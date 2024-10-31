@@ -2,7 +2,7 @@
 const Navbar = () => {
   return (
     <nav>
-
+      desktop nav
     </nav>
   )
 }
