@@ -3,13 +3,9 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    
-  }
 
   body {
-    @apply bg-mainbg text-primary leading-loose;
-    @apply font-primary
+    @apply bg-mainbg text-primary font-primary leading-loose;
   }
 }
 

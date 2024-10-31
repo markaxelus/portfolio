@@ -23,8 +23,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${ClashGrotesk.variable} antialiased`} >
-        
+      <body className={`${ClashGrotesk.variable} `} >
+
         <Header />
         {children}
       </body>
