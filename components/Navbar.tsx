@@ -28,14 +28,14 @@ const Navbar = () => {
   const pathname = usePathname();
 
   return (
-    <nav className="flex">
+    <nav className="flex ">
       {navLinks.map((link, index) => {
         const isActive = link.path === pathname;
         return (
           <Link
             href={link.path}
             key={index}
-            className={`flex justify-center items-center w-56 h-32 gap-2 text-xl border-x ${styles.navLink} ${isActive ? styles.activeLink : ""} ${isActive ? "bg-primary text-mainbg" : ""}`}
+            className={`flex justify-center items-center w-40 h-20 gap-2 text-lg border-x ${styles.navLink} ${isActive ? styles.activeLink : ""} ${isActive ? "bg-primary text-mainbg" : ""}`}
           >
             <Image
               src={link.icon}
