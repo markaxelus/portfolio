@@ -4,7 +4,6 @@ import '@testing-library/jest-dom';
 import Navbar from '../Navbar';
 import { usePathname } from 'next/navigation';
 
-// Mock usePathname
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
 }));
