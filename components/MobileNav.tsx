@@ -36,7 +36,10 @@ const MobileNav = () => {
         <SheetTrigger className="flex justify-center items-center">
             <CiMenuFries className="text-[32px] text-accent"/>
         </SheetTrigger>
-        <SheetContent className="flex flex-col">
+        <SheetContent 
+        aria-describedby={undefined}
+        className="flex flex-col"
+        >
             <SheetTitle></SheetTitle>
             {/* logo */}
             <div className="mt-32 mb-40 text-center text-2xl">
@@ -47,7 +50,10 @@ const MobileNav = () => {
                 </Link>
             </div>
             {/* nav */}
-            <nav className="flex flex-col justify-center items-center gap-8" >
+            <nav 
+            className="flex flex-col justify-center items-center gap-8" 
+            aria-label="Mobile navigation"
+            >    
                 {navLinks.map((link,index) => {
                     return(
                         <Link href={link.path}
