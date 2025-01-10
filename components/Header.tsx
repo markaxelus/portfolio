@@ -8,7 +8,7 @@ import MobileNav from './MobileNav'
 import styles from "./Navbar.module.css"
 const Header = () => (
     <header className=" py-4 xl:py-0  text-primary capitalize border-b ">
-        <div className="mx-auto container flex justify-between items-center">
+        <div className="mx-auto container flex justify-between items-center ">
             <Link href='/' className=''>
                 <div className="w-full flex items-center">
                     <h1 className="text-5xl font-semibold ">
