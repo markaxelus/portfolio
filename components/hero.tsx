@@ -7,7 +7,7 @@ import { SpinningText } from "@/components/magicui/spinning-text";
 
 const Hero = () => {
   return (
-    <div className="h-screen w-screen flex flex-col justify-between px-24 py-28">
+    <div className="h-screen w-screen flex flex-col justify-between px-24 py-28 bg-gray-100">
       {/* Container to match the centered content */}
       <div className="max-w-6xl w-full mx-auto flex flex-col justify-between h-full">
         {/* Top Section - Name and Blobs */}
