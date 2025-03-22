@@ -14,10 +14,11 @@ const Hero = () => {
         <div className="flex justify-between">
           <div>
             <h1 className={`${styles.h1} text-[7.5em] font-medium leading-[1.1] [text-shadow:rgba(255,0,180,0.2)_-11.06px_3.75333px]`}>
-              Mark <br /> Axelus
+              <span className={styles.slideLeft}>Mark</span><br/>
+              <span className={styles.slideRight}>Axelus</span>
             </h1>
             
-           {/*  <div className={styles.blobCont} >
+            {/* <div className={styles.blobCont} >
               <div className={`${styles.blob} ${styles.yellow}`}></div>
               <div className={`${styles.blob} ${styles.red}`}></div>
               <div className={`${styles.blob} ${styles.green}`}></div>
@@ -25,7 +26,7 @@ const Hero = () => {
 
           </div>
           <div className="relative flex justify-center items-center">
-  {/* Image Container */}
+            {/* Image Container */}
             <div className="rounded-full w-[450px] h-[450px] overflow-hidden flex-shrink-0 shadow-lg">
               <Image 
                 src="/profile.jpg" 
@@ -53,7 +54,7 @@ const Hero = () => {
         {/* Bottom Section - Role & Navigation */}
         <div className="flex justify-between items-end w-full ">
           {/* Left Side: Role & Location */}
-          <div className="flex flex-col gap-2">
+          <div className={`${styles.slideUp} flex flex-col gap-2`}>
             <span className="text-5xl font-bold">Full Stack Developer</span>
             <p className="text-sm text-gray-600">
               Discover → Design → Build → Test → Deploy → Promote
