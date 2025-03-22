@@ -35,7 +35,7 @@ const navbar = () => {
     <>
       <nav className={`flex pt-5 text-gray-400 ${styles.nav}`}>
       <ul className={styles.navList}>
-        <li className={`${styles.navItem} ${activeSection === 'top' ? styles.active : ''}`}>
+        <li className={` ${styles.navItem} ${activeSection === 'top' ? styles.active : ''}`}>
           <Link href="#top" onClick={() => setActiveSection('top')}>#Home</Link>
         </li>
         <li className={`${styles.navItem} ${activeSection === 'projects' ? styles.active : ''}`}>
