@@ -1,26 +1,36 @@
 import React from "react";
 import Navbar from "@/components/navbar";
-import Image from "next/image"
+import Image from "next/image";
+import styles from "./styles/Hero.module.css";
 
 const Hero = () => {
   return (
-    <div className="h-screen w-screen flex flex-col justify-between px-24 py-16">
+    <div className="h-screen w-screen flex flex-col justify-between px-24 py-28">
       {/* Container to match the centered content */}
       <div className="max-w-6xl w-full mx-auto flex flex-col justify-between h-full">
-
-        {/* Top Section - Name */}
+        {/* Top Section - Name and Blobs */}
         <div className="flex justify-between">
-          <h1 className="text-[8em] font-medium leading-[1.1] [text-shadow:rgba(255,0,180,0.2)_-11.06px_3.75333px]">
-            Mark <br /> Axelus
-          </h1>
-          <div className="rounded-full w-[400px] h-[400px] overflow-hidden border-4 border-gray-200">
-            <Image 
-              src='/image.png' 
-              alt="profile-photo" 
-              width={400} 
-              height={400} 
-              className="w-full h-full object-cover"
-            />
+          <div>
+            <h1 className="text-[7.5em] font-medium leading-[1.1] [text-shadow:rgba(255,0,180,0.2)_-11.06px_3.75333px]">
+              Mark <br /> Axelus
+            </h1>
+            {/* Insert moving blobs below the name */}
+            <div className={styles.blobCont}>
+              <div className={`${styles.blob} ${styles.yellow}`}></div>
+              <div className={`${styles.blob} ${styles.red}`}></div>
+              <div className={`${styles.blob} ${styles.green}`}></div>
+            </div>
+          </div>
+          <div className="flex justify-center items-center">
+            <div className="rounded-full w-[450] h-[450] overflow-hidden border-4 border-gray-200 flex-shrink-0 mr-4">
+              <Image 
+                src="/profile.jpg" 
+                alt="profile-photo" 
+                width={450} 
+                height={450} 
+                className="w-full h-full  object-cover"
+              />
+            </div>
           </div>
         </div>
 
@@ -28,15 +38,17 @@ const Hero = () => {
         <div className="flex justify-between items-end w-full">
           {/* Left Side: Role & Location */}
           <div className="flex flex-col gap-2">
-            <span className="text-4xl font-bold">Full Stack Developer</span>
+            <span className="text-5xl font-bold">Full Stack Developer</span>
             <p className="text-sm text-gray-600">
               Discover → Design → Build → Test → Deploy → Promote
             </p>
             <p className="text-sm text-gray-400">Victoria, British Columbia</p>
           </div>
-
           {/* Right Side: Navigation */}
-          <Navbar />
+          <div className="">
+            <Navbar />
+          </div>
+
         </div>
       </div>
     </div>
@@ -44,4 +56,3 @@ const Hero = () => {
 };
 
 export default Hero;
-
