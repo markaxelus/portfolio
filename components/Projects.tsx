@@ -1,4 +1,5 @@
 import React from 'react'
+import { BlurFade } from "./magicui/blur-fade"
 
 const Projects = () => {
   return (
