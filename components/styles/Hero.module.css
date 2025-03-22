@@ -12,15 +12,16 @@
   align-items: center;
   z-index: -2;
   position: relative;
-  bottom: 2em;
+  bottom: 7em;
 
 }
 
 /* Common blob styles */
 .blob {
   border-radius: 100px;
-  filter: blur(60px);
+  filter: blur(40px);
   position: absolute;
+  will-change: transform;
 }
 
 /* Yellow Blob */
@@ -73,4 +74,53 @@
   30%  { top: 150px; right: 150px; transform: scale(1.4); }
   60%  { top: 250px; right: 100px; transform: scale(1); }
   100% { top: 250px; right: 0px; transform: scale(1); }
+}
+
+
+.h1 {
+    animation: slideUp 0.6s ease-in forwards;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+/* Slide from left (for "Mark") */
+.slideLeft {
+    display: inline-block;
+    animation: slideLeft 0.6s ease-in forwards;
+  }
+  
+@keyframes slideLeft {
+from {
+    opacity: 0;
+    transform: translateX(-40px);
+}
+to {
+    opacity: 1;
+    transform: translateX(0);
+}
+}
+
+/* Slide from right (for "Axelus") */
+.slideRight {
+    display: inline-block;
+    animation: slideRight 0.6s ease-in forwards;
+}
+
+@keyframes slideRight {
+from {
+    opacity: 0;
+    transform: translateX(40px);
+}
+to {
+    opacity: 1;
+    transform: translateX(0);
+}
 }
