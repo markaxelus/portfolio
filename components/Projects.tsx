@@ -9,7 +9,7 @@ const Projects = () => {
       <div id="projects" className="px-6 py-16 bg-white">
         <div className='max-w-6xl w-full mx-auto  '>
           <h2 className="text-[2.5em] font-bold mb-8">
-            My Works <span className='text-xl'>｡𖦹°‧</span>
+            My Works <span className='text-xl'>｡𖦹°‧ </span>💼
           </h2>
         </div>
           <BlurFade 
@@ -22,7 +22,7 @@ const Projects = () => {
                 return (
                   <div
                     key={index}
-                    className={`relative overflow-hidden shadow-md group`}
+                    className={`relative overflow-hidden shadow-lg group`}
                     style={{ gridColumn: `span ${project.colSpan} ` }}
                   >
                     {/* Background Image */}

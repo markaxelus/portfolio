@@ -18,11 +18,11 @@ const Hero = () => {
               <span className={styles.slideRight}>𝓐𝔁𝓮𝓵𝓾𝓼</span>
             </h1>
             
-            <div className={`${styles.blobCont}`} >
+            {/* <div className={`${styles.blobCont}`} >
               <div className={`${styles.blob} ${styles.yellow}`}></div>
               <div className={`${styles.blob} ${styles.red}`}></div>
               <div className={`${styles.blob} ${styles.green}`}></div>
-            </div> 
+            </div>  */}
 
           </div>
           <div className="relative flex justify-center items-center">
