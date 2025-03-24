@@ -1,12 +1,14 @@
 import React from 'react'
 import { socials } from "../data/Socials"
 import Image from "next/image"
+import Link from "next/link"
+import Contact from "./Contact"
 
 const Footer = () => {
   return (
-    <div className='flex justify-center items-center '>
+    <div id="contact" className='flex justify-center items-center'>
         {/* Footer Container */}
-        <div className='flex justify-between w-full max-w-[75%] border-2 rounded-xl min-h-screen '>
+        <div className='flex justify-between w-full max-w-[75%] border-2 rounded-xl min-h-screen px-8 pt-20'>
             {/* Quote Container */}
             <div>
                 <h1 className='text-4xl font-semibold'>
@@ -20,7 +22,7 @@ const Footer = () => {
                 <h1 className='text-3xl text-orange-400 font-semibold'>
                     Follow Me
                 </h1>
-                <div className=''>
+                <div className='flex flex-col gap-2'>
                     {socials.map((social, index) => (
                         <div 
                             key={index}
@@ -31,20 +33,21 @@ const Footer = () => {
                                     src={social.icon}
                                     alt={social.name}
                                     fill
-                                    className='object-contain'
+                                    className='object-contain '
                                 />
                             </div>
-                            <span className='text-xl'>{social.name}</span>
+                            <Link href={social.link} target="_blank" className='text-xl font-medium'>{social.name}</Link>
 
                         </div>
                     ))}
                 </div>
             </div>
 
-            {/* Contact & Projects */}
-            <div>
+            {/* Contact Me */}
+            <Contact />
                 
-            </div>
+            
+
         </div>
     </div>
   )
