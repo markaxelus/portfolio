@@ -32,31 +32,63 @@ const Contact = () => {
   return (
     
 
-    <form ref={form} onSubmit={sendEmail} className="space-y-4">
-      <input
-        type="text"
-        name="user_name"
-        placeholder="Your Name"
-        required
-        className="border px-3 py-2 rounded-md"
-      />
-      <input
-        type="email"
-        name="user_email"
-        placeholder="Your Email"
-        required
-        className="border px-3 py-2 rounded-md"
-      />
-      <textarea
-        name="message"
-        placeholder="Your Message"
-        rows={5}
-        required
-        className="border px-3 py-2 rounded-md"
-      />
-      <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-md">
-        Send Message
-      </button>
+    <form
+        ref={form}
+        onSubmit={sendEmail}
+        className="rounded-lg w-full max-w-2xl space-y-4 "
+    >
+        {/* Name + Email Row */}
+        <div className="flex gap-4 w-full">
+            <input
+            type="text"
+            name="user_name"
+            placeholder="Name"
+            required
+            className="flex-1 border-black border px-4 py-2 h-16"
+            />
+            <input
+            type="email"
+            name="user_email"
+            placeholder="Email"
+            required
+            className="flex-1 border-black border px-4 py-2"
+            />
+        </div>
+
+        {/* Message Box */}
+        <textarea
+            name="message"
+            placeholder="Your message..."
+            rows={6}
+            required
+            className="w-full border-black border px-4 py-4 resize-none"
+        />
+
+        {/* Send Button aligned right */}
+        <div className="w-full flex justify-end">
+            <button
+            type="submit"
+            className="flex items-center font-medium px-5 py-2 gap-2 border-black border transition"
+            >
+            Send it
+            <div className="w-5 h-5 text-green-500">
+                <svg
+                className="w-full h-full stroke-current"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                >
+                <path
+                    d="M5 12H19M19 12L13 6M19 12L13 18"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                />
+                </svg>
+            </div>
+            </button>
+        </div>
     </form>
 
         

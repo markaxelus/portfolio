@@ -8,13 +8,20 @@ const Footer = () => {
   return (
     <div id="contact" className='flex justify-center items-center'>
         {/* Footer Container */}
-        <div className='flex justify-between w-full max-w-[75%] border-2 rounded-xl min-h-screen px-8 pt-20'>
+        <div className='flex justify-evenly w-full max-w-[75%] border-2 rounded-xl min-h-screen pt-20'>
             {/* Quote Container */}
-            <div>
+            <div className='flex flex-col gap-24'>
                 <h1 className='text-4xl font-semibold'>
                     Where <span className='text-blue-400'>functionality</span> & <br/>
                     <span className='text-pink-400'> aesthetics</span> meet
                 </h1>
+                <div>
+                    <h1 className="text-3xl font-semibold leading-tight">
+                    Contact <br /> Me 📬
+                    </h1>
+                    <p className="text-lg text-gray-400">Say Hello!</p>
+                    <Contact /> 
+                </div>
             </div>
 
             {/* Socials */}
@@ -44,7 +51,6 @@ const Footer = () => {
             </div>
 
             {/* Contact Me */}
-            <Contact />
                 
             
 
