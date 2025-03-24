@@ -14,15 +14,15 @@ const Hero = () => {
         <div className="flex justify-between">
           <div>
             <h1 className={`${styles.h1} text-[7.5em] font-medium leading-[1.1] [text-shadow:rgba(255,0,180,0.2)_-11.06px_3.75333px]`}>
-              <span className={styles.slideLeft}>Mark</span><br/>
-              <span className={styles.slideRight}>Axelus</span>
+              <span className={styles.slideLeft}>𝓜𝓪𝓻𝓴</span><br/>
+              <span className={styles.slideRight}>𝓐𝔁𝓮𝓵𝓾𝓼</span>
             </h1>
             
-            {/* <div className={styles.blobCont} >
+            {/* <div className={`${styles.blobCont}`} >
               <div className={`${styles.blob} ${styles.yellow}`}></div>
               <div className={`${styles.blob} ${styles.red}`}></div>
               <div className={`${styles.blob} ${styles.green}`}></div>
-            </div> */}
+            </div>  */}
 
           </div>
           <div className="relative flex justify-center items-center">
