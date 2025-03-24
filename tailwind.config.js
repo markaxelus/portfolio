@@ -12,7 +12,11 @@ module.exports = {
   			inter: [
   				'var(--font-inter)',
   				'sans-serif'
-  			]
+  			],
+			lexend: [
+				'var(--font-lexend)',
+				'sans-serif'
+			]
   		},
 		safelist: [
 		'col-span-1', 'col-span-2', 'col-span-3', 'col-span-4',
@@ -29,6 +33,7 @@ module.exports = {
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
+			accent: '#FFFFE3',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
