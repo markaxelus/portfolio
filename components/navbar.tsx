@@ -5,7 +5,7 @@ import styles from "./styles/Navbar.module.css"
 
 
 
-const navbar = () => {
+const Navbar = () => {
   const [activeSection, setActiveSection] = useState('top');
 
   useEffect(() => {
@@ -54,4 +54,4 @@ const navbar = () => {
   )
 }
 
-export default navbar
+export default Navbar

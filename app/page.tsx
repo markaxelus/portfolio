@@ -1,4 +1,4 @@
-import Hero from "@/components/hero"
+import Hero from "@/components/Hero"
 import Project from "@/components/Projects"
 import "./globals.css"
 

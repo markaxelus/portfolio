@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import styles from "./styles/Hero.module.css";
 import { SpinningText } from "@/components/magicui/spinning-text";
