@@ -12,10 +12,10 @@ const Contact = () => {
         if(!form.current) return;
 
         emailjs.sendForm(
-            process.env.SERVICE_ID!,
-            process.env.TEMPLATE_ID!,
+            process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+            process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
             form.current,
-            process.env.PUBLIC_KEY!
+            process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
         ).then (
             (result) => {
                 alert('Message sent, \ Thank you !')
@@ -32,51 +32,35 @@ const Contact = () => {
   return (
     
 
-    <form
-        ref={form}
-        onSubmit={sendEmail}
-        className=''
-    >
-        <input type='text' name='' placeholder='' required />
-        <input type='email' name='' placeholder='' required />
-        <textarea name='' placeholder='' required rows={5}/>
-        <button type='submit' className=''>
+    <form ref={form} onSubmit={sendEmail} className="space-y-4">
+      <input
+        type="text"
+        name="user_name"
+        placeholder="Your Name"
+        required
+        className="border px-3 py-2 rounded-md"
+      />
+      <input
+        type="email"
+        name="user_email"
+        placeholder="Your Email"
+        required
+        className="border px-3 py-2 rounded-md"
+      />
+      <textarea
+        name="message"
+        placeholder="Your Message"
+        rows={5}
+        required
+        className="border px-3 py-2 rounded-md"
+      />
+      <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-md">
+        Send Message
+      </button>
+    </form>
 
-        </button>
-    
+        
 
-        <div className='flex gap-6 border-b-200 '>
-            <form>
-                
-            </form>
-
-
-            <div className="flex flex-col ">
-                <h1 className="text-2xl font-semibold leading-tight">
-                Contact <br /> Me
-                </h1>
-                <p className="text-lg text-gray-400">Say Hello!</p>
-            </div>
-
-            <div className='relative w-12 h-12 border-2 border-gray-400 rounded-full p-2 text-green-500'>
-                <svg
-                    className="w-full h-full stroke-current"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                    d="M5 12H19M19 12L13 6M19 12L13 18"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    />
-                </svg>
-            </div>
-        </div>
-
-        </form>
   )
 }
 
