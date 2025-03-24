@@ -4,6 +4,7 @@ import Link from 'next/link'
 import styles from "./styles/Navbar.module.css"
 
 
+
 const navbar = () => {
   const [activeSection, setActiveSection] = useState('top');
 
@@ -34,21 +35,21 @@ const navbar = () => {
   return (
     <>
       <nav className={`flex pt-5 text-gray-400 ${styles.nav}`}>
-      <ul className={styles.navList}>
-        <li className={` ${styles.navItem} ${activeSection === 'top' ? styles.active : ''}`}>
-          <Link href="#top" onClick={() => setActiveSection('top')}>#Home</Link>
-        </li>
-        <li className={`${styles.navItem} ${activeSection === 'projects' ? styles.active : ''}`}>
-          <Link href="#projects" onClick={() => setActiveSection('projects')}>#Projects</Link>
-        </li>
-        <li className={`${styles.navItem} ${activeSection === 'about' ? styles.active : ''}`}>
-          <Link href="#about" onClick={() => setActiveSection('about')}>#About</Link>
-        </li>
-        <li className={`${styles.navItem} ${activeSection === 'contact' ? styles.active : ''}`}>
-          <Link href="#contact" onClick={() => setActiveSection('contact')}>#Contact</Link>
-        </li>
-      </ul>
-    </nav>
+        <ul className={styles.navList}>
+          <li className={` ${styles.navItem} ${activeSection === 'top' ? styles.active : ''}`}>
+            <Link href="#top" onClick={() => setActiveSection('top')}>#Home</Link>
+          </li>
+          <li className={`${styles.navItem} ${activeSection === 'projects' ? styles.active : ''}`}>
+            <Link href="#projects" onClick={() => setActiveSection('projects')}>#Projects</Link>
+          </li>
+          <li className={`${styles.navItem} ${activeSection === 'about' ? styles.active : ''}`}>
+            <Link href="#about" onClick={() => setActiveSection('about')}>#About</Link>
+          </li>
+          <li className={`${styles.navItem} ${activeSection === 'contact' ? styles.active : ''}`}>
+            <Link href="#contact" onClick={() => setActiveSection('contact')}>#Contact</Link>
+          </li>
+        </ul>
+      </nav>
     </>
   )
 }
