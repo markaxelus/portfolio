@@ -18,12 +18,12 @@ const Projects = () => {
           >
             <div className="grid grid-cols-12 grid-flow-row-dense auto-rows-[200px] gap-4 max-w-6xl mx-auto">
               {projectList.map((project, index) => {
-                const col = project.colSpan;
 
                 return (
                   <div
                     key={index}
-                    className={`relative overflow-hidden shadow-md group col-span-${col}`}
+                    className={`relative overflow-hidden shadow-md group`}
+                    style={{ gridColumn: `span ${project.colSpan} ` }}
                   >
                     {/* Background Image */}
                     <Image

@@ -1,7 +1,6 @@
 // projectList.ts (or .js)
 
 export const projectList = [
-    // Row 1 => 3 items, each colSpan = 4 (3 x 4 = 12)
     {
       name: 'Synapse',
       img: '/synapse.jpg',
@@ -11,7 +10,7 @@ export const projectList = [
       description: 'NwHacks2025 - Leverages AI to transform complex information into clear visuals',
       year: 2025,
       techStack: 'Typescript, Tailwind, AWS, Mermaid.js, Serverless, LangChain',
-      colSpan: 6,
+      colSpan: 5,
     },
     {
       name: 'BasicAuth',
@@ -22,9 +21,8 @@ export const projectList = [
       description: '',
       year: 2024,
       techStack: 'MERN, React+Vite, JWT, bcrypt',
-      colSpan: 6,
+      colSpan: 5,
     },
-    // Row 2 => 4 items, each colSpan = 3 (4 x 3 = 12)
     {
       name: 'Neural Style Transfer',
       img: '/neuralstyle.png',
@@ -34,7 +32,7 @@ export const projectList = [
       description: '',
       year: 2024,
       techStack: 'TensorFlow, Numpy, Matplotlib, Pandas, Streamlit',
-      colSpan: 5,
+      colSpan: 2,
     },
   
     {
@@ -46,7 +44,7 @@ export const projectList = [
       description: 'NwHacks2024 - ',
       year: 2024,
       techStack: 'Javascript, Node.js, Express.js, REST',
-      colSpan: 3,
+      colSpan: 6,
     },
     {
       name: 'Weather App',
@@ -57,7 +55,7 @@ export const projectList = [
       description: '',
       year: 2023,
       techStack: 'HTML, CSS, Javascript, REST',
-      colSpan: 4,
+      colSpan: 6,
     },
     
   ]
