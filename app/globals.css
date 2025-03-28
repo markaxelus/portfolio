@@ -15,9 +15,9 @@ html {
 }
 
 :root {
-  --yellow: #EDB74D;
-  --red: #EB6666;
-  --green: #6FB18A;
+  --yellow: #f879de;
+  --red: #e59040;
+  --green: #19dcf6;
   --yellow-anim: yellowAnim;
   --red-anim: redAnim;
   --green-anim: greenAnim;

@@ -24,6 +24,15 @@ module.exports = {
 		'col-span-9', 'col-span-10','col-span-11','col-span-12',
 		'row-span-1','row-span-2','row-span-3','row-span-4'
 		],
+
+		screens: {
+			'xs': '480px',
+			'sm': '640px',
+			'md': '768px',
+			'lg': '1024px',
+			'xl': '1280px',
+			'2xl': '1536px',
+		  },
 		
   		borderRadius: {
   			lg: 'var(--radius)',
