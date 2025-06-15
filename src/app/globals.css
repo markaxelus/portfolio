@@ -1,0 +1,22 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+#root,
+body,
+html,
+.app {
+  height: 100%;
+  width: 100%;
+  @apply bg-white;
+  @apply dark:bg-black;
+}
