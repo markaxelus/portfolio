@@ -1,10 +1,10 @@
 import React from 'react'
-import { LucideIcon } from "lucide-react"
+import { IconType } from "react-icons"
 
 type SocialProps = {
   name: string;
   href: string;
-  icon: LucideIcon;
+  icon: IconType;
 }
 
 const index = ({ name, href, icon:Icon }: SocialProps) => {
