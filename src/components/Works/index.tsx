@@ -36,10 +36,26 @@ const index = ({ headingText, headingClassName }: WorksProps) => {
             href={`/works/${project.slug}`}
             className="group relative block border-[rgb(229, 231, 245)] border-b py-8 overflow-hidden"
           >
-            <div className="">
-              <span className="">0{project.id}</span>
-              <h3 className="">{project.title}</h3>
-              <span className="">{project.category}</span>
+            <div className="flex justify-between px-[96px] py-[60px]  min-h-[160px] tracking-[-0.04em]">
+
+              {/* Left Container: id, title, date */}
+              <div className=" flex gap-3 ">
+                <span className="pt-3.5 text-gray-400 ">0{project.id}</span>
+                <div className="">
+                  <h3 className="text-[48px] tracking-[-0.04em]">{project.title}</h3>
+                  <span className="text-gray-600 ">{project.date}</span>
+                </div>
+                
+              </div>
+
+              {/* Right Container: category */}
+              <div className="flex flex-col justify-start items-end text-right">
+  <span className="text-[28px] tracking-[-0.04em]">{project.category}</span>
+  <span className="text-[16px] tracking-[-0.04em] text-gray-400 break-words max-w-[400px] leading-5">
+    {project.stack.join(', ')}
+  </span>
+</div>
+
             </div>
 
           </Link>

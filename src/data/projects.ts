@@ -5,9 +5,10 @@ export type Project = {
   category: string;
   projectType: string;
   imageUrl: string;
-  date: Number;
+  date: number;
   description: string;
-}
+  stack: string[];
+};
 
 export const projects: Project[] = [
   {
@@ -19,6 +20,7 @@ export const projects: Project[] = [
     imageUrl: "/relay.jpg",
     date: 2025,
     description: "",
+    stack: ["Next.js", "PostgreSQL", "Prisma", "TailwindCSS"],
   },
   {
     id: 2,
@@ -29,6 +31,7 @@ export const projects: Project[] = [
     imageUrl: "",
     date: 2025,
     description: "",
+    stack: ["TypeScript", "Node.js", "Express", "AWS", "LangChain", "Mermaid.js", "Lambda", "Serverless"],
   },
   {
     id: 3,
@@ -39,6 +42,7 @@ export const projects: Project[] = [
     imageUrl: "",
     date: 2025,
     description: "",
+    stack: ["Next.js", "TypeScript", "Framer Motion", "TailwindCSS"],
   },
   {
     id: 4,
@@ -49,6 +53,7 @@ export const projects: Project[] = [
     imageUrl: "/basicauth",
     date: 2024,
     description: "",
+    stack: ["React", "Express", "MongoDB", "JWT"],
   },
   {
     id: 5,
@@ -59,6 +64,6 @@ export const projects: Project[] = [
     imageUrl: "/ecoeats.jpg",
     date: 2024,
     description: "",
+    stack: ["HTML", "CSS", "Javascript"],
   },
-  
-] 
+];
