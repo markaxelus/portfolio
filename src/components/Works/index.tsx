@@ -49,12 +49,12 @@ const index = ({ headingText, headingClassName }: WorksProps) => {
             <div className="flex justify-between px-[96px] py-[60px]  min-h-[160px] tracking-[-0.04em]">
               {/* Left Container: id, title, date */}
               <div className=" flex gap-3 ">
-                <span className="pt-3.5 text-gray-400 ">0{project.id}</span>
-                <div className="">
+                <span className="pt-3.5 text-gray-400 font-semibold">0{project.id}</span>
+                <div className="leading-snug">
                   <h3 className="text-[48px] tracking-[-0.04em]">
                     {project.title}
                   </h3>
-                  <span className="text-gray-600 ">{project.date}</span>
+                  <span className="text-gray-500 tracking-[-0.06em]">{project.dateAndType}</span>
                 </div>
               </div>
 

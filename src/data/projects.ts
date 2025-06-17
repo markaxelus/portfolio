@@ -3,9 +3,8 @@ export type Project = {
   slug: string;
   title: string;
   category: string;
-  projectType: string;
   imageUrl?: string;
-  date: number;
+  dateAndType: string;
   description: string;
   stack: string[];
 };
@@ -16,9 +15,8 @@ export const projects: Project[] = [
     slug: "relay",
     title: "Relay",
     category: "Full-Stack / Product Design",
-    projectType: "Personal Project",
     imageUrl: "/relay.jpg",
-    date: 2025,
+    dateAndType: "2025 — Personal",
     description: "",
     stack: ["Next.js", "PostgreSQL", "Prisma", "TailwindCSS"],
   },
@@ -27,9 +25,8 @@ export const projects: Project[] = [
     slug: "synapse",
     title: "Synapse",
     category: "Full-Stack / Product Design",
-    projectType: "Hackathon",
     imageUrl: "/synapse.jpg",
-    date: 2025,
+    dateAndType: "2024 — Hackathon",
     description: "",
     stack: ["TypeScript", "Node.js", "Express", "AWS", "LangChain", "Mermaid.js", "Lambda", "Serverless"],
   },
@@ -38,9 +35,8 @@ export const projects: Project[] = [
     slug: "portfolio",
     title: "Portfolio",
     category: "UI/UX Design",
-    projectType: "Hackathon",
     imageUrl: "/profile.png",
-    date: 2025,
+    dateAndType: "2025 — Personal",
     description: "",
     stack: ["Next.js", "TypeScript", "Framer Motion", "TailwindCSS"],
   },
@@ -49,9 +45,8 @@ export const projects: Project[] = [
     slug: "basicauth",
     title: "BasicAuth",
     category: "Full-Stack",
-    projectType: "Personal Project",
     imageUrl: "/basicauth.jpg",
-    date: 2024,
+    dateAndType: "2024 — Personal",
     description: "",
     stack: ["React", "Express", "MongoDB", "JWT"],
   },
@@ -60,9 +55,8 @@ export const projects: Project[] = [
     slug: "ecoeats",
     title: "EcoEats",
     category: "Front-End / Product Design",
-    projectType: "Hackathon",
     imageUrl: "/ecoeats.jpg",
-    date: 2024,
+    dateAndType: "2024 — Personal",
     description: "",
     stack: ["HTML", "CSS", "Javascript"],
   },
