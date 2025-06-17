@@ -2,13 +2,16 @@ import React from 'react'
 import { Project, projects } from "@/data/projects"
 import { notFound } from 'next/navigation'
 
-type ProjectDetailProps = {
-    params : { slug: string }
+export const dynamic = 'force-dynamic'; 
+
+interface ProjectDetailProps{
+    params : Promise<{ slug: string }>
 }
 
-const page = async ({ params }: ProjectDetailProps) => {
-  const findProject = projects.find((project: Project) => project.slug === params.slug)
-  if (!findProject) return notFound
+const page =  async ({ params }: ProjectDetailProps) => {
+  const { slug } = await params;
+  const findProject = projects.find((project: Project) => project.slug === slug)
+  if (!findProject) return notFound();
 
   return (
     <main className="pt-[200px] 

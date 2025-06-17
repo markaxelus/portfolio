@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, ReactNode } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Project, projects } from "@/data/projects";
 import ShowMore from "@/components/Buttons/ShowMore";
