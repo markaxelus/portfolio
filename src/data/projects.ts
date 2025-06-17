@@ -1,4 +1,4 @@
-export type Project = {
+/* export type Project = {
   id: number;
   slug: string;
   title: string;
@@ -46,4 +46,45 @@ export const projects: Project[] = [
     description: "",
   },
   
+] */
+
+  // data/projects.ts
+
+export type Project = {
+  id: number
+  slug: string
+  title: string
+  category: string
+  imageUrl: string
+  description: string
+}
+
+export const projects: Project[] = [
+  {
+    id: 1,
+    slug: "meetmate",
+    title: "MeetMate",
+    category: "Development / Design",
+    imageUrl: "/images/meetmate.png",
+    description:
+      "MeetMate is a collaborative meeting scheduling app that helps teams find optimal times across time zones.",
+  },
+  {
+    id: 2,
+    slug: "fishtrack",
+    title: "fishtrack.",
+    category: "iOS Development / Product Design",
+    imageUrl: "/images/fishtrack.png",
+    description:
+      "Track fish migrations and movements with a modern iOS app using live data overlays.",
+  },
+  {
+    id: 3,
+    slug: "tcg-home",
+    title: "TCG-Home",
+    category: "Frontend Development",
+    imageUrl: "/images/tcg-home.png",
+    description:
+      "A property listing site with clean UI and instant filtering based on user preferences.",
+  },
 ]
