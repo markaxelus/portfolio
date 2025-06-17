@@ -2,20 +2,21 @@ import React from "react";
 import Link from "next/link";
 import { Project, projects } from "@/data/projects";
 
-interface SelectedProjectsProps {
+interface WorksProps {
   headingText: string;
   headingClassName: string;
 }
 
-const index = ({ headingText, headingClassName }: SelectedProjectsProps) => {
+const index = ({ headingText, headingClassName }: WorksProps) => {
   return (
     <section
       className="max-w-[1600px] w-full mx-auto
           h-[100vh] 
           px-[20px] md:px-[30px] lg:px-0
-          flex flex-col md:justify-between 
+          
           gap-12 md:gap-6"
     >
+      {/* Heading */}
       <div className="flex justify-between">
         <h1 className={`${headingClassName}`}>{headingText}</h1>
         <Link href='/works'
@@ -25,6 +26,24 @@ const index = ({ headingText, headingClassName }: SelectedProjectsProps) => {
             Show more
           </button>
         </Link>
+      </div>
+
+      {/* Display Section */}
+      <div className="pt-12">
+        {projects.map((project: Project) => (
+          <Link 
+            key={project.id}
+            href={`/works/${project.slug}`}
+            className="group relative block border-[rgb(229, 231, 245)] border-b py-8 overflow-hidden"
+          >
+            <div className="">
+              <span className="">0{project.id}</span>
+              <h3 className="">{project.title}</h3>
+              <span className="">{project.category}</span>
+            </div>
+
+          </Link>
+        ))}
       </div>
     </section>
   );
