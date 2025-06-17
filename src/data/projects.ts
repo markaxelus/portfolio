@@ -35,7 +35,7 @@ export const projects: Project[] = [
     slug: "portfolio",
     title: "Portfolio",
     category: "UI/UX Design",
-    imageUrl: "/profile.png",
+    imageUrl: "/synapse.jpg",
     dateAndType: "2025 — Personal",
     description: "",
     stack: ["Next.js", "TypeScript", "Framer Motion", "TailwindCSS"],
