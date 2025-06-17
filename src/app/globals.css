@@ -20,4 +20,5 @@ html,
   width: 100%;
   @apply bg-white;
   @apply dark:bg-black;
+ 
 }
