@@ -10,7 +10,8 @@ const index = () => {
           h-[100vh]
           pt-[140px] pb-[80px] 
           px-[20px] md:px-[30px] lg:px-0
-          flex flex-col justify-between gap-6
+          flex flex-col md:justify-between 
+          gap-24 md:gap-6
           
       "
       >
@@ -26,7 +27,7 @@ const index = () => {
           </h1>
 
           {/* Profile Image */}
-          <div className="shrink-0 h-full pl-2">
+          <div className="shrink-0 md:h-full pl-2">
             <img
               src="/profile.png"
               alt="Profile"
@@ -37,14 +38,11 @@ const index = () => {
           </div>
         </div>
 
-        {/* MIDDLE “SPACER” ROW (only active on md+) */}
-        <div className="hidden md:block" />
-
         {/* Bottom Row */}
-        <div className="flex flex-col md:flex-row md:justify-between gap-12">
+        <div className="flex flex-col gap-6 md:flex-row md:justify-between md:gap-12">
           <EmailCopy email="mrkaxelus@gmail.com" />
 
-          <p className=" tracking-[-0.09em] indent-[4rem] text-xl max-w-[643px]  font-medium lg:text-[40px]">
+          <p className="tracking-[-0.09em] indent-[4rem] text-xl md:text-[40px] max-w-[643px] font-medium">
             Exploring ideas through design and code — curious, always learning,
             and love to build things. Let's{" "}
             <span className="italic font-semibold">connect!</span>
