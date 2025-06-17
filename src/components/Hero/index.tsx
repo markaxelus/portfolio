@@ -53,7 +53,7 @@ const index = () => {
             </div>
           </div>
 
-          <p className="tracking-[-0.09em] indent-[4rem] text-xl md:text-[40px] max-w-[643px] font-medium">
+          <p className="tracking-[-0.09em] indent-[4rem] text-xl md:text-[40px] max-w-[643px] font-medium text-center md:text-start">
             Exploring ideas through design and code — curious, always learning,
             and love to build things. Let's{" "}
             <span className="italic font-semibold">connect!</span>
