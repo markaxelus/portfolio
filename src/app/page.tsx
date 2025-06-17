@@ -7,7 +7,7 @@ export default function Home() {
       <Hero/>
       <Works
         headingText="work."
-        headingClassName="text-[30px] tracking-[-0.03em] font-medium"
+        headingClassName="text-[48px] tracking-[-0.03em] font-medium"
       />
     </main>
   );

@@ -6,7 +6,7 @@ type ProjectDetailProps = {
     params : { slug: string }
 }
 
-const page = ({ params }: ProjectDetailProps) => {
+const page = async ({ params }: ProjectDetailProps) => {
   const findProject = projects.find((project: Project) => project.slug === params.slug)
   if (!findProject) return notFound
 

@@ -1,14 +1,15 @@
 "use client"
-import React, { useState } from "react";
+import React, { useState, ReactNode } from "react";
 import Link from "next/link";
 import { Project, projects } from "@/data/projects";
+import ShowMore from "@/components/Buttons/ShowMore";
 
 interface WorksProps {
   headingText: string;
   headingClassName: string;
 }
 
-const index = ({ headingText, headingClassName }: WorksProps) => {
+const index = ({ headingText, headingClassName}: WorksProps) => {
   const [hoverInfo, setHoverInfo] = useState<{
     project: Project;
     x: number;
@@ -24,16 +25,9 @@ const index = ({ headingText, headingClassName }: WorksProps) => {
           gap-12 md:gap-6"
     >
       {/* Heading */}
-      <div className="flex justify-between">
+      <div className="flex justify-between ">
         <h1 className={`text-center ${headingClassName}`}>{headingText}</h1>
-        <Link
-          href="/works"
-          className="bg-[rgb(245,245,245)] w-[133px] h-[51px] "
-        >
-          <button className=" w-full h-full tracking-[-0.04em] font-medium">
-            Show more
-          </button>
-        </Link>
+        <ShowMore />
       </div>
 
       {/* Display Section */}
