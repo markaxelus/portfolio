@@ -1,4 +1,5 @@
-import React from "react";
+"use client"
+import React, { useState } from "react";
 import Link from "next/link";
 import { Project, projects } from "@/data/projects";
 
@@ -8,6 +9,12 @@ interface WorksProps {
 }
 
 const index = ({ headingText, headingClassName }: WorksProps) => {
+  const [hoverInfo, setHoverInfo] = useState<{
+    project: Project;
+    x: number;
+    y: number;
+  } | null>(null);
+
   return (
     <section
       className="max-w-[1600px] w-full mx-auto
@@ -18,7 +25,7 @@ const index = ({ headingText, headingClassName }: WorksProps) => {
     >
       {/* Heading */}
       <div className="flex justify-between">
-        <h1 className={`${headingClassName}`}>{headingText}</h1>
+        <h1 className={`text-center ${headingClassName}`}>{headingText}</h1>
         <Link
           href="/works"
           className="bg-[rgb(245,245,245)] w-[133px] h-[51px] "
@@ -35,6 +42,8 @@ const index = ({ headingText, headingClassName }: WorksProps) => {
           <Link
             key={project.id}
             href={`/works/${project.slug}`}
+            onMouseMove={(e) => setHoverInfo({ project : project, x : e.clientX, y : e.clientY })}
+            onMouseLeave={() => setHoverInfo(null)}
             className="group relative block border-[rgb(229, 231, 245)] border-b py-8 overflow-hidden"
           >
             <div className="flex justify-between px-[96px] py-[60px]  min-h-[160px] tracking-[-0.04em]">
@@ -60,13 +69,27 @@ const index = ({ headingText, headingClassName }: WorksProps) => {
               </div>
 
               {/* Hover Img */}
-              <img 
-                src={project.imageUrl}
-                alt={project.title}
-                className="
-                 pointer-events-none w-60 fixed rounded-lg shadow-lg transition-opacity duration-150 ease-out
-                "
-              />
+              {hoverInfo && (
+                <img 
+                  src={hoverInfo.project.imageUrl}  
+                  alt={hoverInfo.project.title}
+                  className="
+                    pointer-events-none
+                    fixed
+                    w-60
+                    rounded-lg
+                    shadow-lg
+                    opacity-95
+                    transition-all duration-1000 ease-out
+                    transform
+                    -translate-x-1/2 -translate-y-1/2
+                  "
+                  style={{
+                    top: hoverInfo.y,
+                    left: hoverInfo.x,
+                  }}
+                />
+              )}
             </div>
           </Link>
         ))}
