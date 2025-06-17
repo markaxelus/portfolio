@@ -76,9 +76,10 @@ const index = ({ headingText, headingClassName }: WorksProps) => {
                   className="
                     pointer-events-none
                     fixed
-                    w-60
+                    w-100
+                    h-70
                     rounded-lg
-                    shadow-lg
+                    shadow-sm
                     opacity-95
                     transition-all duration-1000 ease-out
                     transform
