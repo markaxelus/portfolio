@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Project, projects } from "@/data/projects";
 import ShowMore from "@/components/Buttons/ShowMore";
@@ -10,11 +10,40 @@ interface WorksProps {
 }
 
 const index = ({ headingText, headingClassName}: WorksProps) => {
-  const [hoverInfo, setHoverInfo] = useState<{
-    project: Project;
-    x: number;
-    y: number;
-  } | null>(null);
+  const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
+
+  const mousePos = useRef({ x:0, y:0 })
+  const currentPos = useRef({ x:0, y:0 })
+  const previewRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    let frameId: number;
+    const animate = () => {
+      if (previewRef.current && hoveredProject) {
+        currentPos.current.x += (mousePos.current.x - currentPos.current.x) * 0.025;
+        currentPos.current.y += (mousePos.current.y - currentPos.current.y) * 0.025;
+        previewRef.current.style.transform = `
+          translate3d(${currentPos.current.x}px, ${currentPos.current.y}px, 0)
+          translate(-50%, -50%)
+        `
+      }
+      frameId = requestAnimationFrame(animate)
+    }
+    frameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameId);
+  }, [hoveredProject]);
+
+  /* Handlers */
+  const handleMouseMove = (e: React.MouseEvent, proj: Project) => {
+    mousePos.current = { x:e.clientX, y:e.clientY };
+    if (hoveredProject?.id !== proj.id) {
+      setHoveredProject(proj);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredProject(null);
+  }
 
   return (
     <section
@@ -31,13 +60,13 @@ const index = ({ headingText, headingClassName}: WorksProps) => {
       </div>
 
       {/* Display Section */}
-      <div className="pt-12">
+      <div className="relative pt-12">
         {projects.map((project: Project) => (
           <Link
             key={project.id}
             href={`/works/${project.slug}`}
-            onMouseMove={(e) => setHoverInfo({ project : project, x : e.clientX, y : e.clientY })}
-            onMouseLeave={() => setHoverInfo(null)}
+            onMouseMove={(e) => handleMouseMove(e, project)}
+            onMouseLeave={handleMouseLeave}
             className="group relative block border-[rgb(229, 231, 245)] border-b py-8 overflow-hidden"
           >
             <div className="flex justify-between px-[96px] py-[60px]  min-h-[160px] tracking-[-0.04em]">
@@ -60,34 +89,28 @@ const index = ({ headingText, headingClassName}: WorksProps) => {
                 <span className="text-[16px] tracking-[-0.04em] text-gray-400 break-words max-w-[400px] leading-5">
                   {project.stack.join(", ")}
                 </span>
-              </div>
-
-              {/* Hover Img */}
-              {hoverInfo && (
-                <img 
-                  src={hoverInfo.project.imageUrl}  
-                  alt={hoverInfo.project.title}
-                  className="
-                    pointer-events-none
-                    fixed
-                    w-100
-                    h-70
-                    rounded-lg
-                    shadow-sm
-                    opacity-95
-                    transition-all duration-1000 ease-out
-                    transform
-                    -translate-x-1/2 -translate-y-1/2
-                  "
-                  style={{
-                    top: hoverInfo.y,
-                    left: hoverInfo.x,
-                  }}
-                />
-              )}
+              </div>           
             </div>
           </Link>
         ))}
+
+        {/* Hover Image */}
+        <img 
+          ref={previewRef}
+          src={hoveredProject?.imageUrl}
+          alt={hoveredProject?.title}
+          className={`
+            pointer-events-none
+            fixed top-0 left-0
+            w-100 h-70 shadow-md
+            rounded-xl
+            transition-opacity duration-500 ease-out
+            will-change-transform
+            z-50
+            ${hoveredProject ? 'opacity-90 scale-100' : 'opacity-0 scale-1'}
+          `}
+        />
+
       </div>
     </section>
   );
