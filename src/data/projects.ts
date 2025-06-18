@@ -3,7 +3,7 @@ export type Project = {
   slug: string;
   title: string;
   category: string;
-  imageUrl?: string;
+  imageUrl: string;
   dateAndType: string;
   description: string;
   stack: string[];
