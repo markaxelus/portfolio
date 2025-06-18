@@ -1,4 +1,4 @@
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, Paintbrush, FileText, Code2, Rocket } from "lucide-react";
 
 export type Workflow = {
   icon?: LucideIcon
@@ -8,18 +8,22 @@ export type Workflow = {
 
 export const workflow: Workflow[] = [
   {
+    icon: FileText,
     title: "Empathize & Define",
-    desc: "Initiate the SDLC t. Use structured techniques to convert abstract goals into actionable software requirements.",
+    desc: "Convert abstract problems into actionable goals, scope, and requirements.",
   },
   {
+    icon: Paintbrush,
     title: "Ideate & Design",
-    desc: "Sketch, wireframe, and prototype iteratively. Use tools like Figma and feedback loops to refine UI/UX.",
+    desc: "Sketch, wireframe, and prototype iteratively. Refine UI/UX.",
   },
   {
+    icon: Code2,
     title: "Build & Test",
-    desc: "Develop using modern full-stack tools. Write testable, scalable code with continuous integration, while incorporating user feedback.",
+    desc: "Write testable, scalable code with continuous integration, and user feedback.",
   },
   {
+    icon: Rocket,
     title: "Launch & Iterate",
     desc: "Deploy quickly, gather feedback, monitor with analytics, and continuously improve.",
   },
