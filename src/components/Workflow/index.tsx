@@ -23,7 +23,7 @@ const index = () => {
             >
               {/* Image placeholder */}
               <div className="w-full md:w-1/2">
-                <div className="w-full h-[60vh] md:h-[65vh] lg:h-[70vh]">
+                <div className="w-full h-[60vh] md:h-[65vh] ">
                   <img
                     src={`${step.img}`}
                     alt={step.title}

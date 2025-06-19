@@ -4,7 +4,7 @@ import ShowMore from "@/components/Buttons/ShowMore"
 
 const page = () => {
   return (
-    <main className="pt-[200px] pb-[100px] ">
+    <main className="pt-[150px] pb-[100px] ">
       <Works 
         headingText='WORK'
         headingClassName='text-[76px] md:text-[116px] lg:text-[174px] 

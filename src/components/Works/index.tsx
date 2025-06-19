@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion";
 import { Project, projects } from "@/data/projects";
 import ShowMore from "@/components/Buttons/ShowMore";
@@ -28,6 +29,9 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
   const mousePos = useRef({ x: 0, y: 0 });
   const currentPos = useRef({ x: 0, y: 0 });
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const pathname = usePathname();
+  const onWorksPage = pathname === "/works";
 
   // Smooth follow loop
   useEffect(() => {
@@ -65,10 +69,10 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
   };
 
   return (
-    <section className="max-w-[1600px] w-full mx-auto h-screen px-[20px] md:px-[30px] lg:px-0 gap-12 md:gap-6">
+    <section className="max-w-[1600px] w-full mx-auto h-screen px-[20px] md:px-[30px] lg:px-0 gap-12 md:gap-6 py-[80px]">
       <div className="flex justify-between">
         <h1 className={`text-center ${headingClassName}`}>{headingText}</h1>
-        <ShowMore />
+        {!onWorksPage && <ShowMore />}
       </div>
 
       <div className="relative pt-12">
@@ -84,14 +88,14 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
               <div className="flex gap-3">
                 <span className="pt-3.5 text-gray-400 font-semibold">0{project.id}</span>
                 <div className="leading-snug">
-                  <h3 className="text-[48px] tracking-[-0.04em]">{project.title}</h3>
-                  <span className="text-gray-500 tracking-[-0.06em]">
+                  <h3 className="text-[48px] tracking-[-0.08em] uppercase">{project.title}</h3>
+                  <span className="text-neutral-400 tracking-[-0.06em]">
                     {project.dateAndType}
                   </span>
                 </div>
               </div>
               <div className="flex flex-col justify-start items-end text-right">
-                <span className="text-[28px] tracking-[-0.04em]">{project.category}</span>
+                <span className="text-[28px] font-medium tracking-[-0.04em]">{project.category}</span>
                 <span className="text-[16px] tracking-[-0.04em] text-gray-400 break-words max-w-[400px] leading-5">
                   {project.stack.join(", ")}
                 </span>
