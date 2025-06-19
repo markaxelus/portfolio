@@ -31,7 +31,7 @@ const index = () => {
           <Link href="https://www.instagram.com/mrkaxelus/">Instagram</Link>
         </div>
         {/* Middle container */}
-        <div className="">
+        <div className="flex flex-col gap-[40px]">
           <p className="
               text-[48px] tracking-[-2.4px] px-[2.4px] py-[2.4px] mx-[2.4px] my-[2.4px]
               leading-tight font-[500]
@@ -42,19 +42,36 @@ const index = () => {
             Open to new ideas, new teams, and new challenges. <br />
             Big or small, every idea starts with a chat!
           </p>
-          <div className="relative flex items-center gap-2">
-            <span className="relative flex h-3 w-3">
-              <span className="animate-custom-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 scale-[2]"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-            </span>
-            <span className="text-white text-sm">Available For Work</span>
+          <div className="relative flex items-center gap-10">
+            <div className="bg-white text-black py-[20px] px-[36px]">
+              <Link href="/contact" className='font-[500] '>
+                Get in Touch
+              </Link>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <span className="relative flex h-3 w-3 ">
+                <span className="animate-custom-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 scale-[2]"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+              </span>
+              <span className="text-white text-[16px] font-[500]">Available For Work</span>
+            </div>
           </div>
 
         </div>
 
         {/* Bottom Container */}
-        <div className="">
-          test
+        <div className="flex justify-between ">
+          {/* Left Container: Email, Location */}
+          <div className="flex flex-col ">
+            <span className="font-[400]">mrkaxelus@gmail.com</span>
+            <span className="font-[400]">Victoria, BC</span>
+          </div>
+
+          {/* Right Container: Rights */}
+          <div className="flex flex-col ">
+            <span className="">All rights reserved, <br/> MARK©2025</span>
+          </div>
         </div>
       </div>
     </motion.footer>
