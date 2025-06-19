@@ -12,16 +12,26 @@ export type Project = {
 export const projects: Project[] = [
   {
     id: 1,
+    slug: "uveec",
+    title: "Uveec",
+    category: "Front-End",
+    imageUrl: "/uveec.png",
+    dateAndType: "Uvic Environmental Engineering Club",
+    description: "",
+    stack: ["Next.js", "TypeScript", "TailwindCSS"],
+  },
+  {
+    id: 2,
     slug: "relay",
     title: "Relay",
     category: "Full-Stack / Product Design",
     imageUrl: "/relay.jpg",
-    dateAndType: "2025 — Personal",
+    dateAndType: "Ongoing — Personal",
     description: "",
     stack: ["Next.js", "PostgreSQL", "Prisma", "TailwindCSS"],
   },
   {
-    id: 2,
+    id: 3,
     slug: "synapse",
     title: "Synapse",
     category: "Full-Stack / Product Design",
@@ -31,7 +41,7 @@ export const projects: Project[] = [
     stack: ["TypeScript", "Node.js", "Express", "AWS", "LangChain", "Mermaid.js", "Lambda", "Serverless"],
   },
   {
-    id: 3,
+    id: 4,
     slug: "portfolio",
     title: "Portfolio",
     category: "UI/UX Design",
@@ -41,7 +51,7 @@ export const projects: Project[] = [
     stack: ["Next.js", "TypeScript", "Framer Motion", "TailwindCSS"],
   },
   {
-    id: 4,
+    id: 5,
     slug: "basicauth",
     title: "BasicAuth",
     category: "Full-Stack",
@@ -51,7 +61,7 @@ export const projects: Project[] = [
     stack: ["React", "Express", "MongoDB", "JWT"],
   },
   {
-    id: 5,
+    id: 6,
     slug: "ecoeats",
     title: "EcoEats",
     category: "Front-End / Product Design",

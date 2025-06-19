@@ -67,7 +67,7 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
     setHoveredProject(null);
     setImgReady(false);
   };
-
+  
   return (
     <section className="max-w-[1600px] w-full mx-auto h-screen px-[20px] md:px-[30px] lg:px-0 gap-12 md:gap-6 py-[80px]">
       <div className="flex justify-between">
@@ -75,8 +75,8 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
         {!onWorksPage && <ShowMore />}
       </div>
 
-      <div className="relative pt-12">
-        {projects.map((project) => (
+      <div className="relative pt-12 pb-[120px]">
+        {(onWorksPage ? projects : projects.slice(0,5)).map((project) => (
           <Link
             key={project.id}
             href={`/works/${project.slug}`}
@@ -122,7 +122,7 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
                 animate={imgReady ? { opacity: 0.9, scale: 1, y: 0 } : { opacity: 0, scale: 1, y: 20 }}
                 exit={{ opacity: 0, scale: 0.5, y: -20 }}
                 transition={{ duration: 0.2, ease: 'easeOut' }}
-                className="w-100 h-70 shadow-md rounded-xl"
+                className="w-100 h-60 shadow-md rounded-xl"
               />
             )}
           </AnimatePresence>

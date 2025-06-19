@@ -1,5 +1,5 @@
 import Hero from "@/components/Hero"
-import Workflow from "@/components/Workflow"
+import Workflow from "@/components/Process"
 import Works from "@/components/Works"
 
 
