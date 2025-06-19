@@ -23,14 +23,14 @@ const index = () => {
             >
               {/* Image placeholder */}
               <div className="w-full md:w-1/2">
-  <div className="w-full h-[65vh] ">
-    <img
-      src={`${step.img}`}
-      alt={step.title}
-  className="w-full h-full object-cover block"
-    />
-  </div>
-</div>
+                <div className="w-full h-[65vh] ">
+                  <img
+                    src={`${step.img}`}
+                    alt={step.title}
+                className="w-full h-full object-cover block"
+                  />
+                </div>
+              </div>
 
 
               {/* Text content */}
