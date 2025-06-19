@@ -69,13 +69,13 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
   };
   
   return (
-    <section className="max-w-[1600px] w-full mx-auto h-screen px-[20px] md:px-[30px] lg:px-0 gap-12 md:gap-6 py-[80px]">
+    <section className="max-w-[1600px] w-full mx-auto min-h-screen px-[20px] md:px-[30px] lg:px-0 gap-12 md:gap-6 py-[80px]">
       <div className="flex justify-between">
         <h1 className={`text-center ${headingClassName}`}>{headingText}</h1>
-        {!onWorksPage && <ShowMore />}
+        {!onWorksPage && <ShowMore href="/works" />}
       </div>
 
-      <div className="relative pt-12 pb-[120px]">
+      <div className="relative pt-12 ">
         {(onWorksPage ? projects : projects.slice(0,5)).map((project) => (
           <Link
             key={project.id}
