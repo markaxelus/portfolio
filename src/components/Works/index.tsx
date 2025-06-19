@@ -117,7 +117,7 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
                 initial={{ opacity: 0, scale: 1, y: 20 }}
                 animate={imgReady ? { opacity: 0.9, scale: 1, y: 0 } : { opacity: 0, scale: 1, y: 20 }}
                 exit={{ opacity: 0, scale: 0.5, y: -20 }}
-                transition={{ duration: 0.13, ease: 'easeOut' }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
                 className="w-100 h-70 shadow-md rounded-xl"
               />
             )}

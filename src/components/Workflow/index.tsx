@@ -1,39 +1,53 @@
 import React from 'react'
-import ShowMore from "@/components/Buttons/ShowMore"
 import { Workflow, workflow } from "@/data/workflow"
-import { User2 } from "lucide-react"
 
 const index = () => {
   return (
-    <section className="max-w-[1600px] w-full mx-auto px-[20px] md:px-[30px] lg:px-0 gap-12 md:gap-6 pb-[120px] ">
-      {/* Heading Section */}
-      <div className="flex justify-center md:justify-start">
-        <h1 className="text-[48px] tracking-[-0.03em] font-medium">
-          flow.
-        </h1>
-      </div>
+    <div className="relative w-full 
+      before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-px before:bg-[rgb(245,245,245)]
+      after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-px after:bg-[rgb(245,245,245)]">
+      
+      <section className="max-w-[1600px] w-full mx-auto px-[20px] md:px-[30px] lg:px-0 py-[80px]">
 
-      {/* Flow-Containers */}
-      <div className="flex flex-col md:flex-row gap-5 pt-[48px] justify-center items-center">
-        {workflow.map((flow: Workflow, index) => {
-          const Icon = flow.icon ?? User2;
-          const color = ["#00BAD5", "#9D95FF", "#FEC5FB", "#FF8709"][index];
-          return (
+        {/* Heading */}
+        <div className="flex justify-center md:justify-start  mb-16">
+          <h1 className="text-[48px] tracking-[-0.03em] font-medium">process.</h1>
+        </div>
+
+        {/* Alternating Workflow Steps */}
+        <div>
+          {workflow.map((step: Workflow, index) => (
             <div
               key={index}
-              className=" flex-1 p-2 pt-[150px] pr-[40px] pl-[24px] max-w-[400px] rounded-md border-2 border-[rgb(245,245,245)]
-              transition-transform duration-300 hover:-translate-y-2"
+              className="flex flex-col md:flex-row items-center md:items-start even:flex-row-reverse"
             >
-              <div className="rounded-xl p-1 tracking-[-0.04em] max-w-[600px]">
-                <Icon className="w-10 h-10 mb-2 text-black " style={{ color }}/>
-                <h3 className="text-xl  mb-2 text-black font-bold" style={{ color }}>{flow.title}</h3>
-                <p className="text-gray-700 text-sm font-medium">{flow.desc}</p>
+              {/* Image placeholder */}
+              <div className="w-full md:w-1/2">
+  <div className="w-full h-[65vh] ">
+    <img
+      src={`${step.img}`}
+      alt={step.title}
+  className="w-full h-full object-cover block"
+    />
+  </div>
+</div>
+
+
+              {/* Text content */}
+              <div className="w-full md:w-1/2 flex items-center justify-center h-[65vh] px-4">
+                <div>
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-[40px] font-medium tracking-[-0.05em]">{step.title}</h3>
+                  </div>
+                  <p className="text-sm text-neutral-600 leading-relaxed">{step.desc}</p>
+                </div>
               </div>
             </div>
-          );
-        })}
-      </div>
-    </section>
+          ))}
+        </div>
+
+      </section>
+    </div>
   )
 }
 
