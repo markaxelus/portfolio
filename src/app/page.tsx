@@ -2,11 +2,12 @@ import Hero from "@/components/Hero"
 import Process from "@/components/Process"
 import Works from "@/components/Works"
 import AboutPreview from "@/components/About/AboutPreview"
+import Footer from "@/components/Footer"
 
 
 export default function Home() {
   return (
-    <main className="">
+    <main className="pb-[85vh]">
       <Hero/>
       <Process />
       <Works
@@ -14,6 +15,7 @@ export default function Home() {
         headingClassName="text-[48px] tracking-[-0.03em] font-medium"
       />
       <AboutPreview />
+      <Footer />
     </main>
   );
 }
