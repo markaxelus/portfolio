@@ -14,7 +14,7 @@ const index = () => {
   ]
 
   return (
-    <nav className='fixed top-0 left-0 w-full z-50 h-[81px] bg-white'>
+    <nav className=' h-[81px] bg-white'>
       <div className='flex px-[30px] py-[24px]'>
         {/* Name Heading */}
         <div className="text-3xl font-bold">
