@@ -12,7 +12,7 @@ export default function Home() {
       <Process />
       <Works
         headingText="work."
-        headingClassName="text-[48px] tracking-[-0.03em] font-medium"
+        headingClassName=""
       />
       <AboutPreview />
       <Footer />

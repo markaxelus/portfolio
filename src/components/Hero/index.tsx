@@ -8,12 +8,12 @@ import BubbleReveal from "@/utils/Animation/BubbleReveal";
 
 const index = () => {
   return (
-    <main className="relative w-full h-screen ">
+    <main className="relative w-full md:min-h-screen">
       <div
         className="
           max-w-[1600px] w-full mx-auto
-          h-[90vh]
-          pt-[80px] pb-[120px] 
+          md:h-[90vh]
+          pt-[80px] pb-[40px] md:pb-0
           px-[20px] md:px-[30px] lg:px-0
           flex flex-col md:justify-between 
           gap-12 md:gap-6
@@ -21,9 +21,9 @@ const index = () => {
       "
       >
         {/* Top Row */}
-        <div className="flex flex-col-reverse md:flex-row md:justify-between items-center gap-6">
+        <div className="flex flex-col-reverse md:flex-row md:justify-between gap-6">
           {/* Name Block */}
-          <div className="">
+          <div className="flex flex-col ">
             <StaggerText
               text="MARK"
               className="text-[76px] md:text-[116px] lg:text-[174px] font-semibold leading-none tracking-[-0.09em]"
@@ -65,7 +65,7 @@ const index = () => {
               </div>
             </div>
 
-            <p className="tracking-[-0.09em] indent-[4rem] text-xl md:text-[40px] max-w-[643px] font-medium text-center md:text-start">
+            <p className="tracking-[-0.09em] md:indent-[4rem] text-xl md:text-[40px] max-w-[643px] font-medium text-center md:text-start">
               Exploring ideas through design and code — curious, always learning,
               and love to build things. Let's{" "}
               <span className="italic font-semibold">connect!</span>

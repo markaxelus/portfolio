@@ -34,6 +34,8 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
 
   const pathname = usePathname();
   const onWorksPage = pathname === "/works";
+  const list = onWorksPage ? projects : projects.slice(0, 5);
+
 
   // Smooth follow loop
   useEffect(() => {
@@ -71,42 +73,86 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
   };
   
   return (
-    <section className="max-w-[1600px] w-full mx-auto min-h-screen px-[20px] md:px-[30px] lg:px-0 gap-12 md:gap-6 py-[80px]">
-      <div className="flex justify-between">
-        <h1 className={`text-center ${headingClassName}`}>{headingText}</h1>
+    <section className="max-w-[1600px] w-full mx-auto min-h-screen px-[20px] md:px-[30px] lg:px-0 gap-12 md:gap-6 py-[20px]">
+
+      {/* Heading & ShowMore */}
+      <div className="flex justify-between items-center">
+        <h1 className={`text-[24px] md:text-[48px] tracking-[-0.03em] font-medium ${headingClassName}`}>
+          {headingText}
+        </h1>
         {!onWorksPage && <ShowMore href="/works" />}
       </div>
 
-      <div className="relative pt-12 ">
-        {(onWorksPage ? projects : projects.slice(0,5)).map((project, index) => (
-          <ScrollReveal key={project.id} direction="up" delay={index * 0.1}>
-            <Link
-              key={project.id}
-              href={`/works/${project.slug}`}
-              onMouseMove={(e) => handleMouseMove(e, project)}
-              onMouseLeave={handleMouseLeave}
-              className="group block border-b border-[rgb(229,231,245)] py-8 overflow-hidden"
-            >
-              <div className="flex justify-between px-[96px] py-[60px] min-h-[160px] tracking-[-0.04em]">
-                <div className="flex gap-3">
-                  <span className="pt-3.5 text-gray-400 font-semibold">0{project.id}</span>
-                  <div className="leading-snug">
-                    <h3 className="text-[48px] tracking-[-0.08em] uppercase">{project.title}</h3>
-                    <span className="text-neutral-400 tracking-[-0.06em]">
-                      {project.dateAndType}
+      <div className="relative pt-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
+          {list.slice(0, 4).map((project, idx) => (
+            <ScrollReveal key={project.id} direction="up" delay={idx * 0.1}>
+              <Link
+                href={`/works/${project.slug}`}
+                onMouseMove={(e) => handleMouseMove(e, project)}
+                onMouseLeave={handleMouseLeave}
+                className="block overflow-hidden rounded-lg"
+              >
+                {/* Project Image */}
+                <img
+                  src={project.imageUrl}
+                  alt={project.title}
+                  className="w-full h-auto object-cover"
+                />
+
+                {/* Title and Date */}
+                <div className="flex justify-between items-baseline mt-2 px-2">
+                  <h3 className="text-lg font-semibold">{project.title}</h3>
+                  <span className="text-sm text-neutral-400">
+                    {project.dateAndType}
+                  </span>
+                </div>
+
+                {/* Stack */}
+                <p className="text-sm text-neutral-500 px-2 mt-1">
+                  {project.stack.join(", ")}
+                </p>
+              </Link>
+            </ScrollReveal>
+          ))}
+        </div>
+
+        <div className="hidden lg:block">
+          {list.map((project, idx) => (
+            <ScrollReveal key={project.id} direction="up" delay={idx * 0.1}>
+              <Link
+                href={`/works/${project.slug}`}
+                onMouseMove={(e) => handleMouseMove(e, project)}
+                onMouseLeave={handleMouseLeave}
+                className="group block border-b border-[rgb(229,231,245)] py-8 overflow-hidden"
+              >
+                <div className="flex justify-between px-[96px] py-[60px] min-h-[160px] tracking-[-0.04em]">
+                  <div className="flex gap-3">
+                    <span className="pt-3.5 text-gray-400 font-semibold">
+                      0{project.id}
+                    </span>
+                    <div className="leading-snug">
+                      <h3 className="text-[48px] tracking-[-0.08em] uppercase">
+                        {project.title}
+                      </h3>
+                      <span className="text-neutral-400 tracking-[-0.06em]">
+                        {project.dateAndType}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col justify-start items-end text-right">
+                    <span className="text-[28px] font-medium tracking-[-0.04em]">
+                      {project.category}
+                    </span>
+                    <span className="text-[16px] tracking-[-0.04em] text-gray-400 break-words max-w-[400px] leading-5">
+                      {project.stack.join(", ")}
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-col justify-start items-end text-right">
-                  <span className="text-[28px] font-medium tracking-[-0.04em]">{project.category}</span>
-                  <span className="text-[16px] tracking-[-0.04em] text-gray-400 break-words max-w-[400px] leading-5">
-                    {project.stack.join(", ")}
-                  </span>
-                </div>
-              </div>
-            </Link>
-          </ScrollReveal>
-        ))}
+              </Link>
+            </ScrollReveal>
+          ))}
+        </div>
 
         <div
           ref={wrapperRef}
@@ -122,7 +168,11 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
                 loading="eager"
                 onLoad={() => setImgReady(true)}
                 initial={{ opacity: 0, scale: 1, y: 20 }}
-                animate={imgReady ? { opacity: 0.9, scale: 1, y: 0 } : { opacity: 0, scale: 1, y: 20 }}
+                animate={
+                  imgReady
+                    ? { opacity: 0.9, scale: 1, y: 0 }
+                    : { opacity: 0, scale: 1, y: 20 }
+                }
                 exit={{ opacity: 0, scale: 0.5, y: -20 }}
                 transition={{ duration: 0.2, ease: 'easeOut' }}
                 className="w-100 h-60 shadow-md rounded-xl"
