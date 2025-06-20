@@ -23,8 +23,19 @@ export default function ScrollReveal({
     <motion.div
       initial={{ opacity: 0, y: initialY }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration, ease: "easeOut", delay }}
+      viewport={{ once: true, amount: 0.2 }}   
+      transition={{
+        y: {
+          type: "tween",
+          duration: duration,
+          ease: "easeOut"
+        },
+        opacity: {
+          duration: duration * 1.5,      
+          ease: "easeInOut"              
+        },
+        delay
+      }}
     >
       {children}
     </motion.div>
