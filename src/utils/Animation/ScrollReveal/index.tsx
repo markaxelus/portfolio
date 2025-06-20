@@ -8,26 +8,31 @@ interface Props {
   distance?: number;
   duration?: number;
   delay?: number;
+  className?: string;
+  motionClassName?: string;
 }
 
 export default function ScrollReveal({
   children,
   direction = "up",
-  distance = 50,
+  distance = 200,
   duration = 0.6,
   delay = 0,
+  className = "",
+  motionClassName = "",
 }: Props) {
   // 1) Create a ref and observe it
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.2 });
+  const inView = useInView(ref, { once: true, amount: 0 });
 
   // 2) Compute our initial offset
   const initialY = direction === "up" ? distance : -distance;
 
   // 3) Render a clipping container + motion div
   return (
-    <div ref={ref} className="overflow-hidden">
+    <div ref={ref} className={`overflow-hidden ${className}`}>
       <motion.div
+        className={`w-full h-full ${motionClassName}`}
         initial={false}                 // no SSR mismatch
         animate={
           inView
@@ -36,7 +41,7 @@ export default function ScrollReveal({
         }
         transition={{
           y: { type: "tween", duration, ease: "easeOut", delay },
-          opacity: { duration: duration * 1.2, ease: "easeInOut", delay },
+          opacity: { duration: duration , ease: "easeInOut", delay },
         }}
         style={{ willChange: "transform, opacity" }}
       >

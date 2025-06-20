@@ -1,6 +1,7 @@
 import React from 'react'
 import { Workflow, workflow } from "@/data/workflow"
 import ScrollReveal from "@/utils/Animation/ScrollReveal";
+import ImageReveal from "@/utils/Animation/ImageReveal";
 
 
 const index = () => {
@@ -24,27 +25,33 @@ const index = () => {
         {/* Alternating Workflow Steps */}
         <div>
           {workflow.map((step: Workflow, index) => (
-            <ScrollReveal key={index} direction="up">
-              <div
-                key={index}
-                className={`flex flex-col md:flex-row items-stretch
-                    ${index % 2 === 1 ? "md:flex-row-reverse" : ""}
-                  `}
-              >
-                {/* Image placeholder */}
-                <div className="w-full md:w-1/2">
-                  <div className="w-full aspect-[4/3]">
-                    <img
-                      src={step.img}
-                      alt={step.title}
-                      className="w-full h-full object-cover block"
-                    />
-                  </div>
+            <div
+              key={index}
+              className={`flex flex-col md:flex-row items-stretch
+                  ${index % 2 === 1 ? "md:flex-row-reverse" : ""}
+                `}
+            >
+              {/* Image placeholder */}
+              <div className="w-full md:w-1/2">
+                <div className="w-full aspect-[4/3]">
+                  <ImageReveal
+                    src={step.img}
+                    alt={step.title}
+                    className="w-full h-full object-cover block"
+                    direction="up"
+                  />
                 </div>
+              </div>
 
 
-                {/* Text content */}
-                <div className="w-full md:w-1/2 flex items-center justify-center px-4 py-8">
+              {/* Text content */}
+              <div className="w-full md:w-1/2">
+                <ScrollReveal
+                  direction="up"
+                  delay={0.1}
+                  className="w-full h-full"
+                  motionClassName="flex items-center justify-center p-4 md:p-8"
+                >
                   <div>
                     <div className="flex items-center gap-3">
                       <h3 className="text-[24px] md:text-[40px] leading-tight font-medium tracking-[-0.05em]">
@@ -55,9 +62,9 @@ const index = () => {
                       {step.desc}
                     </p>
                   </div>
-                </div>
+                </ScrollReveal>
               </div>
-            </ScrollReveal>
+            </div>
           ))}
         </div>
 
