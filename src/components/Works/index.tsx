@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Project, projects } from "@/data/projects";
 import ShowMore from "@/components/Buttons/ShowMore";
 import ScrollReveal from "@/utils/Animation/ScrollReveal";
-import ImageReveal from "@/utils/Animation/ImageReveal";
 
 
 interface WorksProps {
@@ -96,12 +95,10 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
                 className="block overflow-hidden"
               >
                 {/* Project Image */}
-                <ImageReveal
+                <img
                   src={project.imageUrl}
                   alt={project.title}
                   className="w-full h-auto object-cover aspect-[5/3]"
-                  direction="up"
-                  delay={0.05}
                 />
 
                 {/* Title and Date */}
