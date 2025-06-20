@@ -23,7 +23,7 @@ export default function ScrollReveal({
     <motion.div
       initial={{ opacity: 0, y: initialY }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}   
+      viewport={{ once: true, amount: 0 }}   
       transition={{
         y: {
           type: "tween",
