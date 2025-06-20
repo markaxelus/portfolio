@@ -1,6 +1,6 @@
 "use client"
 import { useRef } from 'react'
-import { m, motion, useInView } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -12,7 +12,7 @@ interface ScrollRevealProps {
 
 const index = ({children, direction="up", distance=50, duration=0.6, delay=0}: ScrollRevealProps) => {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin:"-100px" })
+  const inView = useInView(ref, { once: true, amount: 0 })
   
   const variants = {
     hidden : {
@@ -28,8 +28,8 @@ const index = ({children, direction="up", distance=50, duration=0.6, delay=0}: S
   return (
     <motion.div 
       ref={ref}
-      initial='hidden'
-      animate={inView ? "visible" : "hidden"}
+      initial={{ opacity: 0, y: direction === "up" ? distance : -distance }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
       variants={variants}
       transition={{ duration, ease: "easeOut", delay }}
     >

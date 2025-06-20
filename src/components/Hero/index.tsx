@@ -2,6 +2,8 @@ import React from "react";
 import EmailCopy from "@/utils/EmailCopy";
 import Social from "@/components/Social";
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+import ScrollReveal from "@/utils/Animation/ScrollReveal";
+import BubbleReveal from "@/utils/Animation/BubbleReveal";
 
 const index = () => {
   return (
@@ -20,14 +22,15 @@ const index = () => {
         {/* Top Row */}
         <div className="flex flex-col-reverse md:flex-row md:justify-between items-center gap-6">
           {/* Name Block */}
-
-          <h1
-            className="w-full text-[76px] md:text-[116px] lg:text-[174px] 
-                        font-semibold leading-none tracking-[-0.09em]
-                        text-center md:text-start"
-          >
-            MARK <br /> AXELUS
-          </h1>
+          <ScrollReveal direction="up">
+            <h1
+              className="w-full text-[76px] md:text-[116px] lg:text-[174px] 
+                          font-semibold leading-none tracking-[-0.09em]
+                          text-center md:text-start"
+            >
+              MARK <br /> AXELUS
+            </h1>
+          </ScrollReveal>
 
           {/* Profile Image */}
           <div className="shrink-0 md:h-full pl-2">
