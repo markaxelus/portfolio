@@ -1,21 +1,12 @@
 "use client"
 import React from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
 import Link from 'next/link';
 
 const index = () => {
-  const { scrollYProgress } = useScroll();
-
-  const reveal = useTransform(scrollYProgress, [0.4,1], [0, 1], {
-    clamp: true,
-  });
-
-  const y = useTransform(reveal, [0, 1], ["500%", "0%"])
   return (
-    <motion.footer
-      style={{ y }}
+    <footer
       className="
-        fixed bottom-0 left-0 right-0 h-screen bg-black text-white z-50
+        h-screen bg-black text-white sticky bottom-0 -z-10
         py-[60px] 
       "
     >
@@ -76,7 +67,7 @@ const index = () => {
           </div>
         </div>
       </div>
-    </motion.footer>
+    </footer>
   )
 }
 

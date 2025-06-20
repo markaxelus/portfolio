@@ -7,15 +7,17 @@ import Footer from "@/components/Footer"
 
 export default function Home() {
   return (
-    <main className="pb-[85vh]">
-      <Hero/>
-      <Process />
-      <Works
-        headingText="work."
-        headingClassName=""
-      />
-      <AboutPreview />
+    <>
+      <main className="relative z-10 bg-white">
+        <Hero/>
+        <Process />
+        <Works
+          headingText="work."
+          headingClassName=""
+        />
+        <AboutPreview />
+      </main>
       <Footer />
-    </main>
+    </>
   );
 }

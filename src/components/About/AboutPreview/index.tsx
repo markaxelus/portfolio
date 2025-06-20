@@ -9,9 +9,9 @@ const index = () => {
   const onAboutPage = pathname === "/about";
 
   return (
-    <section className="flex flex-col justify-start max-w-[1600px] w-full mx-auto px-[20px] md:px-[30px] gap-20 pt-[20px] pb-[100px]">
+    <section className="flex flex-col justify-start w-full mx-auto px-[20px] md:px-[30px] gap-20 pt-[20px] pb-[100px] bg-white">
       {/* Main Heading */}
-      <div className="">
+      <div className="max-w-[1600px] w-full mx-auto">
         <ScrollReveal direction="up">
           <div className="flex justify-between items-center ">
             <h1 className="text-[24px] md:text-[48px] tracking-[-0.03em] font-medium">
@@ -23,8 +23,7 @@ const index = () => {
       </div>
 
       {/* About Section */}
-
-      <div className="flex flex-col gap-10 md:gap-20">
+      <div className="max-w-[1600px] w-full mx-auto flex flex-col gap-10 md:gap-20">
         {/* Info */}
         <ScrollReveal direction="up">
           <div className="md:max-w-[60%]">

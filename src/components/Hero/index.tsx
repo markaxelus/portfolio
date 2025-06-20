@@ -8,7 +8,7 @@ import BubbleReveal from "@/utils/Animation/BubbleReveal";
 
 const index = () => {
   return (
-    <main className="relative w-full md:min-h-screen">
+    <main className="relative w-full md:min-h-screen bg-white">
       <div
         className="
           max-w-[1600px] w-full mx-auto

@@ -73,7 +73,7 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
   };
   
   return (
-    <section className="max-w-[1600px] w-full mx-auto min-h-screen px-[20px] md:px-[30px] lg:px-0 gap-12 md:gap-6 py-[20px]">
+    <section className="max-w-[1600px] w-full mx-auto min-h-screen px-[20px] md:px-[30px] lg:px-0 gap-12 md:gap-6 py-[20px] bg-white">
 
       {/* Heading & ShowMore */}
       <div className="flex justify-between items-center">

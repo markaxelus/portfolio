@@ -7,7 +7,7 @@ import ImageReveal from "@/utils/Animation/ImageReveal";
 const index = () => {
   return (
     
-    <div className="relative w-full 
+    <div className="relative w-full bg-white
       before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-px before:bg-[rgb(245,245,245)]
       after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-px after:bg-[rgb(245,245,245)]">
       
