@@ -1,4 +1,3 @@
-// utils/Animation/AnimatedText.tsx
 "use client";
 
 import { motion } from "framer-motion";
