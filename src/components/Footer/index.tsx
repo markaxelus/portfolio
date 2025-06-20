@@ -26,9 +26,9 @@ const index = () => {
           ">
         {/* Top Container */}
         <div className="flex justify-end gap-[26px]">
-          <Link href="https://www.linkedin.com/in/markaxelus/">LinkedIn</Link>
-          <Link href="https://github.com/markaxelus">Github</Link>
-          <Link href="https://www.instagram.com/mrkaxelus/">Instagram</Link>
+          <Link href="https://www.linkedin.com/in/markaxelus/" target='_blank'>LinkedIn</Link>
+          <Link href="https://github.com/markaxelus" target='_blank'>Github</Link>
+          <Link href="https://www.instagram.com/mrkaxelus/" target='_blank'>Instagram</Link>
         </div>
         {/* Middle container */}
         <div className="flex flex-col gap-[40px]">
@@ -37,7 +37,7 @@ const index = () => {
               leading-tight font-[500]
               bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_40%,rgba(255,255,255,0.3)_95%,rgba(255,255,255,0)_100%)]
               md:bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_40%,rgba(255,255,255,0.3)_90%,rgba(255,255,255,0)_100%)]
-              lg:bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_40%,rgba(255,255,255,0.3)_65%,rgba(255,255,255,0)_100%)]
+              lg:bg-[linear-gradient(to_right,rgba(255,255,255,1)_0%,rgba(255,255,255,1)_40%,rgba(255,255,255,0.3)_55%,rgba(255,255,255,0)_100%)]
               bg-clip-text text-transparent
               w-full max-w-[800px] md:max-w-[500px] lg:max-w-[1200px]
           ">

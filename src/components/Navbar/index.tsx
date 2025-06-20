@@ -44,7 +44,7 @@ const index = () => {
                     <Link
                       key={link.name}
                       href={link.href}
-                      className='font-medium text-[15px]'
+                      className='font-[500] text-[15px] tracking-[-0.04em]'
                     >
                       {link.name}
                     </Link>
