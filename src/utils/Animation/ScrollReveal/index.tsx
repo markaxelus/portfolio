@@ -1,5 +1,6 @@
+// utils/Animation/ScrollReveal.tsx
 "use client";
-import { useState, useEffect, ReactNode } from "react";
+import { ReactNode, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
 interface Props {
@@ -17,36 +18,31 @@ export default function ScrollReveal({
   duration = 0.6,
   delay = 0,
 }: Props) {
-  // 1) Track when we hit the client
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // 1) Create a ref and observe it
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.2 });
 
-  // 2) If we’re still SSR, just render the children un‐wrapped
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
-  // 3) Once mounted, use Framer
+  // 2) Compute our initial offset
   const initialY = direction === "up" ? distance : -distance;
-  const ref = (useInView as any).ref; // if  have per‐element in‐view, otherwise drop this
 
+  // 3) Render a clipping container + motion div
   return (
-    <motion.div
-      ref={ref as any}
-      initial={{ opacity: 0, y: initialY }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0 }}
-      transition={{
-        y: { type: "tween", duration, ease: "easeOut" },
-        opacity: { duration: duration * 1.5, ease: "easeInOut" },
-        delay,
-      }}
-      className="overflow-hidden"
-      style={{ willChange: "transform, opacity" }}
-    >
-      {children}
-    </motion.div>
+    <div ref={ref} className="overflow-hidden">
+      <motion.div
+        initial={false}                 // no SSR mismatch
+        animate={
+          inView
+            ? { opacity: 1, y: 0 }
+            : { opacity: 0, y: initialY }
+        }
+        transition={{
+          y: { type: "tween", duration, ease: "easeOut", delay },
+          opacity: { duration: duration * 1.2, ease: "easeInOut", delay },
+        }}
+        style={{ willChange: "transform, opacity" }}
+      >
+        {children}
+      </motion.div>
+    </div>
   );
 }
