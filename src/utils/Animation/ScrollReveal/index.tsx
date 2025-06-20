@@ -1,4 +1,3 @@
-// utils/Animation/ScrollReveal.tsx
 "use client";
 import { ReactNode, useRef } from "react";
 import { motion, useInView } from "framer-motion";
