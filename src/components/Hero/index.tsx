@@ -42,7 +42,7 @@ const index = () => {
 
           {/* Profile Image */}
           <div className="shrink-0 md:h-full pl-2">
-            <img
+            <BubbleReveal
               src="/profile.png"
               alt="Profile"
               className="rounded-full w-[150px] h-[150px] 
