@@ -83,6 +83,7 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
         {!onWorksPage && <ShowMore href="/works" />}
       </div>
 
+      {/* For sm-md screen size */}
       <div className="relative pt-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
           {list.slice(0, 4).map((project, idx) => (
@@ -91,25 +92,25 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
                 href={`/works/${project.slug}`}
                 onMouseMove={(e) => handleMouseMove(e, project)}
                 onMouseLeave={handleMouseLeave}
-                className="block overflow-hidden rounded-lg"
+                className="block overflow-hidden"
               >
                 {/* Project Image */}
                 <img
                   src={project.imageUrl}
                   alt={project.title}
-                  className="w-full h-auto object-cover"
+                  className="w-full h-auto object-cover aspect-[5/3]"
                 />
 
                 {/* Title and Date */}
-                <div className="flex justify-between items-baseline mt-2 px-2">
-                  <h3 className="text-lg font-semibold">{project.title}</h3>
-                  <span className="text-sm text-neutral-400">
+                <div className="flex justify-between items-baseline mt-2">
+                  <h3 className="text-lg font-semibold uppercase">{project.title}</h3>
+                  <span className="text-[12px] text-neutral-400">
                     {project.dateAndType}
                   </span>
                 </div>
 
                 {/* Stack */}
-                <p className="text-sm text-neutral-500 px-2 mt-1">
+                <p className="text-[13px] text-neutral-500 leading-snug w-[250px]">
                   {project.stack.join(", ")}
                 </p>
               </Link>
@@ -117,6 +118,7 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
           ))}
         </div>
 
+        {/* for lg+ screen size */}
         <div className="hidden lg:block">
           {list.map((project, idx) => (
             <ScrollReveal key={project.id} direction="up" delay={idx * 0.1}>
