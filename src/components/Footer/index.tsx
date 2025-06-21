@@ -33,7 +33,7 @@ const index = () => {
               w-full max-w-[800px] md:max-w-[500px] lg:max-w-[1200px]
           ">
             Open to new ideas, new teams, and new challenges. <br />
-            Big or small, every idea starts with a chat!
+            Everything begins with a conversation!
           </p>
           <div className="relative flex items-center flex-col-reverse md:flex-row gap-10 md:gap-15 md:w-fit">
             <div className="flex items-center justify-center bg-white text-black w-full md:w-auto py-[20px] px-[36px]">
