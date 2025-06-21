@@ -1,7 +1,7 @@
-import React from 'react'
-import AboutFull from '@/components/About/AboutFull'
-import StaggerText from '@/utils/Animation/StaggerText'
-import Footer from '@/components/Footer'
+import React from "react";
+import AboutFull from "@/components/About/AboutFull";
+import StaggerText from "@/utils/Animation/SlideUp";
+import Footer from "@/components/Footer";
 
 const page = () => {
   return (
@@ -34,7 +34,7 @@ const page = () => {
       </main>
       <Footer />
     </>
-  )
-}
+  );
+};
 
-export default page
+export default page;

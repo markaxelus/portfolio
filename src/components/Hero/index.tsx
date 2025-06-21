@@ -12,12 +12,12 @@ const index = () => {
     <main className="relative w-full md:min-h-screen bg-white">
       <div
         className="
-          max-w-[1600px] w-full mx-auto
+          max-w-[2200px] w-full mx-auto
           md:h-[90vh]
           pt-[80px] pb-[40px] md:pb-0
-          px-[20px] md:px-[30px] lg:px-0
-          flex flex-col md:justify-between 
-          gap-12 md:gap-6
+          px-[20px] md:px-[80px] 
+          flex flex-col 
+          gap-12 md:gap-24
           
       "
       >
@@ -27,14 +27,14 @@ const index = () => {
           <div className="flex flex-col ">
             <StaggerText
               text="MARK"
-              className="text-[76px] md:text-[116px] lg:text-[174px] font-semibold leading-none tracking-[-0.09em]"
+              className="text-[76px] md:text-[116px] lg:text-[200px] font-semibold leading-none tracking-[-0.09em]"
               distance={100}
               delay={0}
               letterDelay={0.07}
             />
             <StaggerText
               text="AXELUS"
-              className="text-[76px] md:text-[116px] lg:text-[174px] font-semibold leading-none tracking-[-0.09em]"
+              className="text-[76px] md:text-[116px] lg:text-[200px] font-semibold leading-none tracking-[-0.09em]"
               distance={100}
               delay={0.2}
               letterDelay={0.07}
@@ -48,7 +48,7 @@ const index = () => {
               alt="Profile"
               className="rounded-full w-[150px] h-[150px] 
               object-cover object-[30%] 
-              lg:w-[200px] lg:h-[200px]"
+              lg:w-[300px] lg:h-[300px]"
             />
           </div>
         </div>
@@ -66,7 +66,7 @@ const index = () => {
                     w-full h-[51px]
                     tracking-[-0.04em]
                     flex items-center justify-center
-                    font-medium gap-2" />
+                    font-[500] gap-2" />
               </div>
 
               <div className="flex flex-row gap-4 justify-center md:justify-start  pt-3 w-full">
