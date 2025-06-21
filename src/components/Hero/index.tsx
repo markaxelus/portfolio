@@ -62,7 +62,7 @@ const index = () => {
               {/* Resume */}
               <div className="flex flex-row justify-center md:justify-start  w-full">
                 <Resume href="/resume.pdf" 
-                  className="bg-[rgb(245,245,245)]
+                  className="bg-[rgb(245,245,245)] dark:bg-neutral-800 dark:text-white
                     w-full h-[51px]
                     tracking-[-0.04em]
                     text-[18px]  

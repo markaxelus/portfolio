@@ -126,7 +126,7 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
                 href={`/works/${project.slug}`}
                 onMouseMove={(e) => handleMouseMove(e, project)}
                 onMouseLeave={handleMouseLeave}
-                className="group block border-b border-[rgb(229,231,245)] py-8 overflow-hidden"
+                className="group block border-b border-[rgb(229,231,245)] dark:border-neutral-800 py-8 overflow-hidden"
               >
                 <div className="flex justify-between px-[96px] py-[60px] min-h-[160px] tracking-[-0.04em]">
                   <div className="flex gap-3">

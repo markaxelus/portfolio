@@ -10,7 +10,7 @@ const AboutSection = () => {
   const onAboutPage = pathname === "/about";
 
   return (
-    <section className="flex flex-col w-full gap-20 pt-[70px] pb-[100px] bg-white">
+    <section className="flex flex-col w-full gap-20 pt-[70px] pb-[100px] bg-white dark:bg-black">
       <div className="px-[20px] md:px-[30px] lg:px-[80px] flex flex-col gap-20">
         {/* Heading */}
         <ScrollReveal direction="up">
@@ -21,7 +21,7 @@ const AboutSection = () => {
             <div className="flex items-center gap-4 w-[150px]">
               {!onAboutPage && <ShowMore href="/about" />}
               <Resume href="/resume.pdf" 
-                  className="bg-[rgb(245,245,245)]
+                  className="bg-[rgb(245,245,245)] dark:bg-neutral-800 dark:text-white
                     w-[150px] h-[51px]
                     tracking-[-0.04em]
                     flex items-center justify-center

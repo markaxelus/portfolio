@@ -9,7 +9,7 @@ const index = () => {
   const onAboutPage = pathname === "/about";
 
   return (
-    <section className="flex flex-col justify-start w-full mx-auto px-[20px] md:px-[30px] gap-20 pt-[20px] pb-[100px] bg-white">
+    <section className="flex flex-col justify-start w-full mx-auto px-[20px] md:px-[30px] gap-20 pt-[20px] pb-[100px] bg-white dark:bg-black">
       {/* Main Heading */}
       <div className="max-w-[1600px] w-full mx-auto">
         <ScrollReveal direction="up">

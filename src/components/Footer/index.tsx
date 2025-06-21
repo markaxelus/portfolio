@@ -36,7 +36,7 @@ const index = () => {
             Everything begins with a conversation!
           </p>
           <div className="relative flex items-center flex-col-reverse md:flex-row gap-10 md:gap-15 md:w-fit">
-            <div className="flex items-center justify-center bg-white text-black w-full md:w-auto py-[20px] px-[36px]">
+            <div className="flex items-center justify-center bg-white text-black dark:bg-neutral-800 dark:text-white w-full md:w-auto py-[20px] px-[36px]">
               <Link href="/contact" className='font-[500]'>
                 Get in Touch
               </Link>
