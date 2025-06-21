@@ -5,6 +5,7 @@ import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 import StaggerText from "@/utils/Animation/StaggerText";
 import ScrollReveal from "@/utils/Animation/ScrollReveal";
 import BubbleReveal from "@/utils/Animation/BubbleReveal";
+import Resume from "@/components/Buttons/Resume";
 
 const index = () => {
   return (
@@ -57,8 +58,18 @@ const index = () => {
           <div className="flex flex-col gap-6 md:flex-row md:justify-between md:gap-12">
             <div className="flex flex-col gap-2 items-center">
               <EmailCopy email="mrkaxelus@gmail.com" />
+              
+              {/* Resume */}
+              <div className="flex flex-row justify-center md:justify-start  w-full">
+                <Resume href="/resume.pdf" 
+                  className="bg-[rgb(245,245,245)]
+                    w-full h-[51px]
+                    tracking-[-0.04em]
+                    flex items-center justify-center
+                    font-medium gap-2" />
+              </div>
 
-              <div className="flex flex-row gap-4 justify-center md:justify-start md:pl-4 w-full">
+              <div className="flex flex-row gap-4 justify-center md:justify-start  pt-3 w-full">
                 <Social name="Github" href="https://github.com/markaxelus" icon={FaGithub} />
                 <Social name="LinkedIn" href="https://www.linkedin.com/in/markaxelus/" icon={FaLinkedin} />
                 <Social name="Twitter" href="" icon={FaTwitter} />

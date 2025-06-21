@@ -20,7 +20,7 @@ const EmailCopy = ({ email }: EmailCopyProps) => {
         title="Copy email"
         >
         <span>{email}</span>
-        <Copy className="w-6 h-6 place-items-center" />
+        <Copy className="w-5 h-5 place-items-center" />
       </button>
     </div>
   );
