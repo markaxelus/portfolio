@@ -34,7 +34,7 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
 
   const pathname = usePathname();
   const onWorksPage = pathname === "/works";
-  const list = onWorksPage ? projects : projects.slice(0, 5);
+  const list = onWorksPage ? projects : projects.slice(0, 4);
 
 
   // Smooth follow loop
@@ -86,7 +86,7 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
       {/* For sm-md screen size */}
       <div className="relative pt-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
-          {list.slice(0, 4).map((project, idx) => (
+          {(onWorksPage ? list : list.slice(0, 4)).map((project, idx) => (
             <ScrollReveal key={project.id} direction="up" delay={idx * 0.1}>
               <Link
                 href={`/works/${project.slug}`}
