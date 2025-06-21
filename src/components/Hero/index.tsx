@@ -65,6 +65,7 @@ const index = () => {
                   className="bg-[rgb(245,245,245)]
                     w-full h-[51px]
                     tracking-[-0.04em]
+                    text-[18px]  
                     flex items-center justify-center
                     font-[500] gap-2" />
               </div>

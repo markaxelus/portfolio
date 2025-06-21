@@ -32,10 +32,10 @@ const page = () => {
         </div>
 
         {/* Form Section */}
-        <div className="flex flex-col md:flex-row gap-12 md:gap-16 bg-white px-[20px] md:px-[80px] pb-[180px]">
+        <div className="flex flex-col md:flex-row gap-12 md:gap-16 bg-white px-[20px] md:px-[80px] pb-[140px]">
           {/* Left Column: Email */}
-          <div className="w-full md:w-1/3">
-            <EmailCopy email="mrkaxelus@gmail.com" className="text-[25px] md:text-[35px] font-medium antialiased" />
+          <div className="w-full md:w-1/3 items-center justify-center ">
+            <EmailCopy email="mrkaxelus@gmail.com" className="text-[25px] md:text-[30px] font-medium antialiased" />
           </div>
 
           {/* Right Column: Form */}
@@ -44,21 +44,21 @@ const page = () => {
               <input
                 type="text"
                 placeholder="Your Name"
-                className="bg-neutral-100 p-4 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-300 transition"
-              />
+                className="bg-neutral-100 p-7 placeholder:text-neutral-500 border-b-2 border-neutral-300 focus:border-b-neutral-900 focus:outline-none transition-all duration-300"
+                />
               <input
                 type="email"
                 placeholder="Your Email"
-                className="bg-neutral-100 p-4  placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-300 transition"
-              />
+                className="bg-neutral-100 p-7 placeholder:text-neutral-500 border-b-2 border-neutral-300 focus:border-b-neutral-900 focus:outline-none transition-all duration-300"
+                />
               <textarea
                 placeholder="Your Masterpiece Starts Here"
                 rows={6}
-                className="bg-neutral-100 p-4  placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-300 resize-none transition"
-              />
+                className="bg-neutral-100 p-7 placeholder:text-neutral-500 border-b-2 border-neutral-300 focus:border-b-neutral-900 focus:outline-none transition-all duration-300"
+                />
               <button
                 type="submit"
-                className="bg-neutral-900 text-white p-4  font-medium hover:bg-neutral-800 transition-colors"
+                className="bg-neutral-900 text-white p-7  font-medium hover:bg-neutral-800 transition-colors"
               >
                 Send It!
               </button>
