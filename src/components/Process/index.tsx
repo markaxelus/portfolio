@@ -7,9 +7,9 @@ import ImageReveal from "@/utils/Animation/ImageReveal";
 const index = () => {
   return (
     
-    <div className="relative w-full bg-white
-      before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-px before:bg-[rgb(245,245,245)]
-      after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-px after:bg-[rgb(245,245,245)]">
+    <div className="relative w-full bg-white dark:bg-black
+      before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-px before:bg-[rgb(245,245,245)] dark:before:bg-neutral-800
+      after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-px after:bg-[rgb(245,245,245)] dark:after:bg-neutral-800">
       
       <section className="max-w-[1600px] w-full mx-auto px-[20px] md:px-[30px] lg:px-0 py-[20px]">
 

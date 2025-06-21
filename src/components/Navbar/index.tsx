@@ -4,11 +4,12 @@ import Link from 'next/link'
 import { Sun, Moon, Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from 'framer-motion'
 import ScrollReveal from '@/utils/Animation/ScrollReveal'
+import useDarkMode from '@/utils/useDarkMode'
 
 const index = () => {
 
   const [isNavOpen, setIsNavOpen] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  const { isDarkMode, toggle } = useDarkMode()
   const navLinks = [
     { name: "WORKS", href: "/works"},
     { name: "ABOUT", href: "/about"},
@@ -17,10 +18,10 @@ const index = () => {
   const navIconStyling = `absolute inset-0 m-auto h-6 w-6 transform transition-all duration-300 cursor-pointer`
   return (
     <ScrollReveal direction='down'>
-      <nav className=' h-[81px] bg-white'>
+      <nav className=' h-[81px] bg-white dark:bg-black'>
         <div className='flex px-[30px] py-[24px]'>
           {/* Name Heading */}
-          <div className="text-3xl font-bold">
+          <div className="text-3xl font-bold text-black dark:text-white">
             <Link href='/'>
               MARK
             </Link>
@@ -44,7 +45,7 @@ const index = () => {
                     <Link
                       key={link.name}
                       href={link.href}
-                      className='font-[500] text-[15px] tracking-[-0.04em]'
+                      className='font-[500] text-[15px] tracking-[-0.04em] text-black dark:text-white'
                     >
                       {link.name}
                     </Link>
@@ -73,7 +74,7 @@ const index = () => {
             </button>
 
             <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
+              onClick={toggle}
               className="relative pr-[30px]"
                 
             >

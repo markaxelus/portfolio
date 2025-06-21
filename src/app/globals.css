@@ -18,9 +18,8 @@ html,
 .app {
   height: 100%;
   width: 100%;
-  @apply bg-white;
-  @apply dark:bg-black;
- 
+  @apply bg-white text-black;
+  @apply dark:bg-black dark:text-white;
 }
 
 @keyframes custom-ping {

@@ -9,7 +9,7 @@ import Resume from "@/components/Buttons/Resume";
 
 const index = () => {
   return (
-    <main className="relative w-full md:min-h-screen bg-white">
+    <main className="relative w-full md:min-h-screen bg-white dark:bg-black">
       <div
         className="
           max-w-[2200px] w-full mx-auto
@@ -80,7 +80,7 @@ const index = () => {
             <p className="tracking-[-0.09em] md:indent-[4rem] text-xl md:text-[40px] max-w-[643px] font-medium text-center md:text-start">
               Exploring ideas through design and code — curious, always learning,
               and love to build things. Let's{" "}
-              <span className="italic font-semibold">connect!</span>
+              <span className="italic font-bold tracking-[-0.04em]">connect!</span>
             </p>
           </div>
         </ScrollReveal>
