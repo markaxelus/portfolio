@@ -52,7 +52,7 @@ const page = () => {
                 className="bg-neutral-100 dark:bg-neutral-800 p-7 placeholder:text-neutral-500 dark:placeholder:text-neutral-400 border-b-2 border-neutral-300 dark:border-neutral-600 focus:border-b-neutral-900 dark:focus:border-b-neutral-100 focus:outline-none transition-all duration-300"
                 />
               <textarea
-                placeholder="Your Masterpiece Starts Here"
+                placeholder="Say Hello!"
                 rows={6}
                 className="bg-neutral-100 dark:bg-neutral-800 p-7 placeholder:text-neutral-500 dark:placeholder:text-neutral-400 border-b-2 border-neutral-300 dark:border-neutral-600 focus:border-b-neutral-900 dark:focus:border-b-neutral-100 focus:outline-none transition-all duration-300"
                 />
