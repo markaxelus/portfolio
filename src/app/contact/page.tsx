@@ -14,7 +14,7 @@ const page = () => {
            gap-12 md:gap-34"
     >
       <ScrollReveal direction='up'>
-        <div className="flex flex-col bg-white px-[20px] md:px-[80px] mb-24 md:mb-32">
+        <div className="flex flex-col bg-white dark:bg-black px-[20px] md:px-[80px] mb-24 md:mb-32">
           <StaggerText
             text="SHOOT   A"
             className="text-[76px] md:text-[116px] lg:text-[200px] font-bold leading-none tracking-[-0.09em] whitespace-pre"
@@ -32,7 +32,7 @@ const page = () => {
         </div>
 
         {/* Form Section */}
-        <div className="flex flex-col md:flex-row gap-12 md:gap-16 bg-white px-[20px] md:px-[80px] pb-[140px]">
+        <div className="flex flex-col md:flex-row gap-12 md:gap-16 bg-white dark:bg-black px-[20px] md:px-[80px] pb-[140px]">
           {/* Left Column: Email */}
           <div className="w-full md:w-1/3 items-center justify-center ">
             <EmailCopy email="mrkaxelus@gmail.com" className="text-[25px] md:text-[30px] font-medium antialiased" />
@@ -44,21 +44,21 @@ const page = () => {
               <input
                 type="text"
                 placeholder="Your Name"
-                className="bg-neutral-100 p-7 placeholder:text-neutral-500 border-b-2 border-neutral-300 focus:border-b-neutral-900 focus:outline-none transition-all duration-300"
+                className="bg-neutral-100 dark:bg-neutral-800 p-7 placeholder:text-neutral-500 dark:placeholder:text-neutral-400 border-b-2 border-neutral-300 dark:border-neutral-600 focus:border-b-neutral-900 dark:focus:border-b-neutral-100 focus:outline-none transition-all duration-300"
                 />
               <input
                 type="email"
                 placeholder="Your Email"
-                className="bg-neutral-100 p-7 placeholder:text-neutral-500 border-b-2 border-neutral-300 focus:border-b-neutral-900 focus:outline-none transition-all duration-300"
+                className="bg-neutral-100 dark:bg-neutral-800 p-7 placeholder:text-neutral-500 dark:placeholder:text-neutral-400 border-b-2 border-neutral-300 dark:border-neutral-600 focus:border-b-neutral-900 dark:focus:border-b-neutral-100 focus:outline-none transition-all duration-300"
                 />
               <textarea
                 placeholder="Your Masterpiece Starts Here"
                 rows={6}
-                className="bg-neutral-100 p-7 placeholder:text-neutral-500 border-b-2 border-neutral-300 focus:border-b-neutral-900 focus:outline-none transition-all duration-300"
+                className="bg-neutral-100 dark:bg-neutral-800 p-7 placeholder:text-neutral-500 dark:placeholder:text-neutral-400 border-b-2 border-neutral-300 dark:border-neutral-600 focus:border-b-neutral-900 dark:focus:border-b-neutral-100 focus:outline-none transition-all duration-300"
                 />
               <button
                 type="submit"
-                className="bg-neutral-900 text-white p-7  font-medium hover:bg-neutral-800 transition-colors"
+                className="bg-neutral-900 dark:bg-neutral-800 text-white p-7  font-medium hover:bg-neutral-800 dark:hover:bg-neutral-700 transition-colors"
               >
                 Send It!
               </button>

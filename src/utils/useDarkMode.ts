@@ -22,6 +22,17 @@ export default function useDarkMode() {
     if (typeof window === 'undefined') return;
 
     const root = document.documentElement;
+
+    // add a temporary class that applies CSS transitions so the change feels smooth
+    const applyTransition = () => {
+      root.classList.add('theme-transition');
+      window.setTimeout(() => {
+        root.classList.remove('theme-transition');
+      }, 300); // duration should match CSS
+    };
+
+    applyTransition();
+
     if (isDarkMode) {
       root.classList.add('dark');
       localStorage.setItem('theme', 'dark');

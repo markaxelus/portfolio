@@ -8,7 +8,7 @@ import Footer from "@/components/Footer"
 export default function Home() {
   return (
     <>
-      <main className="relative z-10 bg-white">
+      <main className="relative z-10 bg-white dark:bg-black">
         <Hero/>
         <Process />
         <Works

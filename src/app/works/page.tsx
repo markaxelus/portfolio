@@ -6,7 +6,7 @@ import Footer from "@/components/Footer"
 const page = () => {
   return (
     <>
-      <main className="relative z-10 bg-white pt-[150px]">
+      <main className="relative z-10 bg-white dark:bg-black pt-[150px]  pb-[80px]">
         <ScrollReveal direction='up'>
           <Works 
             headingText='WORK'

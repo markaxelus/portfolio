@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 const page = () => {
   return (
     <>
-      <main className="relative z-10 bg-white">
+      <main className="relative z-10 bg-white dark:bg-black">
         <div className="w-full flex flex-col items-start justify-start gap-6 px-[20px] md:px-[100px] h-auto pt-[100px]">
           {/* Name Block */}
           <div className="flex flex-col items-center w-full">
