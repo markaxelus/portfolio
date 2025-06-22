@@ -14,17 +14,23 @@ const Page = async ({ params }: ProjectDetailProps) => {
     (project: Project) => project.slug === slug
   );
   if (!findProject) return notFound();
-  
+
   const projLink = findProject.link;
+  const { content } = findProject;
+
   return (
     <main className="pt-[52px] w-full max-w-[1700px] mx-auto min-h-screen px-4 md:px-[30px] flex flex-col">
       <ProjectHeading project={findProject} />
 
       <section className="flex flex-col ">
-        <ProjectSection title="overview." projectLink={projLink} />
-        <ProjectSection title="challenges." />
-        <ProjectSection title="result." />
-        <ProjectSection title="reflection." />
+        <ProjectSection
+          title="overview."
+          projectLink={projLink}
+          content={content.overview}
+        />
+        <ProjectSection title="challenges." content={content.challenges} />
+        <ProjectSection title="result." content={content.result} />
+        <ProjectSection title="reflection." content={content.reflection} />
       </section>
     </main>
   );

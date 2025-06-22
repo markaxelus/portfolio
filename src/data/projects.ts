@@ -8,14 +8,20 @@ export type Project = {
   dateAndType: string;
   description: string;
   stack: string[];
-  link?: string
-  metadata: [
-    field: string,
-    project: string,
-    year: string,
-    focus: string,
-    tools: string,
-  ];
+  link?: string;
+  metadata: {
+    field: string;
+    project: string;
+    year: string;
+    focus: string;
+    tools: string;
+  };
+  content: {
+    overview: string;
+    challenges: string;
+    result: string;
+    reflection: string;
+  };
 };
 
 export const projects: Project[] = [
@@ -30,13 +36,22 @@ export const projects: Project[] = [
     description: "",
     stack: ["Next.js", "TypeScript", "TailwindCSS"],
     link: "https://uveec.ca",
-    metadata: [
-      "Front-End",
-      "Website",
-      "2024",
-      "Front-End Development",
-      "Next.js, TypeScript, TailwindCSS",
-    ],
+    metadata: {
+      field: "Front-End",
+      project: "Website",
+      year: "2024",
+      focus: "Front-End Development",
+      tools: "Next.js, TypeScript, TailwindCSS",
+    },
+    content: {
+      overview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      challenges:
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      result:
+        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      reflection:
+        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+    },
   },
   {
     id: 2,
@@ -47,13 +62,22 @@ export const projects: Project[] = [
     dateAndType: "Ongoing — Personal",
     description: "",
     stack: ["Next.js", "PostgreSQL", "Prisma", "TailwindCSS"],
-    metadata: [
-      "Full-Stack / Product Design",
-      "Relay",
-      "Ongoing",
-      "Full-Stack Development & Product Design",
-      "Next.js, PostgreSQL, Prisma, TailwindCSS",
-    ],
+    metadata: {
+      field: "Full-Stack / Product Design",
+      project: "Relay",
+      year: "Ongoing",
+      focus: "Full-Stack Development & Product Design",
+      tools: "Next.js, PostgreSQL, Prisma, TailwindCSS",
+    },
+    content: {
+      overview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      challenges:
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      result:
+        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      reflection:
+        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+    },
   },
   {
     id: 4,
@@ -73,13 +97,23 @@ export const projects: Project[] = [
       "Lambda",
       "Serverless",
     ],
-    metadata: [
-      "Full-Stack / Product Design",
-      "Synapse",
-      "2024",
-      "AI & Full-Stack Development",
-      "TypeScript, Node.js, Express, AWS, LangChain, Mermaid.js, Lambda, Serverless",
-    ],
+    metadata: {
+      field: "Full-Stack / Product Design",
+      project: "Synapse",
+      year: "2024",
+      focus: "AI & Full-Stack Development",
+      tools:
+        "TypeScript, Node.js, Express, AWS, LangChain, Mermaid.js, Lambda, Serverless",
+    },
+    content: {
+      overview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      challenges:
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      result:
+        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      reflection:
+        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+    },
   },
   {
     id: 3,
@@ -90,13 +124,22 @@ export const projects: Project[] = [
     dateAndType: "2025 — Personal",
     description: "",
     stack: ["Next.js", "TypeScript", "Framer Motion", "TailwindCSS"],
-    metadata: [
-      "UI/UX Design",
-      "Portfolio",
-      "2025",
-      "UI/UX & Front-End Development",
-      "Next.js, TypeScript, Framer Motion, TailwindCSS",
-    ],
+    metadata: {
+      field: "UI/UX Design",
+      project: "Portfolio",
+      year: "2025",
+      focus: "UI/UX & Front-End Development",
+      tools: "Next.js, TypeScript, Framer Motion, TailwindCSS",
+    },
+    content: {
+      overview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      challenges:
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      result:
+        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      reflection:
+        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+    },
   },
   {
     id: 5,
@@ -107,13 +150,22 @@ export const projects: Project[] = [
     dateAndType: "2024 — Personal",
     description: "",
     stack: ["React", "Express", "MongoDB", "JWT"],
-    metadata: [
-      "Full-Stack",
-      "BasicAuth",
-      "2024",
-      "Back-End & Authentication",
-      "React, Express, MongoDB, JWT",
-    ],
+    metadata: {
+      field: "Full-Stack",
+      project: "BasicAuth",
+      year: "2024",
+      focus: "Back-End & Authentication",
+      tools: "React, Express, MongoDB, JWT",
+    },
+    content: {
+      overview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      challenges:
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      result:
+        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      reflection:
+        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+    },
   },
   {
     id: 6,
@@ -124,12 +176,21 @@ export const projects: Project[] = [
     dateAndType: "2024 — Personal",
     description: "",
     stack: ["HTML", "CSS", "Javascript"],
-    metadata: [
-      "Front-End / Product Design",
-      "EcoEats",
-      "2024",
-      "Front-End Development & Product Design",
-      "HTML, CSS, Javascript",
-    ],
+    metadata: {
+      field: "Front-End / Product Design",
+      project: "EcoEats",
+      year: "2024",
+      focus: "Front-End Development & Product Design",
+      tools: "HTML, CSS, Javascript",
+    },
+    content: {
+      overview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      challenges:
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      result:
+        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      reflection:
+        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+    },
   },
 ];

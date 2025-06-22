@@ -8,7 +8,7 @@ interface ProjectHeadingProps {
 
 const ProjectHeading: React.FC<ProjectHeadingProps> = ({ project }) => {
   const { metadata, imageUrl, title, club } = project;
-  const [field, projName, year, focus] = metadata;
+  const { field, project: projName, year, focus } = metadata;
 
   return (
     <header className="relative w-full flex flex-col justify-between items-end gap-16  pb-[80px] border-b border-[rgb(245,245,245)] dark:border-neutral-800">
@@ -20,7 +20,9 @@ const ProjectHeading: React.FC<ProjectHeadingProps> = ({ project }) => {
         </div>
         <div className="flex text-[24px] gap-3">
           <span className="text-[#b3b3b3]">PROJECT:</span>
-          <span className="text-black dark:text-white uppercase">{projName}</span>
+          <span className="text-black dark:text-white uppercase">
+            {projName}
+          </span>
         </div>
         <div className="flex text-[24px] gap-3">
           <span className="text-[#b3b3b3]">YEAR:</span>
