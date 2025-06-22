@@ -93,7 +93,7 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
         <h1 className={`text-[24px] md:text-[48px] tracking-[-0.03em] font-medium ${headingClassName}`}>
           {headingText}
         </h1>
-        {!onWorksPage && <ShowMore href="/works" />}
+        {!onWorksPage && <ShowMore href="/works" buttonLabel="Show more" />}
       </div>
 
       {/* For sm-md screen size */}

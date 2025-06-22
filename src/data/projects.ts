@@ -8,13 +8,13 @@ export type Project = {
   dateAndType: string;
   description: string;
   stack: string[];
+  link?: string
   metadata: [
     field: string,
     project: string,
     year: string,
     focus: string,
     tools: string,
-    link?: string
   ];
 };
 
@@ -29,6 +29,7 @@ export const projects: Project[] = [
     dateAndType: "2024 — Club",
     description: "",
     stack: ["Next.js", "TypeScript", "TailwindCSS"],
+    link: "https://uveec.ca",
     metadata: [
       "Front-End",
       "Website",

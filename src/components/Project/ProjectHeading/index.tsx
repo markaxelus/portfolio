@@ -11,7 +11,8 @@ const ProjectHeading: React.FC<ProjectHeadingProps> = ({ project }) => {
   const [field, projName, year, focus] = metadata;
 
   return (
-    <header className="w-full flex flex-col justify-between gap-16 items-start md:items-end">
+    <header className="relative w-full flex flex-col justify-between items-end gap-16  pb-[80px] border-b border-[rgb(245,245,245)] dark:border-neutral-800">
+      {/* Metadata */}
       <div className="flex flex-col">
         <div className="flex text-[24px] gap-3">
           <span className="text-[#b3b3b3]">FIELD:</span>
@@ -31,14 +32,15 @@ const ProjectHeading: React.FC<ProjectHeadingProps> = ({ project }) => {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row items-start md:items-center gap-8 w-full md:w-auto">
-        <div className="w-full md:w-[900px] flex-shrink-0">
+      {/* Image and Title */}
+      <div className="flex items-center gap-8 w-full">
+        <div className="flex-shrink-0">
           <Image
             src={imageUrl}
             alt={title}
             width={900}
             height={800}
-            className="w-full h-auto object-cover "
+            className="w-full max-w-[900px] h-auto object-cover"
           />
         </div>
         <h1 className="text-[110px] font-bold tracking-[-0.06em] leading-[1] break-words">
