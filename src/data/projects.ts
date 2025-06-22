@@ -2,11 +2,20 @@ export type Project = {
   id: number;
   slug: string;
   title: string;
+  club?: string;
   category: string;
   imageUrl: string;
   dateAndType: string;
   description: string;
   stack: string[];
+  metadata: [
+    field: string,
+    project: string,
+    year: string,
+    focus: string,
+    tools: string,
+    link?: string
+  ];
 };
 
 export const projects: Project[] = [
@@ -14,11 +23,19 @@ export const projects: Project[] = [
     id: 1,
     slug: "uveec",
     title: "Uveec",
+    club: "UVic Environmental Engineering Club",
     category: "Front-End",
     imageUrl: "/uveec.png",
     dateAndType: "2024 — Club",
     description: "",
     stack: ["Next.js", "TypeScript", "TailwindCSS"],
+    metadata: [
+      "Front-End",
+      "Website",
+      "2024",
+      "Front-End Development",
+      "Next.js, TypeScript, TailwindCSS",
+    ],
   },
   {
     id: 2,
@@ -29,6 +46,13 @@ export const projects: Project[] = [
     dateAndType: "Ongoing — Personal",
     description: "",
     stack: ["Next.js", "PostgreSQL", "Prisma", "TailwindCSS"],
+    metadata: [
+      "Full-Stack / Product Design",
+      "Relay",
+      "Ongoing",
+      "Full-Stack Development & Product Design",
+      "Next.js, PostgreSQL, Prisma, TailwindCSS",
+    ],
   },
   {
     id: 4,
@@ -38,7 +62,23 @@ export const projects: Project[] = [
     imageUrl: "/synapse.jpg",
     dateAndType: "2024 — Hackathon",
     description: "",
-    stack: ["TypeScript", "Node.js", "Express", "AWS", "LangChain", "Mermaid.js", "Lambda", "Serverless"],
+    stack: [
+      "TypeScript",
+      "Node.js",
+      "Express",
+      "AWS",
+      "LangChain",
+      "Mermaid.js",
+      "Lambda",
+      "Serverless",
+    ],
+    metadata: [
+      "Full-Stack / Product Design",
+      "Synapse",
+      "2024",
+      "AI & Full-Stack Development",
+      "TypeScript, Node.js, Express, AWS, LangChain, Mermaid.js, Lambda, Serverless",
+    ],
   },
   {
     id: 3,
@@ -49,6 +89,13 @@ export const projects: Project[] = [
     dateAndType: "2025 — Personal",
     description: "",
     stack: ["Next.js", "TypeScript", "Framer Motion", "TailwindCSS"],
+    metadata: [
+      "UI/UX Design",
+      "Portfolio",
+      "2025",
+      "UI/UX & Front-End Development",
+      "Next.js, TypeScript, Framer Motion, TailwindCSS",
+    ],
   },
   {
     id: 5,
@@ -59,6 +106,13 @@ export const projects: Project[] = [
     dateAndType: "2024 — Personal",
     description: "",
     stack: ["React", "Express", "MongoDB", "JWT"],
+    metadata: [
+      "Full-Stack",
+      "BasicAuth",
+      "2024",
+      "Back-End & Authentication",
+      "React, Express, MongoDB, JWT",
+    ],
   },
   {
     id: 6,
@@ -69,5 +123,12 @@ export const projects: Project[] = [
     dateAndType: "2024 — Personal",
     description: "",
     stack: ["HTML", "CSS", "Javascript"],
+    metadata: [
+      "Front-End / Product Design",
+      "EcoEats",
+      "2024",
+      "Front-End Development & Product Design",
+      "HTML, CSS, Javascript",
+    ],
   },
 ];
