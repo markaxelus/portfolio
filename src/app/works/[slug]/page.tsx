@@ -1,40 +1,52 @@
-import React from 'react'
-import { Project, projects } from "@/data/projects"
-import { notFound } from 'next/navigation'
+import React from "react";
+import { Project, projects } from "@/data/projects";
+import { notFound } from "next/navigation";
+import ProjectHeading from "@/components/Project/ProjectHeading";
+import ProjectSection from "@/components/Project/ProjectSection";
 
-export const dynamic = 'force-dynamic'; 
-
-interface ProjectDetailProps{
-    params : Promise<{ slug: string }>
+interface ProjectDetailProps {
+  params: Promise<{ slug: string }>;
 }
 
-const page =  async ({ params }: ProjectDetailProps) => {
+const Page = async ({ params }: ProjectDetailProps) => {
   const { slug } = await params;
-  const findProject = projects.find((project: Project) => project.slug === slug)
+  const findProject = projects.find(
+    (project: Project) => project.slug === slug
+  );
   if (!findProject) return notFound();
 
+  const projLink = findProject.link;
+  const { content } = findProject;
+
   return (
-    <main className="pt-[200px] 
-          max-w-[1600px] w-full mx-auto
-          md:px-[100px] lg:px-0
-          flex ">
+    <main className="pt-[52px] w-full max-w-[1700px] mx-auto min-h-screen px-4 md:px-[30px] flex flex-col">
+      <ProjectHeading project={findProject} />
 
-      {/* Top Container */}
-      <div className="">
-        <h1 className="">
-          {findProject.title}
-        </h1>
-      </div>
-
-      {/* Project Details */}
-
-
-      {/*  */}
-
+      <section className="flex flex-col ">
+        <ProjectSection
+          title="overview."
+          projectLink={projLink}
+          content={content.overview.text}
+          images={content.overview.images}
+        />
+        <ProjectSection
+          title="process."
+          content={content.process.text}
+          images={content.process.images}
+        />
+        <ProjectSection
+          title="result."
+          content={content.result.text}
+          images={content.result.images}
+        />
+        <ProjectSection
+          title="reflection."
+          content={content.reflection.text}
+          images={content.reflection.images}
+        />
+      </section>
     </main>
-    
-  )
-  
-}
+  );
+};
 
-export default page
+export default Page;

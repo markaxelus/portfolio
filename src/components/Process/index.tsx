@@ -15,7 +15,7 @@ const index = () => {
 
         {/* Heading */}
         <ScrollReveal direction="up" >
-          <div className="flex  md:justify-start mb-8 md:mb-16">
+          <div className="flex md:justify-start mb-8 md:mb-16">
             <h1 className="text-[24px] md:text-[48px] tracking-[-0.03em] font-medium">
               process.
             </h1>

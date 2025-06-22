@@ -18,7 +18,7 @@ const AboutPreviewSection = () => {
             <h1 className="text-[24px] md:text-[48px] tracking-[-0.03em] font-medium">
               about.
             </h1>
-            {!onAboutPage && <ShowMore href="/about" />}
+            {!onAboutPage && <ShowMore href="/about" buttonLabel="Show More" />}
           </div>
         </ScrollReveal>
       </div>
