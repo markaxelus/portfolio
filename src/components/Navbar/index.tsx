@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import ScrollReveal from '@/utils/Animation/ScrollReveal'
 import useDarkMode from '@/utils/useDarkMode'
 
-const index = () => {
+const Navbar = () => {
 
   const [isNavOpen, setIsNavOpen] = useState(false)
   const { isDarkMode, toggle } = useDarkMode()
@@ -98,4 +98,4 @@ const index = () => {
   )
 }
 
-export default index
+export default Navbar

@@ -7,6 +7,7 @@ import { Project, projects } from "@/data/projects";
 import ShowMore from "@/components/Buttons/ShowMore";
 import ScrollReveal from "@/utils/Animation/ScrollReveal";
 import { createPortal } from 'react-dom';
+import NextImage from "next/image";
 
 
 interface WorksProps {
@@ -107,9 +108,11 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
                 className="block overflow-hidden"
               >
                 {/* Project Image */}
-                <img
+                <NextImage
                   src={project.imageUrl}
                   alt={project.title}
+                  width={800}
+                  height={480}
                   className="w-full h-auto object-cover aspect-[5/3]"
                 />
 

@@ -5,7 +5,7 @@ import StaggerText from '@/utils/Animation/StaggerText'
 import EmailCopy from '@/utils/EmailCopy'
 import ScrollReveal from '@/utils/Animation/ScrollReveal'
 
-const page = () => {
+const ContactPage = () => {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -44,7 +44,7 @@ const page = () => {
       setName('');
       setEmail('');
       setMessage('');
-    } catch (err) {
+    } catch {
       setStatus('error');
     }
   }
@@ -131,4 +131,4 @@ const page = () => {
   )
 }
 
-export default page
+export default ContactPage

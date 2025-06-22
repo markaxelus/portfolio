@@ -3,7 +3,7 @@ import AboutFull from "@/components/About/AboutFull";
 import StaggerText from "@/utils/Animation/SlideUp";
 import Footer from "@/components/Footer";
 
-const page = () => {
+const AboutPage = () => {
   return (
     <>
       <main className="relative z-10 bg-white dark:bg-black">
@@ -37,4 +37,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default AboutPage;

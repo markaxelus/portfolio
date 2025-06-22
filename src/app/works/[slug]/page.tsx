@@ -26,6 +26,11 @@ const page =  async ({ params }: ProjectDetailProps) => {
         </h1>
       </div>
 
+      {/* Project Details */}
+
+
+      {/*  */}
+
     </main>
     
   )

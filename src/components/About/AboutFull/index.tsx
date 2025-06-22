@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import ShowMore from "@/components/Buttons/ShowMore";
 import ScrollReveal from "@/utils/Animation/ScrollReveal";
 import Resume from "@/components/Buttons/Resume";
+import Image from "next/image";
 
 const AboutSection = () => {
   const pathname = usePathname();
@@ -45,10 +46,11 @@ const AboutSection = () => {
       <ScrollReveal direction="up">
         <div className="flex flex-col md:flex-row items-stretch h-[100vh]">
           {/* Image */}
-          <div className="w-full md:w-2/3 h-full overflow-hidden">
-            <img
+          <div className="w-full md:w-2/3 h-full overflow-hidden relative">
+            <Image
               src="/image.png"
               alt="Profile"
+              fill
               className="w-full h-full object-cover"
             />
           </div>

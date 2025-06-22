@@ -3,7 +3,7 @@ import Works from "@/components/Works"
 import ScrollReveal from '@/utils/Animation/ScrollReveal'
 import Footer from "@/components/Footer"
 
-const page = () => {
+const WorksPage = () => {
   return (
     <>
       <main className="relative z-10 bg-white dark:bg-black pt-[150px]  pb-[80px]">
@@ -21,4 +21,4 @@ const page = () => {
   )
 }
 
-export default page
+export default WorksPage

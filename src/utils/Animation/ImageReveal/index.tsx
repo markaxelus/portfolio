@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import NextImage from 'next/image';
 import ScrollReveal from '../ScrollReveal';
 
 interface ImageRevealProps {
@@ -67,11 +68,13 @@ export default function ImageReveal({
       delay={delay}
       className="w-full h-full"
     >
-      <img
+      <NextImage
         src={src}
         alt={alt}
         className={className}
-        loading="eager"
+        width={800}
+        height={600}
+        priority
       />
     </ScrollReveal>
   );

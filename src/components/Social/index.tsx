@@ -7,11 +7,13 @@ type SocialProps = {
   icon: IconType;
 }
 
-const index = ({ name, href, icon:Icon }: SocialProps) => {
+const SocialIcon = ({ name, href, icon:Icon }: SocialProps) => {
   return (
     <a 
       href={href}
       target="_blank"
+      rel="noopener noreferrer"
+      aria-label={name}
       className=''
     >
       <Icon className="w-6 h-6 place-items-center" /> 
@@ -19,4 +21,4 @@ const index = ({ name, href, icon:Icon }: SocialProps) => {
   )
 }
 
-export default index
+export default SocialIcon

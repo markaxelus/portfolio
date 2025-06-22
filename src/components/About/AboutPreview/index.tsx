@@ -3,8 +3,9 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import ShowMore from "@/components/Buttons/ShowMore";
 import ScrollReveal from "@/utils/Animation/ScrollReveal";
+import Image from "next/image";
 
-const index = () => {
+const AboutPreviewSection = () => {
   const pathname = usePathname();
   const onAboutPage = pathname === "/about";
 
@@ -38,9 +39,11 @@ const index = () => {
         <ScrollReveal direction="up">
           <div className="w-full flex flex-col md:flex-row items-center justify-center gap-18">
             <div className="flex-shrink-0">
-              <img
+              <Image
                 src="/image.png"
                 alt="profile"
+                width={553}
+                height={553}
                 className="w-[553px] max-h-[450px] md:max-h-[553px] object-cover"
               />
             </div>
@@ -57,4 +60,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default AboutPreviewSection;

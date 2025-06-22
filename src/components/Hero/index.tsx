@@ -7,7 +7,7 @@ import ScrollReveal from "@/utils/Animation/ScrollReveal";
 import BubbleReveal from "@/utils/Animation/BubbleReveal";
 import Resume from "@/components/Buttons/Resume";
 
-const index = () => {
+const HeroSection = () => {
   return (
     <main className="relative w-full md:min-h-screen bg-white dark:bg-black">
       <div
@@ -79,7 +79,7 @@ const index = () => {
 
             <p className="tracking-[-0.09em] md:indent-[4rem] text-xl md:text-[40px] max-w-[643px] font-medium text-center md:text-start">
               Exploring ideas through design and code — curious, always learning,
-              and love to build things. Let's{" "}
+              and love to build things. Let&apos;s{" "}
               <span className="italic font-bold tracking-[-0.04em]">connect!</span>
             </p>
           </div>
@@ -89,4 +89,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default HeroSection;
