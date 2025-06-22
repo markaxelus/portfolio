@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { X } from "lucide-react";
-import Resume from "@/components/Buttons/Resume";
+
 
 export type NavLink = { name: string; href: string };
 
@@ -42,7 +42,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, links }) => {
             <div className="flex items-center justify-between">
               <Link
                 href="/"
-                className="text-2xl font-bold text-black dark:text-white"
+                className="text-2xl font-bold text-black dark:text-white "
                 onClick={onClose}
               >
                 MARK
@@ -52,21 +52,18 @@ const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, links }) => {
                 onClick={onClose}
               />
             </div>
-            {links.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-3xl font-semibold text-center text-black dark:text-white"
-                onClick={onClose}
-              >
-                {link.name}
-              </Link>
-            ))}
-
-            <Resume
-              href="/MarkAxelus_Resume.pdf"
-              className="mt-auto self-start bg-[rgb(245,245,245)] dark:bg-neutral-800 dark:text-white w-[150px] h-[51px] tracking-[-0.04em] flex items-center justify-center font-medium gap-2"
-            />
+            <div className="flex flex-col gap-8 items-center justify-center h-[50%]">
+              {links.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="text-3xl font-semibold text-center text-black dark:text-white tracking-[-0.04em]"
+                  onClick={onClose}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
           </motion.aside>
         </>
       )}
