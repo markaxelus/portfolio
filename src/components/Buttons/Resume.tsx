@@ -6,7 +6,7 @@ type ResumeProps = {
   className?: string;
 };
 
-const Resume = ({ href = "/resume.pdf", className  }: ResumeProps) => {
+const Resume = ({ href = "/MarkAxelus_Resume.pdf", className  }: ResumeProps) => {
   return (
     <div className="flex items-center w-full">
       <a

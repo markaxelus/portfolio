@@ -21,7 +21,7 @@ const AboutSection = () => {
             </h1>
             <div className="flex items-center gap-4 w-[150px]">
               {!onAboutPage && <ShowMore href="/about" />}
-              <Resume href="/resume.pdf" 
+              <Resume 
                   className="bg-[rgb(245,245,245)] dark:bg-neutral-800 dark:text-white
                     w-[150px] h-[51px]
                     tracking-[-0.04em]

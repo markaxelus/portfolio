@@ -18,7 +18,7 @@ const HeroSection = () => {
           px-[20px] md:px-[80px] 
           flex flex-col 
           gap-12 md:gap-24
-          
+          xl:justify-between
       "
       >
         {/* Top Row */}

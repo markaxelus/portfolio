@@ -70,5 +70,4 @@ const index = () => {
     </footer>
   )
 }
-
 export default index
