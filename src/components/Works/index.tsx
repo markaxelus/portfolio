@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Project, projects } from "@/data/projects";
 import ShowMore from "@/components/Buttons/ShowMore";
 import ScrollReveal from "@/utils/Animation/ScrollReveal";
+import { createPortal } from 'react-dom';
 
 
 interface WorksProps {
@@ -30,12 +31,23 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
   // Mouse-follow refs
   const mousePos = useRef({ x: 0, y: 0 });
   const currentPos = useRef({ x: 0, y: 0 });
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const pathname = usePathname();
   const onWorksPage = pathname === "/works";
   const list = onWorksPage ? projects : projects.slice(0, 4);
 
+  // Create wrapper div in body once
+  useEffect(() => {
+    const node = document.createElement('div');
+    node.className = "pointer-events-none fixed top-0 left-0 z-50 will-change-transform";
+    node.style.transform = 'translate3d(-9999px,-9999px,0)';
+    document.body.appendChild(node);
+    wrapperRef.current = node;
+    return () => {
+      document.body.removeChild(node);
+    };
+  }, []);
 
   // Smooth follow loop
   useEffect(() => {
@@ -156,11 +168,7 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
           ))}
         </div>
 
-        <div
-          ref={wrapperRef}
-          className="pointer-events-none fixed top-0 left-0 z-50 will-change-transform"
-          style={{ transform: 'translate3d(-9999px,-9999px,0)' }}
-        >
+        {wrapperRef.current && createPortal(
           <AnimatePresence mode="wait">
             {hoveredProject && (
               <motion.img
@@ -180,8 +188,9 @@ const Works: React.FC<WorksProps> = ({ headingText, headingClassName }) => {
                 className="w-100 h-60 shadow-md rounded-xl"
               />
             )}
-          </AnimatePresence>
-        </div>
+          </AnimatePresence>,
+          wrapperRef.current
+        )}
       </div>
     </section>
   );
