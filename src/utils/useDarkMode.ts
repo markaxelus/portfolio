@@ -1,29 +1,22 @@
 import { useEffect, useState, useCallback } from 'react';
 
-/**
- * useDarkMode – simple hook to keep a single source-of-truth for theme.
- * It returns the current boolean state and a toggle callback.
- */
 export default function useDarkMode() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem('theme') === 'dark';
+  });
 
-  // On mount: read saved value or system preference
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
     const storedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: light)').matches;
-    const enabled = storedTheme ? storedTheme === 'dark' : prefersDark;
-    setIsDarkMode(enabled);
+    setIsDarkMode(storedTheme === 'dark');
   }, []);
 
-  // Whenever state changes: reflect in DOM + storage
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const root = document.documentElement;
 
-    // add a temporary class that applies CSS transitions so the change feels smooth
     const applyTransition = () => {
       root.classList.add('theme-transition');
       window.setTimeout(() => {
