@@ -58,36 +58,55 @@ export const projects: Project[] = [
     content: {
       overview: {
         text: `
-        UVEEC is the official website for the UVic Environmental Engineering Club, built to showcase 
-        ongoing projects, team members, and upcoming events. The site previously featured outdated 
-        content and inactive components, so my goal was to refresh it with current information 
-        and fix lingering bugs to improve user experience and maintainability for future club members.
-      `,
+          UVEEC is the official website for the UVic Environmental Engineering Club, built to showcase 
+          ongoing projects, team members, and upcoming events. The site previously featured outdated 
+          content and inactive components, so my goal was to refresh it with current information 
+          and fix lingering bugs to improve user experience and maintainability for future club members.
+        `,
+        images: {
+          layout: "large-top",
+          large: "/uveec.png",
+          small: ["/coding.jpg", "/terminal.jpg"],
+        },
       },
       process: {
         text: `
-        One of the key challenges was working within an unfamiliar codebase that had minimal documentation. 
-        Understanding the existing structure and identifying where certain bugs originated — like the broken 
-        marquee animation, required carefully tracing component hierarchies and reviewing how state and styles 
-        were being managed. Additionally, updating the Teams page involved figuring out legacy layout logic 
-        before replacing it with a more modular and maintainable structure that supported dynamic content.
-      `,
+          One of the key challenges was working within an unfamiliar codebase that had minimal documentation. 
+          Understanding the existing structure and identifying where certain bugs originated — like the broken 
+          marquee animation, required carefully tracing component hierarchies and reviewing how state and styles 
+          were being managed. Additionally, updating the Teams page involved figuring out legacy layout logic 
+          before replacing it with a more modular and maintainable structure that supported dynamic content.
+        `,
+        images: {
+          layout: "large-bottom",
+          large: "/launch.jpg",
+          small: ["/prototype.jpg", "/relay.jpg"],
+        },
       },
       result: {
         text: `
-        Resolved key UI bugs, including the marquee glitch and responsive layout issues on the Teams page. 
-        The revamped Teams section now loads dynamically and adjusts seamlessly across screen sizes, 
-        improving both usability and site performance. The site now has a more modern and consistent look, 
-        making it easier for club members to update and maintain.
-      `,
+          Resolved key UI bugs, including the marquee glitch and responsive layout issues on the Teams page. 
+          The revamped Teams section now loads dynamically and adjusts seamlessly across screen sizes, 
+          improving both usability and site performance. The site now has a more modern and consistent look, 
+          making it easier for club members to update and maintain.
+        `,
+        images: {
+          layout: "grid-4",
+          small: [
+            "/synapse.jpg",
+            "/basicauth.jpg",
+            "/ecoeats.jpg",
+            "/emphatize.jpg",
+          ],
+        },
       },
       reflection: {
         text: `
-        This project helped strengthen my ability to navigate and contribute to unfamiliar codebases efficiently. 
-        It also deepened my debugging skills, especially with UI behaviors involving animation and responsive design. 
-        I learned the importance of writing maintainable code and leaving clear structure for future developers, 
-        something I valued after experiencing the opposite while onboarding to this project.
-      `,
+          This project helped strengthen my ability to navigate and contribute to unfamiliar codebases efficiently. 
+          It also deepened my debugging skills, especially with UI behaviors involving animation and responsive design. 
+          I learned the importance of writing maintainable code and leaving clear structure for future developers, 
+          something I valued after experiencing the opposite while onboarding to this project.
+        `,
       },
     },
   },
