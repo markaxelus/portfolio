@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Footer from '@/components/Footer'
 import StaggerText from '@/utils/Animation/StaggerText'
 import EmailCopy from '@/utils/EmailCopy'
@@ -11,6 +11,14 @@ const page = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'sent' | 'error'>('idle');
+
+  // Automatically clear feedback after 4 s
+  useEffect(() => {
+    if (status === 'sent' || status === 'error') {
+      const t = setTimeout(() => setStatus('idle'), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [status]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
