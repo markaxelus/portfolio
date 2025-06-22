@@ -17,10 +17,22 @@ export type Project = {
     tools: string;
   };
   content: {
-    overview: string;
-    challenges: string;
-    result: string;
-    reflection: string;
+    overview: {
+      text: string;
+      images?: import("@/components/Project/ProjectSection").SectionImages;
+    };
+    process: {
+      text: string;
+      images?: import("@/components/Project/ProjectSection").SectionImages;
+    };
+    result: {
+      text: string;
+      images?: import("@/components/Project/ProjectSection").SectionImages;
+    };
+    reflection: {
+      text: string;
+      images?: import("@/components/Project/ProjectSection").SectionImages;
+    };
   };
 };
 
@@ -44,13 +56,39 @@ export const projects: Project[] = [
       tools: "Next.js, TypeScript, TailwindCSS",
     },
     content: {
-      overview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      challenges:
-        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      result:
-        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      reflection:
-        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+      overview: {
+        text: `
+        UVEEC is the official website for the UVic Environmental Engineering Club, built to showcase 
+        ongoing projects, team members, and upcoming events. The site previously featured outdated 
+        content and inactive components, so my goal was to refresh it with current information 
+        and fix lingering bugs to improve user experience and maintainability for future club members.
+      `,
+      },
+      process: {
+        text: `
+        One of the key challenges was working within an unfamiliar codebase that had minimal documentation. 
+        Understanding the existing structure and identifying where certain bugs originated — like the broken 
+        marquee animation, required carefully tracing component hierarchies and reviewing how state and styles 
+        were being managed. Additionally, updating the Teams page involved figuring out legacy layout logic 
+        before replacing it with a more modular and maintainable structure that supported dynamic content.
+      `,
+      },
+      result: {
+        text: `
+        Resolved key UI bugs, including the marquee glitch and responsive layout issues on the Teams page. 
+        The revamped Teams section now loads dynamically and adjusts seamlessly across screen sizes, 
+        improving both usability and site performance. The site now has a more modern and consistent look, 
+        making it easier for club members to update and maintain.
+      `,
+      },
+      reflection: {
+        text: `
+        This project helped strengthen my ability to navigate and contribute to unfamiliar codebases efficiently. 
+        It also deepened my debugging skills, especially with UI behaviors involving animation and responsive design. 
+        I learned the importance of writing maintainable code and leaving clear structure for future developers, 
+        something I valued after experiencing the opposite while onboarding to this project.
+      `,
+      },
     },
   },
   {
@@ -70,13 +108,18 @@ export const projects: Project[] = [
       tools: "Next.js, PostgreSQL, Prisma, TailwindCSS",
     },
     content: {
-      overview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      challenges:
-        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      result:
-        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      reflection:
-        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+      overview: {
+        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      },
+      process: {
+        text: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      },
+      result: {
+        text: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      },
+      reflection: {
+        text: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+      },
     },
   },
   {
@@ -106,13 +149,18 @@ export const projects: Project[] = [
         "TypeScript, Node.js, Express, AWS, LangChain, Mermaid.js, Lambda, Serverless",
     },
     content: {
-      overview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      challenges:
-        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      result:
-        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      reflection:
-        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+      overview: {
+        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      },
+      process: {
+        text: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      },
+      result: {
+        text: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      },
+      reflection: {
+        text: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+      },
     },
   },
   {
@@ -132,13 +180,18 @@ export const projects: Project[] = [
       tools: "Next.js, TypeScript, Framer Motion, TailwindCSS",
     },
     content: {
-      overview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      challenges:
-        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      result:
-        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      reflection:
-        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+      overview: {
+        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      },
+      process: {
+        text: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      },
+      result: {
+        text: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      },
+      reflection: {
+        text: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+      },
     },
   },
   {
@@ -158,13 +211,18 @@ export const projects: Project[] = [
       tools: "React, Express, MongoDB, JWT",
     },
     content: {
-      overview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      challenges:
-        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      result:
-        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      reflection:
-        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+      overview: {
+        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      },
+      process: {
+        text: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      },
+      result: {
+        text: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      },
+      reflection: {
+        text: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+      },
     },
   },
   {
@@ -184,13 +242,18 @@ export const projects: Project[] = [
       tools: "HTML, CSS, Javascript",
     },
     content: {
-      overview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      challenges:
-        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      result:
-        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      reflection:
-        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+      overview: {
+        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      },
+      process: {
+        text: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      },
+      result: {
+        text: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      },
+      reflection: {
+        text: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+      },
     },
   },
 ];

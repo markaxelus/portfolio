@@ -5,11 +5,11 @@ import ProjectHeading from "@/components/Project/ProjectHeading";
 import ProjectSection from "@/components/Project/ProjectSection";
 
 interface ProjectDetailProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 const Page = async ({ params }: ProjectDetailProps) => {
-  const { slug } = params;
+  const { slug } = await params;
   const findProject = projects.find(
     (project: Project) => project.slug === slug
   );
@@ -26,11 +26,24 @@ const Page = async ({ params }: ProjectDetailProps) => {
         <ProjectSection
           title="overview."
           projectLink={projLink}
-          content={content.overview}
+          content={content.overview.text}
+          images={content.overview.images}
         />
-        <ProjectSection title="challenges." content={content.challenges} />
-        <ProjectSection title="result." content={content.result} />
-        <ProjectSection title="reflection." content={content.reflection} />
+        <ProjectSection
+          title="process."
+          content={content.process.text}
+          images={content.process.images}
+        />
+        <ProjectSection
+          title="result."
+          content={content.result.text}
+          images={content.result.images}
+        />
+        <ProjectSection
+          title="reflection."
+          content={content.reflection.text}
+          images={content.reflection.images}
+        />
       </section>
     </main>
   );
