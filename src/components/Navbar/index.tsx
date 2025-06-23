@@ -1,30 +1,28 @@
-"use client"
-import React, { useState } from 'react'
-import Link from 'next/link'
-import { Sun, Moon, Menu, X } from "lucide-react"
-import { motion, AnimatePresence } from 'framer-motion'
-import ScrollReveal from '@/utils/Animation/ScrollReveal'
-import useDarkMode from '@/utils/useDarkMode'
+"use client";
+import React, { useState } from "react";
+import Link from "next/link";
+import { Sun, Moon, Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import ScrollReveal from "@/utils/Animation/ScrollReveal";
+import useDarkMode from "@/utils/useDarkMode";
+import MobileNav from "@/components/Project/MobileNav";
 
 const Navbar = () => {
-
-  const [isNavOpen, setIsNavOpen] = useState(false)
-  const { isDarkMode, toggle } = useDarkMode()
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  const { isDarkMode, toggle } = useDarkMode();
   const navLinks = [
-    { name: "WORKS", href: "/works"},
-    { name: "ABOUT", href: "/about"},
-    { name: "CONTACT", href: "/contact"},
-  ]
-  const navIconStyling = `absolute inset-0 m-auto h-6 w-6 transform transition-all duration-300 cursor-pointer`
+    { name: "WORKS", href: "/works" },
+    { name: "ABOUT", href: "/about" },
+    { name: "CONTACT", href: "/contact" },
+  ];
+  const navIconStyling = `absolute inset-0 m-auto h-6 w-6 transform transition-all duration-300 cursor-pointer`;
   return (
-    <ScrollReveal direction='down'>
-      <nav className=' h-[81px] bg-white dark:bg-black'>
-        <div className='flex px-[30px] py-[24px]'>
+    <ScrollReveal direction="down">
+      <nav className=" h-[81px] bg-white dark:bg-black">
+        <div className="flex px-[30px] py-[24px]">
           {/* Name Heading */}
           <div className="text-3xl font-bold text-black dark:text-white">
-            <Link href='/'>
-              MARK
-            </Link>
+            <Link href="/">MARK</Link>
           </div>
 
           <div className="flex-1" />
@@ -35,17 +33,17 @@ const Navbar = () => {
             <AnimatePresence>
               {isNavOpen && (
                 <motion.div
-                  className="flex gap-8"
+                  className="hidden md:flex gap-8"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 10 }}
                   transition={{ duration: 0.3 }}
                 >
-                  {navLinks.map(link => (
+                  {navLinks.map((link) => (
                     <Link
                       key={link.name}
                       href={link.href}
-                      className='font-[500] text-[15px] tracking-[-0.04em] text-black dark:text-white'
+                      className="font-[500] text-[15px] tracking-[-0.04em] text-black dark:text-white"
                     >
                       {link.name}
                     </Link>
@@ -61,41 +59,58 @@ const Navbar = () => {
               {/* Menu Icon */}
               <Menu
                 className={`${navIconStyling}
-                  ${isNavOpen ? 'rotate-45 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'}
+                  ${
+                    isNavOpen
+                      ? "rotate-45 scale-0 opacity-0"
+                      : "rotate-0 scale-100 opacity-100"
+                  }
                 `}
               />
 
               {/* X Icon */}
               <X
                 className={`${navIconStyling}
-                  ${isNavOpen ? 'rotate-0 scale-100 opacity-100' : '-rotate-45 scale-0 opacity-0'}
+                  ${
+                    isNavOpen
+                      ? "rotate-0 scale-100 opacity-100"
+                      : "-rotate-45 scale-0 opacity-0"
+                  }
                 `}
               />
             </button>
 
-            <button
-              onClick={toggle}
-              className="relative pr-[30px]"
-                
-            >
+            <button onClick={toggle} className="relative pr-[30px]">
               <Moon
                 className={`${navIconStyling}
-                  ${isDarkMode ? 'rotate-45 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'}
+                  ${
+                    isDarkMode
+                      ? "rotate-45 scale-0 opacity-0"
+                      : "rotate-0 scale-100 opacity-100"
+                  }
                 `}
               />
 
               <Sun
                 className={`${navIconStyling}
-                  ${isDarkMode ? 'rotate-0 scale-100 opacity-100' : 'rotate-45 scale-0 opacity-0'}
+                  ${
+                    isDarkMode
+                      ? "rotate-0 scale-100 opacity-100"
+                      : "rotate-45 scale-0 opacity-0"
+                  }
                 `}
               />
-
             </button>
           </div>
         </div>
       </nav>
+      {/* Mobile Navigation Overlay */}
+      <MobileNav
+        isOpen={isNavOpen}
+        onClose={() => setIsNavOpen(false)}
+        links={navLinks}
+      />
     </ScrollReveal>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

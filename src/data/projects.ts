@@ -58,10 +58,9 @@ export const projects: Project[] = [
     content: {
       overview: {
         text: `
-          UVEEC is the official website for the UVic Environmental Engineering Club, built to showcase 
-          ongoing projects, team members, and upcoming events. The site previously featured outdated 
-          content and inactive components, so my goal was to refresh it with current information 
-          and fix lingering bugs to improve user experience and maintainability for future club members.
+          The official website for the UVic Environmental Engineering Club (UVEEC) was outdated, with broken components and old content. My role was to modernize the site by implementing critical bug fixes and updating the content.
+
+          The primary goals were to enhance the user experience for visitors and improve the site's maintainability, ensuring that future club members could easily manage and update it.
         `,
         images: {
           layout: "large-top",
@@ -71,11 +70,9 @@ export const projects: Project[] = [
       },
       process: {
         text: `
-          One of the key challenges was working within an unfamiliar codebase that had minimal documentation. 
-          Understanding the existing structure and identifying where certain bugs originated — like the broken 
-          marquee animation, required carefully tracing component hierarchies and reviewing how state and styles 
-          were being managed. Additionally, updating the Teams page involved figuring out legacy layout logic 
-          before replacing it with a more modular and maintainable structure that supported dynamic content.
+          My process began with a deep dive into an unfamiliar codebase that lacked documentation. To diagnose issues like a broken marquee animation, I meticulously traced component hierarchies and state management logic.
+
+          A significant part of the project involved refactoring the Teams page. I replaced its legacy layout with a modular, dynamic structure. This not only fixed existing responsive issues but also made it easier to add or remove members in the future.
         `,
         images: {
           layout: "large-bottom",
@@ -85,10 +82,9 @@ export const projects: Project[] = [
       },
       result: {
         text: `
-          Resolved key UI bugs, including the marquee glitch and responsive layout issues on the Teams page. 
-          The revamped Teams section now loads dynamically and adjusts seamlessly across screen sizes, 
-          improving both usability and site performance. The site now has a more modern and consistent look, 
-          making it easier for club members to update and maintain.
+          The revitalized website now provides a seamless and bug-free user experience. Key UI issues, including the marquee glitch and layout inconsistencies, were resolved.
+
+          The redesigned Teams page is now fully responsive and loads content dynamically, significantly improving usability and performance. The modern, consistent design makes the site easier to navigate and simpler for club members to maintain.
         `,
         images: {
           layout: "grid-4",
@@ -102,10 +98,9 @@ export const projects: Project[] = [
       },
       reflection: {
         text: `
-          This project helped strengthen my ability to navigate and contribute to unfamiliar codebases efficiently. 
-          It also deepened my debugging skills, especially with UI behaviors involving animation and responsive design. 
-          I learned the importance of writing maintainable code and leaving clear structure for future developers, 
-          something I valued after experiencing the opposite while onboarding to this project.
+          This project was a valuable experience in reverse-engineering and improving a legacy codebase. It sharpened my debugging skills, particularly in handling UI animations and responsive layouts.
+
+          Most importantly, it reinforced the value of writing clean, maintainable code. Experiencing the challenges of an undocumented project firsthand solidified my commitment to creating clear and scalable solutions for future developers.
         `,
       },
     },
@@ -128,16 +123,79 @@ export const projects: Project[] = [
     },
     content: {
       overview: {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        text: `
+          Relay is a full-stack project management tool I'm building to simplify team collaboration and task tracking. It's designed to be an intuitive, responsive platform for dynamic team environments.
+
+          The application features secure user authentication, real-time data synchronization, and a scalable backend architecture, all built from the ground up with modern web technologies.
+        `,
       },
       process: {
-        text: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        text: `
+          I started by wireframing the core user flows and designing the system architecture. For the frontend, I chose Next.js and TypeScript for their performance and type-safety, with Redux and RTK Query managing real-time state.
+
+          The backend was built with Node.js and Express, using Prisma as the ORM to interact with a PostgreSQL database. A key challenge was implementing secure authentication with AWS Cognito and integrating it seamlessly with the backend services running on AWS EC2.
+        `,
       },
       result: {
-        text: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+        text: `
+          The application will feature a responsive dashboard, role-based access controls, and a modular API. Users will be able to assign tasks, monitor progress in real-time, and securely access their workspace from any device.
+
+          The architecture, built on AWS and PostgreSQL, is designed for scalability and reliability, incorporating best practices for cloud security and deployment.
+        `,
       },
       reflection: {
-        text: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+        text: `
+          This ongoing project has been instrumental in my growth as a full-stack developer. It's taught me how to balance technical requirements with user-centric design, and how backend architecture directly impacts frontend performance.
+
+          Working on Relay has given me a deeper understanding of the entire product lifecycle, from initial design and architecting solutions to cloud deployment and scaling.
+        `,
+      },
+    },
+  },
+  {
+    id: 3,
+    slug: "portfolio",
+    title: "Portfolio",
+    category: "UI/UX Design",
+    imageUrl: "/synapse.jpg",
+    dateAndType: "2025 — Personal",
+    description: "",
+    stack: ["Next.js", "TypeScript", "Framer Motion", "TailwindCSS"],
+    metadata: {
+      field: "UI/UX Design",
+      project: "Portfolio",
+      year: "2025",
+      focus: "UI/UX & Front-End Development",
+      tools: "Next.js, TypeScript, Framer Motion, TailwindCSS",
+    },
+    content: {
+      overview: {
+        text: `
+          This portfolio is a curated showcase of my work and technical skills, designed with a strong emphasis on interaction design and a smooth developer experience.
+
+          Built as a performant single-page application, it serves as a dynamic introduction to my capabilities for recruiters, clients, and fellow developers.
+        `,
+      },
+      process: {
+        text: `
+          I began the design process in Figma, iterating on the UI to ensure visual clarity and a strong user experience.
+
+          To achieve fast load times and fluid animations, I built the site with Next.js, TypeScript, and TailwindCSS, using Framer Motion for animations. Key features include project filtering, lazy-loaded images to optimize performance, and a fully responsive design for a seamless experience on any device.
+        `,
+      },
+      result: {
+        text: `
+          The result is an interactive and scroll-friendly website featuring smooth, animated transitions and accessible navigation. The site effectively presents project information in a clean, responsive layout.
+
+          It has received positive feedback for its blend of aesthetics and usability, successfully creating an engaging user experience.
+        `,
+      },
+      reflection: {
+        text: `
+          This project was a lesson in balancing creative expression with technical performance. It deepened my appreciation for how small UX details, hover states, animation timing, and spacing—collectively shape the user's perception.
+
+          I am proud of the final result and the skills I honed during the process, and I look forward to applying these learnings to future projects.
+        `,
       },
     },
   },
@@ -169,47 +227,32 @@ export const projects: Project[] = [
     },
     content: {
       overview: {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        text: `
+          Built in 24 hours at NwHacks 2024, Synapse is an AI-powered tool that transforms dense PDF documents into interactive, easy-to-understand flowcharts.
+
+          Working in a team of two, we leveraged Large Language Models (LLMs) and serverless architecture to automate the entire process, from content extraction to diagram generation.
+        `,
       },
       process: {
-        text: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        text: `
+          I focused on building the backend and designing the UI. The backend was architected using AWS Lambda, the Serverless Framework, and S3 for scalable, secure file storage. This setup allowed for asynchronous processing of API calls.
+
+          For the frontend, I used TypeScript and Mermaid.js to render the dynamic flowcharts from the data processed by the AI. A major challenge was optimizing the data flow between our microservices to ensure real-time rendering.
+        `,
       },
       result: {
-        text: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+        text: `
+          The final product could successfully accept a PDF upload, process its content using an AI model, and render a dynamic, interactive flowchart.
+
+          The tool was praised by judges for its technical sophistication and practical application in simplifying complex information.
+        `,
       },
       reflection: {
-        text: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
-      },
-    },
-  },
-  {
-    id: 3,
-    slug: "portfolio",
-    title: "Portfolio",
-    category: "UI/UX Design",
-    imageUrl: "/synapse.jpg",
-    dateAndType: "2025 — Personal",
-    description: "",
-    stack: ["Next.js", "TypeScript", "Framer Motion", "TailwindCSS"],
-    metadata: {
-      field: "UI/UX Design",
-      project: "Portfolio",
-      year: "2025",
-      focus: "UI/UX & Front-End Development",
-      tools: "Next.js, TypeScript, Framer Motion, TailwindCSS",
-    },
-    content: {
-      overview: {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      },
-      process: {
-        text: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      },
-      result: {
-        text: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      },
-      reflection: {
-        text: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+        text: `
+          This hackathon was an intense exercise in rapid prototyping and creative problem-solving with AI. It sharpened my skills in asynchronous programming and API integration under tight deadlines.
+
+          Collaborating closely with a partner also reinforced the importance of clear communication and effective teamwork in a fast-paced environment.
+        `,
       },
     },
   },
@@ -231,16 +274,32 @@ export const projects: Project[] = [
     },
     content: {
       overview: {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        text: `
+          BasicAuth is a foundational project I built to solidify my understanding of backend authentication and security principles.
+
+          It provides a complete user authentication system, including registration, login, and session management using JWTs and cookies.
+        `,
       },
       process: {
-        text: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        text: `
+          I built the application using the MERN stack (MongoDB, Express.js, React, Node.js). To ensure security, I implemented password hashing with bcrypt and managed sessions with JSON Web Tokens (JWTs) stored in cookies.
+
+          The frontend was developed with React and Vite for a modern, efficient development experience, and styled with TailwindCSS.
+        `,
       },
       result: {
-        text: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+        text: `
+          The result is a secure and responsive authentication system that follows best practices for web security.
+
+          It features a clean separation between the frontend and backend, demonstrating a modular and maintainable approach to full-stack development.
+        `,
       },
       reflection: {
-        text: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+        text: `
+          This project was crucial for developing my intuition for backend security and designing robust authentication flows.
+
+          It reinforced my skills in creating modular, full-stack applications and gave me a practical understanding of how to protect user data effectively.
+        `,
       },
     },
   },
@@ -262,16 +321,32 @@ export const projects: Project[] = [
     },
     content: {
       overview: {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        text: `
+          EcoEats is a front-end prototype for a sustainable food discovery app, designed and built for NwHacks 2024.
+
+          The project's goal was to create a compelling Minimum Viable Product (MVP) that combined thoughtful product design with solid front-end development.
+        `,
       },
       process: {
-        text: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        text: `
+          I started by wireframing the user interface and experience in Figma to establish a clear design direction.
+
+          Using vanilla JavaScript, HTML, and CSS, I built a responsive and accessible interface that simulates dynamic content from a local JSON file. The focus was on creating a clean, intuitive layout that felt like a real application.
+        `,
       },
       result: {
-        text: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+        text: `
+          The final prototype successfully demonstrates the core functionality of the app, including location-based filtering and dynamic data cards for displaying restaurant information.
+
+          The responsive design ensures a seamless experience on both mobile and desktop devices, providing a strong foundation for future development and API integration.
+        `,
       },
       reflection: {
-        text: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.",
+        text: `
+          EcoEats was a great opportunity to sharpen my core front-end skills and practice rapid prototyping.
+
+          It also taught me how to convey a message, in this case, sustainability through UI/UX design choices, such as color palettes, iconography, and information architecture.
+        `,
       },
     },
   },

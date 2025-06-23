@@ -44,7 +44,7 @@ const SectionContent = ({ content }: SectionContentProps) => {
   return (
     <div className="py-[40px] flex justify-end">
       <div className="max-w-[60%]">
-        <p className="text-[20px] md:text-[28px] font-[500] text-neutral-800 dark:text-neutral-400 leading-[1.1]">
+        <p className="text-[20px] md:text-[28px] font-[500] text-neutral-800 dark:text-white leading-[1.1]">
           {content}
         </p>
       </div>
