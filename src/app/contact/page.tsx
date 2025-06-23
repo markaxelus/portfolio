@@ -64,13 +64,13 @@ const ContactPage = () => {
             className="text-[76px] md:text-[116px] lg:text-[200px] font-bold leading-none tracking-[-0.09em] whitespace-pre"
             distance={100}
             delay={0}
-            letterDelay={0.07}
+            letterDelay={0.05}
           />
           <StaggerText
             text="MESSAGE"
             className="text-[76px] md:text-[116px] lg:text-[200px] font-bold leading-none tracking-[-0.09em]"
             distance={100}
-            delay={0.2}
+            delay={0.5}
             letterDelay={0.07}
           />
         </div>
