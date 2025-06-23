@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import ShowMore from "@/components/Buttons/ShowMore";
 import ScrollReveal from "@/utils/Animation/ScrollReveal";
 import Image from "next/image";
+import Resume from "@/components/Buttons/Resume";
 
 const AboutPreviewSection = () => {
   const pathname = usePathname();
@@ -84,24 +85,27 @@ const AboutPreviewSection = () => {
         </ScrollReveal>
 
         {/* Image */}
-          <div className="w-full flex flex-col md:flex-row items-center justify-center gap-18">
-            <ScrollReveal direction="up">
-              <div className="flex-shrink-0">
-                <Image
-                  src="/image.png"
-                  alt="profile"
-                  width={553}
-                  height={553}
-                  className="w-[553px] max-h-[450px] md:max-h-[553px] object-cover"
-                />
-              </div>
-            </ScrollReveal>
+        <div className="w-full flex flex-col md:flex-row items-center justify-center gap-18">
+          <ScrollReveal direction="up">
+            <div className="flex-shrink-0">
+              <Image
+                src="/image.png"
+                alt="profile"
+                width={553}
+                height={553}
+                className="w-[553px] max-h-[450px] md:max-h-[553px] object-cover"
+              />
+            </div>
+          </ScrollReveal>
 
-            {/* Tech Stack Grid */}
-            <ScrollReveal direction="up">
-              <h1 className="text-[24px] md:text-[44px] tracking-[-0.03em] font-medium pb-[40px]">
-                tech.
-              </h1>
+          {/* Tech Stack Grid */}
+          <ScrollReveal direction="up">
+            <div className="flex flex-col flex-1 gap-10 w-full">
+              <div className="flex justify-between items-center w-full ">
+                <h1 className="text-[24px] md:text-[44px] tracking-[-0.03em] font-medium">
+                  tech.
+                </h1>
+              </div>
 
               <div className="grid grid-cols-3 gap-6 md:gap-10 ">
                 {techStack.map(({ name, imgDark, imgLight }) => (
@@ -131,8 +135,9 @@ const AboutPreviewSection = () => {
                   </div>
                 ))}
               </div>
-            </ScrollReveal>
-          </div>
+            </div>
+          </ScrollReveal>
+        </div>
       </div>
     </section>
   );
