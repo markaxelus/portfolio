@@ -5,6 +5,7 @@ import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 import StaggerText from "@/utils/Animation/StaggerText";
 import ScrollReveal from "@/utils/Animation/ScrollReveal";
 import BubbleReveal from "@/utils/Animation/BubbleReveal";
+import Resume from "@/components/Buttons/Resume";
 
 const HeroSection = () => {
   return (
@@ -55,10 +56,10 @@ const HeroSection = () => {
         {/* Bottom Row */}
         <ScrollReveal direction="up">
           <div className="flex flex-col gap-6 md:flex-row md:justify-between md:gap-12">
-            <div className="flex flex-col gap-2 items-center">
+            <div className="flex flex-col gap-4 ">
               <EmailCopy email="mrkaxelus@gmail.com" />
 
-              <div className="flex flex-row gap-4 justify-center md:justify-start  pt-3 w-full">
+              <div className="flex flex-row gap-4 justify-start   w-full">
                 <Social
                   name="Github"
                   href="https://github.com/markaxelus"
@@ -70,10 +71,19 @@ const HeroSection = () => {
                   icon={FaLinkedin}
                 />
                 <Social name="Twitter" href="" icon={FaTwitter} />
+
               </div>
+              <Resume
+                  href="/MarkAxelus_Resume.pdf"
+                  className="bg-[rgb(245,245,245)] dark:bg-neutral-800 dark:text-white
+                      w-[120px] h-[51px]
+                      tracking-[-0.04em]
+                      flex items-center justify-center
+                      font-[500] gap-2"
+                />
             </div>
 
-            <p className="tracking-[-0.09em] md:indent-[4rem] text-xl md:text-[40px] max-w-[643px] font-medium text-center md:text-start">
+            <p className="tracking-[-0.09em] indent-[4rem] text-xl md:text-[40px] max-w-[643px] font-medium  text-start">
               Exploring ideas through design and code — curious, always
               learning, and love to build things. Let&apos;s{" "}
               <span className="italic font-bold tracking-[-0.04em]">

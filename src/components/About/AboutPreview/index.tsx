@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import ShowMore from "@/components/Buttons/ShowMore";
 import ScrollReveal from "@/utils/Animation/ScrollReveal";
 import Image from "next/image";
-import Resume from "@/components/Buttons/Resume";
 
 const AboutPreviewSection = () => {
   const pathname = usePathname();
