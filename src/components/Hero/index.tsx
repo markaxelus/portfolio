@@ -71,16 +71,15 @@ const HeroSection = () => {
                   icon={FaLinkedin}
                 />
                 <Social name="Twitter" href="" icon={FaTwitter} />
-
               </div>
               <Resume
-                  href="/MarkAxelus_Resume.pdf"
-                  className="bg-[rgb(245,245,245)] dark:bg-neutral-800 dark:text-white
+                href="/MarkAxelus_Resume.pdf"
+                className="bg-[rgb(245,245,245)] dark:bg-neutral-800 dark:text-white
                       w-[120px] h-[51px]
                       tracking-[-0.04em]
                       flex items-center justify-center
                       font-[500] gap-2"
-                />
+              />
             </div>
 
             <p className="tracking-[-0.09em] indent-[4rem] text-xl md:text-[40px] max-w-[643px] font-medium  text-start">
