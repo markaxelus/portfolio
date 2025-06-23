@@ -9,6 +9,54 @@ const AboutPreviewSection = () => {
   const pathname = usePathname();
   const onAboutPage = pathname === "/about";
 
+  const techStack = [
+    {
+      name: "Next.js",
+      imgDark: "/stackIcons/next-dark.png",
+      imgLight: "/stackIcons/next-light.png",
+    },
+    {
+      name: "TypeScript",
+      imgDark: "/stackIcons/ts-dark.png",
+      imgLight: "/stackIcons/ts-light.png",
+    },
+    {
+      name: "TailwindCSS",
+      imgDark: "/stackIcons/tailwind-dark.png",
+      imgLight: "/stackIcons/tailwind-light.png",
+    },
+    {
+      name: "PostgreSQL",
+      imgDark: "/stackIcons/postgres-dark.png",
+      imgLight: "/stackIcons/postgres-light.png",
+    },
+    {
+      name: "Node",
+      imgDark: "/stackIcons/node-dark.png",
+      imgLight: "/stackIcons/node-light.png",
+    },
+    {
+      name: "Express",
+      imgDark: "/stackIcons/express-dark.png",
+      imgLight: "/stackIcons/express-light.png",
+    },
+    {
+      name: "MongoDB",
+      imgDark: "/stackIcons/mongo-dark.png",
+      imgLight: "/stackIcons/mongo-light.png",
+    },
+    {
+      name: "AWS",
+      imgDark: "/stackIcons/aws-dark.png",
+      imgLight: "/stackIcons/aws-light.png",
+    },
+    {
+      name: "Python",
+      imgDark: "/stackIcons/python-dark.png",
+      imgLight: "/stackIcons/python-light.png",
+    },
+  ] as const;
+
   return (
     <section className="flex flex-col justify-start w-full mx-auto px-[20px] md:px-[30px] gap-20 pt-[20px] pb-[100px] bg-white dark:bg-black">
       {/* Main Heading */}
@@ -36,25 +84,55 @@ const AboutPreviewSection = () => {
         </ScrollReveal>
 
         {/* Image */}
-        <ScrollReveal direction="up">
           <div className="w-full flex flex-col md:flex-row items-center justify-center gap-18">
-            <div className="flex-shrink-0">
-              <Image
-                src="/image.png"
-                alt="profile"
-                width={553}
-                height={553}
-                className="w-[553px] max-h-[450px] md:max-h-[553px] object-cover"
-              />
-            </div>
-            <p className="text-[16px] md:text-[20px] tracking-[-0.04em] text-center md:text-left max-w-sm font-medium leading-tight">
-              I focus on creating clean, accessible, and maintainable designs
-              through thoughtful planning and iteration. I value clarity and
-              purpose in both code and visuals, and continuously learn through
-              hands-on work.{" "}
-            </p>
+            <ScrollReveal direction="up">
+              <div className="flex-shrink-0">
+                <Image
+                  src="/image.png"
+                  alt="profile"
+                  width={553}
+                  height={553}
+                  className="w-[553px] max-h-[450px] md:max-h-[553px] object-cover"
+                />
+              </div>
+            </ScrollReveal>
+
+            {/* Tech Stack Grid */}
+            <ScrollReveal direction="up">
+              <h1 className="text-[24px] md:text-[44px] tracking-[-0.03em] font-medium pb-[40px]">
+                tech.
+              </h1>
+
+              <div className="grid grid-cols-3 gap-6 md:gap-10 ">
+                {techStack.map(({ name, imgDark, imgLight }) => (
+                  <div
+                    key={name}
+                    className="flex flex-col items-center text-center"
+                  >
+                    {/* Dark theme (light icon) */}
+                    <Image
+                      src={imgLight}
+                      alt={`${name} logo light`}
+                      width={50}
+                      height={50}
+                      className="w-[40px] h-[40px] object-contain mb-2 hidden dark:block"
+                    />
+                    {/* Light theme (dark icon) */}
+                    <Image
+                      src={imgDark}
+                      alt={`${name} logo dark`}
+                      width={50}
+                      height={50}
+                      className="w-[40px] h-[40px] object-contain mb-2 block dark:hidden"
+                    />
+                    <p className="text-[16px] md:text-[20px] tracking-[-0.04em] font-medium leading-tight">
+                      {name}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </ScrollReveal>
           </div>
-        </ScrollReveal>
       </div>
     </section>
   );
