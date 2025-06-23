@@ -3,6 +3,7 @@ import { Project, projects } from "@/data/projects";
 import { notFound } from "next/navigation";
 import ProjectHeading from "@/components/Project/ProjectHeading";
 import ProjectSection from "@/components/Project/ProjectSection";
+import Quote from "@/components/Project/Quote";
 
 interface ProjectDetailProps {
   params: Promise<{ slug: string }>;
@@ -45,6 +46,7 @@ const Page = async ({ params }: ProjectDetailProps) => {
           images={content.reflection.images}
         />
       </section>
+      <Quote />
     </main>
   );
 };

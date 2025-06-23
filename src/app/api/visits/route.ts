@@ -7,6 +7,10 @@ const redis = new Redis({
 });
 
 export async function GET(request: Request) {
+  if (process.env.DISABLE_VISIT_COUNTER === "true") {
+    return Response.json({ total: 12345 });
+  }
+  
   const cookieStore = await cookies();
 
   if (cookieStore.get("ignoreVisits")?.value === "true") {
