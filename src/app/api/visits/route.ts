@@ -7,7 +7,7 @@ const redis = new Redis({
 });
 
 export async function GET(request: Request) {
-  if (process.env.DISABLE_VISIT_COUNTER === "true") {
+  if (process.env.NODE_ENV === "development") {
     return Response.json({ total: 12345 });
   }
   
