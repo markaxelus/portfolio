@@ -56,10 +56,14 @@ const AboutSection = () => {
           </div>
 
           {/* Text */}
-          <div className="w-full md:w-1/3 flex items-center justify-center p-8 md:p-12">
-            <p className="text-[28px] md:text-[40px] lg:text-[50px] font-medium tracking-[-0.06em] leading-tight">
-              placeholder
+          <div className="w-full md:w-1/3 flex items-center justify-center p-8">
+            <p className="text-[16px] md:text-[30px] tracking-[-0.04em] text-center md:text-left max-w-sm font-medium leading-tight">
+              I focus on creating clean, accessible, and maintainable designs
+              through thoughtful planning and iteration. I value clarity and
+              purpose in both code and visuals, and continuously learn through
+              hands-on work.
             </p>
+
           </div>
         </div>
       </ScrollReveal>
