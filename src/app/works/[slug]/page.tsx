@@ -41,6 +41,11 @@ const Page = async ({ params }: ProjectDetailProps) => {
           images={content.result.images}
         />
         <ProjectSection
+          title="challenge."
+          content={content.challenge.text}
+          images={content.challenge.images}
+        />
+        <ProjectSection
           title="reflection."
           content={content.reflection.text}
           images={content.reflection.images}

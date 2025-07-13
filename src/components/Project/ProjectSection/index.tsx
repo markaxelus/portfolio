@@ -15,7 +15,7 @@ const SectionHeading = ({ title, projectLink }: SectionHeadingProps) => {
       <div className="flex justify-between items-start">
         <div className="flex-1 flex flex-col gap-8 max-w-[70%]">
           <h2 className="text-[24px] md:text-[48px] font-[500] tracking-[-0.03em]">
-            {title}
+            {title} 
           </h2>
         </div>
 
@@ -44,7 +44,7 @@ const SectionContent = ({ content }: SectionContentProps) => {
   return (
     <div className="py-[40px] flex justify-end">
       <div className="max-w-[60%]">
-        <p className="text-[20px] md:text-[28px] font-[500] text-neutral-800 dark:text-white leading-[1.1]">
+        <p className="text-[20px] md:text-[28px] font-[500] text-neutral-800 dark:text-white leading-[1.1] whitespace-pre-line">
           {content}
         </p>
       </div>
