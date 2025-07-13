@@ -6,7 +6,7 @@ type QuoteProps = {
 
 const index = ({ quote }: QuoteProps) => {
   return (
-    <div>\
+    <div>
 
     </div>
   )
