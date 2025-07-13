@@ -50,14 +50,8 @@ const ContactPage = () => {
   }
 
   return (
-    <div
-      className=" 
-           min-h-screen
-           pt-[180px]
-           flex flex-col
-           gap-12 md:gap-34"
-    >
-      <ScrollReveal direction='up'>
+    <>
+      <ScrollReveal direction='up' className='min-h-screen pt-[180px] flex flex-col gap-12 md:gap-34'>
         <div className="flex flex-col bg-white dark:bg-black px-[20px] md:px-[80px] mb-24 md:mb-32">
           <StaggerText
             text="SHOOT   A"
@@ -126,8 +120,10 @@ const ContactPage = () => {
         </div>
       </ScrollReveal>
       {/* New Footer */}
+      
       <Footer />
-    </div>
+      
+    </>
   )
 }
 
