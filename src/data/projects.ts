@@ -10,10 +10,9 @@ export type Project = {
   stack: string[];
   link?: string;
   metadata: {
-    field: string;
+    focus: string;
     project: string;
     year: string;
-    focus: string;
     tools: string;
   };
   content: {
@@ -53,10 +52,9 @@ export const projects: Project[] = [
     stack: ["Next.js", "TypeScript", "TailwindCSS"],
     link: "https://uveec.ca",
     metadata: {
-      field: "Front-End",
+      focus: "Front-End Development",
       project: "Website",
       year: "2024",
-      focus: "Front-End Development",
       tools: "Next.js, TypeScript, TailwindCSS",
     },
     content: {
@@ -100,16 +98,15 @@ export const projects: Project[] = [
     id: 2,
     slug: "relay",
     title: "Relay",
-    category: "Full-Stack / Product Design",
+    category: "Full-Stack & Product Design",
     imageUrl: "/relay.jpg",
     dateAndType: "Ongoing — Personal",
     description: "",
     stack: ["Next.js", "PostgreSQL", "Prisma", "TailwindCSS"],
     metadata: {
-      field: "Full-Stack / Product Design",
+      focus: "Full-Stack Development & Product Design",
       project: "Relay",
       year: "Ongoing",
-      focus: "Full-Stack Development & Product Design",
       tools: "Next.js, PostgreSQL, Prisma, TailwindCSS",
     },
     content: {
@@ -167,10 +164,9 @@ export const projects: Project[] = [
     description: "",
     stack: ["Next.js", "TypeScript", "Framer Motion", "TailwindCSS"],
     metadata: {
-      field: "UI/UX Design",
+      focus: "UI/UX & Front-End Development",
       project: "Portfolio",
       year: "2025",
-      focus: "UI/UX & Front-End Development",
       tools: "Next.js, TypeScript, Framer Motion, TailwindCSS",
     },
     content: {
@@ -220,7 +216,7 @@ export const projects: Project[] = [
     id: 4,
     slug: "synapse",
     title: "Synapse",
-    category: "Full-Stack / Product Design",
+    category: "Full-Stack & Product Design",
     imageUrl: "/synapse.jpg",
     dateAndType: "2024 — Hackathon",
     description: "",
@@ -235,10 +231,9 @@ export const projects: Project[] = [
       "Serverless",
     ],
     metadata: {
-      field: "Full-Stack / Product Design",
+      focus: "Full-Stack Development & Product Design",
       project: "Synapse",
       year: "2024",
-      focus: "AI & Full-Stack Development",
       tools:
         "TypeScript, Node.js, Express, AWS, LangChain, Mermaid.js, Lambda, Serverless",
     },
@@ -310,10 +305,9 @@ export const projects: Project[] = [
     description: "",
     stack: ["React", "Express", "MongoDB", "JWT"],
     metadata: {
-      field: "Full-Stack",
+      focus: "Back-End Development& Authentication",
       project: "BasicAuth",
       year: "2024",
-      focus: "Back-End & Authentication",
       tools: "React, Express, MongoDB, JWT",
     },
     content: {
@@ -372,10 +366,9 @@ export const projects: Project[] = [
     description: "",
     stack: ["HTML", "CSS", "Javascript"],
     metadata: {
-      field: "Front-End / Product Design",
+      focus: "Back-End Development",
       project: "EcoEats",
       year: "2024",
-      focus: "Front-End Development & Product Design",
       tools: "HTML, CSS, Javascript",
     },
     content: {

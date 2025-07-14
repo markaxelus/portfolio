@@ -8,7 +8,7 @@ interface ProjectHeadingProps {
 
 const ProjectHeading: React.FC<ProjectHeadingProps> = ({ project }) => {
   const { metadata, imageUrl, title, club } = project;
-  const { field, project: projName, year, focus } = metadata;
+  const { focus, project: projName, year, tools } = metadata;
 
   return (
     <header className="relative w-full flex flex-col justify-between items-end gap-16  pb-[80px] border-b border-[rgb(245,245,245)] dark:border-neutral-800">
@@ -16,7 +16,7 @@ const ProjectHeading: React.FC<ProjectHeadingProps> = ({ project }) => {
       <div className="flex flex-col">
         <div className="flex text-[24px] gap-3">
           <span className="text-[#b3b3b3]">FIELD:</span>
-          <span className="text-black dark:text-white uppercase">{field}</span>
+          <span className="text-black dark:text-white uppercase">{focus}</span>
         </div>
         <div className="flex text-[24px] gap-3">
           <span className="text-[#b3b3b3]">PROJECT:</span>
@@ -29,8 +29,10 @@ const ProjectHeading: React.FC<ProjectHeadingProps> = ({ project }) => {
           <span className="text-black dark:text-white uppercase">{year}</span>
         </div>
         <div className="flex text-[24px] gap-3">
-          <span className="text-[#b3b3b3]">FOCUS:</span>
-          <span className="text-black dark:text-white uppercase">{focus}</span>
+          <span className="text-[#b3b3b3]">TOOLS:</span>
+          <span className="text-black dark:text-white uppercase break-words max-w-[550px]">
+            {tools}
+          </span>
         </div>
       </div>
 

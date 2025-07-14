@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import ProjectHeading from "@/components/Project/ProjectHeading";
 import ProjectSection from "@/components/Project/ProjectSection";
 import GoBack from "@/components/Buttons/GoBack";
-
 import Footer from "@/components/Footer";
 
 interface ProjectDetailProps {
