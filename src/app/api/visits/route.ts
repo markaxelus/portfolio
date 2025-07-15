@@ -6,7 +6,7 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
 
-export async function GET(request: Request) {
+export async function GET() {
   const cookieStore = await cookies();
 
   if (cookieStore.get("ignoreVisits")?.value === "true") {

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link';
 import StaggerText from '@/utils/Animation/StaggerText';
 
-const index = () => {
+const Footer = () => {
   const [visits, setVisits] = useState<number | 0>(0);
 
   useEffect(() => {
@@ -93,4 +93,4 @@ const index = () => {
     </footer>
   )
 }
-export default index
+export default Footer
