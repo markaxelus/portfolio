@@ -29,7 +29,30 @@ const index = () => {
       })
     }
 
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const isClickable = Boolean(
+        target.tagName === "BUTTON" ||
+        target.tagName === "A" ||
+        target.closest("button") ||
+        target.closest("a") ||
+        target.classList.contains("cursor-pointer")
+      );
+      /* console.log("Hovered Element:", target);
+      console.log("tagName:", target.tagName);
+      console.log("isClickable:", isClickable); */
+
+      setCursor((prev) => ({
+        ...prev,
+        isHovering: true,
+        isClickable,
+      }))
+    }
+
+    
+
     document.addEventListener("mousemove", moveCursor)
+    document.addEventListener("mouseover", handleMouseOver)
 
     
     
@@ -46,7 +69,6 @@ const index = () => {
           left: `${cursor.x}px`,
           top: `${cursor.y}px`,
           backgroundColor: "#ffffff",
-          
           transform: `translate(-50%,-50%)`,
           opacity: isCursorVisible ? 1 : 0,
           mixBlendMode: "difference",
