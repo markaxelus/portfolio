@@ -27,6 +27,7 @@ const EmailCopy = ({ email, className }: EmailCopyProps) => {
       <button
         onClick={handleCopy}
         data-cursor="copy"
+        data-copied={copied}
         className="flex cursor-pointer text-inherit p-1 items-center gap-2"
         aria-label="Copy email"
         title="Copy email"

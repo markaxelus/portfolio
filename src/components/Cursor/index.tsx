@@ -1,5 +1,5 @@
 "use client"
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 
 type CursorState = {
   x: number;
@@ -11,7 +11,7 @@ type CursorState = {
   copyFeedback: boolean;
 }
 
-const index = () => {
+const Cursor = () => {
   const [cursor, setCursor] = useState<CursorState>({
     x: 0,
     y: 0,
@@ -73,7 +73,7 @@ const index = () => {
       }
     }
 
-    const handleWindowEnter = (e: MouseEvent) => {
+    const handleWindowEnter = () => {
       setCursor ((prev) => ({
         ...prev,
         isVisible: true
@@ -152,4 +152,4 @@ const index = () => {
   )
 }
 
-export default index
+export default Cursor
