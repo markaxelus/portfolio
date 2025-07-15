@@ -101,7 +101,7 @@ export const projects: Project[] = [
     category: "Full-Stack & Product Design",
     imageUrl: "/relay.jpg",
     dateAndType: "Ongoing — Personal",
-    description: "",
+    description: "/black.png",
     stack: ["Next.js", "PostgreSQL", "Prisma", "TailwindCSS"],
     metadata: {
       focus: "Full-Stack Development & Product Design",
@@ -159,7 +159,7 @@ export const projects: Project[] = [
     slug: "portfolio",
     title: "Portfolio",
     category: "UI/UX Design",
-    imageUrl: "",
+    imageUrl: "/black.png",
     dateAndType: "2025 — Personal",
     description: "",
     stack: ["Next.js", "TypeScript", "Framer Motion", "TailwindCSS"],
@@ -302,7 +302,7 @@ export const projects: Project[] = [
     category: "Full-Stack",
     imageUrl: "/basicauth.jpg",
     dateAndType: "2024 — Personal",
-    description: "",
+    description: "/black.png",
     stack: ["React", "Express", "MongoDB", "JWT"],
     metadata: {
       focus: "Back-End Development& Authentication",
