@@ -1,4 +1,4 @@
-/* import { cookies } from "next/headers";*/
+import { cookies } from "next/headers";
 import { Redis } from "@upstash/redis";
 
 const redis = new Redis({
@@ -7,22 +7,40 @@ const redis = new Redis({
 });
 
 export async function GET() {
-  try {
-    console.log('Attempting to increment visit counter...');
-    const total = await redis.incr("visit_total");
-    console.log('Successfully incremented counter to:', total);
+  const cookieStore = await cookies();
+
+  if (cookieStore.get("ignoreVisits")?.value === "true") {
+    const total = (await redis.get<number>("visit_total")) ?? 0;
     return Response.json({ total });
-  } catch (error) {
-    console.error('Failed to increment counter:', error);
-    // If we don't have permission to increment, try to at least read the value
-    try {
-      console.log('Attempting to read visit counter...');
-      const total = (await redis.get<number>("visit_total"));
-      console.log('Successfully read counter:', total);
-      return Response.json({ total });
-    } catch (error) {
-      console.error('Failed to access visit counter:', error);
-      return Response.json({ total: 0, error: 'Failed to access visit counter' }, { status: 500 });
-    }
   }
+
+  const cachedTotal = cookieStore.get("visit_total")?.value;
+  const lastCounted = cookieStore.get("last_counted")?.value;
+
+  if (cachedTotal) {
+    // If we have a cached count, use it
+    return Response.json({ total: Number(cachedTotal) });
+  }
+
+  // Check if user was counted within last 10 minutes
+  const now = Date.now();
+  const tenMinutesAgo = now - (10 * 60 * 1000);
+  
+  if (lastCounted && Number(lastCounted) > tenMinutesAgo) {
+    // User was counted recently, just get current total without incrementing
+    const total = (await redis.get<number>("visit_total")) ?? 0;
+    return Response.json({ total });
+  }
+
+  // Otherwise, get the real count from Redis and increment
+  let total = (await redis.get<number>("visit_total")) ?? 0;
+  total = await redis.incr("visit_total");
+  
+  // Mark this user as counted for the next 10 minutes
+  cookieStore.set("last_counted", String(now), { maxAge: 60 * 10 });
+
+  // Cache the count for 10 minutes
+  cookieStore.set("visit_total", String(total), { maxAge: 60 * 10 });
+
+  return Response.json({ total });
 }
