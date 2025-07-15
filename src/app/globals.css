@@ -4,6 +4,7 @@
 *,
 *::before,
 *::after {
+  cursor: none !important;
   box-sizing: inherit;
 }
 

@@ -29,16 +29,30 @@ const index = () => {
       })
     }
 
+    document.addEventListener("mousemove", moveCursor)
+
     
     
-
-
-  })
+    
+  },[])
   
-  return (
-    <div>
+  const isCursorVisible = cursor.isVisible;
 
-    </div>
+  return (
+    <>
+      <div
+        className='fixed pointer-events-none z-[9999] w-8 h-8 rounded-full'
+        style={{
+          left: `${cursor.x}px`,
+          top: `${cursor.y}px`,
+          backgroundColor: "#000000",
+          transform: `translate(-50%,-50%)`,
+          opacity: isCursorVisible ? 1 : 0,
+        }}
+      />
+
+      
+    </>
   )
 }
 
