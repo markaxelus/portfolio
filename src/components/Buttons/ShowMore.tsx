@@ -10,7 +10,9 @@ type ShowMoreProps = {
 const ShowMore = ({ href, buttonLabel, style,  }: ShowMoreProps) => {
   return (
     <div className="flex items-center">
-      <Link href={href} style={style} className="bg-[rgb(245,245,245)] dark:bg-neutral-800 dark:text-white w-[133px] h-[51px] tracking-[-0.04em] flex items-center justify-center font-medium">
+      <Link href={href} style={style} 
+      className="bg-[rgb(245,245,245)] dark:bg-neutral-800 dark:text-white w-[133px] h-[51px] tracking-[-0.04em] flex items-center justify-center font-medium transition-colors duration-300 ease-in-out
+                      hover:bg-black hover:text-white dark:hover:bg-neutral-600">
           {buttonLabel}
       </Link>
     </div>

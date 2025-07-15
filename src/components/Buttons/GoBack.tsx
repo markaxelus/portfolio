@@ -16,9 +16,9 @@ const GoBack = () => {
       >
         OTHER WORKS
       </Link>
-      <span className="text-[46px] md:text-[96px] lg:text-[184px] font-semibold leading-none tracking-[-0.09em] lg:mb-[30px] md:mb-[20px] mb-[10px]">
+      <Link href="/works" className="-ml-[30px] text-[46px] md:text-[96px] lg:text-[184px] font-semibold leading-none tracking-[-0.09em] lg:mb-[30px] md:mb-[20px] mb-[10px]">
         →
-      </span>
+      </Link>
     </section>
   );
 };

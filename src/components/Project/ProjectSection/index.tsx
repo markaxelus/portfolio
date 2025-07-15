@@ -24,7 +24,8 @@ const SectionHeading = ({ title, projectLink }: SectionHeadingProps) => {
             <Link
               href={projectLink}
               target="_blank"
-              className="bg-[rgb(245,245,245)] dark:bg-neutral-800 dark:text-white w-[203px] h-[71px] tracking-[-0.04em] flex items-center justify-center font-medium text-[20px]"
+              className="bg-[rgb(245,245,245)] dark:bg-neutral-800 dark:text-white w-[203px] h-[71px] tracking-[-0.04em] flex items-center justify-center font-medium text-[20px] transition-colors duration-300 ease-in-out
+                      hover:bg-black hover:text-white dark:hover:bg-neutral-600"
             >
               Take a Look!
             </Link>

@@ -78,7 +78,10 @@ const HeroSection = () => {
                       w-[120px] h-[51px]
                       tracking-[-0.04em]
                       flex items-center justify-center
-                      font-[500] gap-2"
+                      font-[500] gap-2
+                      transition-colors duration-300 ease-in-out
+                      hover:bg-black hover:text-white dark:hover:bg-neutral-600
+                      "
               />
             </div>
 
