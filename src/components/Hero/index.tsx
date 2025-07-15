@@ -36,7 +36,7 @@ const HeroSection = () => {
               text="AXELUS"
               className="text-[76px] md:text-[116px] lg:text-[200px] font-semibold leading-none tracking-[-0.09em]"
               distance={100}
-              delay={0.2}
+              delay={0.35}
               letterDelay={0.07}
             />
           </div>
@@ -78,7 +78,10 @@ const HeroSection = () => {
                       w-[120px] h-[51px]
                       tracking-[-0.04em]
                       flex items-center justify-center
-                      font-[500] gap-2"
+                      font-[500] gap-2
+                      transition-colors duration-300 ease-in-out
+                      hover:bg-black hover:text-white dark:hover:bg-neutral-600
+                      "
               />
             </div>
 

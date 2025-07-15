@@ -1,5 +1,5 @@
-"use client"
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { Copy } from "lucide-react";
 
 type EmailCopyProps = {
@@ -8,8 +8,16 @@ type EmailCopyProps = {
 };
 
 const EmailCopy = ({ email, className }: EmailCopyProps) => {
-  const handleCopy = () => {
-    navigator.clipboard.writeText(email);
+  const [copied, setCopied] = useState(false)
+  const handleCopy = async() => {
+    try {
+      await navigator.clipboard.writeText(email);
+      setCopied(true);
+      window.dispatchEvent(new CustomEvent("cursor:copied"));
+      setTimeout(() => setCopied(false), 1000);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
   };
 
   return (
@@ -18,6 +26,7 @@ const EmailCopy = ({ email, className }: EmailCopyProps) => {
     >
       <button
         onClick={handleCopy}
+        data-cursor="copy"
         className="flex cursor-pointer text-inherit p-1 items-center gap-2"
         aria-label="Copy email"
         title="Copy email"
@@ -30,3 +39,5 @@ const EmailCopy = ({ email, className }: EmailCopyProps) => {
 };
 
 export default EmailCopy;
+
+

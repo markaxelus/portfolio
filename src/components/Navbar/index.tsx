@@ -5,7 +5,7 @@ import { Sun, Moon, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ScrollReveal from "@/utils/Animation/ScrollReveal";
 import useDarkMode from "@/utils/useDarkMode";
-import MobileNav from "@/components/Project/MobileNav";
+import MobileNav from "@/components/MobileNav";
 
 const Navbar = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);

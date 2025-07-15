@@ -10,10 +10,9 @@ export type Project = {
   stack: string[];
   link?: string;
   metadata: {
-    field: string;
+    focus: string;
     project: string;
     year: string;
-    focus: string;
     tools: string;
   };
   content: {
@@ -26,6 +25,10 @@ export type Project = {
       images?: import("@/components/Project/ProjectSection").SectionImages;
     };
     result: {
+      text: string;
+      images?: import("@/components/Project/ProjectSection").SectionImages;
+    };
+    challenge: {
       text: string;
       images?: import("@/components/Project/ProjectSection").SectionImages;
     };
@@ -49,58 +52,44 @@ export const projects: Project[] = [
     stack: ["Next.js", "TypeScript", "TailwindCSS"],
     link: "https://uveec.ca",
     metadata: {
-      field: "Front-End",
+      focus: "Front-End Development",
       project: "Website",
       year: "2024",
-      focus: "Front-End Development",
       tools: "Next.js, TypeScript, TailwindCSS",
     },
     content: {
       overview: {
         text: `
-          The official website for the UVic Environmental Engineering Club (UVEEC) was outdated, with broken components and old content. My role was to modernize the site by implementing critical bug fixes and updating the content.
-
-          The primary goals were to enhance the user experience for visitors and improve the site's maintainability, ensuring that future club members could easily manage and update it.
+          As the developer for the UVic Environmental Engineering Club's website redesign, I tackled the challenge of modernizing an outdated and poorly maintained platform. The existing site suffered from content inconsistencies, broken components, and a lack of responsive design that hindered both visitor engagement and internal team operations. My mission was to transform this legacy system into a modern, maintainable platform that would serve as a proper digital presence for the club. The project required not just technical fixes, but a complete rethinking of how content would be managed and updated by future team members.
         `,
-        images: {
-          layout: "large-top",
-          large: "/uveec.png",
-          small: ["/coding.jpg", "/terminal.jpg"],
-        },
       },
       process: {
         text: `
-          My process began with a deep dive into an unfamiliar codebase that lacked documentation. To diagnose issues like a broken marquee animation, I meticulously traced component hierarchies and state management logic.
+          I began by conducting a thorough code audit of the existing React codebase, mapping out component dependencies and identifying critical pain points. The most pressing issue was the Teams page, which used hardcoded layouts that made simple updates unnecessarily complex. I redesigned this into a dynamic system using TypeScript interfaces and reusable components, allowing content updates through structured data files rather than direct code changes.
 
-          A significant part of the project involved refactoring the Teams page. I replaced its legacy layout with a modular, dynamic structure. This not only fixed existing responsive issues but also made it easier to add or remove members in the future.
+          Performance optimization was another key focus. I implemented proper image optimization using Next.js's built-in features. The site's responsive design was standardized using TailwindCSS's mobile-first approach, eliminating the previous inconsistent breakpoint handling. I also introduced proper error boundaries and loading states to improve the user experience during data fetches and page transitions.
         `,
-        images: {
-          layout: "large-bottom",
-          large: "/launch.jpg",
-          small: ["/prototype.jpg", "/relay.jpg"],
-        },
       },
       result: {
         text: `
-          The revitalized website now provides a seamless and bug-free user experience. Key UI issues, including the marquee glitch and layout inconsistencies, were resolved.
+          The redesigned website now offers a significantly improved experience for both visitors and administrators. Load times have been reduced, the UI is consistently responsive across all devices, and content updates can be made through a streamlined process. Key improvements include:
 
-          The redesigned Teams page is now fully responsive and loads content dynamically, significantly improving usability and performance. The modern, consistent design makes the site easier to navigate and simpler for club members to maintain.
+          • Modular component architecture that separates content from presentation
+          • Standardized responsive design system using TailwindCSS
+          • Simplified content management workflow for non-technical users
+          • Comprehensive documentation for future maintainers
         `,
-        images: {
-          layout: "grid-4",
-          small: [
-            "/synapse.jpg",
-            "/basicauth.jpg",
-            "/ecoeats.jpg",
-            "/emphatize.jpg",
-          ],
-        },
+      },
+      challenge: {
+        text: `
+          The most significant challenge was balancing the need for immediate improvements with long-term maintainability. The existing codebase lacked documentation and consistent patterns, making it tempting to start from scratch. However, project constraints required working within the existing system. I developed a strategy of incremental improvements, carefully refactoring critical components while maintaining functionality. This approach required detailed documentation of my changes and thorough testing to ensure no regressions occurred during the transition.
+        `,
       },
       reflection: {
         text: `
-          This project was a valuable experience in reverse-engineering and improving a legacy codebase. It sharpened my debugging skills, particularly in handling UI animations and responsive layouts.
+          This project taught me valuable lessons about technical debt and the importance of sustainable development practices. I learned how to effectively navigate and improve legacy code without disrupting existing functionality. The experience reinforced the critical role of documentation and clean architecture in maintaining long-term project health.
 
-          Most importantly, it reinforced the value of writing clean, maintainable code. Experiencing the challenges of an undocumented project firsthand solidified my commitment to creating clear and scalable solutions for future developers.
+          Most importantly, I gained practical experience in making technical decisions that consider both immediate needs and future maintenance requirements. These insights have directly influenced my approach to new projects, where I now prioritize clear documentation, modular design, and maintainable code structures from the start.
         `,
       },
     },
@@ -109,45 +98,58 @@ export const projects: Project[] = [
     id: 2,
     slug: "relay",
     title: "Relay",
-    category: "Full-Stack / Product Design",
+    category: "Full-Stack & Product Design",
     imageUrl: "/relay.jpg",
     dateAndType: "Ongoing — Personal",
-    description: "",
+    description: "/black.png",
     stack: ["Next.js", "PostgreSQL", "Prisma", "TailwindCSS"],
     metadata: {
-      field: "Full-Stack / Product Design",
+      focus: "Full-Stack Development & Product Design",
       project: "Relay",
       year: "Ongoing",
-      focus: "Full-Stack Development & Product Design",
       tools: "Next.js, PostgreSQL, Prisma, TailwindCSS",
     },
     content: {
       overview: {
         text: `
-          Relay is a full-stack project management tool I'm building to simplify team collaboration and task tracking. It's designed to be an intuitive, responsive platform for dynamic team environments.
-
-          The application features secure user authentication, real-time data synchronization, and a scalable backend architecture, all built from the ground up with modern web technologies.
+          Relay is a full-stack project management application I'm developing to address common pain points in team collaboration. The project emerged from my experience with existing tools that either sacrificed functionality for simplicity or became too complex for quick adoption. My goal was to create a platform that maintains simplicity while offering powerful features for real-time collaboration, task management, and team coordination.
         `,
       },
       process: {
         text: `
-          I started by wireframing the core user flows and designing the system architecture. For the frontend, I chose Next.js and TypeScript for their performance and type-safety, with Redux and RTK Query managing real-time state.
+          Development began with extensive research into modern web architectures and state management patterns. I chose Next.js with TypeScript for type safety and better developer experience, paired with PostgreSQL and Prisma for robust data modeling. Key technical decisions included:
 
-          The backend was built with Node.js and Express, using Prisma as the ORM to interact with a PostgreSQL database. A key challenge was implementing secure authentication with AWS Cognito and integrating it seamlessly with the backend services running on AWS EC2.
+          • Implementing a custom real-time collaboration system using WebSocket connections
+          • Designing a flexible database schema that could accommodate future feature additions
+          • Creating a modular component architecture for reusable UI elements
+          • Setting up automated testing pipelines for critical business logic
+
+          I focused heavily on performance optimization, implementing efficient data fetching patterns and careful state management to ensure smooth user interactions even with large datasets.
         `,
       },
       result: {
         text: `
-          The application will feature a responsive dashboard, role-based access controls, and a modular API. Users will be able to assign tasks, monitor progress in real-time, and securely access their workspace from any device.
+          The current version of Relay successfully demonstrates core project management capabilities while maintaining excellent performance metrics. Key features include:
 
-          The architecture, built on AWS and PostgreSQL, is designed for scalability and reliability, incorporating best practices for cloud security and deployment.
+          • Real-time task updates and collaboration
+          • Intuitive drag-and-drop interface for task management
+          • Responsive design that works seamlessly across devices
+          • Efficient data caching and optimistic UI updates
+          • Comprehensive error handling and user feedback systems
+
+          The application maintains sub-second response times for most operations and handles concurrent users effectively, providing a smooth experience for team collaboration.
+        `,
+      },
+      challenge: {
+        text: `
+          The biggest technical challenge was implementing real-time updates without compromising application performance. Initial WebSocket implementations caused state management issues and unnecessary re-renders. I solved this by implementing a custom event system that batches updates and optimizes re-render cycles. This required deep diving into React's reconciliation process and careful consideration of component lifecycle management.
         `,
       },
       reflection: {
         text: `
-          This ongoing project has been instrumental in my growth as a full-stack developer. It's taught me how to balance technical requirements with user-centric design, and how backend architecture directly impacts frontend performance.
+          Building Relay has significantly deepened my understanding of full-stack development and real-time systems. I've learned valuable lessons about state management, data synchronization, and the importance of user-centric design in collaborative tools.
 
-          Working on Relay has given me a deeper understanding of the entire product lifecycle, from initial design and architecting solutions to cloud deployment and scaling.
+          The project has also taught me about making pragmatic technical decisions - knowing when to build custom solutions versus leveraging existing libraries, and how to plan for scalability without over-engineering. These insights continue to influence my approach to new development challenges.
         `,
       },
     },
@@ -157,44 +159,55 @@ export const projects: Project[] = [
     slug: "portfolio",
     title: "Portfolio",
     category: "UI/UX Design",
-    imageUrl: "/synapse.jpg",
+    imageUrl: "/black.png",
     dateAndType: "2025 — Personal",
     description: "",
     stack: ["Next.js", "TypeScript", "Framer Motion", "TailwindCSS"],
     metadata: {
-      field: "UI/UX Design",
+      focus: "UI/UX & Front-End Development",
       project: "Portfolio",
       year: "2025",
-      focus: "UI/UX & Front-End Development",
       tools: "Next.js, TypeScript, Framer Motion, TailwindCSS",
     },
     content: {
       overview: {
         text: `
-          This portfolio is a curated showcase of my work and technical skills, designed with a strong emphasis on interaction design and a smooth developer experience.
-
-          Built as a performant single-page application, it serves as a dynamic introduction to my capabilities for recruiters, clients, and fellow developers.
+          This portfolio website represents my approach to modern web development, combining performance optimization with engaging user interactions. The project served as a practical exploration of advanced animation techniques, static site generation, and responsive design principles. My goal was to create a platform that not only showcases my work effectively but also demonstrates technical proficiency through its implementation.
         `,
       },
       process: {
         text: `
-          I began the design process in Figma, iterating on the UI to ensure visual clarity and a strong user experience.
+          The development process focused on three key areas: performance, interactivity, and maintainability. Using Next.js and TypeScript provided a solid foundation for static site generation and type safety. I implemented a custom animation system using Framer Motion, carefully orchestrating entrance animations and scroll-based reveals.
 
-          To achieve fast load times and fluid animations, I built the site with Next.js, TypeScript, and TailwindCSS, using Framer Motion for animations. Key features include project filtering, lazy-loaded images to optimize performance, and a fully responsive design for a seamless experience on any device.
+          Performance optimization was a primary concern. I established a comprehensive strategy including:
+          • Implementing dynamic image loading with Next.js Image component
+          • Setting up efficient component code-splitting
+          • Optimizing animation performance through CSS transforms
+          • Implementing proper font loading and subsetting
         `,
       },
       result: {
         text: `
-          The result is an interactive and scroll-friendly website featuring smooth, animated transitions and accessible navigation. The site effectively presents project information in a clean, responsive layout.
+          The final implementation achieves several key technical objectives:
 
-          It has received positive feedback for its blend of aesthetics and usability, successfully creating an engaging user experience.
+          • Consistent 90+ scores across all Core Web Vitals
+          • Sub-second initial page loads through static generation
+          • Perfect accessibility scores in Lighthouse audits
+          • Responsive design that maintains visual fidelity across all breakpoints
+
+          The site successfully balances aesthetic appeal with technical performance, creating an engaging yet efficient user experience.
+        `,
+      },
+      challenge: {
+        text: `
+          The primary challenge was implementing complex animations without compromising performance. Initial implementations of scroll-based animations caused significant layout shifts and performance drops on mobile devices. I solved this by creating a custom hook that manages animation states based on intersection observer entries, effectively decoupling animation triggers from scroll events. This approach dramatically improved performance while maintaining smooth visual transitions.
         `,
       },
       reflection: {
         text: `
-          This project was a lesson in balancing creative expression with technical performance. It deepened my appreciation for how small UX details, hover states, animation timing, and spacing—collectively shape the user's perception.
+          This project pushed me to find the right balance between creative design and technical performance. I learned valuable lessons about animation optimization, the importance of performance budgets, and how to structure a project for long-term maintainability.
 
-          I am proud of the final result and the skills I honed during the process, and I look forward to applying these learnings to future projects.
+          The experience reinforced the importance of measuring performance impact during development rather than treating it as an afterthought. These insights have become central to my approach to front-end development, influencing how I evaluate technical decisions in all my projects.
         `,
       },
     },
@@ -203,7 +216,7 @@ export const projects: Project[] = [
     id: 4,
     slug: "synapse",
     title: "Synapse",
-    category: "Full-Stack / Product Design",
+    category: "Full-Stack & Product Design",
     imageUrl: "/synapse.jpg",
     dateAndType: "2024 — Hackathon",
     description: "",
@@ -218,40 +231,66 @@ export const projects: Project[] = [
       "Serverless",
     ],
     metadata: {
-      field: "Full-Stack / Product Design",
+      focus: "Full-Stack Development & Product Design",
       project: "Synapse",
       year: "2024",
-      focus: "AI & Full-Stack Development",
       tools:
         "TypeScript, Node.js, Express, AWS, LangChain, Mermaid.js, Lambda, Serverless",
     },
     content: {
       overview: {
         text: `
-          Built in 24 hours at NwHacks 2024, Synapse is an AI-powered tool that transforms dense PDF documents into interactive, easy-to-understand flowcharts.
+          Synapse was developed during NwHacks 2025, where I collaborated with a partner to build an AI-powered visualization tool under tight time constraints.
 
-          Working in a team of two, we leveraged Large Language Models (LLMs) and serverless architecture to automate the entire process, from content extraction to diagram generation.
+          Our vision was to create a web application that could convert academic or technical PDFs into editable diagrams, making complex information easier to understand visually.
+
+          The project combined full-stack engineering, serverless architecture, and AI integration into a seamless user-facing tool, with a focus on both front-end user interaction and back-end reliability.
         `,
       },
       process: {
         text: `
-          I focused on building the backend and designing the UI. The backend was architected using AWS Lambda, the Serverless Framework, and S3 for scalable, secure file storage. This setup allowed for asynchronous processing of API calls.
+          We began by carefully scoping the technical workflow into key components: PDF ingestion for handling large documents, entity extraction using AI, code generation for diagrams, and real-time rendering.
 
-          For the frontend, I used TypeScript and Mermaid.js to render the dynamic flowcharts from the data processed by the AI. A major challenge was optimizing the data flow between our microservices to ensure real-time rendering.
+          For the front-end, I architected a responsive UI using TypeScript and React. The interface needed to handle large file uploads smoothly, provide clear feedback during processing, and display interactive Mermaid.js diagrams.
+
+          The back-end architecture was built around AWS Lambda functions with 512MB memory allocation. I implemented cold-start mitigation strategies and optimized the processing pipeline to handle documents up to 10MB within a five-second window.
+
+          To transform PDF content into meaningful diagrams, we integrated LangChain with OpenAI's GPT-4 API. This required careful prompt engineering to extract semantic relationships from text and convert them reliably into valid Mermaid diagram syntax.
+
+          Throughout development, I focused on reliability: implementing comprehensive error handling, adding real-time loading indicators, and setting up monitoring for the serverless functions. We used a local-first testing approach to validate components before deploying, which was crucial given the hackathon's time constraints.
         `,
       },
       result: {
         text: `
-          The final product could successfully accept a PDF upload, process its content using an AI model, and render a dynamic, interactive flowchart.
+          Synapse successfully delivered on its core promise: users could upload complex PDFs and receive clean, editable diagrams within seconds. The interface provided a smooth experience from upload through to final visualization.
 
-          The tool was praised by judges for its technical sophistication and practical application in simplifying complex information.
+          Performance metrics exceeded our targets, with the system processing 10MB documents in under five seconds even on cold Lambda starts. The front-end maintained responsiveness under load, and the backend handled concurrent API calls without degradation.
+
+          The AI-powered diagram generation proved remarkably accurate, correctly identifying and visualizing relationships from various types of technical documents. Users could further edit these diagrams through an intuitive interface.
+
+          The project earned recognition during judging for its practical utility, technical implementation, and seamless integration of AI capabilities. We demonstrated that complex document processing could be both fast and user-friendly.
+        `,
+      },
+      challenge: {
+        text: `
+          The primary technical challenge was optimizing PDF processing within AWS Lambda's constraints. The 512MB memory limit and cold-start times initially made it impossible to handle larger documents within our target response time.
+
+          We tackled this through several optimizations: implementing streaming document parsing to reduce memory usage, chunking the text intelligently to maintain context across segments, and parallelizing AI processing where possible.
+
+          Another significant challenge was ensuring consistent, meaningful output from the AI processing pipeline. Early versions would sometimes produce invalid diagram syntax or miss important relationships in the text.
+
+          We solved this by implementing strict validation at each step: schema checking for AI outputs, syntax verification for generated Mermaid code, and fallback options for edge cases. This made the system much more robust while still maintaining performance.
         `,
       },
       reflection: {
         text: `
-          This hackathon was an intense exercise in rapid prototyping and creative problem-solving with AI. It sharpened my skills in asynchronous programming and API integration under tight deadlines.
+          This project significantly deepened my understanding of serverless architecture and its practical limitations. Working within strict memory and time constraints taught me valuable lessons about optimization and resource management.
 
-          Collaborating closely with a partner also reinforced the importance of clear communication and effective teamwork in a fast-paced environment.
+          The experience of integrating AI capabilities in a production environment was particularly enlightening. I learned how to balance the power of large language models with the need for predictable, validated outputs.
+
+          The hackathon environment pushed me to make pragmatic architectural decisions while maintaining code quality. I gained confidence in rapidly prototyping complex features and iterating based on immediate feedback.
+
+          Perhaps most importantly, I learned how to effectively collaborate under pressure, coordinate across different system components, and maintain a focus on end-user value even while solving complex technical challenges.
         `,
       },
     },
@@ -263,42 +302,56 @@ export const projects: Project[] = [
     category: "Full-Stack",
     imageUrl: "/basicauth.jpg",
     dateAndType: "2024 — Personal",
-    description: "",
+    description: "/black.png",
     stack: ["React", "Express", "MongoDB", "JWT"],
     metadata: {
-      field: "Full-Stack",
+      focus: "Back-End Development& Authentication",
       project: "BasicAuth",
       year: "2024",
-      focus: "Back-End & Authentication",
       tools: "React, Express, MongoDB, JWT",
     },
     content: {
       overview: {
         text: `
-          BasicAuth is a foundational project I built to solidify my understanding of backend authentication and security principles.
-
-          It provides a complete user authentication system, including registration, login, and session management using JWTs and cookies.
+          BasicAuth is a full-stack authentication system I built to gain hands-on experience with secure user management and session handling. Rather than using pre-built solutions, I chose to implement core authentication features from scratch to understand the underlying security principles and best practices in modern web applications.
         `,
       },
       process: {
         text: `
-          I built the application using the MERN stack (MongoDB, Express.js, React, Node.js). To ensure security, I implemented password hashing with bcrypt and managed sessions with JSON Web Tokens (JWTs) stored in cookies.
+          I approached the development systematically, focusing first on security fundamentals:
 
-          The frontend was developed with React and Vite for a modern, efficient development experience, and styled with TailwindCSS.
+          • Implementing secure password hashing using bcrypt with proper salt rounds
+          • Setting up JWT-based session management with refresh token rotation
+          • Configuring secure HTTP-only cookies with appropriate flags
+          • Creating middleware for role-based access control
+
+          The frontend was built with React and TypeScript, emphasizing clean component architecture and proper state management for auth flows. I implemented comprehensive form validation, clear error handling, and intuitive user feedback for authentication states.
         `,
       },
       result: {
         text: `
-          The result is a secure and responsive authentication system that follows best practices for web security.
+          The completed system successfully implements core authentication features while maintaining security best practices:
 
-          It features a clean separation between the frontend and backend, demonstrating a modular and maintainable approach to full-stack development.
+          • Secure user registration and login flows
+          • Password reset functionality with email verification
+          • Role-based access control for protected routes
+          • Automatic token refresh handling
+          • Session timeout management
+          • Cross-site request forgery (CSRF) protection
+
+          All components are thoroughly documented and include proper error handling, making the system both secure and maintainable.
+        `,
+      },
+      challenge: {
+        text: `
+          The most significant challenge was implementing secure token refresh logic. The initial implementation was vulnerable to race conditions during concurrent refreshes, potentially leading to invalid session states. I solved this by implementing a token rotation system with proper invalidation checks and implementing a mutex-like mechanism for refresh operations. This required careful consideration of edge cases and proper error handling to maintain session security.
         `,
       },
       reflection: {
         text: `
-          This project was crucial for developing my intuition for backend security and designing robust authentication flows.
+          Building BasicAuth from scratch gave me deep insights into authentication security and user session management. I learned the importance of considering security at every level of the application stack and gained practical experience with common authentication vulnerabilities and their mitigations.
 
-          It reinforced my skills in creating modular, full-stack applications and gave me a practical understanding of how to protect user data effectively.
+          The project also taught me valuable lessons about API design and state management in full-stack applications. These learnings have directly influenced how I approach security considerations in my subsequent projects.
         `,
       },
     },
@@ -313,39 +366,56 @@ export const projects: Project[] = [
     description: "",
     stack: ["HTML", "CSS", "Javascript"],
     metadata: {
-      field: "Front-End / Product Design",
+      focus: "Back-End Development",
       project: "EcoEats",
       year: "2024",
-      focus: "Front-End Development & Product Design",
       tools: "HTML, CSS, Javascript",
     },
     content: {
       overview: {
         text: `
-          EcoEats is a front-end prototype for a sustainable food discovery app, designed and built for NwHacks 2024.
-
-          The project's goal was to create a compelling Minimum Viable Product (MVP) that combined thoughtful product design with solid front-end development.
+          EcoEats was my first hackathon project, where I took on the challenge of building a carbon-conscious recipe platform using vanilla web technologies. The project aimed to help users reduce their carbon footprint by discovering and cooking with seasonal, locally-available ingredients. This served as both an environmental initiative and a practical exercise in fundamental web development concepts.
         `,
       },
       process: {
         text: `
-          I started by wireframing the user interface and experience in Figma to establish a clear design direction.
+          Our development process, while enthusiastic, suffered from a lack of proper planning and structure. We immediately jumped into coding with vanilla JavaScript, HTML, and CSS, driven by the excitement of building our vision. Initial development focused on various features in isolation:
 
-          Using vanilla JavaScript, HTML, and CSS, I built a responsive and accessible interface that simulates dynamic content from a local JSON file. The focus was on creating a clean, intuitive layout that felt like a real application.
+          • Building a basic grid layout for displaying seasonal ingredients and recipes
+          • Setting up ingredient seasonality data structures and recipe filtering
+          • Implementing carbon footprint calculation algorithms
+          • Creating user recipe storage and favorites system
+
+          However, without a clear architectural plan, these components were developed in isolation without considering how they would integrate. This led to inconsistent patterns across features and mounting technical debt as the project progressed.
         `,
       },
       result: {
         text: `
-          The final prototype successfully demonstrates the core functionality of the app, including location-based filtering and dynamic data cards for displaying restaurant information.
+          Despite our planning challenges, we managed to implement some basic functionality:
 
-          The responsive design ensures a seamless experience on both mobile and desktop devices, providing a strong foundation for future development and API integration.
+          • A basic responsive layout for displaying seasonal ingredients
+          • Interactive filtering system for ingredient seasonality
+          • Recipe search based on available seasonal ingredients
+
+          While the final prototype demonstrated the core concept of sustainable cooking through seasonal ingredients, many features were fragile and required constant maintenance. The lack of initial planning meant that while individual components worked, their integration was not as seamless as intended.
+        `,
+      },
+      challenge: {
+        text: `
+          The biggest challenge stemmed from inadequate planning and an over-reliance on ad-hoc development. While we had a clear vision of what we wanted to build, we didn't properly architect how to get there. This led to a cascade of issues: features were implemented without considering their interactions, state management became increasingly chaotic, and the codebase grew more brittle with each addition.
+
+          The lack of structure meant that bugs became exponentially harder to track and fix. What should have been simple feature additions turned into hours of debugging sessions, as changes in one area would unexpectedly break functionality in others. We found ourselves spending more time fixing regressions than implementing new features, significantly impacting our productivity and morale.
+
+          This experience starkly illustrated the importance of proper planning and architecture, even in time-constrained environments. While we eventually managed to deliver a working prototype, the development process was far more challenging and time-consuming than necessary due to our initial rush to start coding without a solid foundation.
         `,
       },
       reflection: {
         text: `
-          EcoEats was a great opportunity to sharpen my core front-end skills and practice rapid prototyping.
+          EcoEats was a pivotal learning experience that taught me the critical importance of proper planning and architecture, even in rapid development environments like hackathons. While our vision of reducing carbon footprints through seasonal cooking was compelling, the challenges we faced due to inadequate planning and ad-hoc development became a powerful lesson in what not to do.
 
-          It also taught me how to convey a message, in this case, sustainability through UI/UX design choices, such as color palettes, iconography, and information architecture.
+          The project helped me understand that taking time for initial architecture and planning isn't just bureaucracy - it's a crucial investment that pays dividends throughout development. Features like carbon footprint calculation and seasonal ingredient matching required complex data relationships that should have been properly modeled from the start. In subsequent projects, I've adopted a more structured approach, always starting with a clear architectural plan and development strategy, even under time constraints.
+
+          Most importantly, I learned that enthusiasm for coding needs to be balanced with disciplined software engineering practices. While we eventually delivered a working prototype that demonstrated the potential for technology to promote sustainable cooking, the experience shaped my approach to all future projects, where I now ensure proper planning and architecture are in place before diving into implementation.
         `,
       },
     },

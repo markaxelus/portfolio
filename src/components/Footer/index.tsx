@@ -1,8 +1,18 @@
 "use client"
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link';
+import StaggerText from '@/utils/Animation/StaggerText';
 
 const index = () => {
+  const [visits, setVisits] = useState<number | 0>(0);
+
+  useEffect(() => {
+    fetch('/api/visits')
+      .then((res) => res.json())
+      .then((data) => setVisits(data.total))
+      .catch(() => {})
+  }, [])
+
   return (
     <footer
       className="
@@ -57,13 +67,26 @@ const index = () => {
         <div className="flex justify-between ">
           {/* Left Container: Email, Location */}
           <div className="flex flex-col ">
-            <span className="font-[400] text-[14px] md:text-[16px]">mrkaxelus@gmail.com</span>
-            <span className="font-[400] text-[14px] md:text-[16px]">Victoria, BC</span>
+            <span className="font-[400] text-[16px] md:text-[22px]">mrkaxelus@gmail.com</span>
+            <span className="font-[400] text-[16px] md:text-[22px]">Victoria, BC</span>
+          </div> 
+
+          {/* Middle Container: Visits */}
+          
+          <div className="flex flex-col justify-center items-center gap-2">
+            <StaggerText
+                text={visits.toString()}
+                className="text-[20px] md:text-[28px] font-semibold leading-none tracking-[-0.09em]"
+                distance={100}
+                delay={0}
+                letterDelay={0.07}
+              />
+            <span className="text-[14px] md:text-[18px]">VIEWS</span>
           </div>
 
           {/* Right Container: Rights */}
           <div className="flex flex-col  ">
-            <span className="text-[14px] md:text-[16px]">All rights reserved, <br/> MARK©2025</span>
+            <span className="text-[16px] md:text-[22px]">All rights reserved, <br/> MARK©2025</span>
           </div>
         </div>
       </div>
