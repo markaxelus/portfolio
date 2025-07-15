@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+/* import { cookies } from "next/headers";*/
 import { Redis } from "@upstash/redis";
 
 const redis = new Redis({
@@ -7,31 +7,22 @@ const redis = new Redis({
 });
 
 export async function GET() {
-  const cookieStore = await cookies();
-
-  if (cookieStore.get("ignoreVisits")?.value === "true") {
-    const total = (await redis.get<number>("visit_total")) ?? 0;
+  try {
+    console.log('Attempting to increment visit counter...');
+    const total = await redis.incr("visit_total");
+    console.log('Successfully incremented counter to:', total);
     return Response.json({ total });
+  } catch (error) {
+    console.error('Failed to increment counter:', error);
+    // If we don't have permission to increment, try to at least read the value
+    try {
+      console.log('Attempting to read visit counter...');
+      const total = (await redis.get<number>("visit_total"));
+      console.log('Successfully read counter:', total);
+      return Response.json({ total });
+    } catch (error) {
+      console.error('Failed to access visit counter:', error);
+      return Response.json({ total: 0, error: 'Failed to access visit counter' }, { status: 500 });
+    }
   }
-
-  const visited = cookieStore.get("visited")?.value === "true";
-  const cachedTotal = cookieStore.get("visit_total")?.value;
-
-  if (visited && cachedTotal) {
-    // If user has visited and we have a cached count, use it
-    return Response.json({ total: Number(cachedTotal) });
-  }
-
-  // Otherwise, get the real count from Redis
-  let total = (await redis.get<number>("visit_total")) ?? 0;
-
-  if (!visited) {
-    total = await redis.incr("visit_total");
-    cookieStore.set("visited", "true", { maxAge: 60 * 60 * 24 }); // 30 days
-  }
-
-  // Cache the count for 1 hour
-  cookieStore.set("visit_total", String(total), { maxAge: 60 * 60 * 24 });
-
-  return Response.json({ total });
 }
