@@ -45,9 +45,12 @@ const index = () => {
         style={{
           left: `${cursor.x}px`,
           top: `${cursor.y}px`,
-          backgroundColor: "#000000",
+          backgroundColor: "#ffffff",
+          
           transform: `translate(-50%,-50%)`,
           opacity: isCursorVisible ? 1 : 0,
+          mixBlendMode: "difference",
+
         }}
       />
 
