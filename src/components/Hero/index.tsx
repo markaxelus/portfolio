@@ -9,7 +9,7 @@ import Resume from "@/components/Buttons/Resume";
 
 const HeroSection = () => {
   return (
-    <main className="relative w-full md:min-h-screen bg-white dark:bg-black">
+    <main className="relative w-full md:min-h-screen bg-white dark:bg-black ">
       <div
         className="
           max-w-[2200px] w-full mx-auto
@@ -19,6 +19,7 @@ const HeroSection = () => {
           flex flex-col 
           gap-12 md:gap-24
           xl:justify-between
+          
       "
       >
         {/* Top Row */}
@@ -56,7 +57,7 @@ const HeroSection = () => {
         {/* Bottom Row */}
         <ScrollReveal direction="up">
           <div className="flex flex-col gap-6 md:flex-row md:justify-between md:gap-12">
-            <div className="flex flex-col gap-4 ">
+            <div className="flex flex-col gap-4 pb-[100px]">
               <EmailCopy email="mrkaxelus@gmail.com" />
 
               <div className="flex flex-row gap-4 justify-start   w-full">
