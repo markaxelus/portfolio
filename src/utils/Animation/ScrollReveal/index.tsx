@@ -32,7 +32,7 @@ export default function ScrollReveal({
   return (
     <div ref={ref} className={`overflow-hidden ${className}`}>
       <motion.div
-        className={`w-full h-full ${motionClassName}`}
+        className={`w-full ${motionClassName}`}
         initial={false}                 // no SSR mismatch
         animate={
           inView

@@ -13,7 +13,7 @@ const HeroSection = () => {
       <div
         className="
           max-w-[2200px] w-full mx-auto
-          md:h-[90vh]
+          md:min-h-[90vh]
           pt-[80px] pb-[40px] md:pb-0
           px-[20px] md:px-[80px] 
           flex flex-col 
