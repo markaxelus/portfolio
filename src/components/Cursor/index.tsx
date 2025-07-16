@@ -107,7 +107,7 @@ const Cursor = () => {
       setCursor((prev) => ({ ...prev, copyFeedback: true }));
       setTimeout(() => {
         setCursor((prev) => ({ ...prev, copyFeedback: false }));
-      }, 1000);
+      }, 1500);
     };
 
     document.addEventListener("mousemove", moveCursor);
@@ -156,7 +156,7 @@ const Cursor = () => {
 
       {/* Copy Button */}
       <div
-        className="fixed pointer-events-none z-[9999] flex items-center justify-center px-10 py-5 rounded-full font-semibold text-lg will-change-transform"
+        className="fixed pointer-events-none z-[9999] bg-black text-white dark:bg-white dark:text-black flex items-center justify-center px-10 py-5 rounded-full font-semibold text-lg will-change-transform"
         style={{
           left: `${cursor.x}px`,
           top: `${cursor.y}px`,
@@ -166,8 +166,6 @@ const Cursor = () => {
           transition:
             "transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.25s ease-out, min-width 0.25s ease-out, padding 0.25s ease-out",
           willChange: "transform, opacity",
-          backgroundColor: "#000000",
-          color: "#ffffff",
         }}
       >
         {cursor.copyFeedback ? "Copied!" : "Copy"}
