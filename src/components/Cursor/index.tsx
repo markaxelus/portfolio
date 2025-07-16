@@ -1,5 +1,5 @@
-"use client"
-import React, { useState, useEffect } from 'react'
+"use client";
+import React, { useState, useEffect } from "react";
 
 type CursorState = {
   x: number;
@@ -9,7 +9,7 @@ type CursorState = {
   isHovering: boolean;
   isCopyButton: boolean;
   copyFeedback: boolean;
-}
+};
 
 const Cursor = () => {
   const [cursor, setCursor] = useState<CursorState>({
@@ -20,27 +20,50 @@ const Cursor = () => {
     isHovering: false,
     isCopyButton: false,
     copyFeedback: false,
-  })
+  });
+
+  // Only display the custom cursor when the primary pointer is "fine" (mouse/trackpad).
+  const [showCursor, setShowCursor] = useState(false);
 
   useEffect(() => {
+    const finePointerQuery = window.matchMedia("(pointer: fine)");
+
+    const update = () => setShowCursor(finePointerQuery.matches);
+    update();
+
+    finePointerQuery.addEventListener("change", update);
+    return () => {
+      finePointerQuery.removeEventListener("change", update);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!showCursor) {
+      // Ensure native cursor remains visible when custom cursor is disabled
+      if (typeof document !== "undefined") {
+        document.documentElement.setAttribute("data-custom-cursor", "false");
+      }
+      return;
+    }
+
     const moveCursor = (e: MouseEvent) => {
       requestAnimationFrame(() => {
         setCursor((prev) => ({
           ...prev,
           x: e.clientX,
           y: e.clientY,
-        }))
-      })
-    }
+        }));
+      });
+    };
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const isClickable = Boolean(
         target.tagName === "BUTTON" ||
-        target.tagName === "A" ||
-        target.closest("button") ||
-        target.closest("a") ||
-        target.classList.contains("cursor-pointer")
+          target.tagName === "A" ||
+          target.closest("button") ||
+          target.closest("a") ||
+          target.classList.contains("cursor-pointer")
       );
       const isCopyButton = target.closest('[data-cursor="copy"]') !== null;
       /* console.log("Hovered Element:", target);
@@ -52,8 +75,8 @@ const Cursor = () => {
         isHovering: true,
         isClickable,
         isCopyButton,
-      }))
-    }
+      }));
+    };
 
     const handleMouseOut = () => {
       setCursor((prev) => ({
@@ -61,59 +84,61 @@ const Cursor = () => {
         isHovering: false,
         isClickable: false,
         isCopyButton: false,
-      }))
-    }
+      }));
+    };
 
     const handleWindowLeave = (e: MouseEvent) => {
       if (!e.relatedTarget) {
-        setCursor ((prev) => ({
+        setCursor((prev) => ({
           ...prev,
-          isVisible: false
-        }))
+          isVisible: false,
+        }));
       }
-    }
+    };
 
     const handleWindowEnter = () => {
-      setCursor ((prev) => ({
+      setCursor((prev) => ({
         ...prev,
-        isVisible: true
-      }))
-    }
+        isVisible: true,
+      }));
+    };
 
     const handleCopied = () => {
       setCursor((prev) => ({ ...prev, copyFeedback: true }));
       setTimeout(() => {
         setCursor((prev) => ({ ...prev, copyFeedback: false }));
-      }, 1000);
-    }
+      }, 1500);
+    };
 
     document.addEventListener("mousemove", moveCursor);
     document.addEventListener("mouseover", handleMouseOver);
     document.addEventListener("mouseout", handleMouseOut);
-    document.addEventListener('mouseout', handleWindowLeave);
-    document.addEventListener('mouseenter', handleWindowEnter);
-    window.addEventListener('cursor:copied', handleCopied);
-    document.body.style.cursor = "none";
-    
+    document.addEventListener("mouseout", handleWindowLeave);
+    document.addEventListener("mouseenter", handleWindowEnter);
+    window.addEventListener("cursor:copied", handleCopied);
+    document.documentElement.setAttribute("data-custom-cursor", "true");
+
     return () => {
       document.removeEventListener("mousemove", moveCursor);
       document.removeEventListener("mouseover", handleMouseOver);
       document.removeEventListener("mouseout", handleMouseOut);
-      document.removeEventListener('mouseout', handleWindowLeave);
-      document.removeEventListener('mouseenter', handleWindowEnter);
-      window.removeEventListener('cursor:copied', handleCopied);
-      document.body.style.cursor = "auto";
-    }
-    
-  },[])
-  
+      document.removeEventListener("mouseout", handleWindowLeave);
+      document.removeEventListener("mouseenter", handleWindowEnter);
+      window.removeEventListener("cursor:copied", handleCopied);
+      document.documentElement.setAttribute("data-custom-cursor", "false");
+    };
+  }, [showCursor]);
+
   const isCursorVisible = !cursor.isCopyButton && cursor.isVisible;
-  const showCopyBubble = (cursor.isCopyButton || cursor.copyFeedback) && cursor.isVisible;
+  const showCopyBubble =
+    (cursor.isCopyButton || cursor.copyFeedback) && cursor.isVisible;
+
+  if (!showCursor) return null;
 
   return (
     <>
       <div
-        className='fixed pointer-events-none z-[9999] w-8 h-8 rounded-full'
+        className="fixed pointer-events-none z-[9999] w-8 h-8 rounded-full"
         style={{
           left: `${cursor.x}px`,
           top: `${cursor.y}px`,
@@ -123,33 +148,30 @@ const Cursor = () => {
           })`,
           opacity: isCursorVisible ? 1 : 0,
           mixBlendMode: "difference",
-          transition: 
+          transition:
             "transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease-out",
-          willChange: "transform, opacity"
+          willChange: "transform, opacity",
         }}
       />
 
       {/* Copy Button */}
       <div
-        className="fixed pointer-events-none z-[9999] flex items-center justify-center px-10 py-5 rounded-full font-semibold text-lg will-change-transform"
+        className="fixed pointer-events-none z-[9999] bg-black text-white dark:bg-white dark:text-black flex items-center justify-center px-10 py-5 rounded-full font-semibold text-lg will-change-transform"
         style={{
           left: `${cursor.x}px`,
           top: `${cursor.y}px`,
           transform: `translate(-50%,-50%) scale(${showCopyBubble ? 1 : 0})`,
           opacity: showCopyBubble ? 1 : 0,
-          width: '140px',
-          transition: 
-          "transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.25s ease-out, min-width 0.25s ease-out, padding 0.25s ease-out",
+          width: "140px",
+          transition:
+            "transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.25s ease-out, min-width 0.25s ease-out, padding 0.25s ease-out",
           willChange: "transform, opacity",
-          backgroundColor: "#000000",
-          color: "#ffffff",
         }}
       >
         {cursor.copyFeedback ? "Copied!" : "Copy"}
       </div>
-      
     </>
-  )
-}
+  );
+};
 
-export default Cursor
+export default Cursor;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Download } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 type ResumeProps = {
   href?: string;
@@ -13,13 +13,12 @@ const Resume = ({
   return (
     <a
       href={href}
-      download="MarkAxelus_Resume.pdf"
       target="_blank"
       rel="noopener noreferrer"
       className={className}
     >
       <span>Resume</span>
-      <Download className="w-4 h-4" />
+      <ArrowUpRight className="w-4 h-4" />
     </a>
   );
 };
