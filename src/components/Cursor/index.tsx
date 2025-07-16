@@ -41,7 +41,7 @@ const Cursor = () => {
     if (!showCursor) {
       // Ensure native cursor remains visible when custom cursor is disabled
       if (typeof document !== "undefined") {
-        document.body.style.cursor = "auto";
+        document.documentElement.setAttribute("data-custom-cursor", "false");
       }
       return;
     }
@@ -116,7 +116,7 @@ const Cursor = () => {
     document.addEventListener("mouseout", handleWindowLeave);
     document.addEventListener("mouseenter", handleWindowEnter);
     window.addEventListener("cursor:copied", handleCopied);
-    document.body.style.cursor = "none";
+    document.documentElement.setAttribute("data-custom-cursor", "true");
 
     return () => {
       document.removeEventListener("mousemove", moveCursor);
@@ -125,7 +125,7 @@ const Cursor = () => {
       document.removeEventListener("mouseout", handleWindowLeave);
       document.removeEventListener("mouseenter", handleWindowEnter);
       window.removeEventListener("cursor:copied", handleCopied);
-      document.body.style.cursor = "auto";
+      document.documentElement.setAttribute("data-custom-cursor", "false");
     };
   }, [showCursor]);
 

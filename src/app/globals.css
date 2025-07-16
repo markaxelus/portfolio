@@ -1,9 +1,10 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
-*,
-*::before,
-*::after {
+/* Only apply cursor: none when custom cursor is active */
+html:not([data-custom-cursor="false"]) *,
+html:not([data-custom-cursor="false"]) *::before,
+html:not([data-custom-cursor="false"]) *::after {
   cursor: none !important;
   box-sizing: inherit;
 }
