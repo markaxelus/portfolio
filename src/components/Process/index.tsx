@@ -10,7 +10,7 @@ const index = () => {
       before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-px before:bg-[rgb(245,245,245)] dark:before:bg-neutral-800
       after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-px after:bg-[rgb(245,245,245)] dark:after:bg-neutral-800"
     >
-      <section className="max-w-[1600px] w-full mx-auto px-[20px] md:px-[30px] lg:px-0 pt-[40px] pb-[80px]">
+      <section className="max-w-[2200px]  w-full mx-auto px-[20px] md:px-[80px] pt-[40px] pb-[80px]">
         {/* Heading */}
         <ScrollReveal direction="up">
           <div className="flex md:justify-start mb-8 md:mb-16">
