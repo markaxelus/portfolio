@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import NextImage from "next/image";
+import Image from "next/image";
 import ScrollReveal from "../ScrollReveal";
 
 interface ImageRevealProps {
@@ -28,7 +28,7 @@ export default function ImageReveal({
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
-    const img = new Image();
+    const img = new window.Image();
 
     img.onload = () => {
       setImageLoaded(true);
@@ -69,17 +69,16 @@ export default function ImageReveal({
       duration={duration}
       delay={delay}
       className="w-full h-full"
+      motionClassName="w-full h-full relative"
     >
-      <div className="relative w-full h-full">
-        <NextImage
-          src={src}
-          alt={alt}
-          className={className}
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          priority
-        />
-      </div>
+      <Image
+        src={src}
+        alt={alt}
+        className={className}
+        fill
+        sizes="(max-width: 768px) 100vw, 50vw"
+        priority
+      />
     </ScrollReveal>
   );
 }

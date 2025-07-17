@@ -33,15 +33,11 @@ export default function ScrollReveal({
     <div ref={ref} className={`overflow-hidden ${className}`}>
       <motion.div
         className={`w-full ${motionClassName}`}
-        initial={false}                 // no SSR mismatch
-        animate={
-          inView
-            ? { opacity: 1, y: 0 }
-            : { opacity: 0, y: initialY }
-        }
+        initial={false} // no SSR mismatch
+        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: initialY }}
         transition={{
           y: { type: "tween", duration, ease: "easeOut", delay },
-          opacity: { duration: duration , ease: "easeInOut", delay },
+          opacity: { duration: duration, ease: "easeInOut", delay },
         }}
         style={{ willChange: "transform, opacity" }}
       >
