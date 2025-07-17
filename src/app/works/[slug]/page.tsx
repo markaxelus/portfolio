@@ -23,7 +23,7 @@ const Page = async ({ params }: ProjectDetailProps) => {
   return (
     <>
       <main className="relative z-10 bg-white dark:bg-black pt-[52px] w-full min-h-screen">
-        <div className="max-w-[1700px] mx-auto px-4 md:px-[30px] flex flex-col">
+        <div className="max-w-[2200px] mx-auto px-4 md:px-[80px] flex flex-col">
           <ProjectHeading project={findProject} />
 
           <section className="flex flex-col ">

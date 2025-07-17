@@ -20,8 +20,8 @@ const Footer = () => {
         py-[60px] 
       "
     >
-      <div className="max-w-[1600px] w-full h-full mx-auto
-          px-[20px] md:px-[30px] 
+      <div className="max-w-[2200px] w-full h-full mx-auto
+          px-[20px] md:px-[80px] 
           gap-12 md:gap-6
           flex flex-col justify-between
           ">
