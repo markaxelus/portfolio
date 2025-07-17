@@ -31,7 +31,7 @@ const index = () => {
             >
               {/* Image placeholder */}
               <div className="w-full md:w-1/2">
-                <div className="relative w-full aspect-[4/3] md:aspect-[3/2] overflow-hidden">
+                <div className="relative w-full aspect-square overflow-hidden">
                   <ImageReveal
                     src={step.img}
                     alt={step.title}
