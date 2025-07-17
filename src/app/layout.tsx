@@ -11,9 +11,33 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Mark Axelus| Portfolio",
+  title: "Mark Axelus | Portfolio",
   description: "Welcome to my portfolio!",
+  keywords: [
+    "Mark Axelus",
+    "Portfolio",
+    "Web Developer",
+    "React Developer",
+    "Node.js",
+    "Full Stack Developer",
+    "Canada",
+    "Victoria",
+    "British Columbia" 
+  ],
+  authors: [{ name: "Mark Axelus", url: "https://markaxelus.com" }],
+  creator: "Mark Axelus",
+  publisher: "Mark Axelus",
+  robots: "index, follow",
+  openGraph: {
+    title: "Mark Axelus | Portfolio",
+    description: "Welcome to my portfolio!",
+    url: "https://markaxelus.com", 
+    siteName: "Mark Axelus Portfolio",
+    locale: "en_CA",
+    type: "website",
+  },
 };
+
 
 export default function RootLayout({
   children,
