@@ -46,11 +46,11 @@ const Footer = () => {
             Everything begins with a conversation!
           </p>
           <div className="relative flex items-center flex-col-reverse md:flex-row gap-10 md:gap-15 md:w-fit">
-            <div className="flex items-center justify-center bg-white text-black dark:bg-neutral-800 dark:text-white w-full md:w-auto py-[20px] px-[36px]">
+            <button className="flex items-center justify-center bg-white text-black dark:bg-neutral-800 dark:text-white w-full md:w-auto py-[20px] px-[36px]">
               <Link href="/contact" className='font-[500]'>
                 Get in Touch
               </Link>
-            </div>
+            </button>
             
             <div className="flex md:items-center gap-4 ">
               <span className="relative flex h-3 w-3 ">
@@ -67,8 +67,8 @@ const Footer = () => {
         <div className="flex justify-between ">
           {/* Left Container: Email, Location */}
           <div className="flex flex-col ">
-            <span className="font-[400] text-[16px] md:text-[22px]">mrkaxelus@gmail.com</span>
-            <span className="font-[400] text-[16px] md:text-[22px]">Victoria, BC</span>
+            <span className="font-[400] text-[15px] md:text-[22px] ">mrkaxelus@gmail.com</span>
+            <span className="font-[400] text-[15px] md:text-[22px] ">Victoria, BC</span>
           </div> 
 
           {/* Middle Container: Visits */}
@@ -76,17 +76,17 @@ const Footer = () => {
           <div className="flex flex-col justify-center items-center gap-2">
             <StaggerText
                 text={visits.toString()}
-                className="text-[20px] md:text-[28px] font-semibold leading-none tracking-[-0.09em]"
+                className="text-[15px] md:text-[22px] font-semibold leading-none tracking-[-0.09em]"
                 distance={100}
                 delay={0}
                 letterDelay={0.07}
               />
-            <span className="text-[14px] md:text-[18px]">VIEWS</span>
+            <span className="text-[15px] md:text-[22px]">VIEWS</span>
           </div>
 
           {/* Right Container: Rights */}
           <div className="flex flex-col  ">
-            <span className="text-[16px] md:text-[22px]">All rights reserved, <br/> MARK©2025</span>
+            <span className="text-[15px] md:text-[22px]">All rights reserved, <br/> MARK©2025</span>
           </div>
         </div>
       </div>

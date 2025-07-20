@@ -18,7 +18,7 @@ const Navbar = () => {
   const navIconStyling = `absolute inset-0 m-auto h-6 w-6 transform transition-all duration-300 cursor-pointer`;
   return (
     <ScrollReveal direction="down">
-      <nav className=" h-[81px] bg-white dark:bg-black">
+      <nav className=" h-[81px] bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800">
         <div className="flex px-[30px] py-[24px]">
           {/* Name Heading */}
           <div className="text-3xl font-bold text-black dark:text-white">
