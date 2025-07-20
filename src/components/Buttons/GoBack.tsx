@@ -5,7 +5,7 @@ import React from "react";
 
 const GoBack = () => {
   return (
-    <section className="w-full flex items-center justify-center gap-8">
+    <section className="w-full flex items-center justify-center gap-8 py-[100px]">
       <Link
         href="/works"
         className="
