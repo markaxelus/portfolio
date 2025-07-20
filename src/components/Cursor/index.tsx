@@ -107,7 +107,7 @@ const Cursor = () => {
       setCursor((prev) => ({ ...prev, copyFeedback: true }));
       setTimeout(() => {
         setCursor((prev) => ({ ...prev, copyFeedback: false }));
-      }, 1500);
+      }, 950);
     };
 
     document.addEventListener("mousemove", moveCursor);

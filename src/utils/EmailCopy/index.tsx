@@ -22,7 +22,7 @@ const EmailCopy = ({ email, className }: EmailCopyProps) => {
 
   return (
     <div
-      className={`gap-2 tracking-[-0.09em] text-[20px] md:text-[25px] font-medium antialiased ${className}`}
+      className={`gap-2 tracking-[-0.09em] text-[30px] md:text-[35px] font-medium antialiased ${className}`}
     >
       <button
         onClick={handleCopy}
