@@ -28,7 +28,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/components/Project/ProjectSection"
+    "src/components/Project/ProjectSection",
+    "!cypress/**/*"
   ],
   "exclude": ["node_modules"]
 }
