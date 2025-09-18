@@ -6,7 +6,7 @@ export type Workflow = {
 
 export const workflow: Workflow[] = [
   {
-    title: "EMPHATIZE & DEFINE",
+    title: "EMPATHIZE & DEFINE",
     img: "/emphatize.jpg",
     desc: "Convert abstract problems into actionable goals, scope, and requirements.",
   },
