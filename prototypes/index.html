@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mark Axelus — Code, Design &amp; Nerve</title>
+<meta name="description" content="Mark Axelus is a one-person practice. Code, design & nerve — interfaces that hold theirs.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23DDDBD4'/%3E%3Cellipse cx='8' cy='12.2' rx='5.4' ry='2.2' fill='%2316150F'/%3E%3Cellipse cx='8' cy='8.6' rx='3.9' ry='1.9' fill='%2316150F'/%3E%3Cellipse cx='8' cy='5.4' rx='2.5' ry='1.6' fill='%232A2AF0'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=Space+Mono:wght@400;700&family=Zeyada&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- grain -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- poster frame -->
+  <div class="frame" aria-hidden="true"></div>
+
+  <!-- proof-sheet furniture (always present, quiet) -->
+  <div class="sheet" aria-hidden="true">
+    <span class="crop tl"></span>
+    <span class="crop tr"></span>
+    <span class="crop bl"></span>
+    <span class="crop br"></span>
+    <svg class="regmark" viewBox="0 0 20 20">
+      <circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="1"/>
+      <path d="M10 0v20M0 10h20" stroke="currentColor" stroke-width="1"/>
+    </svg>
+    <span class="jobline mono">SHEET Nº 001 &middot; MARK AXELUS &middot; WORKING PROOF &middot; <span id="job-date"></span></span>
+  </div>
+
+  <!-- decal furniture: grip tape, hazards, working paint chips, night switch -->
+  <span class="tape mono" aria-hidden="true">AXELUS &bull; AXELUS &bull; AXELUS &bull; AXELUS</span>
+  <span class="hazard hz-bl" aria-hidden="true"></span>
+  <span class="hazard hz-r" aria-hidden="true"></span>
+
+  <div class="chips">
+    <span class="chip-static chip-ink" aria-hidden="true"></span>
+    <button class="chip" type="button" data-ai="0" aria-label="Paint it signal blue" style="background:#2A2AF0"></button>
+    <button class="chip" type="button" data-ai="1" aria-label="Paint it magenta" style="background:#D6246E"></button>
+    <button class="chip" type="button" data-ai="2" aria-label="Paint it acid" style="background:#B4C400"></button>
+    <span class="chip-static chip-fade" aria-hidden="true"></span>
+  </div>
+
+  <button class="night-toggle" type="button" id="night-btn" aria-pressed="false">[N] NIGHT OFFICE <span class="moon">&#9686;</span></button>
+
+  <!-- live telemetry -->
+  <span class="d-scroll spec" aria-hidden="true">SCROLL <span id="scroll-pct">000</span>%</span>
+
+  <!-- corner navigation -->
+  <a class="corner tl mono" href="#top">MARK AXELUS</a>
+  <a class="corner tr mono" href="mailto:mrkaxelus@gmail.com">CONTACT &nearr;</a>
+  <a class="corner bl mono" href="#top">&copy;2026 &mdash; ALL MINE<span id="clock"></span></a>
+  <button class="corner br mono" id="proof-btn" type="button" aria-pressed="false">SEE&nbsp;THE&nbsp;MESS</button>
+
+  <!-- underdrawing: grid + margin guides (mess mode) -->
+  <div class="under" aria-hidden="true"></div>
+
+  <!-- underdrawing: fixed callouts (mess mode) -->
+  <div class="proof-fixed" aria-hidden="true">
+    <span class="note hand-k n-margin" style="--d:.10s">&larr; 2vw. don&rsquo;t touch it, mark.</span>
+    <span class="note hand-k n-chips" style="--d:.46s">the paint. try the chips.</span>
+    <svg class="chip-ring scrawl" viewBox="0 0 118 42" aria-hidden="true">
+      <path class="draw" pathLength="1" d="M58,6 C92,4 112,12 110,22 C108,34 84,39 54,37 C26,35 8,28 10,19 C12,9 34,7 62,7" fill="none"/>
+    </svg>
+    <span class="note hand-b n-night" style="--d:.52s">for the 2am people &nearr;</span>
+    <div class="stamp" id="stamp">
+      <span class="stamp-line1">MARK AXELUS &mdash; WORKING PROOF</span>
+      <span class="stamp-line2">STILL NOT DONE</span>
+      <span class="stamp-line3 mono">AT MY DESK &middot; <span id="stamp-date"></span></span>
+    </div>
+  </div>
+
+  <main class="page" id="top">
+
+    <!-- hero -->
+    <section class="hero" id="hero">
+      <span class="ghost-m final" aria-hidden="true">M.</span>
+
+      <!-- machine decals -->
+      <div class="d-cluster spec final">
+        <span class="decode" tabindex="0"><span class="c1">MA//TC-IV <span class="sq" aria-hidden="true"></span></span><span class="c2">mark axelus, fourth redesign this year</span></span>
+        <span class="decode" tabindex="0"><span class="c1">00.MA2093 &nbsp;00 01</span><span class="c2">means nothing. looks great.</span></span>
+        <span class="decode" tabindex="0"><span class="c1">VISIT Nº <span id="visit-n">001</span></span><span class="c2">yes, i&rsquo;m counting.</span></span>
+      </div>
+      <span class="d-scatter spec final decode" tabindex="0"><span class="c1">R.00 &nbsp;&#9633; &nbsp;-sL</span><span class="c2">leftover from v2. sentimental.</span></span>
+      <span class="d-cross final" aria-hidden="true"></span>
+      <span class="d-run spec final"><span class="decode" tabindex="0"><span class="c1">[RUN.M] MESS LAYER ARMED</span><span class="c2">press M. you&rsquo;ll see.</span></span> <span class="blink" aria-hidden="true"></span></span>
+
+      <p class="eyebrow mono final">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</p>
+      <h1 class="hero-title final" id="hero-title">
+        <span class="hl-mask"><span class="hl" data-ink>Code,</span></span>
+        <span class="hl-mask"><span class="hl" data-ink>design</span></span>
+        <span class="hl-mask"><span class="hl"><span class="amp" id="amp" data-ink>&amp;</span><span data-ink id="nerve">&nbsp;nerve</span></span></span>
+      </h1>
+      <aside class="hero-bio mono final" id="hero-bio">
+        <span class="bio-rule" aria-hidden="true"></span>
+        I&rsquo;m Mark. I design and build interfaces that hold
+        their nerve. I work slowly, ship rarely, and put
+        everything on the page.
+      </aside>
+
+      <!-- loose type: the case is open -->
+      <button class="spec loose-decal" id="type-decal" type="button">[!] LOOSE TYPE &mdash; GRAB A LETTER</button>
+
+      <!-- the hand (mess layer, anchored to the type) -->
+      <div class="amark scrawl" id="amark-nerve" aria-hidden="true">
+        <svg viewBox="0 0 100 14" preserveAspectRatio="none">
+          <path class="draw" pathLength="1" d="M2,7 C20,10 42,4 60,8 C76,11 90,6 98,8" fill="none"/>
+          <path class="draw echo" pathLength="1" d="M4,10 C24,12 48,7 68,10 C80,12 92,9 97,11" fill="none"/>
+        </svg>
+      </div>
+
+      <!-- hero marginalia -->
+      <div class="proof-notes" aria-hidden="true">
+        <span class="note hand-k n-eyebrow" style="--d:.16s">since 2019 &mdash; feels longer</span>
+
+        <div class="note drafts" style="--d:.22s">
+          <span class="drafts-head mono">REJECTED &mdash;</span>
+          <span class="hand-b struck">pixels &amp; feelings</span>
+          <span class="hand-b struck">make. break. repeat.</span>
+          <span class="hand-b struck">code, design &amp; coffee</span>
+          <span class="hand-k">code, design &amp; nerve &nbsp;&#10003; <em>(finally)</em></span>
+        </div>
+
+        <span class="note hand-b n-lh" style="--d:.30s">0.84 line-height. tight. leave it.</span>
+
+        <!-- JS-anchored: circle around the ampersand -->
+        <div class="anchor anchor-amp" id="anchor-amp" style="--d:.34s">
+          <svg viewBox="0 0 180 120" class="scrawl">
+            <path class="draw" pathLength="1" d="M90,18 C128,12 160,32 157,58 C154,88 118,106 80,103 C44,100 19,84 22,57 C25,29 56,23 96,20" fill="none"/>
+            <path class="draw echo" pathLength="1" d="M92,23 C126,18 154,36 151,59 C148,84 116,100 82,98 C50,96 27,82 29,58 C31,34 58,28 94,25" fill="none"/>
+          </svg>
+          <span class="hand-k">the amp stays. favorite glyph.</span>
+          <span class="hand-b">(you say that every time)</span>
+        </div>
+
+        <!-- JS-anchored: bracket beside the bio -->
+        <div class="anchor anchor-bio" id="anchor-bio" style="--d:.40s">
+          <svg viewBox="0 0 24 200" preserveAspectRatio="none" class="scrawl">
+            <path class="draw" pathLength="1" d="M20,4 C6,10 8,60 9,100 C10,140 6,190 20,196" fill="none"/>
+          </svg>
+          <span class="hand-b">26ch. i counted.<br>of course i counted.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- kinetic seam -->
+    <div class="ticker mono final" aria-hidden="true">
+      <div class="ticker-track" id="ticker-track"></div>
+    </div>
+
+    <!-- the trail so far -->
+    <section class="trail" id="trail">
+      <p class="trail-head mono final">THE TRAIL SO FAR &mdash; ONE STONE PER YEAR THAT MATTERED</p>
+      <div class="miles final">
+        <svg class="trail-path" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M8,26 C150,18 280,30 420,24 C560,18 700,30 840,22 C960,16 1100,26 1192,20" fill="none"/>
+        </svg>
+        <div class="mile">
+          <svg class="mile-stone" viewBox="0 0 60 30" aria-hidden="true"></svg>
+          <p class="mile-year mono">2019</p>
+          <p class="mile-fact">Quit the agency job to go it alone.</p>
+        </div>
+        <div class="mile">
+          <svg class="mile-stone" viewBox="0 0 60 30" aria-hidden="true"></svg>
+          <p class="mile-year mono">2021</p>
+          <p class="mile-fact">First book I designed came off the press.</p>
+        </div>
+        <div class="mile">
+          <svg class="mile-stone" viewBox="0 0 60 30" aria-hidden="true"></svg>
+          <p class="mile-year mono">2023</p>
+          <p class="mile-fact">Taught myself WebGL for one project.</p>
+        </div>
+        <div class="mile">
+          <svg class="mile-stone" viewBox="0 0 60 30" aria-hidden="true"></svg>
+          <p class="mile-year mono">2024</p>
+          <p class="mile-fact">Clients started arriving by word of mouth.</p>
+        </div>
+        <div class="mile">
+          <svg class="mile-stone" viewBox="0 0 60 30" aria-hidden="true"></svg>
+          <p class="mile-year mono">2026</p>
+          <p class="mile-fact">You&rsquo;re here, reading this.</p>
+        </div>
+      </div>
+      <div class="proof-notes" aria-hidden="true">
+        <span class="note hand-k mile-note" style="--d:.1s; left:1%;">terrifying. correct.</span>
+        <span class="note hand-k mile-note" style="--d:.2s; left:21%;">slept next to the proofs.</span>
+        <span class="note hand-k mile-note" style="--d:.3s; left:41%;">out of spite, honestly.</span>
+        <span class="note hand-k mile-note" style="--d:.4s; left:61%;">the good kind of busy.</span>
+        <span class="note hand-k mile-note" style="--d:.5s; left:81%;">leave a stone on the way out.</span>
+        <span class="note hand-b n-2022" style="--d:.6s">the gap in 2022? we don&rsquo;t talk about 2022.</span>
+        <span class="note hand-k n-2025" style="--d:.7s">2025 was mostly invoices.</span>
+      </div>
+    </section>
+
+    <!-- project index -->
+    <section class="index" id="index">
+      <p class="index-head mono final">SELECTED WORK / 2024&ndash;2025</p>
+
+      <!-- coffee ring, sorry -->
+      <div class="proof-notes" aria-hidden="true">
+        <svg class="note coffee" style="--d:.20s" viewBox="0 0 160 150">
+          <path class="draw" pathLength="1" d="M80,12 C120,10 148,38 146,74 C144,114 114,140 78,138 C40,136 12,110 14,72 C16,36 44,14 80,12 Z" fill="none"/>
+          <path class="draw" pathLength="1" d="M80,22 C114,20 138,44 136,74 C134,108 108,130 78,128 C46,126 24,104 26,72 C28,42 50,24 80,22 Z" fill="none" opacity=".55"/>
+        </svg>
+        <span class="note hand-b n-coffee" style="--d:.26s">3am was involved.</span>
+        <span class="note hand-b n-time1" style="--d:.4s">01:47 &mdash; still here.</span>
+        <svg class="note scrawl dd-spiral" style="--d:.5s" viewBox="0 0 50 50" aria-hidden="true">
+          <path class="draw" pathLength="1" d="M25,25 C29,21 33,26 29,30 C23,36 15,29 20,21 C26,11 39,16 38,28 C37,41 22,46 13,37" fill="none"/>
+        </svg>
+        <span class="note hand-k n-redo" style="--d:.6s">redo this whole section? <em>&mdash; no. &mdash; maybe.</em></span>
+      </div>
+
+      <a class="row" id="p-01" href="#p-01" data-plate="0">
+        <span class="row-num mono final">01</span>
+        <span class="row-title final">Meridian</span>
+        <span class="row-meta mono final">IDENTITY &middot; 2025<span class="row-ref">REF//MRD-25</span></span>
+        <span class="row-desc final">Identity and site for a climate-data startup &mdash; first sketch to launch in six weeks.</span>
+        <span class="row-thumb final" aria-hidden="true"></span>
+        <span class="note hand-k row-note" style="--d:.18s" aria-hidden="true">client asked for &ldquo;more premium.&rdquo;<br>i made it quieter.</span>
+      </a>
+
+      <a class="row" id="p-02" href="#p-02" data-plate="1">
+        <span class="row-num mono final">02</span>
+        <span class="row-title final">Low Relief</span>
+        <span class="row-meta mono final">EDITORIAL &middot; 2025<span class="row-ref">REF//LRF-25</span></span>
+        <span class="row-desc final">A 240-page artist monograph &mdash; art direction, typesetting, and the print production.</span>
+        <span class="row-thumb final" aria-hidden="true"></span>
+        <span class="note hand-b row-note" style="--d:.24s" aria-hidden="true">printed on the wrong stock first. kept it.</span>
+      </a>
+
+      <a class="row" id="p-03" href="#p-03" data-plate="2">
+        <span class="row-num mono final">03</span>
+        <span class="row-title final">Night Office</span>
+        <span class="row-meta mono final">DIGITAL &middot; 2024<span class="row-ref">REF//NOF-24</span></span>
+        <span class="row-desc final">Real-time dashboard for a render farm &mdash; TypeScript, WebGL, dark by default.</span>
+        <span class="row-thumb final" aria-hidden="true"></span>
+        <span class="note hand-k row-note" style="--d:.30s" aria-hidden="true">built after 23:00. always am.</span>
+        <svg class="note num-ring scrawl" style="--d:.42s" viewBox="0 0 84 58" aria-hidden="true">
+          <path class="draw" pathLength="1" d="M42,6 C66,4 80,14 78,28 C76,44 58,53 38,52 C18,51 5,42 7,27 C9,12 24,7 46,7" fill="none"/>
+        </svg>
+        <span class="note hand-k n-fav" style="--d:.48s" aria-hidden="true">fav.</span>
+      </a>
+
+      <a class="row" id="p-04" href="#p-04" data-plate="3">
+        <span class="row-num mono final">04</span>
+        <span class="row-title final">Signal Garden</span>
+        <span class="row-meta mono final">SPATIAL &middot; 2024<span class="row-ref">REF//SGN-24</span></span>
+        <span class="row-desc final">Interactive installation mapping radio noise to a garden of light. Built the lot.</span>
+        <span class="row-thumb final" aria-hidden="true"></span>
+        <span class="note hand-b row-note" style="--d:.36s" aria-hidden="true">still pulling splinters from my palms</span>
+
+        <!-- the cat. she just exists. -->
+        <svg class="note scrawl cat" viewBox="0 0 120 100" aria-hidden="true">
+          <path class="draw" pathLength="1" style="--dd:0s"   d="M45,34 C41,24 44,13 49,9 L55,17 C61,14 68,14 73,17 L80,10 C85,15 86,25 82,33" fill="none"/>
+          <path class="draw" pathLength="1" style="--dd:.1s"  d="M82,33 C87,41 85,50 78,54 C68,59 52,59 46,53 C42,48 43,40 45,34" fill="none"/>
+          <path class="draw" pathLength="1" style="--dd:.22s" d="M80,54 C93,63 99,78 97,98" fill="none"/>
+          <path class="draw" pathLength="1" style="--dd:.34s" d="M50,56 C45,68 45,84 47,98" fill="none"/>
+          <path class="draw" pathLength="1" style="--dd:.46s" d="M56,98 C55,88 57,80 59,76 M66,77 C67,85 67,92 66,98" fill="none"/>
+          <path class="draw" pathLength="1" style="--dd:.58s" d="M97,96 C111,92 114,74 100,68" fill="none"/>
+          <path class="draw" pathLength="1" style="--dd:.7s"  d="M36,38 L20,35 M36,44 L21,47 M52,30 C54,28 57,28 59,30 M46,38 L42,42" fill="none"/>
+          <path class="draw" pathLength="1" style="--dd:.82s" d="M68,68 L58,80 M76,72 L64,88 M83,78 L72,93" fill="none" opacity=".6"/>
+        </svg>
+        <span class="note hand-b n-cat" style="--d:.9s" aria-hidden="true">not my cat. she keeps coming back.</span>
+        <svg class="note scrawl dd-zzz" style="--d:1.05s" viewBox="0 0 40 40" aria-hidden="true">
+          <path class="draw" pathLength="1" d="M6,30 L14,30 L6,38 L14,38" fill="none"/>
+          <path class="draw" pathLength="1" d="M17,17 L26,17 L17,26 L26,26" fill="none" opacity=".75"/>
+          <path class="draw" pathLength="1" d="M29,5 L37,5 L29,13 L37,13" fill="none" opacity=".5"/>
+        </svg>
+      </a>
+    </section>
+
+    <!-- at the desk -->
+    <section class="desk" id="desk">
+      <p class="desk-head mono final">AT THE DESK &mdash; RIGHT NOW-ISH</p>
+      <div class="desk-row final"><span class="mono desk-k">BUILDING</span><span class="desk-v">This site. Again.</span></div>
+      <div class="desk-row final"><span class="mono desk-k">READING</span><span class="desk-v">The Shape of Design, again</span></div>
+      <div class="desk-row final"><span class="mono desk-k">LISTENING</span><span class="desk-v">The same three albums, on loop</span></div>
+      <div class="desk-row final"><span class="mono desk-k">COFFEE</span><span class="desk-v">Nº 094 this quarter</span></div>
+      <div class="proof-notes" aria-hidden="true">
+        <span class="note hand-k n-desk" style="--d:.2s">update this, mark. it&rsquo;s been three weeks.</span>
+        <svg class="note scrawl dd-cup" style="--d:.34s" viewBox="0 0 60 70" aria-hidden="true">
+          <path class="draw" pathLength="1" d="M13,32 C12,44 15,56 18,58 C24,61 36,61 40,57 C43,52 45,40 44,31" fill="none"/>
+          <path class="draw" pathLength="1" d="M11,31 C20,34 38,34 46,30" fill="none"/>
+          <path class="draw" pathLength="1" d="M45,36 C52,34 54,44 47,48" fill="none"/>
+          <path class="draw" pathLength="1" d="M22,22 C20,16 26,14 24,8 M32,23 C30,17 36,15 34,9" fill="none" opacity=".7"/>
+        </svg>
+        <svg class="note scrawl dd-tally" style="--d:.44s" viewBox="0 0 100 32" aria-hidden="true">
+          <path class="draw" pathLength="1" d="M8,6 L10,26 M17,5 L18,27 M26,6 L27,26 M35,5 L36,27 M3,24 L42,8" fill="none"/>
+          <path class="draw" pathLength="1" d="M54,6 L56,26 M63,5 L64,27 M72,6 L73,26" fill="none"/>
+        </svg>
+        <span class="note hand-b n-tally" style="--d:.54s">lost count in march.</span>
+      </div>
+    </section>
+
+    <!-- visitors' cairn -->
+    <section class="yard" id="yard">
+      <div class="yard-head final">
+        <p class="mono">PASSERS-BY</p>
+        <p class="mono yard-count" id="yard-count">LEAVE A STONE</p>
+      </div>
+      <div class="yard-ground final" id="yard-ground" role="button" tabindex="0"
+           aria-label="Leave a stone on the pile">
+        <svg id="yard-svg" viewBox="0 0 1000 160" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+          <path id="ground-line" d="M14,144 C180,141 360,146 500,143 C660,140 840,145 986,142"
+                fill="none"/>
+          <g id="pile"></g>
+        </svg>
+      </div>
+    </section>
+
+    <!-- outro -->
+    <section class="outro">
+      <span class="d-outro spec final decode" tabindex="0"><span class="c1">094&#10042; &nbsp;00//WC</span><span class="c2">coffees this quarter. and counting.</span></span>
+      <h2 class="outro-title final">Got a brief?<br><a href="mailto:mrkaxelus@gmail.com" id="write-link">Write to me.</a></h2>
+      <div class="amark scrawl" id="amark-write" aria-hidden="true">
+        <svg viewBox="0 0 200 90" preserveAspectRatio="none">
+          <path class="draw" pathLength="1" d="M100,8 C158,4 194,22 192,46 C190,74 148,86 92,84 C42,82 8,68 10,44 C12,20 52,10 106,10" fill="none"/>
+        </svg>
+      </div>
+      <p class="outro-meta mono final">MRKAXELUS@GMAIL.COM<br>REPLIES WITHIN 48H</p>
+      <p class="colophon mono final">SET IN FRAUNCES &amp; SPACE MONO ( + TWO PENS )<br>
+        NO FRAMEWORK &middot; NO TRACKERS &middot; HAND-BUILT<br>
+        24PX GRID &middot; 3 INKS &middot; 1 CAT</p>
+      <div class="proof-notes" aria-hidden="true">
+        <span class="note hand-k big-line" style="--d:.2s">it just never stops, does it.</span>
+        <span class="note hand-b big-reply" style="--d:.45s">you love it though. &mdash; 2am me</span>
+        <svg class="note scrawl dd-moon" style="--d:.6s" viewBox="0 0 48 44" aria-hidden="true">
+          <path class="draw" pathLength="1" d="M30,6 C16,10 14,30 28,36 C18,38 8,30 10,18 C12,8 22,4 30,6" fill="none"/>
+          <path class="draw" pathLength="1" d="M40,12 L40,20 M36,16 L44,16" fill="none" opacity=".7"/>
+          <path class="draw" pathLength="1" d="M42,28 L42,33 M39.5,30.5 L44.5,30.5" fill="none" opacity=".45"/>
+        </svg>
+        <svg class="note scrawl dd-plane" style="--d:.7s" viewBox="0 0 80 54" aria-hidden="true">
+          <path class="draw" pathLength="1" d="M8,42 L70,10 M70,10 L38,36 M38,36 L34,48 L30,37 M30,37 L8,42" fill="none"/>
+          <path class="draw" pathLength="1" d="M4,50 C14,48 20,50 26,46" fill="none" opacity=".5"/>
+        </svg>
+        <span class="note hand-k n-outro" style="--d:.85s">you read my margins &mdash; mention the stones when you write.</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- cairn scroll indicator -->
+  <div class="cairn-ind" id="cairn-ind" aria-hidden="true">
+    <svg viewBox="0 0 44 120" id="cairn-svg"></svg>
+  </div>
+
+  <!-- signature: cursor-trailing reveal -->
+  <div class="reveal" aria-hidden="true">
+    <div class="reveal-scaler" id="reveal-scaler">
+      <div class="reveal-plate" id="reveal-plate"></div>
+    </div>
+  </div>
+
+  <!-- custom cursor -->
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <span class="cursor-label">PROOF &nearr;</span>
+  </div>
+
+<script src="main.js"></script>
+</body>
+</html>
