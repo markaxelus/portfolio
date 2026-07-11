@@ -44,8 +44,11 @@ Two strictly separated layers:
 The main page earns uniqueness through **interaction** instead. Current main-page
 signatures (Mark counts these himself):
 1. **Press M** (the mess layer itself — the thing he loved first)
-2. **The stones** (visitors' cairn guestbook — "the stone concept is good I like it")
+2. **The stones** (visitors' cairn — no longer just a guestbook: your stone
+   lands ON the cairn, which leans and topples, §4.6)
 3. **Loose type** (hero letters are grabbable/throwable letterpress physics)
+4. **The plate pull** (shift-drag the headline → the ink passes come off
+   register; chosen July 2026 over the loupe / light-table tryouts, §4.1)
 
 ---
 
@@ -100,6 +103,14 @@ signatures (Mark counts these himself):
   day. Mark: "Im not saying to make like play... I want elements that can
   fill in the gap like that [the & cascade] was a good start." The hero
   wants quiet PRINT FURNITURE that fills, not toys. Hover-swell stays.
+- **The light table (hold L)** — one of three signature-Nº4 tryouts (§7 #14).
+  Struck July 2026 in the sharpen pass: it read as a debug rectangle and did
+  a worse version of what M already does. The plate pull won the slot; the
+  loupe stays as a quiet unlabeled delight. Do not rebuild it.
+- **The trail-as-timeline** — five equal ovals evenly spaced on a straight
+  dashed connector. The connector was the metronome tell; a juror flagged it
+  as the one templated section. Replaced by the measured FIG.1 terrain
+  (§4.3). Don't put the dashed connector back.
 
 ---
 
@@ -132,16 +143,30 @@ signatures (Mark counts these himself):
      not init, not night toggle.
    - **THE PILE** (`.frame::before`): two offset sheet-edges + soft stack
      shadow at bottom-right — the proof is the top sheet of a stack.
-2. **Ticker** — personal marquee ("THE KERNING IS DONE — IT ISN'T", desk status by
-   LA hour, hints for M / N / chips / loose type). Pauses in mess mode.
+2. **Ticker** — personal marquee in Mark's voice ("THE KERNING IS DONE — IT
+   ISN'T", desk status by LA hour). **Exactly one hint per cycle** — press M
+   for the mess — the rest is voice (sharpen pass: it used to read its own
+   manual, nine instructions per loop; the decals + the awake rattle teach the
+   other interactions now). Pauses in mess mode.
    Has `margin-top: 10vh` so it never parks at the fold on load — the hero is
    ~one viewport tall and the marquee used to idle exactly under the jobline
    (Mark flagged this twice; the jobline is also docked flush to the sheet edge,
    `bottom: 3px`, out of the content's travel path).
-3. **THE TRAIL SO FAR** — career as a dashed hand-path with 5 generated stones
-   (2019→2026, 2026 stone is accent-colored). Serif facts on main page; the five
-   red asides ("terrifying. correct." etc.) are MESS-ONLY notes, plus "the gap in
-   2022? we don't talk about 2022."
+3. **THE TRAIL SO FAR — FIG.1** — recomposed as a captioned figure, not a
+   timeline (sharpen pass). Header rule + `FIG.1 — THE TRAIL SO FAR` /
+   `ONE STONE PER YEAR THAT MATTERED · 2019–2026 · NOT TO SCALE`. Stones
+   sized by the weight each year carried (`--sz`) and lifted to varied
+   elevation (`--lift`); the **ground line is MEASURED** through the actual
+   stone bases by `buildTerrain()` (a `#terrain-ground` SVG, run at
+   load/fonts.ready/resize — never in a frame loop), with hairline drops to
+   a legend row. The **2022 gap is left as a gap** (a dashed vertical tick +
+   faint `2022` label, no stone). The **2026 stone is accent-colored and
+   proud** — the ground climbs to it. `terrain-stones` and `terrain-labels`
+   share one grid template so labels sit under their stones. Mobile hides the
+   measured ground (a hairline under the stones) and drops the legend to two
+   columns; print rules the stones + prints the legend. Serif facts on the
+   final layer; the red asides ("terrifying. correct." etc.) are MESS-ONLY,
+   plus "the gap in 2022? we don't talk about 2022."
 3½. **THE THOUGHT-THREAD = THE RE-READ (mess only)** — the spine of the
    hidden page, redirected per Direction Nº 001 (Mark: the line was "too
    linear... looks a bit dead... direct user eyes to certain spots").
@@ -168,8 +193,15 @@ signatures (Mark counts these himself):
    mess-entry — `updateThread(true)` — never during scroll.
 4. **SELECTED WORK** — 4 fictional placeholder projects (Meridian, Low Relief,
    Night Office, Signal Garden), each with one-line description, REF// part number,
-   generated duotone SVG plates (halftone, misregistered red pass, proof slug,
-   ghost numeral). Cursor-trailing plate reveal on hover (desktop), static thumbs
+   generated SVG press-plates **in the site's own inks** (sharpen pass: ink
+   field + accent linework + the red working pass off register + halftone +
+   proof slug + ghost numeral). No exotic per-plate hues — told apart by MOTIF
+   (arcs/stripes/orbits/steps), not colour, so the colophon's `3 INKS` holds.
+   The plate always takes the luminous (night) accent so it reads on the dark
+   tile in any mode. **The paint chips reprint the work** (`rebuildPlates`):
+   a chip re-inks every plate surface on screen — thumbs, hover reveal, loupe,
+   and the open viewer (REPAINT = REPRINT, extended from the headline to the
+   plates). Cursor-trailing plate reveal on hover (desktop), static thumbs
    on touch. Row titles go WONK on hover. Mess: row notes, "fav." circle on 03,
    the cat + zzz on row 04, and the pen argument ("ship it." / "one more pass.").
    **Clicking a row opens the PROJECT VIEWER** (`#pv`, z 60): each project is
@@ -189,12 +221,52 @@ signatures (Mark counts these himself):
    Shape of Design, again" / LISTENING "The same three albums, on loop" / COFFEE
    "Nº 094 this quarter". Mess: "update this, mark. it's been three weeks.",
    coffee-cup doodle, tally marks ("lost count in march.").
-6. **PASSERS-BY (visitors' cairn)** — hand-drawn stone stack + click/tap to leave a
-   stone (localStorage, capped 60, every 9th stone accent-colored, drop animation).
+   - **THE OPERATOR'S PLATE** (July 11): Mark's photo (`operator.jpg`, 800×1000
+     crop of IMG_2814) printed in the site's inks — inline SVG, duotone via
+     feComponentTransfer (ink→paper), a misregistered RED PASS at translate(7,5)
+     multiply-blended under the ink pass, the plates' 9px halftone screen, the
+     rotated proof slug ("PROOF 00/04"), grain. `isolation: isolate` keeps the
+     multiplies inside the plate (no page-level blending — perf rule holds).
+     **Hover slides the red pass into register.** Baked colors like every
+     plate — it stays a lit print on the night sheet. Desk is a 2-col grid
+     ≥821px (rows | plate); plate keeps `margin-right: 2.4rem` to clear the
+     fixed edge chrome (scroll telemetry + cairn indicator); TODAY card moved
+     inboard (`right: 30%`) and n-desk to `right: 34%` because the plate owns
+     the old top-right void. Prints (≤52mm, candid hidden).
+   - **THE CANDID (mess)**: `body.proof` reveals the unscreened color original
+     taped over the dimmed plate — white photo border, two tape strips,
+     day-pen "me, apparently." floating left of it. The two-exposure echo:
+     the FINAL layer gets the screened official portrait, the mess gets the
+     real one. A profile picture was Mark's ask; the circle-avatar "bubble"
+     was rejected on concept — the photo had to become a print artifact.
+6. **PASSERS-BY (visitors' cairn)** — the guestbook that keeps its promise
+   (sharpen pass, the labeled risk). A click/tap adds your stone **ON the
+   cairn**, not beside it: the tower grows on the studio's own stack (`OURS`,
+   the foundation, never falls), a **seeded lean** develops (`leanStep`,
+   deterministic per stone), and past `LEAN_LIMIT`/`STACK_CAP` it **topples**
+   — the stacked stones fall to the ground row (an accelerating, heavy fall
+   with tumble, `e*e` easing, never a bounce) and the count flashes "THE STACK
+   FELL — WE STACK AGAIN". Fallen stones persist as the ground (`GROUND_CAP`
+   erosion); the leaning tower persists too. Every 9th stone is a signal
+   (accent) stone; hover tips read `Nº 023 — 3 DAYS AGO` / `THE HOUSE STACK
+   — MINE`. Every stone is one `<g>`-per-stone (positioned group + inner
+   anim group + origin-centred blob) so the topple is **pure transform
+   writes** — 165fps through the fall, no layout reads in the rAF. Reduced
+   motion seats every stone and the collapse instantly; a `cairnBusy` guard
+   stops fast clicks racing the fall. Storage: `cairn-stones-v2`
+   (`{stack, ground}`; v1's scattered stones migrate into `ground`). The
+   `#yard-svg` viewBox gained headroom (`0 -80 1000 240`) for the growing
+   tower. NOT the parked stone-balance mini-game (§8): no aim, no score, no
+   fail — the same one click, now with weight.
 7. **Outro** — "Got a brief? / Write to me." + colophon ("NO FRAMEWORK · NO
    TRACKERS · HAND-BUILT / 24PX GRID · 3 INKS · 1 CAT"). Mess: "it just never
    stops, does it." / "you love it though. — 2am me", moon+stars, paper plane,
    Write-to-me circle (JS-anchored), "mention the stones" handshake.
+   - **SOCIAL TABS** (July 11): GITHUB ↗ / LINKEDIN ↗ under the email meta —
+     corner-tab language (stone bg, hairline border, invert to ink on hover)
+     with small currentColor SVG icons. github.com/markaxelus confirmed from
+     the repo remote; **linkedin.com/in/markaxelus is a GUESS — confirm with
+     Mark** (§6). In print they flatten to slugs with full `attr(href)` URLs.
 
 ### Fixed furniture (all pages)
 - Poster frame + crop marks, spinning registration mark, color bar → **paint chips**
@@ -324,8 +396,26 @@ signatures (Mark counts these himself):
     cursor dot keeps its `difference` blend: tiny region, negligible.
   - Transform/text writes are skipped when the value didn't change (cursor, plate,
     scroll %, reveal background).
+  - **The measured trail ground** (`buildTerrain`, §4.3) reads layout ONCE per
+    load/fonts.ready/resize (same discipline as `buildThread`/`positionAnchors`)
+    — never per frame. **The cairn topple** (§4.6) animates each falling stone's
+    `<g>` transform in a one-shot rAF with ZERO layout reads (positions are
+    known SVG numbers), so a full collapse holds 165fps. **Plate reprints**
+    (`rebuildPlates`) only fire on a chip click, never in a loop.
   - Next.js was considered for perf and rejected: the jank was runtime layout
     thrash, not load time. Site stays vanilla (colophon says NO FRAMEWORK).
+- **THE COMPAT-MOUSEMOVE GOTCHA (three sites now):** any `pointerdown` handler
+  that calls `preventDefault()` suppresses compatibility mouse events for the
+  whole hold — `mouse.x/y` (the cursor dot's feed) freezes until release. Every
+  drag interaction must feed `mouse.x/y` from its own `pointermove` handler:
+  the loupe, the loose-type drag, and the plate pull all do this. Mark reported
+  the frozen-dot symptom on loose type July 11 (dot stuck at grab point,
+  snapping to the real position on release).
+- **GRAB label scoping:** the `.hl` lines are full-width blocks, so hover on
+  `#hero-title` covered huge empty areas. GRAB is delegated to the `.ch` spans
+  (mouseover/mouseout, 90ms exit debounce to bridge word spaces). The
+  loose-type and plate-pull `pointerup`s only keep the ring if the release
+  actually lands on a letter.
 - **Known dev quirk:** the embedded Claude browser pane throttles rAF/compositor —
   transitions stall and screenshots go stale there. NOT a site bug; always confirm
   in a real browser before "fixing."
@@ -339,6 +429,8 @@ signatures (Mark counts these himself):
 - Desk rows (reading/listening/coffee count).
 - "EST. 2019", "AVAILABLE Q4 2026", coffee "Nº 094".
 - Timezone if not US Pacific.
+- **LinkedIn URL** — outro tab points at linkedin.com/in/markaxelus (guessed
+  from the GitHub handle); confirm or correct. GitHub URL is confirmed real.
 
 ---
 
@@ -454,6 +546,71 @@ signatures (Mark counts these himself):
     OF THE PRINT WORLD, THE DESK WORLD, OR A DOOR BETWEEN THEM — pinned
     in §3 graveyard lesson. HELD: loose-type after-images, live day-count
     eyebrow. KILLED: weather, cursor trails, ghost objects, music player.
+
+19. (July 11, `prototypes-reread`) **The operator's plate + socials + two
+    cursor bugs.** Mark supplied his photo ("u can do what u want with it"),
+    approved the print-artifact treatment over a "bubble" avatar (his own
+    instinct — "putting a bubble would look weird"), and asked for GitHub +
+    LinkedIn space ("if icons make more sense u can just use icons").
+    Built: the operator's plate at the desk (§4.5) with the mess candid,
+    outro social tabs (§4.7), and fixed two bugs he reported: GRAB showing
+    across the hero's empty space (now delegated to .ch letters) and the
+    cursor dot freezing at the grab point during a letter drag (the
+    compat-mousemove gotcha, §5 — loose type + plate pull now feed
+    mouse.x/y from pointermove like the loupe always did). Verified via
+    Playwright: label scoping, sub-pixel dot tracking mid-drag, candid
+    reveal + note draw-in, zero console errors. Assets: `operator.jpg`
+    (committed content), `IMG_2814.jpg` (source, like the stock .ai).
+
+20. (branch `prototypes-sharpen`, off prototypes-reread) **The SOTD
+    sharpen — five moves, no redesign.** A juror pass (judged the live
+    site headless, day/night/main/mess/mobile/print) scored it Honorable
+    Mention, not Site-of-the-Day, and named the gap: mobile was broken,
+    the plates lied about the inks, the trail was the one templated
+    section, three signature tryouts were still live, and the cairn didn't
+    keep its promise. Mark: "make a new branch and implement the fix."
+    Built in rank order, each screenshotted + self-critiqued + verified:
+    - **M1 — the pocket proof.** The layout viewport widened to 468px on a
+      390 screen (`#type-decal` at left:26rem + the mess stamp overflowed
+      the ICB), throwing all fixed chrome off-canvas — SEE THE MESS was
+      untappable. Killed the loose-type decal on coarse/narrow (fine-
+      pointer gesture only), centred + un-scaled the stamp, dropped the
+      do-not-scale note and re-anchored the knows-note. innerWidth back to
+      390 at every section; the tap lands.
+    - **M2 — three inks means three inks (§4.4).** The project plates ran
+      in exotic hues (teal/violet/pink) that contradicted `3 INKS` and
+      read as generative-placeholder stock. Rebuilt `plateURI`/`detailURI`
+      in the site's own inks — ink field + accent linework + the red
+      working pass off register — told apart by MOTIF, not colour. Then
+      **the paint chips re-ink the whole plate library** (`rebuildPlates`):
+      a chip reprints the work too (thumbs, reveal, loupe, open viewer).
+      `ACCENTS`/`accentI` moved to the top of main.js so the first build
+      knows the stored accent; the plate always takes the luminous (night)
+      variant so it stays a lit print in any room.
+    - **M3 — the trail becomes terrain (§4.3).** Recomposed as FIG.1: a
+      measured ground line drawn through the actual stone bases
+      (`buildTerrain`, run at load/fonts.ready/resize — NEVER in a frame
+      loop), stones sized by the weight each year carried, the 2022 gap
+      left as a gap, the present stone proud where the ground climbs to it,
+      hairline drops to the legend. The dashed connector — the metronome
+      tell — is gone.
+    - **M4 — one gesture, cut the manual.** Chose the **plate pull** as
+      signature Nº4 (it lives on the headline where every cursor already
+      is), kept the loupe as an unannounced delight, and **struck the
+      light table entirely** (graveyard — read as a debug rectangle). The
+      ticker dropped from nine instructions to one voice-woven hint
+      (press M); the decals + the rattle do the rest of the teaching.
+    - **M5 — the cairn keeps its promise (§4.6, the risk).** Your stone
+      lands ON the stack now. It grows on the house foundation, leans
+      (seeded), and topples past a threshold — the stacked stones fall to
+      the ground row and "THE STACK FELL — WE STACK AGAIN" flashes.
+      localStorage bumped to `cairn-stones-v2` (v1 stones migrate to the
+      ground).
+    Verified headless throughout: 165fps / 6ms worst frame through the
+    topple and steady scroll (the one-off 115ms spike is the operator
+    plate's SVG-filter raster on first scroll-in, pre-existing), mobile
+    inner/scroll both 390 across a full scroll, zero console errors in any
+    mode. The fourth signature slot (open since §7 #13) is now filled.
 
 ## 8. Ideas discussed but not built (fair game later)
 
