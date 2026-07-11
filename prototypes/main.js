@@ -463,21 +463,21 @@
   }
 
   /* ============ ticker ============ */
+  /* the seam speaks in Mark's voice, not the manual. exactly one hint per
+     cycle — press M for the mess (signature Nº1). the rest of the page
+     teaches itself: the decals name themselves, the letters rattle to
+     invite the grab, the plates reward a press, the headline a shift-drag. */
   var TICKER = [
     "CODE — DESIGN — TYPE — MOTION",
     "AVAILABLE Q4 2026",
     deskStatus(),
     "THE KERNING IS DONE — IT ISN’T",
-    "PRESS M FOR THE MESS",
-    "PRESS N FOR NIGHT OFFICE",
-    "CTRL+P PRINTS A CLEAN PROOF",
-    "PRESS S FOR PRESS NOISE",
-    "HOLD L — THE LIGHT TABLE",
-    "PRESS AND HOLD A PLATE — LOUPE",
-    "SHIFT-DRAG THE HEADLINE — OFF REGISTER",
-    "THE HEADLINE IS LOOSE TYPE — GRAB IT",
-    "THE CHIPS AT THE BOTTOM ARE PAINT",
-    "ONE-PERSON OPERATION"
+    "I SHIP SLOWLY, ON PURPOSE",
+    "THERE’S ANOTHER PAGE UNDER THIS ONE — PRESS M",
+    "NO FRAMEWORK — NO TRACKERS — HAND-BUILT",
+    "ONE-PERSON OPERATION",
+    "STILL NOT DONE — NEVER QUITE IS",
+    "MRKAXELUS@GMAIL.COM — REPLIES IN 48H"
   ];
   var track = document.getElementById("ticker-track");
   TICKER.forEach(function (item) {
@@ -1047,7 +1047,6 @@
     if (e.key === "m" || e.key === "M" || e.key === "p" || e.key === "P") toggleProof();
     if (e.key === "n" || e.key === "N") setNight(!isNight(), true);
     if (e.key === "s" || e.key === "S") setNoise(!noiseOn);
-    if (e.key === "l" || e.key === "L") setLit(true); /* keyup lets go */
     if (e.key === "Escape") {
       if (document.body.classList.contains("pv-open")) closeProject();
       else setProof(false);
@@ -1664,30 +1663,10 @@
     }
   });
 
-  /* ============ tryout 1: the light table (hold L) ============ */
-  /* momentary, no mode: while held, the sheet goes backlit and the
-     mess bleeds through from underneath — dim, complete, in place */
-  var lightBtn = document.getElementById("light-btn");
-  function setLit(on) {
-    if (on && document.body.classList.contains("proof")) on = false;
-    document.body.classList.toggle("lit", on);
-    lightBtn.setAttribute("aria-pressed", String(on));
-  }
-  lightBtn.addEventListener("pointerdown", function (e) {
-    e.preventDefault();
-    setLit(true);
-  });
-  ["pointerup", "pointercancel", "pointerleave"].forEach(function (ev) {
-    lightBtn.addEventListener(ev, function () { setLit(false); });
-  });
-  document.addEventListener("keyup", function (e) {
-    if (e.key === "l" || e.key === "L") setLit(false);
-  });
-  addEventListener("blur", function () { setLit(false); });
-
-  /* ============ tryout 2: the printer's loupe ============ */
+  /* ============ the printer's loupe (a quiet delight) ============ */
   /* press and hold a plate: the glass magnifies the halftone and the
-     9px margin notes that are just dots at 1:1 */
+     9px margin notes that are just dots at 1:1. unannounced on purpose —
+     a reward for the curious, not a line in the ticker. */
   var loupeEl = document.getElementById("loupe");
   var LOUPE_M = 2.2, LOUPE_R = 92;
   var loupeOn = false, loupeUsed = false, loupeLeftRow = false;
@@ -1737,9 +1716,11 @@
     }
   });
 
-  /* ============ tryout 3: the plate pull (shift-drag the headline) ============ */
-  /* the red and blue passes come off register and follow the hand,
-     with resistance; release and they thunk back into register */
+  /* ============ signature Nº4: the plate pull (shift-drag the headline) ============ */
+  /* the chosen fourth signature. the red and blue passes come off register
+     and follow the hand, with resistance; release and they thunk back.
+     it lives on the headline — where every cursor already is (loose type),
+     so a shift-drag is the most-stumbled-upon gesture on the page. */
   var pullState = null;
   var lastPullShadow = "";
   function softPull(v) {
