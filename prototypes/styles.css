@@ -433,6 +433,18 @@ button.corner {
   padding: 2vw 1.4vw 7vw;
 }
 .desk-head { opacity: 0.6; margin-bottom: 1.6rem; }
+/* rows left, the operator's plate right */
+@media (min-width: 821px) {
+  .desk {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(200px, 20vw, 280px);
+    gap: 0 5vw;
+    align-items: start;
+  }
+  .desk-head { grid-column: 1 / -1; }
+  .desk-rows { grid-column: 1; min-width: 0; }
+  .op { grid-column: 2; grid-row: 2; }
+}
 .desk-row {
   display: grid;
   grid-template-columns: 9rem minmax(0, 1fr);
@@ -449,7 +461,78 @@ button.corner {
   font-variation-settings: "opsz" 40;
   letter-spacing: -0.01em;
 }
-.n-desk { top: -0.4rem; right: 8%; --tilt: 2deg; }
+.n-desk { top: -0.4rem; right: 34%; --tilt: 2deg; }
+
+/* ---------- the operator's plate ---------- */
+/* the person, printed in the site's inks: duotone + one misregistered
+   red pass + the same 9px screen the project plates use. baked colors,
+   like every plate — it stays a lit print on the night sheet. */
+/* right margin keeps the plate clear of the fixed edge chrome
+   (scroll telemetry + cairn indicator live in that strip) */
+.op { position: relative; margin: 0.35rem 2.4rem 0 0; }
+.op-print {
+  display: block;
+  width: 100%;
+  height: auto;
+  isolation: isolate; /* multiply passes never blend past the plate */
+}
+.op-redpass,
+.op-inkpass { mix-blend-mode: multiply; }
+.op-redpass {
+  transform: translate(7px, 5px);
+  transition: transform 0.5s var(--ease-out);
+}
+/* hover pulls the red pass into register */
+.op:hover .op-redpass { transform: translate(0, 0); }
+.op-cap {
+  margin-top: 0.65rem;
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  line-height: 1.8;
+  opacity: 0.55;
+}
+
+/* the mess holds the unscreened original, taped over the print */
+.op-candid {
+  display: none;
+  position: absolute;
+  top: -2.5%;
+  left: -6%;
+  right: 6%;
+  z-index: 5;
+  transform: rotate(-2.4deg);
+}
+body.proof .op-candid { display: block; }
+.op-candid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 7px solid #F6F3EA;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+}
+.op-candid::before,
+.op-candid::after {
+  content: "";
+  position: absolute;
+  top: -0.85rem;
+  width: 26%;
+  height: 1.8rem;
+  background: rgba(244, 240, 226, 0.5);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.op-candid::before { left: 5%; transform: rotate(-5deg); }
+.op-candid::after { right: 5%; transform: rotate(4deg); }
+.op-candid .n-opc {
+  /* to the left of the photo — the plate caption owns the space below */
+  position: absolute;
+  right: 102%;
+  bottom: 12%;
+  white-space: nowrap;
+  --tilt: -2deg;
+}
+@media (max-width: 820px) {
+  .op { max-width: 320px; margin-top: 2.2rem; }
+}
 
 /* doodles — they just exist */
 .dd-cup { width: 54px; height: 62px; bottom: 8%; right: 22%; --tilt: 4deg; }
@@ -611,6 +694,36 @@ button.corner {
 .outro-title a { border-bottom: 2px solid var(--accent); transition: color 0.4s var(--ease-out); }
 .outro-title a:hover { color: var(--accent); }
 .outro-meta { opacity: 0.6; text-align: right; }
+/* the two doors out — same tab language as the corners */
+.outro-links {
+  grid-column: 2;
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  margin: 0.4rem 0 0.2rem;
+}
+.olink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  background: var(--stone);
+  border: 1px solid var(--hairline);
+  transition:
+    color 0.25s var(--ease-out),
+    background-color 0.25s var(--ease-out),
+    border-color 0.25s var(--ease-out);
+}
+.olink svg { width: 13px; height: 13px; display: block; }
+.olink:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--stone);
+}
+.olink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 .colophon {
   grid-column: 2;
   text-align: right;
@@ -1367,6 +1480,10 @@ body.pointer-seen .cursor { opacity: 1; }
 @media (hover: none), (pointer: coarse), (max-width: 820px) {
   .cursor, .reveal { display: none !important; }
   .row-thumb { display: block; }
+  /* loose type is a fine-pointer gesture; on coarse/narrow the decal is
+     dead weight that (at left: 26rem) widens the layout viewport past the
+     device — killing it here re-imposes the sheet inside the screen */
+  .loose-decal { display: none !important; }
 }
 
 /* ---------- narrower desktops: drop the delicate anchored notes ---------- */
@@ -1405,6 +1522,7 @@ body.pointer-seen .cursor { opacity: 1; }
   .corner.tr, .corner.br { right: calc(var(--frame) + 3vw); }
   .outro { grid-template-columns: 1fr; }
   .outro-meta { text-align: left; }
+  .outro-links { grid-column: 1; justify-content: flex-start; }
   .cairn-ind, .regmark, .chips, .chip-ring, .n-chips, .n-night { display: none; }
   .tape, .hz-r, .d-cluster, .d-scatter, .d-cross, .d-scroll { display: none; }
   .specimen, .tonebar, .foldline { display: none; }
@@ -1413,10 +1531,28 @@ body.pointer-seen .cursor { opacity: 1; }
   .crop { display: none; }
   .drafts { display: none; }
   .n-margin { display: none; }
+  /* the stamp is re-imposed for the narrow sheet: centred and un-scaled so
+     its rotated corner can't hang off the edge and widen the viewport */
   .stamp {
     top: auto;
-    bottom: calc(var(--frame) + 14vw);
-    right: calc(var(--frame) + 4vw);
+    bottom: calc(var(--frame) + 15vw);
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%) rotate(6deg) scale(1);
+    transform-origin: center;
+    max-width: 88vw;
+  }
+  .proof .stamp { transform: translateX(-50%) rotate(6deg) scale(1); }
+  /* two hero scrawls collide with the stacked mobile bio / run off-edge —
+     the do-not-scale note goes, the knows-note re-anchors above the stamp */
+  .n-noscale { display: none; }
+  .n-knows {
+    top: auto;
+    bottom: calc(var(--frame) + 15vw + 3.4rem);
+    left: 5vw;
+    right: auto;
+    max-width: 72vw;
+    text-align: left;
   }
   .n-outro { position: static; display: block; margin-top: 1rem; }
   .yard { padding-bottom: 12vw; }
@@ -1924,6 +2060,10 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
   border: 1px solid var(--pencil-soft);
   transform: rotate(1.2deg);
 }
+/* the operator's plate owns the top-right now — the card moves inboard */
+@media (min-width: 821px) {
+  .todo { right: 30%; }
+}
 .todo-head { color: var(--pencil); font-size: 0.52rem; margin-bottom: 0.25rem; }
 
 .dd-map { left: 2%; bottom: -0.4rem; width: 180px; }
@@ -1939,6 +2079,7 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
 
 @media (prefers-reduced-motion: reduce) {
   .proof .dd-vinyl.seen .vinyl-spin { animation: none !important; }
+  .op-redpass { transition: none !important; }
 }
 
 /* ============================================================
@@ -2148,4 +2289,15 @@ body.odo-live .odo-reel { transition: transform 0.9s var(--ease-out); }
   .desk-row, .mile, .yard, .outro { break-inside: avoid; }
   .outro-title { font-size: 34pt; }
   .outro-title a { border-bottom-width: 1pt; }
+
+  /* the operator's plate prints — it's content, registration error and all */
+  .desk { display: block; }
+  .op { max-width: 52mm; margin: 6mm 0 0; break-inside: avoid; }
+  .op-candid { display: none !important; }
+
+  /* the doors out print as plain slugs with their full addresses */
+  .outro-links { display: block; text-align: right; }
+  .olink { border: 0; padding: 0; background: none; }
+  .olink svg { display: none; }
+  .olink::after { content: " — " attr(href); }
 }
