@@ -706,17 +706,16 @@ body.proof .op-candid { display: block; }
   stroke-linecap: round;
   stroke-linejoin: round;
   fill: var(--stone-deep);
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
 }
 #pile path.signal { fill: var(--accent); fill-opacity: 0.85; stroke: var(--ink); }
-#pile g.drop-wrap path.dropping {
-  animation: stone-drop 0.55s var(--ease-thunk) both;
+/* the new stone drops into place on the stack (the topple is JS-driven) */
+#pile .stone-inner.dropping {
+  animation: stone-drop 0.5s var(--ease-thunk) both;
 }
 @keyframes stone-drop {
-  0%   { transform: translateY(-110px) rotate(6deg); }
-  74%  { transform: translateY(0) rotate(0deg) scaleY(1); }
-  85%  { transform: translateY(0) scaleY(0.86); }
+  0%   { transform: translateY(-105px); }
+  70%  { transform: translateY(0) scaleY(1); }
+  82%  { transform: translateY(0) scaleY(0.85); }
   100% { transform: translateY(0) scaleY(1); }
 }
 
@@ -1638,7 +1637,7 @@ body.pointer-seen .cursor { opacity: 1; }
   .scrawl .draw { transition: none !important; stroke-dashoffset: 0; }
   body:not(.proof) .scrawl .draw { stroke-dashoffset: 1; }
   .loose-decal { display: none; }
-  #pile g.drop-wrap path.dropping { animation: none !important; }
+  #pile .stone-inner.dropping { animation: none !important; }
   .hl .ch { transition: none !important; }
 }
 

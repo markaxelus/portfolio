@@ -1317,16 +1317,23 @@
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
-  /* ============ visitors' cairn ============ */
+  /* ============ visitors' cairn — your stone lands ON the stack ============ */
+  /* the guestbook keeps its promise: a click doesn't scatter a pebble
+     beside the pile, it adds to the cairn. the stack grows, a seeded lean
+     develops, and past a threshold it TOPPLES — the stacked stones fall to
+     the ground row and we stack again. the studio's own stack is the
+     foundation; visitors build on it. every 9th stone is a signal stone.
+     the fall accelerates (heavy, not bouncy); reduced motion seats it. */
   var pileEl = document.getElementById("pile");
   var yardEl = document.getElementById("yard-ground");
-  var yardSvgEl = document.getElementById("yard-svg");
   var countEl = document.getElementById("yard-count");
   var GROUND_Y = 143;
-  var STORE_KEY = "cairn-stones-v1";
-  var MAX_STONES = 60;
+  var STORE_KEY = "cairn-stones-v2";
+  var LEAN_LIMIT = 30;   /* px of apex lean before it gives */
+  var STACK_CAP = 9;     /* it never stacks higher than this */
+  var GROUND_CAP = 42;   /* the ground erodes past this */
 
-  /* the studio's own stack, centre stage */
+  /* the studio's own stack, centre stage — the foundation, never falls */
   var OURS = [
     { rx: 50, ry: 12, seed: 101 },
     { rx: 42, ry: 10, seed: 102 },
@@ -1336,106 +1343,179 @@
     { rx: 20, ry: 6,  seed: 106 },
     { rx: 15, ry: 5,  seed: 107 }
   ];
-  (function drawOurs() {
-    var bottom = GROUND_Y + 1;
-    OURS.forEach(function (s) {
-      var p = document.createElementNS(SVG_NS, "path");
-      p.setAttribute("d", stonePath(500, bottom - s.ry, s.rx, s.ry, s.seed));
-      p.classList.add("house");
-      pileEl.appendChild(p);
-      bottom = bottom - 2 * s.ry + 3;
-    });
+  /* the top surface of the house stack — visitor stones start here */
+  var HOUSE_APEX = (function () {
+    var b = GROUND_Y + 1;
+    OURS.forEach(function (s) { b = b - 2 * s.ry + 3; });
+    return b;
   })();
 
-  function loadStones() {
+  /* a stone's size + its lean contribution are derived from its seed, so
+     the same stack renders identically on every load */
+  function stoneSize(seed) {
+    var r = mulberry32(seed ^ 0x1234);
+    return { rx: 12 + Math.floor(r() * 6), ry: 5 + Math.floor(r() * 3) };
+  }
+  function leanStep(seed) { return (mulberry32(seed ^ 0x9E37)() - 0.5) * 22; }
+
+  /* one draw path for every stone: a positioned group, an animation group
+     (for the drop / topple), and the wobbly blob centred at its own origin
+     so a rotate() tumbles it around its middle */
+  function drawStoneG(cx, cy, rx, ry, meta, drop) {
+    var g = document.createElementNS(SVG_NS, "g");
+    g.setAttribute("transform", "translate(" + cx.toFixed(1) + " " + cy.toFixed(1) + ")");
+    var inner = document.createElementNS(SVG_NS, "g");
+    inner.setAttribute("class", "stone-inner" + (drop ? " dropping" : ""));
+    var p = document.createElementNS(SVG_NS, "path");
+    p.setAttribute("d", stonePath(0, 0, rx, ry, meta.seed));
+    if (meta.n) p.dataset.n = String(meta.n);
+    if (meta.t) p.dataset.t = String(meta.t);
+    if (meta.house) p.classList.add("house");
+    if (meta.sig) p.classList.add("signal");
+    inner.appendChild(p);
+    g.appendChild(inner);
+    pileEl.appendChild(g);
+    return g;
+  }
+
+  var stackStones, groundStones, stoneSeq = 0;
+  function loadCairn() {
     try {
       var raw = localStorage.getItem(STORE_KEY);
-      var arr = raw ? JSON.parse(raw) : [];
-      return Array.isArray(arr) ? arr : [];
-    } catch (e) { return []; }
+      if (raw) {
+        var o = JSON.parse(raw);
+        return { stack: Array.isArray(o.stack) ? o.stack : [], ground: Array.isArray(o.ground) ? o.ground : [] };
+      }
+      /* migrate the old scattered stones into the ground row */
+      var v1 = localStorage.getItem("cairn-stones-v1");
+      if (v1) {
+        var arr = JSON.parse(v1);
+        if (Array.isArray(arr)) return { stack: [], ground: arr.map(function (s) {
+          return { x: s.x, seed: s.seed, sig: s.sig, t: s.t, n: s.n, rx: s.rx, ry: s.ry };
+        }) };
+      }
+    } catch (e) {}
+    return { stack: [], ground: [] };
   }
-  function saveStones(arr) {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(arr)); } catch (e) {}
+  function saveCairn() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ stack: stackStones, ground: groundStones })); } catch (e) {}
+  }
+  (function initCairn() {
+    var l = loadCairn();
+    stackStones = l.stack; groundStones = l.ground;
+    try { stoneSeq = +(localStorage.getItem("ma-stone-seq") || 0); } catch (e) {}
+    stackStones.concat(groundStones).forEach(function (s) { if (s.n && s.n > stoneSeq) stoneSeq = s.n; });
+  })();
+
+  /* the tower's geometry: each stone sits on the last, carrying the lean */
+  function stackGeom() {
+    var out = [], bottom = HOUSE_APEX, lean = 0;
+    stackStones.forEach(function (s) {
+      var sz = stoneSize(s.seed);
+      lean += leanStep(s.seed);
+      out.push({ cx: 500 + lean, cy: bottom - sz.ry, rx: sz.rx, ry: sz.ry, seed: s.seed, n: s.n, t: s.t, sig: s.sig });
+      bottom = bottom - 2 * sz.ry + 3;
+    });
+    return out;
+  }
+  function towerLean() {
+    var lean = 0;
+    stackStones.forEach(function (s) { lean += leanStep(s.seed); });
+    return lean;
   }
 
-  var visitorStones = loadStones();
-
-  /* every stone gets a number; older stones kept theirs implicitly */
-  var stoneSeq = 0;
-  try { stoneSeq = +(localStorage.getItem("ma-stone-seq") || 0); } catch (e) {}
-  visitorStones.forEach(function (s, i) {
-    if (!s.n) s.n = i + 1;
-    if (s.n > stoneSeq) stoneSeq = s.n;
-  });
-
-  function drawStone(s, animate) {
-    var g = document.createElementNS(SVG_NS, "g");
-    g.setAttribute("class", "drop-wrap");
-    g.setAttribute("transform", "translate(" + s.x + " 0)");
-    var p = document.createElementNS(SVG_NS, "path");
-    p.setAttribute("d", stonePath(0, GROUND_Y - s.ry + 1, s.rx, s.ry, s.seed));
-    if (s.n) p.dataset.n = String(s.n);
-    if (s.t) p.dataset.t = String(s.t);
-    if (s.sig) p.classList.add("signal");
-    if (animate && !reduced()) p.classList.add("dropping");
-    g.appendChild(p);
-    pileEl.appendChild(g);
+  function renderCairn(dropLast) {
+    while (pileEl.firstChild) pileEl.removeChild(pileEl.firstChild);
+    var b = GROUND_Y + 1;
+    OURS.forEach(function (s) { drawStoneG(500, b - s.ry, s.rx, s.ry, { seed: s.seed, house: true }, false); b = b - 2 * s.ry + 3; });
+    groundStones.forEach(function (s) {
+      var sz = stoneSize(s.seed);
+      drawStoneG(s.x, GROUND_Y - (s.ry || sz.ry), s.rx || sz.rx, s.ry || sz.ry, s, false);
+    });
+    var geom = stackGeom();
+    geom.forEach(function (g, i) { drawStoneG(g.cx, g.cy, g.rx, g.ry, g, dropLast && i === geom.length - 1); });
   }
 
   function updateCount() {
-    var total = OURS.length + visitorStones.length;
+    var total = OURS.length + stackStones.length + groundStones.length;
     var verb = mqFine.matches ? "CLICK" : "TAP";
     countEl.textContent = total + " STONES — " + verb + " TO LEAVE YOURS";
   }
 
-  visitorStones.forEach(function (s) { drawStone(s, false); });
-  updateCount();
-
-  function addStone(viewX) {
-    var seed = Math.floor(Math.random() * 100000);
-    var rnd = mulberry32(seed);
-    var x = clamp(viewX, 40, 960);
-    /* keep the studio's stack clear */
-    if (Math.abs(x - 500) < 95) {
-      x = 500 + (x >= 500 ? 1 : -1) * (95 + rnd() * 60);
-    }
-    var s = {
-      x: Math.round(x),
-      rx: Math.round(13 + rnd() * 14),
-      ry: Math.round(6 + rnd() * 5),
-      seed: seed,
-      sig: (visitorStones.length % 9) === 8,
-      t: Date.now(),
-      n: ++stoneSeq
-    };
-    try { localStorage.setItem("ma-stone-seq", String(stoneSeq)); } catch (e) {}
-    visitorStones.push(s);
-    if (visitorStones.length > MAX_STONES) {
-      visitorStones.shift();
-      /* re-render the pile without the eroded stone */
-      Array.prototype.slice.call(pileEl.querySelectorAll("g.drop-wrap"))
-        .forEach(function (n) { n.remove(); });
-      visitorStones.forEach(function (st, i) {
-        drawStone(st, i === visitorStones.length - 1);
-      });
-    } else {
-      drawStone(s, true);
-    }
-    saveStones(visitorStones);
-    updateCount();
-    setTimeout(sndTok, reduced() ? 80 : 400);
+  var fellT = null;
+  function showFellLine() {
+    countEl.textContent = "THE STACK FELL — WE STACK AGAIN";
+    clearTimeout(fellT);
+    fellT = setTimeout(updateCount, 2600);
   }
 
-  yardEl.addEventListener("click", function (e) {
-    var r = yardSvgEl.getBoundingClientRect();
-    var x = ((e.clientX - r.left) / r.width) * 1000;
-    addStone(x);
-  });
-  yardEl.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      addStone(80 + Math.random() * 840);
+  function trimGround() { while (groundStones.length > GROUND_CAP) groundStones.shift(); }
+
+  var cairnBusy = false; /* locked while a topple plays, so fast clicks don't race it */
+  function topple() {
+    var geom = stackGeom();
+    if (!geom.length) { cairnBusy = false; return; }
+    var targets = geom.map(function (g, i) {
+      var side = (i % 2 === 0) ? -1 : 1;
+      var spread = 70 + i * 22 + mulberry32(g.seed ^ 0x5151)() * 60;
+      return {
+        seed: g.seed, sig: g.sig, t: g.t, n: g.n, rx: g.rx, ry: g.ry,
+        fromX: g.cx, fromY: g.cy,
+        tx: clamp(500 + side * spread, 55, 945), ty: GROUND_Y - g.ry,
+        rot: (mulberry32(g.seed ^ 0xAAAA)() * 2 - 1) * 46
+      };
+    });
+    stackStones = [];
+    showFellLine();
+    if (reduced() || stillMode) {
+      targets.forEach(function (t) { groundStones.push(groundEntry(t)); });
+      trimGround(); saveCairn(); updateCount(); renderCairn(false);
+      cairnBusy = false;
+      return;
     }
+    renderCairn(false); /* tower gone; house + existing ground */
+    var nodes = targets.map(function (t) {
+      return drawStoneG(t.fromX, t.fromY, t.rx, t.ry, { seed: t.seed, sig: t.sig, n: t.n, t: t.t }, false);
+    });
+    var start = performance.now(), DUR = 700;
+    requestAnimationFrame(function fall(now) {
+      var e = Math.min(1, (now - start) / DUR);
+      var kg = e * e; /* accelerate — the pile lets go, it doesn't spring */
+      nodes.forEach(function (node, i) {
+        var t = targets[i];
+        var x = t.fromX + (t.tx - t.fromX) * kg;
+        var y = t.fromY + (t.ty - t.fromY) * kg;
+        node.setAttribute("transform", "translate(" + x.toFixed(1) + " " + y.toFixed(1) + ") rotate(" + (t.rot * kg).toFixed(1) + ")");
+      });
+      if (e < 1) { requestAnimationFrame(fall); return; }
+      targets.forEach(function (t) { groundStones.push(groundEntry(t)); });
+      trimGround(); saveCairn(); updateCount(); renderCairn(false);
+      cairnBusy = false;
+      if (noiseOn) sndTok();
+    });
+  }
+  function groundEntry(t) { return { x: Math.round(t.tx), seed: t.seed, sig: t.sig, t: t.t, n: t.n, rx: t.rx, ry: t.ry }; }
+
+  function addStone() {
+    if (cairnBusy) return; /* the pile is mid-collapse — let it land */
+    var visitorTotal = stackStones.length + groundStones.length;
+    var s = { seed: Math.floor(Math.random() * 1e9), sig: (visitorTotal % 9) === 8, t: Date.now(), n: ++stoneSeq };
+    try { localStorage.setItem("ma-stone-seq", String(stoneSeq)); } catch (e) {}
+    stackStones.push(s);
+    saveCairn();
+    updateCount();
+    var willTopple = Math.abs(towerLean()) > LEAN_LIMIT || stackStones.length >= STACK_CAP;
+    renderCairn(true);
+    setTimeout(sndTok, reduced() ? 60 : 340);
+    if (willTopple) { cairnBusy = true; setTimeout(topple, (reduced() || stillMode) ? 260 : 560); }
+  }
+
+  renderCairn(false);
+  updateCount();
+
+  yardEl.addEventListener("click", function () { addStone(); });
+  yardEl.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); addStone(); }
   });
 
   /* ============ press noise: opt-in, muted by default ============ */
