@@ -339,6 +339,16 @@ signatures (Mark counts these himself):
       pow 0.72, clamp ±110px), thunk back on release (`.plates-return`
       transition). Shift is the discriminator vs loose-type grabs (char
       pointerdown returns early on shiftKey). Cursor label OFF REGISTER.
+15. **The bonsai + page-cat experiments live on branch `prototypes-cat`**
+    (commits 8d191ba → 2757544, on top of this branch). Mark asked for a
+    hero bonsai and a living cat, iterated through four versions (choreo
+    vignette → living rig → legged walk + yarn physics → real silhouettes
+    traced from his AdobeStock_232143247.ai), then said "put all this in
+    its own branch I dont like the way it is rn" — so it was split off
+    whole. The generative bonsai (+ mess note, ticker line, leaf act) went
+    with it; if Mark wants the tree WITHOUT the cat, strip the cat from
+    that branch rather than rebuilding. The stock .ai sits untracked in
+    prototypes/. Nothing from that branch is merged anywhere.
 
 ## 8. Ideas discussed but not built (fair game later)
 
