@@ -169,7 +169,6 @@
     "THE KERNING IS DONE — IT ISN’T",
     "PRESS M FOR THE MESS",
     "PRESS N FOR NIGHT OFFICE",
-    "PEEL THE BOTTOM-RIGHT CORNER — ALL THE WAY",
     "CTRL+P PRINTS A CLEAN PROOF",
     "PRESS S FOR PRESS NOISE",
     "THE HEADLINE IS LOOSE TYPE — GRAB IT",
@@ -1081,79 +1080,6 @@
     setTimeout(endPress, 2600);
   })();
 
-  /* ============ the dog-ear: THE way into the mess ============ */
-  /* one control, one corner. click it and the page peels itself off;
-     drag it and the whole sheet follows your hand — release past the
-     threshold and the peel finishes (it never pops), release early and
-     it snaps home. the fold maths keep the folded corner tip glued to
-     the pointer: inset p = ((W - x) + (H - y)) / 2. */
-  var deHot = document.getElementById("de-hot");
-  var dogear = document.getElementById("dogear");
-  var peeling = null;
-  var committing = false;
-
-  function deDrop() { return (innerWidth + innerHeight) * 0.16; }
-  function dePeel(p) {
-    dogear.style.setProperty("--de-p", clamp(p, 22, innerWidth + innerHeight) + "px");
-    var past = p > deDrop();
-    if (past !== dogear.classList.contains("past")) {
-      dogear.classList.toggle("past", past);
-      cursorLabel.textContent = past ? "LET GO" : "PEEL";
-    }
-  }
-  function deCommit() {
-    if (committing || document.body.classList.contains("proof")) return;
-    committing = true;
-    dogear.classList.remove("dragging");
-    dogear.classList.add("committing");
-    dogear.classList.add("past");
-    dogear.style.setProperty("--de-p", (innerWidth + innerHeight) + "px");
-    cursorEl.classList.remove("is-peel");
-    setTimeout(function () { setProof(true); }, 620);
-    setTimeout(function () {
-      /* invisible by now (.proof .dogear fades out) — reset quietly */
-      dogear.classList.remove("committing");
-      dogear.classList.remove("past");
-      dogear.style.removeProperty("--de-p");
-      committing = false;
-    }, 1150);
-  }
-  deHot.addEventListener("pointerdown", function (e) {
-    if (committing || document.body.classList.contains("proof")) return;
-    e.preventDefault();
-    deHot.setPointerCapture(e.pointerId);
-    peeling = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
-    dogear.classList.add("dragging");
-    cursorEl.classList.add("is-peel");
-    cursorLabel.textContent = "PEEL";
-  });
-  deHot.addEventListener("pointermove", function (e) {
-    if (!peeling || e.pointerId !== peeling.id) return;
-    if (!peeling.moved &&
-        Math.abs(e.clientX - peeling.x) + Math.abs(e.clientY - peeling.y) < 8) return;
-    peeling.moved = true;
-    var dx = innerWidth - e.clientX, dy = innerHeight - e.clientY;
-    dePeel((dx + dy) / 2);
-  });
-  function deRelease(e) {
-    if (!peeling || e.pointerId !== peeling.id) return;
-    var wanted = dogear.classList.contains("past");
-    var clicked = !peeling.moved;
-    peeling = null;
-    dogear.classList.remove("dragging");
-    cursorEl.classList.remove("is-peel");
-    if (wanted || clicked) { deCommit(); return; }
-    dogear.classList.remove("past");
-    dogear.style.removeProperty("--de-p"); /* transition carries it home */
-  }
-  deHot.addEventListener("pointerup", deRelease);
-  deHot.addEventListener("pointercancel", deRelease);
-  /* keyboard: Enter/Space peels the page like anyone else's click */
-  deHot.addEventListener("click", function (e) {
-    if (e.detail !== 0) return; /* pointer path handles the mouse */
-    deCommit();
-  });
-
   /* ============ the regmark is also a fidget ============ */
   var regEl = document.querySelector(".regmark");
   regEl.addEventListener("click", function () {
@@ -1247,34 +1173,11 @@
   }
 
   /* ============ the page is awake ============ */
-  /* every so often the page does one small unprompted thing: the dog-ear
-     catches a draft, a letter rattles loose in its case, a decal
-     re-decodes itself, the regmark corrects its drift. one act at a
-     time; never in the mess (the cat has that shift), never when the
-     tab is hidden, never under reduced motion or ?still. */
-
-  /* the corner also lifts as the pointer approaches — pure viewport
-     math, zero layout reads on mousemove */
-  var deNear = 0;
-  document.addEventListener("mousemove", function (e) {
-    if (peeling || committing || !trailEnabled()) return;
-    var d = Math.max(innerWidth - e.clientX, innerHeight - e.clientY);
-    var t = d > 240 ? 0 : 1 - d / 240;
-    var target = t === 0 ? 0 : Math.round(22 + t * 24);
-    if (target === deNear) return;
-    deNear = target;
-    if (document.body.classList.contains("proof")) return;
-    if (target === 0) dogear.style.removeProperty("--de-p");
-    else dogear.style.setProperty("--de-p", target + "px");
-  });
-
-  function actFlutter() {
-    if (peeling || committing) return;
-    dogear.style.setProperty("--de-p", "44px");
-    setTimeout(function () {
-      if (!peeling && !committing && deNear === 0) dogear.style.removeProperty("--de-p");
-    }, 500);
-  }
+  /* every so often the page does one small unprompted thing: a letter
+     rattles loose in its case, a decal re-decodes itself, the regmark
+     corrects its drift. one act at a time; never in the mess (the cat
+     has that shift), never when the tab is hidden, never under reduced
+     motion or ?still. */
   function actRattle() {
     var live = chars.filter(function (c) { return !c.loose; });
     if (!live.length) return;
@@ -1319,8 +1222,8 @@
     if (e.animationName === "reg-hiccup") regEl.classList.remove("hiccup");
   });
 
-  /* flutter and rattle carry discovery weight, so they come up more */
-  var ACTS = [actFlutter, actRattle, actMutter, actHiccup, actFlutter, actRattle];
+  /* the rattle carries discovery weight (loose type), so it comes up more */
+  var ACTS = [actRattle, actMutter, actHiccup, actRattle];
   var lifeT = null;
   function scheduleLife() {
     lifeT = setTimeout(function () {
@@ -1330,13 +1233,7 @@
       scheduleLife();
     }, 9000 + Math.random() * 13000);
   }
-  if (!reduced() && !stillMode) {
-    scheduleLife();
-    /* the corner catches a draft once, early — so you know it's there */
-    setTimeout(function () {
-      if (!document.body.classList.contains("proof")) actFlutter();
-    }, 4200);
-  }
+  if (!reduced() && !stillMode) scheduleLife();
 
   /* for the ones who open the hood */
   console.log(

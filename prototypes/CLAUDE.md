@@ -84,6 +84,12 @@ signatures (Mark counts these himself):
 - **Literal autograph/signature SVG** — rejected before it was built.
 - **Hand marks on the main page** (nerve underline, Write-to-me circle, trail
   asides in red) — built, then moved into the mess layer per the hard rule.
+- **The dog-ear peel** — a draggable page corner that peeled the proof back over
+  the mess (three revisions deep: corner flap → proximity lift → full-screen
+  peel with click-to-open, replacing the SEE THE MESS button). Mark: "idk if I
+  like this peeling thing I think we need to think of something else u can
+  bring back the button." Removed July 2026; the corner button is back. A
+  replacement "big gesture" is an open question — do not rebuild the peel.
 
 ---
 
@@ -97,6 +103,10 @@ signatures (Mark counts these himself):
    - Bio top-right column; ghost `M.` glyph bleeding off the right edge.
 2. **Ticker** — personal marquee ("THE KERNING IS DONE — IT ISN'T", desk status by
    LA hour, hints for M / N / chips / loose type). Pauses in mess mode.
+   Has `margin-top: 10vh` so it never parks at the fold on load — the hero is
+   ~one viewport tall and the marquee used to idle exactly under the jobline
+   (Mark flagged this twice; the jobline is also docked flush to the sheet edge,
+   `bottom: 3px`, out of the content's travel path).
 3. **THE TRAIL SO FAR** — career as a dashed hand-path with 5 generated stones
    (2019→2026, 2026 stone is accent-colored). Serif facts on main page; the five
    red asides ("terrifying. correct." etc.) are MESS-ONLY notes, plus "the gap in
@@ -121,13 +131,14 @@ signatures (Mark counts these himself):
 ### Fixed furniture (all pages)
 - Poster frame + crop marks, spinning registration mark, color bar → **paint chips**
   (clickable accent swap: signal blue / magenta / acid; persisted), job line.
-  The jobline sits on a **solid stone chip** so page content (the ticker) passes
-  under it, never through it; the sheet is softened via `color-mix`, NOT opacity
-  (Mark flagged the SHEET Nº / ticker collision).
-- Corners: MARK AXELUS / CONTACT ↗ / ©2026 — ALL MINE + live LA clock, all
-  **bordered tabs that invert on hover** (Mark said they read as background
-  before; they must look clickable). Bottom-right belongs to the dog-ear on the
-  main page; the OK, ENOUGH tab (pencil-red hover) appears there only in mess mode.
+  The jobline sits on a **solid stone chip, docked flush to the bottom edge**
+  (`bottom: 3px`) so page content passes under it, never through it; the sheet
+  is softened via `color-mix`, NOT opacity (Mark flagged the SHEET Nº / ticker
+  collision twice — see also the ticker's 10vh margin in §4.2).
+- Corners: MARK AXELUS / CONTACT ↗ / ©2026 — ALL MINE + live LA clock / SEE THE
+  MESS (↔ OK, ENOUGH), all **bordered tabs that invert on hover** (SEE THE MESS
+  fills pencil red) — Mark said they read as background before; they must look
+  clickable.
 - `[N] NIGHT OFFICE` decal button top-right; `[S] PRESS NOISE — OFF` decal under it
   (opt-in sound, see delights); grip tape "AXELUS • AXELUS" up the left
   edge; hazard stripes; `SCROLL 042%` live telemetry; cairn scroll indicator
@@ -135,29 +146,13 @@ signatures (Mark counts these himself):
   caret; hero spec cluster with hover-decodes (`00.MA2093` → "means nothing. looks
   great.", `VISIT Nº 007` → real localStorage visit counter, rolls like an odometer
   on arrival).
-- **The dog-ear** (signature #4) — **THE way into the mess; one control per
-  corner** (Mark: "why is SEE THE MESS right beside the peeler, choose one").
-  The old SEE THE MESS corner button is `display:none` on the main page and
-  exists only inside the mess as OK, ENOUGH. A small rotated `SEE THE MESS —`
-  label (`.de-label`) rides the fold. **Click the corner** → the page peels
-  itself off (deCommit, 0.7s). **Drag it** → the peel spans the whole screen —
-  the dogear layer is fixed `inset: 0`, fold maths keep the folded tip glued to
-  the pointer (`p = ((W−x)+(H−y))/2`). Release past ~16% of (vw+vh) → the peel
-  FINISHES, never pops (Mark: "you peel it halfway and then it like pops");
-  release early → snaps back (`--ease-thunk`). The under-grid matches `.under`'s
-  phase + margin guides exactly so the handoff into the real mess is invisible.
-  Cursor label PEEL → LET GO. Keyboard Enter = full peel.
-  Discoverability: rests at 22px, **lifts toward 46px as the pointer approaches
-  the corner** (pure viewport math on mousemove, zero layout reads), catches a
-  draft once ~4.2s after load, and flutters periodically via the awake scheduler.
-- **The page is awake**: every 9–22s it does ONE small unprompted act — the
-  dog-ear flutters, a hero letter rattles in its case (invites the grab), a spec
-  decal re-decodes itself (scramble → settle), or the regmark corrects its drift
-  (`rotate` composes with the transform `reg-spin`, so the drift never resets).
-  Flutter/rattle are weighted double (they carry discovery). Never in mess mode
-  (the cat has that shift), never when the tab is hidden, never under reduced
-  motion or `?still`. Plus the ghost M. parallaxes at 0.12× scroll (transform-only
-  write inside the existing scroll rAF).
+- **The page is awake**: every 9–22s it does ONE small unprompted act — a hero
+  letter rattles in its case (invites the grab), a spec decal re-decodes itself
+  (scramble → settle), or the regmark corrects its drift (`rotate` composes with
+  the transform `reg-spin`, so the drift never resets). Rattle is weighted double
+  (it carries discovery). Never in mess mode (the cat has that shift), never when
+  the tab is hidden, never under reduced motion or `?still`. Plus the ghost M.
+  parallaxes at 0.12× scroll (transform-only write inside the existing scroll rAF).
 - **Press check intro**: once per session (sessionStorage `ma-press-check`) the
   hero loads as three misregistered passes — red (`--pencil`) and blue (`--accent`)
   text-shadows under the ink — that slide into register (0.85s, starts 1.6s, after
@@ -311,6 +306,15 @@ signatures (Mark counts these himself):
     opens, drag peels, threshold release finishes the peel across the whole
     screen); SEE THE MESS button is mess-only now (OK, ENOUGH). Peel handoff
     is seamless: de-under grid matches .under exactly.
+13. (`prototypes-big-three`) **Dog-ear removed** — even at full-screen, Mark
+    didn't like the peel ("idk if I like this peeling thing... u can bring back
+    the button"). Peel deleted entirely (HTML/CSS/JS), SEE THE MESS corner
+    button restored, flutter act dropped from the awake scheduler (rattle /
+    mutter / hiccup remain). Ticker/jobline collision fixed for real this time:
+    the marquee parked at the fold on load, under the jobline — ticker got
+    `margin-top: 10vh` (below the fold at load on all screens) and the jobline
+    docked flush to the edge. Dog-ear is in the graveyard (§3); the fourth
+    signature slot is open — candidates should be pitched to Mark first.
 
 ## 8. Ideas discussed but not built (fair game later)
 
