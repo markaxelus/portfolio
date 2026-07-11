@@ -844,6 +844,31 @@ body.has-cursor .loose-decal { opacity: 0.55; }
 body.has-cursor .loose-decal:hover { opacity: 1; color: var(--accent); }
 .proof .loose-decal { opacity: 0.15 !important; pointer-events: none; }
 
+/* the plate pull's nameplate — same spec-decal language, stacked under
+   the loose-type one. nothing on this sheet is key-only: the gesture is
+   named on its face, and a click runs one demo pull. fine-pointer only,
+   like the gesture itself. */
+.plates-decal {
+  position: absolute;
+  left: 26rem;
+  top: calc(3.2vw + 1.5rem);
+  z-index: 7;
+  border: 0;
+  background: none;
+  padding: 0.3rem 0;
+  font-family: "Space Mono", monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.4s var(--ease-out), color 0.3s var(--ease-out);
+}
+body.has-cursor .plates-decal { opacity: 0.55; }
+body.has-cursor .plates-decal:hover { opacity: 1; color: var(--accent); }
+.proof .plates-decal { opacity: 0.15 !important; pointer-events: none; }
+
 /* once the type is loose, the line masks let go */
 .type-loose .hl-mask { overflow: visible; clip-path: none; }
 .hl .ch { cursor: none; }
@@ -1530,10 +1555,10 @@ body.pointer-seen .cursor { opacity: 1; }
 @media (hover: none), (pointer: coarse), (max-width: 820px) {
   .cursor, .reveal { display: none !important; }
   .row-thumb { display: block; }
-  /* loose type is a fine-pointer gesture; on coarse/narrow the decal is
-     dead weight that (at left: 26rem) widens the layout viewport past the
-     device — killing it here re-imposes the sheet inside the screen */
-  .loose-decal { display: none !important; }
+  /* loose type + plate pull are fine-pointer gestures; on coarse/narrow
+     the decals are dead weight that (at left: 26rem) widen the layout
+     viewport past the device — killing them re-imposes the sheet */
+  .loose-decal, .plates-decal { display: none !important; }
 }
 
 /* ---------- narrower desktops: drop the delicate anchored notes ---------- */
@@ -1642,7 +1667,7 @@ body.pointer-seen .cursor { opacity: 1; }
   }
   .scrawl .draw { transition: none !important; stroke-dashoffset: 0; }
   body:not(.proof) .scrawl .draw { stroke-dashoffset: 1; }
-  .loose-decal { display: none; }
+  .loose-decal, .plates-decal { display: none; }
   #pile .stone-inner.dropping { animation: none !important; }
   .hl .ch { transition: none !important; }
 }
@@ -2316,6 +2341,23 @@ body.proof .impline { opacity: 0 !important; }
 .regmark { transition: rotate 0.4s var(--ease-thunk); }
 
 /* ============================================================
+   HOLD REGISTER — the sheet is only true when you are still
+   (Direction Nº 003, P2). scroll velocity shears the ink passes
+   of the display type 1–3px (inline text-shadow, written in the
+   existing scroll rAF); ~300ms of stillness and everything thunks
+   back into register. the regmark's crosshair drifts by exactly
+   the same error — the page's live instrument. the shear rides on
+   inline styles; these rules only supply the settle transition.
+   ============================================================ */
+
+.reg-settling .regel { transition: text-shadow 0.35s var(--ease-thunk); }
+.reg-settling .regmark {
+  transition:
+    translate 0.35s var(--ease-thunk),
+    rotate 0.4s var(--ease-thunk);
+}
+
+/* ============================================================
    CTRL+P — printing produces a clean proof sheet
    ============================================================ */
 
@@ -2353,7 +2395,7 @@ body.proof .impline { opacity: 0 !important; }
   .grain, .frame, .cursor, .reveal, .cairn-ind, .d-scroll,
   .tape, .hazard, .chips, .night-toggle, .noise-toggle, .loupe,
   .corner, .ticker, .under, .proof-fixed, .proof-notes,
-  .idle-line, .stone-tip, .loose-decal,
+  .idle-line, .stone-tip, .loose-decal, .plates-decal,
   .amark, .pv, .thread, .d-cluster, .d-scatter, .d-cross, .d-run,
   .d-outro, .row-thumb, .fps-meter, .regmark, .terrain-ground {
     display: none !important;

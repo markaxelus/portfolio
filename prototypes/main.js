@@ -781,6 +781,8 @@
         c.vr *= 0.8;
         if (Math.abs(c.vy) < 60) c.vy = 0;
         if (impact > 220) sndClack(clamp(impact / 1800, 0.12, 1));
+        /* a hard landing kicks a pixel of error into the register */
+        if (impact > 900) regKick(clamp(impact / 700, 1, 2.2));
       }
       if (r.left < heroRect.left) { c.x += heroRect.left - r.left; c.vx = -c.vx * 0.5; }
       if (r.right > heroRect.right) { c.x -= r.right - heroRect.right; c.vx = -c.vx * 0.5; }
@@ -983,6 +985,7 @@
     proofBtn.textContent = on ? "OK, ENOUGH" : "SEE THE MESS";
     if (on) {
       strikeAll(true); /* you can't annotate unprinted paper */
+      regHardZero();   /* the desk holds still */
       chars.forEach(function (c) {
         c.el.style.fontVariationSettings = "";
         c.t = 0; c.lw = -1; c.ls = -1;
@@ -1320,6 +1323,8 @@
       }
       /* the impression line: cached positions vs scrollY — pure math */
       checkStrikes();
+      /* hold register: scroll velocity shears the ink passes */
+      regFrame();
       /* the thought-thread draws in with the scroll (mess only) */
       if (document.body.classList.contains("proof")) updateThread();
     });
@@ -1760,6 +1765,107 @@
     }
   })();
   colophonPulled();
+
+  /* ============ hold register: true only when you are still ============ */
+  /* one global registration-error scalar, written in the existing scroll
+     rAF (no new loops): scroll velocity shears the ink passes of the
+     display type — hero headline, row titles, outro title, the 144pt
+     specimen amp — by 1–3px via the same text-shadow pass language the
+     press-check intro uses. ~300ms of stillness and everything thunks
+     back true (a transition, not a loop). the regmark's crosshair drifts
+     by exactly the same error. a hard loose-type landing kicks a pixel
+     of error into the system; the plate pull's inline styles win while
+     you're pulling. never touches body text; reduced motion, ?still,
+     the mess and the viewer all pin the error at zero. */
+  var regEls = [heroTitleEl,
+                document.querySelector(".outro-title"),
+                document.querySelector(".spec-amp.s5")]
+    .concat(rows.map(function (r) { return r.querySelector(".row-title"); }))
+    .filter(Boolean);
+  regEls.forEach(function (el) { el.classList.add("regel"); });
+  var regCur = 0, regPrevY = -1, regSettleT = null;
+  var regLastShadow = "";
+
+  function regEnabled() {
+    return !reduced() && !stillMode &&
+      !document.body.classList.contains("proof") &&
+      !document.body.classList.contains("pv-open") &&
+      !document.body.classList.contains("press-check");
+  }
+  function regHeroBusy() {
+    /* the manual extreme owns the headline while it's in hand */
+    return !!pullState || heroTitleEl.classList.contains("plates-return");
+  }
+  function regWrite(px) {
+    var q = Math.round(px * 4) / 4; /* quarter-px steps — no style churn */
+    var shadow = q === 0
+      ? "0 0 0 var(--pencil), 0 0 0 var(--accent)"
+      : "0 " + (q * 0.75).toFixed(2) + "px 0 var(--pencil), 0 " +
+        (-q * 0.55).toFixed(2) + "px 0 var(--accent)";
+    if (shadow === regLastShadow) return;
+    regLastShadow = shadow;
+    for (var i = 0; i < regEls.length; i++) {
+      if (regEls[i] === heroTitleEl && regHeroBusy()) continue;
+      regEls[i].style.textShadow = shadow;
+    }
+    regEl.style.translate = q === 0
+      ? "0px 0px"
+      : (q * 0.5).toFixed(2) + "px " + (q * 0.9).toFixed(2) + "px";
+  }
+  function regSettle() {
+    document.body.classList.add("reg-settling");
+    regCur = 0;
+    regWrite(0);
+    setTimeout(function () {
+      document.body.classList.remove("reg-settling");
+      for (var i = 0; i < regEls.length; i++) {
+        if (regEls[i] === heroTitleEl && regHeroBusy()) continue;
+        regEls[i].style.textShadow = "";
+      }
+      regEl.style.translate = "";
+      regLastShadow = "";
+    }, 430);
+  }
+  function regHardZero() {
+    if (!regEls) return; /* ?proof calls setProof before this block */
+    clearTimeout(regSettleT);
+    regCur = 0;
+    regLastShadow = "";
+    regEls.forEach(function (el) {
+      if (el === heroTitleEl && regHeroBusy()) return;
+      el.style.textShadow = "";
+    });
+    regEl.style.translate = "";
+  }
+  function regFrame() {
+    if (regPrevY < 0) { regPrevY = scrollY; return; }
+    var dy = scrollY - regPrevY;
+    regPrevY = scrollY;
+    if (!regEnabled()) {
+      if (regCur) regHardZero();
+      return;
+    }
+    var target = clamp(dy * 0.05, -3, 3);
+    regCur += (target - regCur) * 0.5;
+    if (Math.abs(regCur) < 0.05) regCur = 0;
+    regWrite(regCur);
+    clearTimeout(regSettleT);
+    regSettleT = setTimeout(regSettle, 300);
+  }
+  function regKick(px) {
+    if (!regEnabled()) return;
+    regCur = clamp(px, -3, 3);
+    regWrite(regCur);
+    clearTimeout(regSettleT);
+    regSettleT = setTimeout(regSettle, 300);
+  }
+
+  /* the decal runs one demo pull: the sheet lurches off register and
+     thunks back — the gesture, taught by the gesture */
+  var platesDecal = document.getElementById("plates-decal");
+  if (platesDecal) {
+    platesDecal.addEventListener("click", function () { regKick(2.6); });
+  }
 
   /* ============ the tab misses you ============ */
   var baseTitle = document.title;
