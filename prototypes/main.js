@@ -40,17 +40,36 @@
      ghost numeral + grain, as an inline SVG data-URI */
 
   /* micro: plate margin notes set at 9px — dots at 1:1, legible only
-     under the loupe */
+     under the loupe. `g` is the field's ink-to-accent gradient depth —
+     the only per-plate variation; the motif does the rest. no exotic
+     hues: every plate runs paper + ink + the red working pass, in the
+     current accent (three inks, four plates — told apart by what's on
+     them, not by colour). */
   var PROJECTS = [
-    { num: "01", dark: "#0E0E22", bright: "#2A2AF0", motif: "arcs",
+    { num: "01", motif: "arcs",    g: 0.32,
       micro: "MRD-25 · PASS 2/4 · “MORE PREMIUM” MEANT QUIETER · APPROVED 03:12" },
-    { num: "02", dark: "#160E2C", bright: "#8E7BFF", motif: "stripes",
+    { num: "02", motif: "stripes", g: 0.52,
       micro: "LRF-25 · WRONG STOCK, RIGHT ACCIDENT · KEPT IT" },
-    { num: "03", dark: "#041D1C", bright: "#63D3C6", motif: "orbits",
+    { num: "03", motif: "orbits",  g: 0.4,
       micro: "NOF-24 · BUILT AFTER 23:00 · OBVIOUSLY" },
-    { num: "04", dark: "#22060F", bright: "#EE4E9B", motif: "steps",
+    { num: "04", motif: "steps",   g: 0.6,
       micro: "SGN-24 · SPLINTERS 11 · REGRETS 0" }
   ];
+
+  /* the paint chips pick the site accent; the plates print in it too.
+     defined up here (not with the chip handlers below) so the first
+     plate build already knows the stored accent. the plate is a dark
+     tile lit the same in any room — like the operator's plate — so it
+     always takes the luminous (night) variant. */
+  var ACCENTS = [
+    { day: "#2A2AF0", night: "#7C7CFF" },  /* signal */
+    { day: "#D6246E", night: "#FF5FA2" },  /* magenta */
+    { day: "#6E7D00", night: "#C6D600" }   /* acid */
+  ];
+  var accentI = 0;
+  try { accentI = Math.min(2, Math.max(0, +(localStorage.getItem("ma-accent-i") || 0))); } catch (e) {}
+  function plateAccent() { return ACCENTS[accentI].night; }
+  var PLATE_INK = "#16150F", PLATE_PAPER = "#DDDBD4", PLATE_RED = "#C7361F";
 
   function motifSVG(kind, color) {
     var s = "";
@@ -88,34 +107,35 @@
     return s;
   }
 
-  function plateURI(p) {
+  function plateURI(p, accent) {
     var svg =
       '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">' +
         '<defs>' +
-          '<linearGradient id="duo" x1="0" y1="0" x2="1" y2="1.2">' +
-            '<stop offset="0" stop-color="' + p.dark + '"/>' +
-            '<stop offset="1" stop-color="' + p.bright + '" stop-opacity="0.55"/>' +
+          '<linearGradient id="duo" x1="0" y1="0" x2="0.9" y2="1.15">' +
+            '<stop offset="0" stop-color="' + PLATE_INK + '"/>' +
+            '<stop offset="1" stop-color="' + accent + '" stop-opacity="' + p.g + '"/>' +
           '</linearGradient>' +
           '<pattern id="ht" width="9" height="9" patternUnits="userSpaceOnUse">' +
-            '<circle cx="4.5" cy="4.5" r="1.5" fill="' + p.bright + '"/>' +
+            '<circle cx="4.5" cy="4.5" r="1.5" fill="' + accent + '"/>' +
           '</pattern>' +
           '<filter id="gr"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>' +
           '<feColorMatrix type="saturate" values="0"/></filter>' +
         '</defs>' +
-        '<rect width="800" height="1000" fill="' + p.dark + '"/>' +
+        /* paper never shows through — this is a press plate, not a duotone;
+           the ink field, the accent pass, and one red pass off register */
+        '<rect width="800" height="1000" fill="' + PLATE_INK + '"/>' +
         '<rect width="800" height="1000" fill="url(#duo)"/>' +
         '<rect width="800" height="1000" fill="url(#ht)" opacity="0.14"/>' +
-        /* misregistered red proof pass, then the true pass */
-        '<g transform="translate(6 4)" opacity="0.4">' + motifSVG(p.motif, "#C7361F") + "</g>" +
-        motifSVG(p.motif, p.bright) +
+        '<g transform="translate(6 4)" opacity="0.42">' + motifSVG(p.motif, PLATE_RED) + "</g>" +
+        motifSVG(p.motif, accent) +
         '<text x="30" y="985" font-family="Georgia, \'Times New Roman\', serif" font-size="560" ' +
-          'font-weight="500" fill="#DDDBD4" opacity="0.16" letter-spacing="-30">' + p.num + '</text>' +
+          'font-weight="500" fill="' + PLATE_PAPER + '" opacity="0.14" letter-spacing="-30">' + p.num + '</text>' +
         '<g transform="rotate(-90 44 500)"><text x="44" y="500" text-anchor="middle" ' +
-          'font-family="monospace" font-size="17" letter-spacing="5" fill="#DDDBD4" opacity="0.75">' +
+          'font-family="monospace" font-size="17" letter-spacing="5" fill="' + PLATE_PAPER + '" opacity="0.72">' +
           "M.A. &#8212; PROOF " + p.num + "/04 &#183; NOT FOR PRODUCTION</text></g>" +
         /* margin whispers — 9px on an 800-wide plate: loupe-only.
            kept inside the cover-crop safe band (y ≈ 250–780) */
-        '<g font-family="monospace" font-size="9" letter-spacing="1.5" fill="#DDDBD4">' +
+        '<g font-family="monospace" font-size="9" letter-spacing="1.5" fill="' + PLATE_PAPER + '">' +
           '<text x="770" y="732" text-anchor="end" opacity="0.55">' + p.micro + '</text>' +
           '<text x="770" y="748" text-anchor="end" opacity="0.4">IF YOU CAN READ THIS YOU FOUND THE LOUPE</text>' +
         '</g>' +
@@ -124,7 +144,7 @@
     return 'url("data:image/svg+xml;utf8,' + encodeURIComponent(svg) + '")';
   }
 
-  var plates = PROJECTS.map(plateURI);
+  var plates = PROJECTS.map(function (p) { return plateURI(p, plateAccent()); });
 
   /* ============ the thought-thread: THE RE-READ ============ */
   /* the line is Mark re-reading his own margins at 2am. it routes
@@ -821,6 +841,11 @@
 
   document.addEventListener("pointermove", function (e) {
     if (!grabbed) return;
+    /* the canceled pointerdown suppresses compat mousemove for the whole
+       drag, freezing mouse.x/y — the dot's feed. keep it fed from here
+       (same gotcha as the loupe) so the dot rides the drag. */
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
     var g = grabbed, c = g.c;
     c.x = g.baseX + (e.clientX - g.startPX);
     c.y = g.baseY + (e.clientY - g.startPY);
@@ -832,7 +857,7 @@
     applyChar(c);
   });
 
-  document.addEventListener("pointerup", function () {
+  document.addEventListener("pointerup", function (e) {
     if (!grabbed) return;
     var c = grabbed.c;
     c.el.classList.remove("grabbed");
@@ -840,17 +865,32 @@
     c.vy = clamp(c.vy, -1600, 1600);
     c.vr = c.vx * 0.15 + (c.vy > 0 ? 40 : -40);
     grabbed = null;
-    cursorLabel.textContent = "GRAB";
+    /* the thrown letter usually rides under the pointer, so this stays
+       GRAB; released over empty case, the ring goes away */
+    if (overCh(e.target)) cursorLabel.textContent = "GRAB";
+    else cursorEl.classList.remove("is-grab");
     startPhysics();
   });
 
-  heroTitleEl.addEventListener("mouseenter", function () {
+  /* GRAB only over an actual letter — the h1's .hl lines are full-width
+     blocks, so most of the title box is empty case, not type. delegate to
+     the .ch spans; the short exit delay bridges word spaces so the ring
+     doesn't flicker while sweeping across the headline. */
+  var grabHoverT = null;
+  function overCh(t) { return !!(t && t.classList && t.classList.contains("ch")); }
+  heroTitleEl.addEventListener("mouseover", function (e) {
+    if (!overCh(e.target)) return;
     if (!trailEnabled() || reduced() || document.body.classList.contains("proof")) return;
+    clearTimeout(grabHoverT);
     cursorLabel.textContent = grabbed ? "WHEEE" : "GRAB";
     cursorEl.classList.add("is-grab");
   });
-  heroTitleEl.addEventListener("mouseleave", function () {
-    cursorEl.classList.remove("is-grab");
+  heroTitleEl.addEventListener("mouseout", function (e) {
+    if (!overCh(e.target) || grabbed) return; /* mid-drag it stays WHEEE */
+    clearTimeout(grabHoverT);
+    grabHoverT = setTimeout(function () {
+      if (!grabbed) cursorEl.classList.remove("is-grab");
+    }, 90);
   });
   document.addEventListener("keydown", function (e) {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -1052,14 +1092,9 @@
   });
 
   /* ============ paint chips: pick my accent ============ */
-  var ACCENTS = [
-    { day: "#2A2AF0", night: "#7C7CFF" },  /* signal */
-    { day: "#D6246E", night: "#FF5FA2" },  /* magenta */
-    { day: "#6E7D00", night: "#C6D600" }   /* acid */
-  ];
+  /* ACCENTS + accentI are declared up top (the plates need them at build
+     time); here we just wire the chips and the reprint. */
   var chipEls = Array.prototype.slice.call(document.querySelectorAll(".chips .chip"));
-  var accentI = 0;
-  try { accentI = Math.min(2, Math.max(0, +(localStorage.getItem("ma-accent-i") || 0))); } catch (e) {}
 
   function isNight() { return document.body.classList.contains("night"); }
   function applyAccent() {
@@ -1070,11 +1105,33 @@
       c.setAttribute("aria-pressed", String(+c.dataset.ai === accentI));
     });
   }
+  /* repaint = reprint, extended to the work: a new ink re-runs the whole
+     plate library and repaints every plate surface currently on screen */
+  function rebuildPlates() {
+    var pa = plateAccent();
+    plates = PROJECTS.map(function (p) { return plateURI(p, pa); });
+    rows.forEach(function (row) {
+      var th = row.querySelector(".row-thumb");
+      if (th) th.style.backgroundImage = plates[+row.dataset.plate];
+    });
+    if (curPlate >= 0 && plateEl) plateEl.style.backgroundImage = plates[curPlate];
+    if (loupeOn && curPlate >= 0) loupeEl.style.backgroundImage = plates[curPlate];
+    if (pvIdx >= 0) {
+      var pl = pvEl.querySelector(".pv-plate");
+      if (pl) pl.style.backgroundImage = plates[pvIdx];
+      var duo = pvEl.querySelectorAll(".pv-duo figure");
+      if (duo.length === 2) {
+        duo[0].style.backgroundImage = detailURI(PROJECTS[pvIdx], 0, pa);
+        duo[1].style.backgroundImage = detailURI(PROJECTS[pvIdx], 1, pa);
+      }
+    }
+  }
   chipEls.forEach(function (c) {
     c.addEventListener("click", function () {
       accentI = +c.dataset.ai;
       try { localStorage.setItem("ma-accent-i", String(accentI)); } catch (e) {}
       applyAccent();
+      rebuildPlates(); /* the work reprints in the new ink too */
       /* new ink: the press runs a quick re-register */
       if (!reduced() && !stillMode) {
         heroTitleEl.classList.remove("reprint");
@@ -1644,6 +1701,10 @@
   });
   document.addEventListener("pointermove", function (e) {
     if (!pullState) return;
+    /* same compat-mousemove suppression as the loose-type drag: keep the
+       dot's feed alive while the plates are held off register */
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
     var rx = softPull(e.clientX - pullState.x);
     var ry = softPull(e.clientY - pullState.y);
     var shadow =
@@ -1654,12 +1715,15 @@
       heroTitleEl.style.textShadow = shadow;
     }
   });
-  document.addEventListener("pointerup", function () {
+  document.addEventListener("pointerup", function (e) {
     if (!pullState) return;
     pullState = null;
     heroTitleEl.classList.add("plates-return");
     heroTitleEl.style.textShadow = "0 0 0 var(--pencil), 0 0 0 var(--accent)";
-    cursorLabel.textContent = "GRAB";
+    /* is-grab came from the pull, not a letter hover — clear it unless
+       the release actually lands on a letter */
+    if (overCh(e.target)) cursorLabel.textContent = "GRAB";
+    else cursorEl.classList.remove("is-grab");
     setTimeout(function () {
       heroTitleEl.classList.remove("plates-return");
       heroTitleEl.style.textShadow = "";
@@ -1743,15 +1807,16 @@
     }
   ];
 
-  /* specimen details: two generated close-ups per project */
-  function detailURI(p, v) {
+  /* specimen details: two generated close-ups per project, same inks */
+  function detailURI(p, v, accent) {
+    accent = accent || plateAccent();
     var inner = v === 0
-      ? '<g transform="translate(-260 -160) scale(2.1)" opacity="0.9">' + motifSVG(p.motif, p.bright) + "</g>"
-      : '<g transform="translate(10 7)" opacity="0.35">' + motifSVG(p.motif, "#C7361F") + "</g>" +
-        '<g opacity="0.92">' + motifSVG(p.motif, p.bright) + "</g>";
+      ? '<g transform="translate(-260 -160) scale(2.1)" opacity="0.9">' + motifSVG(p.motif, accent) + "</g>"
+      : '<g transform="translate(10 7)" opacity="0.35">' + motifSVG(p.motif, PLATE_RED) + "</g>" +
+        '<g opacity="0.92">' + motifSVG(p.motif, accent) + "</g>";
     var svg =
       '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">' +
-      '<rect width="1200" height="760" fill="' + p.dark + '"/>' +
+      '<rect width="1200" height="760" fill="' + PLATE_INK + '"/>' +
       '<g transform="translate(200 -60)">' + inner + "</g>" +
       '<text x="30" y="736" font-family="monospace" font-size="15" letter-spacing="4" fill="#DDDBD4" opacity="0.7">DETAIL 0' +
       (v + 1) + " &#183; PLATE " + p.num + " &#183; NOT FOR PRODUCTION</text>" +
