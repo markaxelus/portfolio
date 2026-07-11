@@ -169,7 +169,7 @@
     "THE KERNING IS DONE — IT ISN’T",
     "PRESS M FOR THE MESS",
     "PRESS N FOR NIGHT OFFICE",
-    "LIFT THE BOTTOM-RIGHT CORNER — GENTLY",
+    "PEEL THE BOTTOM-RIGHT CORNER — ALL THE WAY",
     "CTRL+P PRINTS A CLEAN PROOF",
     "PRESS S FOR PRESS NOISE",
     "THE HEADLINE IS LOOSE TYPE — GRAB IT",
@@ -1081,59 +1081,77 @@
     setTimeout(endPress, 2600);
   })();
 
-  /* ============ the dog-ear: lift the corner ============ */
-  /* drag the turned corner and the proof peels back over the mess.
-     let go and it snaps home; carry it far enough and you fall in. */
+  /* ============ the dog-ear: THE way into the mess ============ */
+  /* one control, one corner. click it and the page peels itself off;
+     drag it and the whole sheet follows your hand — release past the
+     threshold and the peel finishes (it never pops), release early and
+     it snaps home. the fold maths keep the folded corner tip glued to
+     the pointer: inset p = ((W - x) + (H - y)) / 2. */
   var deHot = document.getElementById("de-hot");
   var dogear = document.getElementById("dogear");
-  var DE_MAX = 280;   /* the flap only reaches so far */
-  var DE_DROP = 170;  /* past this, you wanted the mess */
   var peeling = null;
+  var committing = false;
 
+  function deDrop() { return (innerWidth + innerHeight) * 0.16; }
   function dePeel(p) {
-    dogear.style.setProperty("--de-p", clamp(p, 22, DE_MAX) + "px");
-    var past = p > DE_DROP;
+    dogear.style.setProperty("--de-p", clamp(p, 22, innerWidth + innerHeight) + "px");
+    var past = p > deDrop();
     if (past !== dogear.classList.contains("past")) {
       dogear.classList.toggle("past", past);
-      cursorLabel.textContent = past ? "LET GO" : "LIFT";
+      cursorLabel.textContent = past ? "LET GO" : "PEEL";
     }
   }
+  function deCommit() {
+    if (committing || document.body.classList.contains("proof")) return;
+    committing = true;
+    dogear.classList.remove("dragging");
+    dogear.classList.add("committing");
+    dogear.classList.add("past");
+    dogear.style.setProperty("--de-p", (innerWidth + innerHeight) + "px");
+    cursorEl.classList.remove("is-peel");
+    setTimeout(function () { setProof(true); }, 620);
+    setTimeout(function () {
+      /* invisible by now (.proof .dogear fades out) — reset quietly */
+      dogear.classList.remove("committing");
+      dogear.classList.remove("past");
+      dogear.style.removeProperty("--de-p");
+      committing = false;
+    }, 1150);
+  }
   deHot.addEventListener("pointerdown", function (e) {
-    if (document.body.classList.contains("proof")) return;
+    if (committing || document.body.classList.contains("proof")) return;
     e.preventDefault();
     deHot.setPointerCapture(e.pointerId);
-    peeling = { id: e.pointerId };
+    peeling = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
     dogear.classList.add("dragging");
     cursorEl.classList.add("is-peel");
-    cursorLabel.textContent = "LIFT";
+    cursorLabel.textContent = "PEEL";
   });
   deHot.addEventListener("pointermove", function (e) {
     if (!peeling || e.pointerId !== peeling.id) return;
-    /* how far the corner has been carried toward the middle of the page */
+    if (!peeling.moved &&
+        Math.abs(e.clientX - peeling.x) + Math.abs(e.clientY - peeling.y) < 8) return;
+    peeling.moved = true;
     var dx = innerWidth - e.clientX, dy = innerHeight - e.clientY;
     dePeel((dx + dy) / 2);
   });
   function deRelease(e) {
     if (!peeling || e.pointerId !== peeling.id) return;
     var wanted = dogear.classList.contains("past");
+    var clicked = !peeling.moved;
     peeling = null;
     dogear.classList.remove("dragging");
+    cursorEl.classList.remove("is-peel");
+    if (wanted || clicked) { deCommit(); return; }
     dogear.classList.remove("past");
     dogear.style.removeProperty("--de-p"); /* transition carries it home */
-    cursorEl.classList.remove("is-peel");
-    if (wanted) setProof(true);
   }
   deHot.addEventListener("pointerup", deRelease);
   deHot.addEventListener("pointercancel", deRelease);
-  /* keyboard gets the peek without the drag */
+  /* keyboard: Enter/Space peels the page like anyone else's click */
   deHot.addEventListener("click", function (e) {
     if (e.detail !== 0) return; /* pointer path handles the mouse */
-    if (document.body.classList.contains("proof")) return;
-    dePeel(150);
-    setTimeout(function () {
-      dogear.classList.remove("past");
-      dogear.style.removeProperty("--de-p");
-    }, 1200);
+    deCommit();
   });
 
   /* ============ the regmark is also a fidget ============ */
@@ -1239,7 +1257,7 @@
      math, zero layout reads on mousemove */
   var deNear = 0;
   document.addEventListener("mousemove", function (e) {
-    if (peeling || !trailEnabled()) return;
+    if (peeling || committing || !trailEnabled()) return;
     var d = Math.max(innerWidth - e.clientX, innerHeight - e.clientY);
     var t = d > 240 ? 0 : 1 - d / 240;
     var target = t === 0 ? 0 : Math.round(22 + t * 24);
@@ -1251,10 +1269,10 @@
   });
 
   function actFlutter() {
-    if (peeling) return;
+    if (peeling || committing) return;
     dogear.style.setProperty("--de-p", "44px");
     setTimeout(function () {
-      if (!peeling && deNear === 0) dogear.style.removeProperty("--de-p");
+      if (!peeling && !committing && deNear === 0) dogear.style.removeProperty("--de-p");
     }, 500);
   }
   function actRattle() {

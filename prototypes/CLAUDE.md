@@ -124,10 +124,10 @@ signatures (Mark counts these himself):
   The jobline sits on a **solid stone chip** so page content (the ticker) passes
   under it, never through it; the sheet is softened via `color-mix`, NOT opacity
   (Mark flagged the SHEET Nº / ticker collision).
-- Corners: MARK AXELUS / CONTACT ↗ / ©2026 — ALL MINE + live LA clock / SEE THE MESS
-  button (↔ OK, ENOUGH). All four are **bordered tabs that invert on hover**
-  (ink fill; SEE THE MESS fills pencil red) — Mark said they read as background
-  before; they must look clickable.
+- Corners: MARK AXELUS / CONTACT ↗ / ©2026 — ALL MINE + live LA clock, all
+  **bordered tabs that invert on hover** (Mark said they read as background
+  before; they must look clickable). Bottom-right belongs to the dog-ear on the
+  main page; the OK, ENOUGH tab (pencil-red hover) appears there only in mess mode.
 - `[N] NIGHT OFFICE` decal button top-right; `[S] PRESS NOISE — OFF` decal under it
   (opt-in sound, see delights); grip tape "AXELUS • AXELUS" up the left
   edge; hazard stripes; `SCROLL 042%` live telemetry; cairn scroll indicator
@@ -135,15 +135,21 @@ signatures (Mark counts these himself):
   caret; hero spec cluster with hover-decodes (`00.MA2093` → "means nothing. looks
   great.", `VISIT Nº 007` → real localStorage visit counter, rolls like an odometer
   on arrival).
-- **The dog-ear** (signature #4): a turned corner bottom-right. Drag it and the
-  proof physically peels back over a sliver of the mess (red baseline grid +
-  "stop peeking. press M." in the 2am pen — legal: what's under the page IS the
-  mess layer). Release → snaps back (`--ease-thunk`); carry it past ~170px → drops
-  into mess mode. Cursor label LIFT → LET GO. Keyboard Enter = 1.2s peek.
-  Discoverability (Mark: "peeling should be more obvious"): rests at 22px, **lifts
-  toward 46px as the pointer approaches the corner** (pure viewport math on
-  mousemove, zero layout reads), catches a draft once ~4.2s after load, and
-  flutters periodically via the awake scheduler.
+- **The dog-ear** (signature #4) — **THE way into the mess; one control per
+  corner** (Mark: "why is SEE THE MESS right beside the peeler, choose one").
+  The old SEE THE MESS corner button is `display:none` on the main page and
+  exists only inside the mess as OK, ENOUGH. A small rotated `SEE THE MESS —`
+  label (`.de-label`) rides the fold. **Click the corner** → the page peels
+  itself off (deCommit, 0.7s). **Drag it** → the peel spans the whole screen —
+  the dogear layer is fixed `inset: 0`, fold maths keep the folded tip glued to
+  the pointer (`p = ((W−x)+(H−y))/2`). Release past ~16% of (vw+vh) → the peel
+  FINISHES, never pops (Mark: "you peel it halfway and then it like pops");
+  release early → snaps back (`--ease-thunk`). The under-grid matches `.under`'s
+  phase + margin guides exactly so the handoff into the real mess is invisible.
+  Cursor label PEEL → LET GO. Keyboard Enter = full peel.
+  Discoverability: rests at 22px, **lifts toward 46px as the pointer approaches
+  the corner** (pure viewport math on mousemove, zero layout reads), catches a
+  draft once ~4.2s after load, and flutters periodically via the awake scheduler.
 - **The page is awake**: every 9–22s it does ONE small unprompted act — the
   dog-ear flutters, a hero letter rattles in its case (invites the grab), a spec
   decal re-decodes itself (scramble → settle), or the regmark corrects its drift
@@ -298,6 +304,13 @@ signatures (Mark counts these himself):
     and descenders render whole; [N]/[S] decals moved clear of the CONTACT tab
     (desktop + mobile hero padding). Comma clipping was NOT a design choice —
     it was a side effect of the entrance masks.
+12. (`prototypes-big-three`) One-corner rule + full-screen peel, from Mark's
+    review — "why is SEE THE MESS right beside the peeler, choose one or the
+    other" and "when u peel it should actually peel the whole screen, not peel
+    it halfway and then it pops." The dog-ear became the single way in (click
+    opens, drag peels, threshold release finishes the peel across the whole
+    screen); SEE THE MESS button is mess-only now (OK, ENOUGH). Peel handoff
+    is seamless: de-under grid matches .under exactly.
 
 ## 8. Ideas discussed but not built (fair game later)
 
