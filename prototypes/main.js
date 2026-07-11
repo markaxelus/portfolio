@@ -816,6 +816,7 @@
       if (!anyLoose) heroEl.classList.remove("type-loose");
     }, 750);
     typeDecal.textContent = "[!] LOOSE TYPE — GRAB A LETTER";
+    logAct("the case reset. every sort back home.");
   }
   typeDecal.addEventListener("click", function () {
     if (anyLoose) resetCase();
@@ -862,6 +863,7 @@
     applyChar(c);
   });
 
+  var throwCount = 0;
   document.addEventListener("pointerup", function (e) {
     if (!grabbed) return;
     var c = grabbed.c;
@@ -874,6 +876,9 @@
        GRAB; released over empty case, the ring goes away */
     if (overCh(e.target)) cursorLabel.textContent = "GRAB";
     else cursorEl.classList.remove("is-grab");
+    throwCount++;
+    logAct("the “" + c.el.textContent + "” thrown across the case.");
+    if (throwCount === 4) logAct("that’s four throws. the type forgives.");
     startPhysics();
   });
 
@@ -997,6 +1002,13 @@
       if (!messObserver) watchNotes();
       updateThread(true); /* the thread meets you at your scroll position */
       cacheInkNotes(); /* fresh ink needs to know where the notes live */
+      /* the log notices, once a session — reading the margins is an act */
+      try {
+        if (!sessionStorage.getItem("ma-log-mess")) {
+          sessionStorage.setItem("ma-log-mess", "1");
+          logAct("the margins read.");
+        }
+      } catch (e) {}
     } else {
       unwatchNotes();
       clearWet();
@@ -1194,12 +1206,14 @@
       }
     }
   }
+  var INK_NAMES = ["signal blue", "magenta", "acid"];
   chipEls.forEach(function (c) {
     c.addEventListener("click", function () {
       accentI = +c.dataset.ai;
       try { localStorage.setItem("ma-accent-i", String(accentI)); } catch (e) {}
       applyAccent();
       rebuildPlates(); /* the work reprints in the new ink too */
+      logAct("ink changed to " + INK_NAMES[accentI] + "." + (accentI === 2 ? " bold choice." : ""));
       /* new ink: the press runs a quick re-register */
       if (!reduced() && !stillMode) {
         heroTitleEl.classList.remove("reprint");
@@ -1218,7 +1232,12 @@
     nightBtn.innerHTML = on
       ? '[N] DAY SHIFT <span class="moon">&#9728;</span>'
       : '[N] NIGHT OFFICE <span class="moon">&#9686;</span>';
-    if (persist) { try { localStorage.setItem("ma-night", on ? "1" : "0"); } catch (e) {} }
+    if (persist) {
+      try { localStorage.setItem("ma-night", on ? "1" : "0"); } catch (e) {}
+      /* persist means a hand did it (button or key) — the clock's own
+         23:00 dimming is not the visitor's act, so it stays off the book */
+      logAct(on ? "lights out — night office." : "back on day shift.");
+    }
     applyAccent();
   }
   nightBtn.addEventListener("click", function () { setNight(!isNight(), true); });
@@ -1525,7 +1544,13 @@
     var willTopple = Math.abs(towerLean()) > LEAN_LIMIT || stackStones.length >= STACK_CAP;
     renderCairn(true);
     setTimeout(sndTok, reduced() ? 60 : 340);
-    if (willTopple) { cairnBusy = true; setTimeout(topple, (reduced() || stillMode) ? 260 : 560); }
+    logAct("stone nº " + s.n + " placed. " + (willTopple ? "the stack… hm." : "the stack holds."));
+    if (willTopple) {
+      cairnBusy = true;
+      setTimeout(topple, (reduced() || stillMode) ? 260 : 560);
+      setTimeout(function () { logAct("the stack fell. we stack again."); },
+        (reduced() || stillMode) ? 320 : 1300);
+    }
   }
 
   renderCairn(false);
@@ -1696,13 +1721,17 @@
   }
   function retireLine() {
     document.body.classList.remove("imp-armed");
+    var firstPull = false;
     try {
       if (!localStorage.getItem("ma-pulled-n")) {
+        firstPull = true;
         localStorage.setItem("ma-pulled-n",
           String(Math.max(1, +(localStorage.getItem("ma-visits") || 1))));
       }
     } catch (e) {}
     colophonPulled();
+    /* the moment the last unit strikes — once, ever */
+    if (firstPull) logAct("the sheet fully pulled. every unit struck.");
   }
   function strikeUnit(u, instant) {
     if (u.struck) return;
@@ -1938,6 +1967,7 @@
     try { localStorage.setItem(OK_STORE, JSON.stringify(okState)); } catch (e) {}
     renderOK(true);
     sndTok(); /* the stamp knocks, if the noise is on */
+    logAct("sheet stamped: " + OK_META[verdict].face.toLowerCase() + " — “" + ini + "”.");
   }
   var okHoldT = null;
   okTabs.forEach(function (tab) {
@@ -1971,6 +2001,62 @@
     });
   }
   renderOK(false);
+
+  /* ============ the job log: the shop witnesses you ============ */
+  /* every playful act gets one dry typeset line in the colophon — desk
+     time, trade language, newest last. appears only once you've touched
+     something; keeps the last ten; adjacent repeats collapse (throwing
+     the same letter five times is one line, a different letter is news).
+     local-only, and the fine print says so. a returning visitor's first
+     act opens a new READING Nº divider — the log resumes, like a job
+     ticket someone kept. (logAct is a function declaration on purpose:
+     handlers above this block call it.) */
+  var LOG_STORE = "ma-presslog-v1";
+  var logLinesEl = document.getElementById("jl-lines");
+  var logBlockEl = document.getElementById("joblog");
+  var logEntries = [];
+  var logSessionMarked = false;
+  try { logEntries = JSON.parse(localStorage.getItem(LOG_STORE) || "[]") || []; } catch (e) { logEntries = []; }
+  try { logSessionMarked = !!sessionStorage.getItem("ma-log-sess"); } catch (e) {}
+
+  function renderLog() {
+    if (!logLinesEl || !logBlockEl) return;
+    if (!logEntries.length) { logBlockEl.hidden = true; return; }
+    var html = "";
+    for (var i = 0; i < logEntries.length; i++) {
+      var en = logEntries[i];
+      html += en.d
+        ? '<li class="jl-div">' + en.s + "</li>"
+        : "<li>" + en.t + " — " + en.s + "</li>";
+    }
+    logLinesEl.innerHTML = html;
+    logBlockEl.hidden = false;
+  }
+  function logAct(line) {
+    if (!logLinesEl) return;
+    /* the first act of a return session re-opens the ticket */
+    if (!logSessionMarked) {
+      logSessionMarked = true;
+      try { sessionStorage.setItem("ma-log-sess", "1"); } catch (e) {}
+      if (logEntries.length) {
+        var v = 1;
+        try { v = Math.max(2, +(localStorage.getItem("ma-visits") || 2)); } catch (e) {}
+        logEntries.push({ d: 1, s: "— reading nº " + String(v).padStart(3, "0") + " —" });
+      }
+    }
+    var last = logEntries[logEntries.length - 1];
+    if (last && !last.d && last.s === line) {
+      last.t = deskTime(); /* same act again — the clock updates, the line doesn't */
+    } else {
+      logEntries.push({ t: deskTime(), s: line });
+    }
+    if (logEntries.length > 11) logEntries = logEntries.slice(-11);
+    try { localStorage.setItem(LOG_STORE, JSON.stringify(logEntries)); } catch (e) {}
+    renderLog();
+  }
+  renderLog();
+  /* pulling a paper copy is an act too — it shows on the next look */
+  addEventListener("beforeprint", function () { logAct("a clean proof pulled to paper."); });
 
   /* ============ the tab misses you ============ */
   var baseTitle = document.title;
@@ -2099,6 +2185,7 @@
   var loupeOn = false, loupeUsed = false, loupeLeftRow = false;
   var lastLoupeTf = "", lastLoupeBs = "", lastLoupeBp = "";
   var loupeDelayT = null;
+  var loupedPlates = {};
   rows.forEach(function (row) {
     row.addEventListener("pointerdown", function (e) {
       if (!trailEnabled() || !open || e.button !== 0) return;
@@ -2112,6 +2199,10 @@
         loupeEl.style.backgroundImage = plates[curPlate];
         loupeEl.classList.add("on");
         cursorEl.classList.add("is-loupe");
+        if (!loupedPlates[curPlate]) {
+          loupedPlates[curPlate] = 1;
+          logAct("loupe down on plate 0" + (curPlate + 1) + ". the dots check out.");
+        }
       }, 230);
     });
     /* a loupe press is not a navigation */
@@ -2187,6 +2278,8 @@
        the release actually lands on a letter */
     if (overCh(e.target)) cursorLabel.textContent = "GRAB";
     else cursorEl.classList.remove("is-grab");
+    /* only a real pull makes the book (a shift-click without drag doesn't) */
+    if (lastPullShadow) logAct("headline pulled off register. returned crooked.");
     setTimeout(function () {
       heroTitleEl.classList.remove("plates-return");
       heroTitleEl.style.textShadow = "";
