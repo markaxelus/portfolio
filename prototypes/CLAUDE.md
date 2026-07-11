@@ -267,6 +267,39 @@ signatures (Mark counts these himself):
      with small currentColor SVG icons. github.com/markaxelus confirmed from
      the repo remote; **linkedin.com/in/markaxelus is a GUESS — confirm with
      Mark** (§6). In print they flatten to slugs with full `attr(href)` URLs.
+   - **THE OK SLIP** (Direction Nº 003, P3): the visitor is the press-check
+     client and the sheet has been AWAITING OK all along. A bordered slip
+     before the social tabs: machine-set initials field (typed, never
+     handwritten — the hard rule holds), three stamp-tabs that commit on a
+     ~620ms HOLD with the accent ink visibly rising (`.ok-tab::after`
+     scaleY) — the face says HOLD; Enter/Space commit for keyboards, Enter
+     in the field passes the sheet (nothing key-only, nothing hold-only).
+     The stamp thunks down steel-crisp in the accent at −4° (same double
+     ring as the mess stamp, none of its hand — that one is rubber, this
+     one is steel); the jobline permanently gains `· PASSED FOR PRESS ·
+     OK "JD" · 14:32`; the mess argues back per verdict (ok: "someone
+     passed it. it is not done." / "who let them in.", corrections:
+     "corrections. plural. i know about the kerning.", reproof: "yeah. i
+     know.") and clocks a re-stamp ("changed your mind. noted.",
+     `okState.n`). Persisted `ma-ok-v1`; prints on the Ctrl+P proof minus
+     the screen instructions. Typing initials is guarded from the M/N/S/R
+     mode keys (INPUT check in both keydown handlers).
+   - **THE JOB LOG** (Direction Nº 003, P4): the shop witnesses you. One
+     dry typeset line per playful act, desk-time stamped, newest last,
+     under the colophon — hidden until your first act opens the ticket.
+     Hooks: chips ("ink changed to acid. bold choice."), throws (+ "that's
+     four throws. the type forgives." at exactly four), case reset, plate
+     pull (only if a drag actually happened — `lastPullShadow` gate),
+     loupe (once per plate), stones ("the stack… hm." when the next one
+     topples it), the fall, night by hand only (the 23:00 auto-dim is not
+     the visitor's act), "the margins read." (once/session), the stamp,
+     "the sheet fully pulled." (once ever, from `retireLine`), and
+     beforeprint ("a clean proof pulled to paper."). Adjacent identical
+     acts collapse into one line with a fresh clock; last ~10 kept; a
+     returning session's first act inserts `— reading nº 003 —` from the
+     real visit counter. Fine print: THIS LOG PRINTS ON YOUR COPY ONLY.
+     SHOP POLICY. (It does print — that's where the joke lands hardest.)
+     `ma-presslog-v1`; renders only on acts, never in a loop.
 
 ### Fixed furniture (all pages)
 - Poster frame + crop marks, spinning registration mark, color bar → **paint chips**
@@ -297,7 +330,46 @@ signatures (Mark counts these himself):
   hero loads as three misregistered passes — red (`--pencil`) and blue (`--accent`)
   text-shadows under the ink — that slide into register (0.85s, starts 1.6s, after
   the last line lands) while the regmark locks in (`reg-lock`). Any input skips it;
-  reduced-motion and `?still` never see it.
+  reduced-motion and `?still` never see it. Since Direction Nº 003 it is no
+  longer a one-off: it's the hero's STRIKE — the first note of the governing
+  law (everything on this page is struck, and you are present for the striking).
+- **THE IMPRESSION LINE** (Direction Nº 003, P1 — the flagship): below a fixed
+  hairline at 62vh (`.impline`, labeled `IMPRESSION LINE — THE SHEET PRINTS AS
+  READ` in the FOLD's furniture voice), every section is blind impression —
+  real type, uninked: transparent fill + a two-tone emboss rim (`--emb-hi`/
+  `--emb-lo`, day and night variants), svg linework pressed to the rim tone,
+  plates ghosted to 5%. As a unit's first visible child crosses the line it
+  STRIKES: ink floods in ~120ms (transitions ride on `.striking`), the unit
+  shudders 1px (inline `translate` steps — a keyframe would restart filled
+  entrance animations), and the regmark ticks one notch (36° per unit; a full
+  first read turns the crosshair exactly once). One-way, persisted per unit
+  (`ma-struck-v1`); struck is the DEFAULT — js arms `.unstruck` at boot, so
+  no-js/print/reduced/?still simply ship printed. Ten units (ticker, trail,
+  index head, four rows, desk, yard, outro); the hero is always pre-struck
+  (the intro is its strike). A deliberate click/focus strikes a unit early;
+  entering the mess strikes everything ("you can't annotate unprinted
+  paper"); beforeprint strikes all. When the last unit lands the line
+  retires and the colophon admits it: `PULLED IN ONE VISIT` / `PULLED OVER
+  003 VISITS` (`ma-pulled-n`). Unstruck rows don't run their reveal/hover
+  choreography — unprinted paper doesn't perform. GOTCHA: strike positions
+  are cached at load/fonts.ready/resize (`measureStrikes`, same discipline
+  as buildTerrain) so the scroll rAF does pure math.
+- **HOLD REGISTER** (Direction Nº 003, P2): the sheet is only true when you
+  are still. One global registration-error scalar written in the existing
+  scroll rAF: scroll velocity shears the ink passes of the display type —
+  hero headline, row titles, outro title, the 144pt specimen amp (`.regel`,
+  never body text) — 1–3px via the press-check's text-shadow pass language,
+  quantized to quarter-px so identical frames write nothing. ~300ms of
+  stillness thunks everything home (`.reg-settling` transition, then inline
+  styles clear). The regmark's crosshair drifts by exactly the current error
+  (`translate` composes with `reg-spin`) — the page's live instrument. A
+  hard loose-type landing kicks ~1–2px of error in (`regKick`); the plate
+  pull owns the headline while in hand (`regHeroBusy`); the mess, the
+  viewer, reduced motion and `?still` all pin the error at zero. The decal
+  `[⇧] PLATES — SHIFT-DRAG, OFF REGISTER` sits under the loose-type decal
+  (fine-pointer only) and its click runs a demo `regKick` — the gesture,
+  taught by the gesture. This fixed signature Nº4's discoverability gap
+  (nothing had advertised shift-drag since the ticker manual was cut).
 - **Ctrl+P prints a clean proof**: real `@media print` stylesheet — black ink on
   white, crop marks, jobline, "PRINTED FROM THE WORKING PROOF · MRKAXELUS@GMAIL.COM"
   slug, all screen chrome stripped, sections reflowed with `break-inside: avoid`.
@@ -305,6 +377,13 @@ signatures (Mark counts these himself):
   dog-ear), grain overlay.
 
 ### Modes & keys
+> **THE KEYBOARD RULE (Mark's note, July 2026, Direction Nº 003): nothing is
+> ever key-only.** "They're not gonna know to press SPACE or M." Every feature
+> has a visible, clickable, self-labeling affordance in the furniture language
+> (SEE THE MESS tab, [N]/[S] decals, [R] on the loose-type decal, the [⇧]
+> plates decal, HOLD on the stamp faces); keys are silent bonuses for people
+> who live on keyboards. STOP THE PRESS (hold SPACE) was dropped from the
+> press-check phase for exactly this — it only worked as a keypress.
 - **M or P** — mess layer (also `?proof` URL / `#proof`). Esc exits.
 - **N** — night office (auto-on 23:00–06:00 LA time when no stored pref; persisted
   on manual toggle). Dark ink sheet, acid accents, brightened pencil red
@@ -369,9 +448,13 @@ signatures (Mark counts these himself):
   fonts.ready, hero animationend, resize.
 - **Stones:** `stonePath()` seeded generator (mulberry32) draws all stones — yard,
   cairn indicator, trail. Same visual language everywhere.
-- **localStorage keys:** `cairn-stones-v1` (stones now also store `t` timestamp +
-  `n` sequence number), `ma-night`, `ma-accent-i`, `ma-visits`, `ma-stone-seq`.
-  sessionStorage: `ma-press-check`. Noise preference is deliberately NOT stored.
+- **localStorage keys:** `cairn-stones-v2` (`{stack, ground}`; v1 migrates into
+  `ground`), `ma-night`, `ma-accent-i`, `ma-visits`, `ma-stone-seq`,
+  `ma-struck-v1` (impression-line units), `ma-pulled-n` (visits the full pull
+  took), `ma-ok-v1` (press-check verdict/initials/time/count),
+  `ma-presslog-v1` (job-log entries). sessionStorage: `ma-press-check`,
+  `ma-log-sess` (reading divider), `ma-log-mess` (margins-read once).
+  Noise preference is deliberately NOT stored.
 - **Loose type physics:** in main.js — `GRAV = 2400`, bounce `0.42`, wall bounce
   `0.5`. Two numbers to tune feel.
 - **Perf rules (July 2026 pass — Mark reported cursor lag/chop):**
@@ -402,6 +485,14 @@ signatures (Mark counts these himself):
     `<g>` transform in a one-shot rAF with ZERO layout reads (positions are
     known SVG numbers), so a full collapse holds 165fps. **Plate reprints**
     (`rebuildPlates`) only fire on a chip click, never in a loop.
+  - **Direction Nº 003 additions obey the same laws:** the impression line
+    caches unit tops outside the rAF (`measureStrikes`) and strikes via class
+    swaps + opacity/color transitions (body text never changes weight — zero
+    reflow; display type strikes its axes, transition-smoothed); hold register
+    writes one quantized text-shadow string per frame and skips writes when the
+    quarter-px value didn't change; the job log renders only on user acts.
+    Certified after P4: 162fps, 6ms worst frame, zero console errors, mobile
+    inner/scroll 390/390.
   - Next.js was considered for perf and rejected: the jank was runtime layout
     thrash, not load time. Site stays vanilla (colophon says NO FRAMEWORK).
 - **THE COMPAT-MOUSEMOVE GOTCHA (three sites now):** any `pointerdown` handler
@@ -611,6 +702,43 @@ signatures (Mark counts these himself):
     plate's SVG-filter raster on first scroll-in, pre-existing), mobile
     inner/scroll both 390 across a full scroll, zero console errors in any
     mode. The fourth signature slot (open since §7 #13) is now filled.
+
+21. (branch `prototypes-presscheck`, off prototypes-sharpen) **Direction
+    Nº 003 — THE PRESS CHECK, P1–P4.** Mark asked for the thing award
+    sites have — "this unique feel that draws the user... unique to us"
+    (his reference: 3D rooms of screens; his caveat: not literally).
+    A five-lens brainstorm (physics / place / time / role / flat-
+    contrarian, ~40 ideas) converged on a governing law instead of a
+    component: **nothing on this page simply exists — everything is
+    STRUCK, and the visitor is present for the striking.** The fiction:
+    you walked in while your copy was coming off the press, and you're
+    the press-check client it was waiting for. Mark's one note before
+    execute: **keys aren't discoverable — "either drop it or it needs
+    to be really clear."** That became the keyboard rule (§ Modes) and
+    killed STOP-THE-PRESS (hold SPACE) outright.
+    Built, in rank order: **P1 the impression line** (reading prints the
+    sheet; see Fixed furniture — the flagship), **P2 hold register**
+    (velocity shears the passes, stillness thunks them true, the regmark
+    is the instrument; + the [⇧] plates decal that finally advertises
+    signature Nº4), **P3 the OK slip** (the visitor signs off; the mess
+    argues), **P4 the job log** (the shop witnesses you, in type). The
+    arc: arrive mid-run → read (you print it) → play (the log records)
+    → stamp your verdict → the margins talk back → "Write to me."
+    Synthesis kills (stay dead): weather/sunlight ideas (weather died in
+    Direction Nº 001), a full sheet-flip into the mess (peel-adjacent —
+    its one good detail, blind embossing, lives on INSIDE the unstruck
+    state), an ink duct you must refill (nag), a visitor composing stick
+    (dilutes the cairn), sheet-mass tilt (breaks fixed chrome under a
+    transformed ancestor). Parked with potential: the Friday close, the
+    galley view, the wire edition, the visitor's pull souvenir, the
+    stray sort, the anglepoise, the night edition (needs a writing
+    session, not code). P3's commit was delayed by a tooling outage
+    mid-session; the work was verified and committed after ("continue
+    the work I think P3 is done"). All four phases verified headless:
+    P3 9/9, P4 15/15 (one suite flake was the TEST scrolling smoothly
+    while measuring — `scroll-behavior: smooth` + `scrollTo(0,0)` +
+    400ms ≠ arrived; fixed in the test, site was correct), 162fps/6ms,
+    zero console errors throughout.
 
 ## 8. Ideas discussed but not built (fair game later)
 
