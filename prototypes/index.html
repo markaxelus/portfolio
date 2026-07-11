@@ -78,14 +78,24 @@
       <span class="stamp-line2">STILL NOT DONE</span>
       <span class="stamp-line3 mono">AT MY DESK &middot; <span id="stamp-date"></span></span>
     </div>
+    <span class="note hand-b n-knows" id="knows-note" style="--d:.64s"></span>
   </div>
 
   <main class="page" id="top">
 
-    <!-- the thought-thread: one pencil line from the top of the mess to
-         the bottom, drawn in by your scroll (mess only; built by main.js) -->
+    <!-- the thought-thread: the re-read. one pencil line travelling
+         note-to-note, circling what matters, abandoning one idea,
+         changing pens at midnight, landing on "Write to me."
+         (mess only; routed through real note positions by main.js) -->
     <svg class="thread" id="thread" aria-hidden="true" preserveAspectRatio="none">
-      <path id="thread-path" fill="none"/>
+      <path id="th-a" class="th-main th-red" fill="none"/>
+      <path id="th-a-echo" class="th-echo th-red" fill="none"/>
+      <path id="th-b" class="th-main th-gra" fill="none"/>
+      <path id="th-b-echo" class="th-echo th-gra" fill="none"/>
+      <path id="th-spur" class="th-ev th-red" fill="none" pathLength="1"/>
+      <path id="th-scratch" class="th-ev th-red" fill="none" pathLength="1"/>
+      <path id="th-arrow" class="th-ev th-gra" fill="none" pathLength="1"/>
+      <circle id="th-tip" class="th-red" r="4"/>
     </svg>
 
     <!-- hero -->

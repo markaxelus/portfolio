@@ -128,6 +128,28 @@ button:focus-visible,
   transform-origin: left;
   animation: sweep 1s var(--ease-out) 0.35s both;
 }
+/* the pile: this proof is the top sheet of a working stack — two more
+   sheet edges peek out bottom-right, with the stack's soft shadow */
+.frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow:
+    3px 3px 0 -1px var(--stone),
+    4px 4px 0 0 var(--hairline),
+    7px 7px 0 -1px var(--stone),
+    8px 8px 0 0 rgba(22, 21, 15, 0.16),
+    14px 16px 26px rgba(22, 21, 15, 0.12);
+}
+.night .frame::before {
+  box-shadow:
+    3px 3px 0 -1px var(--stone),
+    4px 4px 0 0 var(--hairline),
+    7px 7px 0 -1px var(--stone),
+    8px 8px 0 0 rgba(221, 219, 212, 0.14),
+    14px 16px 26px rgba(0, 0, 0, 0.4);
+}
 @keyframes frame-in {
   from { transform: scale(0.985); opacity: 0; }
   to   { transform: scale(1); opacity: 1; }
@@ -281,8 +303,11 @@ button.corner {
   clip-path: inset(-0.08em -0.1em 0 -0.1em);
 }
 /* masks exist for the entrance only — once the lines land they release,
-   so commas and descenders render whole (js adds .landed) */
+   so commas and descenders render whole (js adds .landed). the filled
+   entrance transform also drops: a transformed .hl is a stacking
+   context that sits over (and steals clicks from) the specimen. */
 .hero-title.landed .hl-mask { overflow: visible; clip-path: none; }
+.hero-title.landed .hl { animation: none; transform: none; }
 .hl {
   display: block;
   transform: translateY(115%);
@@ -822,7 +847,11 @@ body.has-cursor .loose-decal:hover { opacity: 1; color: var(--accent); }
   font-size: clamp(6.5rem, 9.5vw, 11rem);
   font-style: italic;
   color: var(--accent);
+  cursor: none;
+  touch-action: none;
 }
+.spec-amp.playing { transition: none; }
+.spec-amp.springing { transition: font-variation-settings 0.6s var(--ease-thunk); }
 
 /* grip tape — name running up the left edge */
 .tape {
@@ -981,7 +1010,8 @@ body.has-cursor .loose-decal:hover { opacity: 1; color: var(--accent); }
   transform: translateY(6px) rotate(var(--tilt, -1.5deg));
   transition:
     opacity 0.45s var(--ease-out) var(--d, 0s),
-    transform 0.45s var(--ease-out) var(--d, 0s);
+    transform 0.45s var(--ease-out) var(--d, 0s),
+    filter 0.35s var(--ease-out) 0s;
   pointer-events: none;
 }
 body:not(.proof) .note { transition-delay: 0s; }
@@ -1396,6 +1426,8 @@ body.pointer-seen .cursor { opacity: 1; }
      entrance), then the passes slide home in under a second */
   animation: press-register 0.85s var(--ease-out) 1.6s both;
 }
+/* repaint = reprint: a new ink means a quick re-register (chip click) */
+.hero-title.reprint { animation: press-register 0.45s var(--ease-out); }
 @keyframes reg-lock {
   0%   { transform: rotate(-70deg) scale(1.5); opacity: 0; }
   55%  { opacity: 1; }
@@ -1759,7 +1791,7 @@ html.pv-open { overflow: hidden; }
 body.proof { --stone: #E1DBCC; --stone-deep: #D2CBB9; }
 body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
 
-/* the thought-thread: one pencil line, drawn by your scroll */
+/* the thought-thread: the re-read. two pens, a tip, and events */
 .thread {
   position: absolute;
   top: 0;
@@ -1770,11 +1802,30 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
   display: none;
 }
 .proof .thread { display: block; }
-.thread path {
-  stroke: var(--pencil);
+.th-red { color: var(--pencil); }
+.th-gra { color: var(--graphite); }
+.thread path { stroke: currentColor; stroke-linecap: round; }
+.th-main { stroke-width: 2.4; opacity: 0.55; }
+.th-echo { stroke-width: 1.2; opacity: 0.22; transform: translate(2px, 2px); }
+.th-ev {
   stroke-width: 2.2;
-  stroke-linecap: round;
-  opacity: 0.5;
+  opacity: 0;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.6s var(--ease-out), opacity 0.2s var(--ease-out);
+}
+.th-ev.on { opacity: 0.55; stroke-dashoffset: 0; }
+#th-scratch.on { transition-delay: 0.45s; }
+#th-tip {
+  fill: currentColor;
+  stroke: none;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+/* fresh ink: the scrawl nearest the cursor is still wet */
+.proof .note.wet {
+  filter: contrast(1.25) brightness(0.78);
 }
 
 /* the record spins for as long as the mess is open */
@@ -1790,6 +1841,14 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
 .n-mood { left: 12%; bottom: 3%; --tilt: 1.5deg; }
 
 .n-noscale { bottom: 6vh; left: calc(var(--frame) + 3vw); --tilt: -1deg; }
+
+/* the mess knows you (fixed, just under the stamp) */
+.n-knows {
+  position: absolute;
+  top: calc(var(--frame) + 3vw + 9.2rem);
+  right: 6vw;
+  --tilt: -2deg;
+}
 
 .dd-ttt { right: 8%; top: -3.4rem; width: 74px; }
 .n-ttt { right: 3%; top: 2.2rem; --tilt: 2deg; }

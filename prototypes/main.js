@@ -126,58 +126,224 @@
 
   var plates = PROJECTS.map(plateURI);
 
-  /* ============ the thought-thread: the mess has a spine ============ */
-  /* one continuous pencil line meandering from the top of the sheet to
-     the outro, drawn in by your scroll — the chain of thought that
-     connects the scrawls. mess-only. */
+  /* ============ the thought-thread: THE RE-READ ============ */
+  /* the line is Mark re-reading his own margins at 2am. it routes
+     note-to-note through the real scrawl positions, circles what
+     matters, ties a hesitation knot, throws one dead-end spur toward
+     "one more pass" and scratches it out, changes pens at the record
+     (midnight), and lands as an arrow on "Write to me." — the tour of
+     the mess ends at contact. a tip-dot rides the head of the stroke:
+     the line is being written now, not revealed. */
   var threadSvg = document.getElementById("thread");
-  var threadPath = document.getElementById("thread-path");
-  var threadLen = 0;
-  var threadH = 1;
-  var lastThreadOff = -1;
+  var thA = document.getElementById("th-a");
+  var thAe = document.getElementById("th-a-echo");
+  var thB = document.getElementById("th-b");
+  var thBe = document.getElementById("th-b-echo");
+  var thSpur = document.getElementById("th-spur");
+  var thScratch = document.getElementById("th-scratch");
+  var thArrow = document.getElementById("th-arrow");
+  var thTip = document.getElementById("th-tip");
+  var thLenA = 0, thLenB = 0;
+  var thSamples = [];
+  var thSpurLen = 0;
+  var lastThA = -1, lastThB = -1, lastTipOnB = false;
+
+  function pageRect(sel) {
+    var n = document.querySelector(sel);
+    if (!n) return null;
+    var r = n.getBoundingClientRect();
+    if (r.width < 3) return null; /* hidden at this breakpoint */
+    return {
+      x: r.left + r.width / 2, y: r.top + scrollY + r.height / 2,
+      w: r.width, h: r.height,
+      left: r.left, right: r.right,
+      top: r.top + scrollY, bottom: r.bottom + scrollY
+    };
+  }
   function buildThread() {
     if (!threadSvg) return;
     var page = document.querySelector(".page");
     var W = page.clientWidth;
     var H = page.scrollHeight;
-    threadH = H;
     threadSvg.setAttribute("viewBox", "0 0 " + W + " " + H);
     threadSvg.style.height = H + "px";
     var rnd = mulberry32(7);
-    var pts = [[W * 0.24, 190]];
-    var y = 190, side = 1;
-    while (y < H - 420) {
-      y += 300 + rnd() * 320;
-      pts.push([W * (0.5 + side * (0.16 + rnd() * 0.24)), y + (rnd() - 0.5) * 90]);
-      side = -side;
+
+    var drafts = pageRect(".drafts"), amp = pageRect("#amp"), lh = pageRect(".n-lh"),
+        nosc = pageRect(".n-noscale"), y2022 = pageRect(".n-2022"), ttt = pageRect(".dd-ttt"),
+        argue = pageRect(".argue"), coffee = pageRect(".coffee"), vinyl = pageRect(".dd-vinyl"),
+        todo = pageRect(".todo"), rip = pageRect(".dd-rip"), write = pageRect("#write-link");
+
+    var pts = [];
+    var penChangeAt = -1;
+    var spurFrom = null;
+    function push(x, y) { pts.push([x, y]); }
+    function jitterTo(x, y) {
+      /* long transits wander twice — a hand never draws a chord */
+      var p = pts[pts.length - 1];
+      var dist = Math.abs(x - p[0]) + Math.abs(y - p[1]);
+      if (dist > 650) {
+        push(p[0] + (x - p[0]) * 0.33 + (rnd() - 0.5) * 160, p[1] + (y - p[1]) * 0.33 + (rnd() - 0.5) * 70);
+        push(p[0] + (x - p[0]) * 0.7 + (rnd() - 0.5) * 160, p[1] + (y - p[1]) * 0.7 + (rnd() - 0.5) * 70);
+      } else {
+        push((p[0] + x) / 2 + (rnd() - 0.5) * 100, (p[1] + y) / 2 + (rnd() - 0.5) * 60);
+      }
+      push(x, y);
     }
-    pts.push([W * 0.3, H - 260]); /* it ends at "Write to me." */
-    function mid(p, q) { return [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]; }
-    var d = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1);
-    for (var i = 1; i < pts.length - 1; i++) {
-      var m = mid(pts[i], pts[i + 1]);
-      d += " Q" + pts[i][0].toFixed(1) + " " + pts[i][1].toFixed(1) +
-           " " + m[0].toFixed(1) + " " + m[1].toFixed(1);
+    function loop(r, padX, padY) {
+      /* a journaling circle, 1.2 turns, entered from wherever we are */
+      var rx = r.w / 2 + padX, ry = r.h / 2 + padY;
+      var N = 9, steps = Math.floor(N * 1.22);
+      for (var i = 0; i <= steps; i++) {
+        var a = Math.PI + (i / N) * Math.PI * 2;
+        push(r.x + Math.cos(a) * rx * (1 + (rnd() - 0.5) * 0.16),
+             r.y + Math.sin(a) * ry * (1 + (rnd() - 0.5) * 0.16));
+      }
     }
-    d += " L" + pts[pts.length - 1][0].toFixed(1) + " " + pts[pts.length - 1][1].toFixed(1);
-    threadPath.setAttribute("d", d);
-    threadLen = threadPath.getTotalLength();
-    threadPath.style.strokeDasharray = threadLen + " " + threadLen;
-    lastThreadOff = -1;
+    function knot(x, y) {
+      /* the pen hesitates: a small tightening tangle */
+      for (var i = 0; i <= 15; i++) {
+        var a = (i / 7.5) * Math.PI * 2;
+        var rr = 7 + i * 0.9;
+        push(x + Math.cos(a) * rr * 1.5, y + Math.sin(a) * rr);
+      }
+    }
+
+    push(W * 0.3, 150);
+    if (drafts) jitterTo(drafts.left - 36, drafts.y);
+    if (amp) jitterTo(amp.x + amp.w * 0.62 + 30, amp.y);
+    if (lh) jitterTo(lh.x, lh.bottom + 14);
+    if (nosc) jitterTo(nosc.x, nosc.top - 16);
+    var prev = pts[pts.length - 1];
+    knot(W * (0.42 + rnd() * 0.2), prev[1] + (y2022 ? (y2022.y - prev[1]) * 0.5 : 400));
+    if (y2022) jitterTo(y2022.x, y2022.bottom + 12);
+    if (ttt) { jitterTo(ttt.left - 26, ttt.y); loop(ttt, 26, 22); }
+    spurFrom = pts[pts.length - 1].slice();
+    if (coffee) { jitterTo(coffee.left - 18, coffee.y); loop(coffee, 12, 10); }
+    if (vinyl) { jitterTo(vinyl.right + 26, vinyl.y); penChangeAt = pts.length - 1; }
+    if (todo) { jitterTo(todo.left - 24, todo.y); loop(todo, 20, 16); }
+    if (rip) jitterTo(rip.x, rip.top - 18);
+    if (write) jitterTo(write.x - write.w * 0.2, write.top - 26);
+    else jitterTo(W * 0.3, H - 240);
+
+    if (penChangeAt < 0) penChangeAt = Math.floor(pts.length * 0.6);
+
+    function smooth(list) {
+      if (list.length < 2) return "";
+      var d = "M" + list[0][0].toFixed(1) + " " + list[0][1].toFixed(1);
+      for (var i = 1; i < list.length - 1; i++) {
+        var mx = (list[i][0] + list[i + 1][0]) / 2;
+        var my = (list[i][1] + list[i + 1][1]) / 2;
+        d += " Q" + list[i][0].toFixed(1) + " " + list[i][1].toFixed(1) +
+             " " + mx.toFixed(1) + " " + my.toFixed(1);
+      }
+      return d + " L" + list[list.length - 1][0].toFixed(1) + " " + list[list.length - 1][1].toFixed(1);
+    }
+    var listA = pts.slice(0, penChangeAt + 1);
+    var listB = pts.slice(penChangeAt);
+    thA.setAttribute("d", smooth(listA));
+    thAe.setAttribute("d", smooth(listA));
+    thB.setAttribute("d", smooth(listB));
+    thBe.setAttribute("d", smooth(listB));
+    thLenA = thA.getTotalLength();
+    thLenB = thB.getTotalLength();
+    [[thA, thLenA], [thAe, thLenA], [thB, thLenB], [thBe, thLenB]].forEach(function (pl) {
+      pl[0].style.strokeDasharray = pl[1] + " " + pl[1];
+    });
+
+    /* the spur: a thought toward "one more pass" — abandoned, scratched */
+    if (spurFrom && argue) {
+      var sx = spurFrom[0], sy = spurFrom[1];
+      var tx = argue.left - 20, ty = argue.y;
+      thSpur.setAttribute("d",
+        "M" + sx.toFixed(1) + " " + sy.toFixed(1) +
+        " Q" + ((sx + tx) / 2 + 40).toFixed(1) + " " + ((sy + ty) / 2 - 60).toFixed(1) +
+        " " + tx.toFixed(1) + " " + ty.toFixed(1));
+      var mx2 = (sx + tx) / 2 + 12, my2 = (sy + ty) / 2 - 26;
+      thScratch.setAttribute("d",
+        "M" + (mx2 - 48).toFixed(1) + " " + (my2 + 2).toFixed(1) +
+        " L" + (mx2 + 48).toFixed(1) + " " + (my2 - 12).toFixed(1) +
+        " M" + (mx2 - 42).toFixed(1) + " " + (my2 + 14).toFixed(1) +
+        " L" + (mx2 + 42).toFixed(1) + " " + (my2 - 24).toFixed(1));
+      thSpurLen = 0;
+      for (var s = 0; s <= 80; s++) {
+        var q = thA.getPointAtLength(thLenA * s / 80);
+        if (Math.abs(q.x - sx) + Math.abs(q.y - sy) < 26) { thSpurLen = thLenA * s / 80; break; }
+      }
+      if (!thSpurLen) thSpurLen = thLenA * 0.7;
+    } else {
+      thSpur.removeAttribute("d");
+      thScratch.removeAttribute("d");
+      thSpurLen = 0;
+    }
+
+    /* the arrowhead, landing on the CTA */
+    var end = pts[pts.length - 1];
+    thArrow.setAttribute("d",
+      "M" + (end[0] - 15).toFixed(1) + " " + (end[1] - 16).toFixed(1) +
+      " L" + end[0].toFixed(1) + " " + end[1].toFixed(1) +
+      " M" + (end[0] - 18).toFixed(1) + " " + (end[1] + 3).toFixed(1) +
+      " L" + end[0].toFixed(1) + " " + end[1].toFixed(1));
+
+    /* reading samples: monotonic max-y → drawn length (this is what
+       makes the reveal dart between notes and linger inside loops) */
+    thSamples = [];
+    var maxY = 0, K = 110, k, q2;
+    for (k = 0; k <= K; k++) {
+      q2 = thA.getPointAtLength(thLenA * k / K);
+      maxY = Math.max(maxY, q2.y);
+      thSamples.push({ p: 0, len: thLenA * k / K, y: maxY });
+    }
+    for (k = 0; k <= K; k++) {
+      q2 = thB.getPointAtLength(thLenB * k / K);
+      maxY = Math.max(maxY, q2.y);
+      thSamples.push({ p: 1, len: thLenB * k / K, y: maxY });
+    }
+    lastThA = -1;
+    lastThB = -1;
     updateThread();
   }
+
   function updateThread() {
-    if (!threadLen) return;
-    var f;
-    if (stillMode || reduced()) {
-      f = 1; /* fully drawn — no scroll choreography */
-    } else {
-      f = clamp((scrollY + innerHeight * 0.92) / threadH, 0, 1);
+    if (!thSamples.length) return;
+    var full = stillMode || reduced();
+    var target = full ? Infinity : scrollY + innerHeight * 0.86;
+    var lo = 0, hi = thSamples.length - 1;
+    while (lo < hi) {
+      var mid = (lo + hi + 1) >> 1;
+      if (thSamples[mid].y <= target) lo = mid; else hi = mid - 1;
     }
-    var off = Math.round(threadLen * (1 - f));
-    if (off !== lastThreadOff) {
-      lastThreadOff = off;
-      threadPath.style.strokeDashoffset = off;
+    var s = thSamples[lo];
+    var lenA = s.p === 0 ? s.len : thLenA;
+    var lenB = s.p === 1 ? s.len : 0;
+    if (thSamples[0].y > target) { lenA = 0; lenB = 0; }
+    var offA = Math.round(thLenA - lenA);
+    var offB = Math.round(thLenB - lenB);
+    if (offA !== lastThA) {
+      lastThA = offA;
+      thA.style.strokeDashoffset = offA;
+      thAe.style.strokeDashoffset = offA;
+    }
+    if (offB !== lastThB) {
+      lastThB = offB;
+      thB.style.strokeDashoffset = offB;
+      thBe.style.strokeDashoffset = offB;
+    }
+    thSpur.classList.toggle("on", thSpurLen > 0 && lenA >= thSpurLen);
+    thScratch.classList.toggle("on", thSpurLen > 0 && lenA >= thSpurLen + 70);
+    thArrow.classList.toggle("on", thLenB > 0 && lenB >= thLenB - 4);
+    /* the tip: the pen is writing this right now */
+    if (full || (thLenB > 0 && lenB >= thLenB - 2) || lenA <= 1) {
+      thTip.style.opacity = "0";
+    } else {
+      var onB = lenB > 0;
+      var tp = onB ? thB.getPointAtLength(lenB) : thA.getPointAtLength(lenA);
+      thTip.style.opacity = "1";
+      thTip.setAttribute("transform", "translate(" + tp.x.toFixed(1) + " " + tp.y.toFixed(1) + ")");
+      if (onB !== lastTipOnB) {
+        lastTipOnB = onB;
+        thTip.setAttribute("class", onB ? "th-gra" : "th-red");
+      }
     }
   }
 
@@ -734,8 +900,10 @@
       open = false;
       if (!messObserver) watchNotes();
       updateThread(); /* the thread meets you at your scroll position */
+      cacheInkNotes(); /* fresh ink needs to know where the notes live */
     } else {
       unwatchNotes();
+      clearWet();
     }
     catLife(on);
     /* the project sheet carries its own mess button — keep it honest */
@@ -859,6 +1027,13 @@
       accentI = +c.dataset.ai;
       try { localStorage.setItem("ma-accent-i", String(accentI)); } catch (e) {}
       applyAccent();
+      /* new ink: the press runs a quick re-register */
+      if (!reduced() && !stillMode) {
+        heroTitleEl.classList.remove("reprint");
+        void heroTitleEl.getBoundingClientRect();
+        heroTitleEl.classList.add("reprint");
+        setTimeout(function () { heroTitleEl.classList.remove("reprint"); }, 500);
+      }
     });
   });
 
@@ -930,6 +1105,14 @@
         document.body.classList.add("odo-live");
         requestAnimationFrame(function () { rollOdo(visits); });
       }, 1500);
+    }
+    /* the mess knows you — the scrawl by the stamp remembers */
+    var knowsEl = document.getElementById("knows-note");
+    if (knowsEl) {
+      knowsEl.textContent =
+        visits <= 1 ? "first time here. look around." :
+        visits < 5 ? "back again. the kerning still isn’t fixed." :
+        "you again. leave a stone if you haven’t.";
     }
   }
 
@@ -1280,6 +1463,93 @@
   if (catEl) {
     catEl.addEventListener("animationend", function (e) {
       if (e.animationName === "tail-flick") catEl.classList.remove("flick");
+    });
+  }
+
+  /* ============ fresh ink: the mess notices being read ============ */
+  /* the scrawl nearest the cursor darkens a breath, like wet ink under
+     the lamp. note positions cached on mess-entry (event-driven read);
+     mousemove does pure math. */
+  var inkNotes = [];
+  var wetEl = null;
+  var wetLast = 0;
+  function cacheInkNotes() {
+    inkNotes = [];
+    Array.prototype.slice.call(document.querySelectorAll(".page .note")).forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      if (r.width < 3) return;
+      inkNotes.push({ el: el, x: r.left + r.width / 2, y: r.top + scrollY + r.height / 2 });
+    });
+  }
+  function clearWet() {
+    if (wetEl) { wetEl.classList.remove("wet"); wetEl = null; }
+    inkNotes = [];
+  }
+  document.addEventListener("mousemove", function (e) {
+    if (!inkNotes.length) return;
+    var now = performance.now();
+    if (now - wetLast < 90) return;
+    wetLast = now;
+    var px = e.clientX, py = e.clientY + scrollY;
+    var best = null, bd = 170 * 170;
+    for (var i = 0; i < inkNotes.length; i++) {
+      var dx = inkNotes[i].x - px, dy = inkNotes[i].y - py;
+      var d = dx * dx + dy * dy;
+      if (d < bd) { bd = d; best = inkNotes[i].el; }
+    }
+    if (best !== wetEl) {
+      if (wetEl) wetEl.classList.remove("wet");
+      wetEl = best;
+      if (wetEl) wetEl.classList.add("wet");
+    }
+  });
+
+  /* ============ play the typeface: the specimen is an instrument ============ */
+  /* grab the 144pt ampersand — x is weight, y is optical size, the axis
+     label ticks live, release springs home with the thunk. loose type is
+     the rowdy toy; this is the precision toy. */
+  var ampBig = document.querySelector(".spec-amp.s5");
+  var ampLab = ampBig && ampBig.querySelector("i");
+  var ampPlay = null;
+  if (ampBig) {
+    ampBig.addEventListener("pointerdown", function (e) {
+      if (!trailEnabled() || reduced()) return;
+      e.preventDefault();
+      ampBig.setPointerCapture(e.pointerId);
+      ampPlay = { x: e.clientX, y: e.clientY, o: 144, w: 540 };
+      ampBig.classList.remove("springing");
+      ampBig.classList.add("playing");
+      cursorLabel.textContent = "PLAY";
+      cursorEl.classList.add("is-grab");
+    });
+    document.addEventListener("pointermove", function (e) {
+      if (!ampPlay) return;
+      var w = Math.round(clamp(540 + (e.clientX - ampPlay.x) * 1.4, 340, 900));
+      var o = Math.round(clamp(144 - (e.clientY - ampPlay.y) * 0.55, 9, 144));
+      if (w === ampPlay.w && o === ampPlay.o) return;
+      ampPlay.w = w;
+      ampPlay.o = o;
+      ampBig.style.fontVariationSettings =
+        '"opsz" ' + o + ', "wght" ' + w + ', "SOFT" 0, "WONK" 1';
+      ampLab.textContent = o + " · " + w + " · WONK";
+    });
+    document.addEventListener("pointerup", function () {
+      if (!ampPlay) return;
+      ampPlay = null;
+      ampBig.classList.remove("playing");
+      ampBig.classList.add("springing");
+      ampBig.style.fontVariationSettings = "";
+      ampLab.textContent = "144 · 540 · WONK";
+      cursorEl.classList.remove("is-grab");
+      setTimeout(function () { ampBig.classList.remove("springing"); }, 680);
+    });
+    ampBig.addEventListener("mouseenter", function () {
+      if (!trailEnabled() || ampPlay) return;
+      cursorLabel.textContent = "PLAY";
+      cursorEl.classList.add("is-grab");
+    });
+    ampBig.addEventListener("mouseleave", function () {
+      if (!ampPlay) cursorEl.classList.remove("is-grab");
     });
   }
 
