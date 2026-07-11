@@ -699,6 +699,16 @@
   if (lastLine) lastLine.addEventListener("animationend", positionAnchors, { once: true });
   positionAnchors();
 
+  /* the entrance masks release once the lines land, so commas and
+     descenders render whole (they only exist for the rise) */
+  function releaseMasks() { heroTitleEl.classList.add("landed"); }
+  if (lastLine && !stillMode && !reduced()) {
+    lastLine.addEventListener("animationend", releaseMasks, { once: true });
+    setTimeout(releaseMasks, 2400); /* belt and braces */
+  } else {
+    releaseMasks();
+  }
+
   /* ============ the trail: one stone per year ============ */
   Array.prototype.slice.call(document.querySelectorAll(".mile-stone")).forEach(function (svg, i) {
     var p = document.createElementNS(SVG_NS, "path");
@@ -824,6 +834,8 @@
   var scrollQueued = false;
   var pctEl = document.getElementById("scroll-pct");
   var lastPct = "";
+  var ghostEl = document.querySelector(".ghost-m");
+  var lastGy = 0;
   function onScroll() {
     if (scrollQueued) return;
     scrollQueued = true;
@@ -838,6 +850,15 @@
       if (pctEl && pct !== lastPct) {
         lastPct = pct;
         pctEl.textContent = pct; /* rewriting identical text still dirties layout */
+      }
+      /* the ghost M leaves slower than the page — depth reads as life.
+         transform-only write, skipped once the hero is long gone */
+      if (ghostEl && !reduced() && scrollY < innerHeight * 1.8) {
+        var gy = Math.round(scrollY * 0.12);
+        if (gy !== lastGy) {
+          lastGy = gy;
+          ghostEl.style.transform = "translate3d(0," + gy + "px,0)";
+        }
       }
     });
   }
@@ -1070,7 +1091,7 @@
   var peeling = null;
 
   function dePeel(p) {
-    dogear.style.setProperty("--de-p", clamp(p, 16, DE_MAX) + "px");
+    dogear.style.setProperty("--de-p", clamp(p, 22, DE_MAX) + "px");
     var past = p > DE_DROP;
     if (past !== dogear.classList.contains("past")) {
       dogear.classList.toggle("past", past);
@@ -1205,6 +1226,98 @@
     catEl.addEventListener("animationend", function (e) {
       if (e.animationName === "tail-flick") catEl.classList.remove("flick");
     });
+  }
+
+  /* ============ the page is awake ============ */
+  /* every so often the page does one small unprompted thing: the dog-ear
+     catches a draft, a letter rattles loose in its case, a decal
+     re-decodes itself, the regmark corrects its drift. one act at a
+     time; never in the mess (the cat has that shift), never when the
+     tab is hidden, never under reduced motion or ?still. */
+
+  /* the corner also lifts as the pointer approaches — pure viewport
+     math, zero layout reads on mousemove */
+  var deNear = 0;
+  document.addEventListener("mousemove", function (e) {
+    if (peeling || !trailEnabled()) return;
+    var d = Math.max(innerWidth - e.clientX, innerHeight - e.clientY);
+    var t = d > 240 ? 0 : 1 - d / 240;
+    var target = t === 0 ? 0 : Math.round(22 + t * 24);
+    if (target === deNear) return;
+    deNear = target;
+    if (document.body.classList.contains("proof")) return;
+    if (target === 0) dogear.style.removeProperty("--de-p");
+    else dogear.style.setProperty("--de-p", target + "px");
+  });
+
+  function actFlutter() {
+    if (peeling) return;
+    dogear.style.setProperty("--de-p", "44px");
+    setTimeout(function () {
+      if (!peeling && deNear === 0) dogear.style.removeProperty("--de-p");
+    }, 500);
+  }
+  function actRattle() {
+    var live = chars.filter(function (c) { return !c.loose; });
+    if (!live.length) return;
+    var c = live[(Math.random() * live.length) | 0];
+    c.el.classList.add("rattle");
+    setTimeout(function () { c.el.classList.remove("rattle"); }, 650);
+  }
+  var MUTTER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/·—□";
+  var mutterables = Array.prototype.slice.call(
+    document.querySelectorAll(".decode .c1")
+  ).filter(function (el) { return el.children.length === 0; });
+  var muttering = false;
+  function actMutter() {
+    if (muttering || !mutterables.length) return;
+    muttering = true;
+    var el = mutterables[(Math.random() * mutterables.length) | 0];
+    var orig = el.textContent;
+    var f = 0, TOTAL = 9;
+    var iv = setInterval(function () {
+      f++;
+      if (f >= TOTAL) {
+        clearInterval(iv);
+        el.textContent = orig;
+        muttering = false;
+        return;
+      }
+      var settled = Math.floor((f / TOTAL) * orig.length);
+      var out = orig.slice(0, settled);
+      for (var i = settled; i < orig.length; i++) {
+        var ch = orig[i];
+        out += (ch === " " || ch === " ")
+          ? ch
+          : MUTTER_CHARS[(Math.random() * MUTTER_CHARS.length) | 0];
+      }
+      el.textContent = out;
+    }, 48);
+  }
+  function actHiccup() {
+    regEl.classList.add("hiccup");
+  }
+  regEl.addEventListener("animationend", function (e) {
+    if (e.animationName === "reg-hiccup") regEl.classList.remove("hiccup");
+  });
+
+  /* flutter and rattle carry discovery weight, so they come up more */
+  var ACTS = [actFlutter, actRattle, actMutter, actHiccup, actFlutter, actRattle];
+  var lifeT = null;
+  function scheduleLife() {
+    lifeT = setTimeout(function () {
+      if (!document.hidden && !document.body.classList.contains("proof")) {
+        ACTS[(Math.random() * ACTS.length) | 0]();
+      }
+      scheduleLife();
+    }, 9000 + Math.random() * 13000);
+  }
+  if (!reduced() && !stillMode) {
+    scheduleLife();
+    /* the corner catches a draft once, early — so you know it's there */
+    setTimeout(function () {
+      if (!document.body.classList.contains("proof")) actFlutter();
+    }, 4200);
   }
 
   /* for the ones who open the hood */

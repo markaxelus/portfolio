@@ -121,8 +121,13 @@ signatures (Mark counts these himself):
 ### Fixed furniture (all pages)
 - Poster frame + crop marks, spinning registration mark, color bar → **paint chips**
   (clickable accent swap: signal blue / magenta / acid; persisted), job line.
+  The jobline sits on a **solid stone chip** so page content (the ticker) passes
+  under it, never through it; the sheet is softened via `color-mix`, NOT opacity
+  (Mark flagged the SHEET Nº / ticker collision).
 - Corners: MARK AXELUS / CONTACT ↗ / ©2026 — ALL MINE + live LA clock / SEE THE MESS
-  button (↔ OK, ENOUGH).
+  button (↔ OK, ENOUGH). All four are **bordered tabs that invert on hover**
+  (ink fill; SEE THE MESS fills pencil red) — Mark said they read as background
+  before; they must look clickable.
 - `[N] NIGHT OFFICE` decal button top-right; `[S] PRESS NOISE — OFF` decal under it
   (opt-in sound, see delights); grip tape "AXELUS • AXELUS" up the left
   edge; hazard stripes; `SCROLL 042%` live telemetry; cairn scroll indicator
@@ -135,6 +140,18 @@ signatures (Mark counts these himself):
   "stop peeking. press M." in the 2am pen — legal: what's under the page IS the
   mess layer). Release → snaps back (`--ease-thunk`); carry it past ~170px → drops
   into mess mode. Cursor label LIFT → LET GO. Keyboard Enter = 1.2s peek.
+  Discoverability (Mark: "peeling should be more obvious"): rests at 22px, **lifts
+  toward 46px as the pointer approaches the corner** (pure viewport math on
+  mousemove, zero layout reads), catches a draft once ~4.2s after load, and
+  flutters periodically via the awake scheduler.
+- **The page is awake**: every 9–22s it does ONE small unprompted act — the
+  dog-ear flutters, a hero letter rattles in its case (invites the grab), a spec
+  decal re-decodes itself (scramble → settle), or the regmark corrects its drift
+  (`rotate` composes with the transform `reg-spin`, so the drift never resets).
+  Flutter/rattle are weighted double (they carry discovery). Never in mess mode
+  (the cat has that shift), never when the tab is hidden, never under reduced
+  motion or `?still`. Plus the ghost M. parallaxes at 0.12× scroll (transform-only
+  write inside the existing scroll rAF).
 - **Press check intro**: once per session (sessionStorage `ma-press-check`) the
   hero loads as three misregistered passes — red (`--pencil`) and blue (`--accent`)
   text-shadows under the ink — that slide into register (0.85s, starts 1.6s, after
@@ -262,7 +279,7 @@ signatures (Mark counts these himself):
 9. Performance pass (cursor felt laggy/choppy): killed per-frame forced reflows,
    dot now 1:1, grain tiled, ink pooling gated to the hero. Next.js rejected as a
    perf fix — see perf rules in §5.
-10. Delights batch (branch `prototypes-big-three`, off `prototypes-delights`) —
+10. (`prototypes-big-three`) Delights batch —
     Mark picked "the big three": the **dog-ear** (drag the corner, proof peels
     back over the mess, peel far enough to fall in), the **press-check intro**
     (once per session, misregistered passes slide into register), and a real
@@ -271,6 +288,16 @@ signatures (Mark counts these himself):
     timestamps/hover tips, idle whisper, opt-in press noise ([S] decal), cat
     tail-flick, and the 23:00–06:00-only "you're up late too?" scrawl. All
     verified headless (Playwright): 12/12 behaviors pass, no console errors.
+11. (`prototypes-big-three`) Alive pass, from Mark's review — "the page should
+    feel alive, its own entity"; "peeling should be more obvious"; corners
+    "don't seem clickable"; jobline overlapped the ticker; hero comma was
+    clipped. Built the awake scheduler (flutter / rattle / mutter / hiccup),
+    dog-ear proximity lift + teach flutter, ghost-M parallax; corners became
+    bordered invert-on-hover tabs; jobline got a solid chip (sheet dims via
+    color-mix now, not opacity); entrance masks release on `.landed` so commas
+    and descenders render whole; [N]/[S] decals moved clear of the CONTACT tab
+    (desktop + mobile hero padding). Comma clipping was NOT a design choice —
+    it was a side effect of the entrance masks.
 
 ## 8. Ideas discussed but not built (fair game later)
 

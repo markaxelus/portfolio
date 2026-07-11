@@ -144,12 +144,13 @@ button:focus-visible,
   inset: 0;
   z-index: 50;
   pointer-events: none;
-  color: var(--ink);
-  opacity: 0.55;
+  /* softened via color, not opacity — the jobline needs a solid chip
+     so the ticker can't shine through it */
+  color: color-mix(in srgb, var(--ink) 55%, var(--stone));
   animation: rise 0.6s var(--ease-out) 1.2s both;
-  transition: opacity 0.5s var(--ease-out), color 0.5s var(--ease-out);
+  transition: color 0.5s var(--ease-out);
 }
-.proof .sheet { opacity: 1; color: var(--pencil); }
+.proof .sheet { color: var(--pencil); }
 
 .crop { position: absolute; width: 12px; height: 12px; }
 .crop::before, .crop::after { content: ""; position: absolute; background: currentColor; }
@@ -182,6 +183,10 @@ button:focus-visible,
   transform: translateX(-50%);
   font-size: 0.55rem;
   white-space: nowrap;
+  /* solid chip: page content (the ticker) passes underneath, not through */
+  background: var(--stone);
+  padding: 0.3rem 0.75rem;
+  transition: background-color 0.5s var(--ease-out);
 }
 
 /* ---------- corner navigation ---------- */
@@ -190,8 +195,13 @@ button:focus-visible,
   z-index: 55;
   padding: 0.5rem 0.65rem;
   background: var(--stone);
-  border: 0;
+  /* a visible tab, not wallpaper — these are controls */
+  border: 1px solid var(--hairline);
   animation: rise 0.6s var(--ease-out) 0.95s both;
+  transition:
+    color 0.25s var(--ease-out),
+    background-color 0.25s var(--ease-out),
+    border-color 0.25s var(--ease-out);
 }
 button.corner {
   cursor: pointer;
@@ -206,9 +216,21 @@ button.corner {
 .corner.tr { top: calc(var(--frame) - 0.85em); right: calc(var(--frame) + 1.4vw); }
 .corner.bl { bottom: calc(var(--frame) - 0.85em); left: calc(var(--frame) + 1.4vw); }
 .corner.br { bottom: calc(var(--frame) - 0.85em); right: calc(var(--frame) + 1.4vw); }
-.corner:hover { color: var(--accent); }
-.corner.br:hover { color: var(--pencil); }
-.proof .corner.br { color: var(--pencil); }
+.corner:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--stone);
+}
+.corner.br:hover {
+  background: var(--pencil);
+  border-color: var(--pencil);
+  color: var(--stone);
+}
+.corner:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.proof .corner.br { color: var(--pencil); border-color: var(--pencil); }
 @keyframes rise {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -257,6 +279,9 @@ button.corner {
   overflow: hidden;
   clip-path: inset(-0.08em -0.1em 0 -0.1em);
 }
+/* masks exist for the entrance only — once the lines land they release,
+   so commas and descenders render whole (js adds .landed) */
+.hero-title.landed .hl-mask { overflow: visible; clip-path: none; }
 .hl {
   display: block;
   transform: translateY(115%);
@@ -802,7 +827,8 @@ body.has-cursor .loose-decal:hover { opacity: 1; color: var(--accent); }
 /* night-office switch — a decal that works */
 .night-toggle {
   position: fixed;
-  top: calc(var(--frame) + 1.1vw);
+  /* clears the CONTACT tab above it (the tab grew a border) */
+  top: calc(var(--frame) + 1.1vw + 0.9rem);
   right: calc(var(--frame) + 1.4vw);
   z-index: 55;
   border: 0;
@@ -1237,7 +1263,8 @@ body.pointer-seen .cursor { opacity: 1; }
   :root { --frame: 3.5vw; }
   .hero {
     grid-template-columns: 1fr;
-    padding: 14vw 2vw 12vw;
+    /* top padding clears the corner tab + [N]/[S] decal stack */
+    padding: calc(14vw + 2.5rem) 2vw 12vw;
     gap: 8vw;
   }
   .hero-title { font-size: clamp(3.4rem, 17.5vw, 8rem); }
@@ -1261,7 +1288,7 @@ body.pointer-seen .cursor { opacity: 1; }
   .cairn-ind, .regmark, .chips, .chip-ring, .n-chips, .n-night { display: none; }
   .tape, .hz-r, .d-cluster, .d-scatter, .d-cross, .d-scroll { display: none; }
   .ghost-m { font-size: 60vw; right: -12vw; opacity: 0.04; }
-  .night-toggle { top: calc(var(--frame) + 8vw); }
+  .night-toggle { top: calc(var(--frame) + 8vw + 0.9rem); }
   .jobline { font-size: 0.48rem; bottom: 2px; }
   .crop { display: none; }
   .drafts { display: none; }
@@ -1346,7 +1373,7 @@ body.pointer-seen .cursor { opacity: 1; }
 @property --de-p {
   syntax: "<length>";
   inherits: true;
-  initial-value: 16px;
+  initial-value: 22px;
 }
 
 /* invisible grab zone: only the diagonal corner half takes the pointer */
@@ -1368,7 +1395,7 @@ body.pointer-seen .cursor { opacity: 1; }
 .proof .de-hot { pointer-events: none; }
 
 .dogear {
-  --de-p: 16px;
+  --de-p: 22px;
   position: fixed;
   right: var(--frame);
   bottom: var(--frame);
@@ -1380,7 +1407,7 @@ body.pointer-seen .cursor { opacity: 1; }
 }
 .dogear.dragging { transition: opacity 0.35s var(--ease-out); }
 .de-hot:hover + .dogear,
-.de-hot:focus-visible + .dogear { --de-p: 30px; }
+.de-hot:focus-visible + .dogear { --de-p: 36px; }
 .proof .dogear { opacity: 0; }
 
 /* what's under the page IS the mess */
@@ -1431,7 +1458,7 @@ body.pointer-seen .cursor { opacity: 1; }
     100% calc(100% - var(--de-p)),
     calc(100% - var(--de-p)) calc(100% - var(--de-p))
   );
-  filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.28));
+  filter: drop-shadow(3px 4px 9px rgba(0, 0, 0, 0.34));
 }
 
 /* the cursor knows */
@@ -1449,7 +1476,7 @@ body.pointer-seen .cursor { opacity: 1; }
 
 .noise-toggle {
   position: fixed;
-  top: calc(var(--frame) + 1.1vw + 1.35rem);
+  top: calc(var(--frame) + 1.1vw + 2.25rem);
   right: calc(var(--frame) + 1.4vw);
   z-index: 55;
   border: 0;
@@ -1519,6 +1546,30 @@ body.odo-live .odo-reel { transition: transform 0.9s var(--ease-out); }
 @keyframes reg-fidget { to { transform: rotate(720deg); } }
 .regmark.fidget { animation: reg-fidget 0.9s cubic-bezier(0.16, 1, 0.3, 1); }
 
+/* ============================================================
+   THE PAGE IS AWAKE — small unprompted acts, one at a time
+   ============================================================ */
+
+/* a letter rattles loose in its case (invites the grab) */
+@keyframes rattle {
+  20%  { transform: translate(0.02em, -0.028em) rotate(1.1deg); }
+  45%  { transform: translate(-0.018em, 0.014em) rotate(-1.3deg); }
+  70%  { transform: translate(0.012em, 0) rotate(0.7deg); }
+  100% { transform: none; }
+}
+.hl .ch.rattle { animation: rattle 0.55s ease-in-out; }
+
+/* the regmark corrects its drift — `rotate` composes with the
+   transform-based reg-spin instead of replacing it */
+@keyframes reg-hiccup {
+  30%  { rotate: -10deg; }
+  60%  { rotate: 5deg; }
+  100% { rotate: 0deg; }
+}
+.regmark.hiccup {
+  animation: reg-spin 90s linear infinite, reg-hiccup 0.7s var(--ease-out);
+}
+
 /* the cat, alive at last (mess layer) */
 .cat .cat-tail { transform-box: fill-box; transform-origin: 0% 100%; }
 .cat.flick .cat-tail { animation: tail-flick 0.55s var(--ease-out); }
@@ -1539,13 +1590,14 @@ body.odo-live .odo-reel { transition: transform 0.9s var(--ease-out); }
 .late-desk .n-uplate { display: block; }
 
 @media (max-width: 820px) {
-  .noise-toggle { top: calc(var(--frame) + 8vw + 1.35rem); }
+  .noise-toggle { top: calc(var(--frame) + 8vw + 2.25rem); }
   .de-hot { width: 68px; height: 68px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .press-check .hero-title, .press-check .regmark { animation: none !important; }
   .regmark.fidget { animation: none !important; }
+  .hl .ch.rattle, .regmark.hiccup { animation: none !important; }
   .dogear { transition: opacity 0.01s !important; }
   .odo-reel { transition: none !important; }
   .idle-line { transition: none !important; }
