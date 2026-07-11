@@ -123,12 +123,28 @@ signatures (Mark counts these himself):
   (clickable accent swap: signal blue / magenta / acid; persisted), job line.
 - Corners: MARK AXELUS / CONTACT ↗ / ©2026 — ALL MINE + live LA clock / SEE THE MESS
   button (↔ OK, ENOUGH).
-- `[N] NIGHT OFFICE` decal button top-right; grip tape "AXELUS • AXELUS" up the left
+- `[N] NIGHT OFFICE` decal button top-right; `[S] PRESS NOISE — OFF` decal under it
+  (opt-in sound, see delights); grip tape "AXELUS • AXELUS" up the left
   edge; hazard stripes; `SCROLL 042%` live telemetry; cairn scroll indicator
   (5 stones stack with scroll progress); `[RUN.M] MESS LAYER ARMED` + blinking acid
   caret; hero spec cluster with hover-decodes (`00.MA2093` → "means nothing. looks
-  great.", `VISIT Nº 007` → real localStorage visit counter).
-- Custom cursor (dot; PROOF ↗ over rows; GRAB over headline), grain overlay.
+  great.", `VISIT Nº 007` → real localStorage visit counter, rolls like an odometer
+  on arrival).
+- **The dog-ear** (signature #4): a turned corner bottom-right. Drag it and the
+  proof physically peels back over a sliver of the mess (red baseline grid +
+  "stop peeking. press M." in the 2am pen — legal: what's under the page IS the
+  mess layer). Release → snaps back (`--ease-thunk`); carry it past ~170px → drops
+  into mess mode. Cursor label LIFT → LET GO. Keyboard Enter = 1.2s peek.
+- **Press check intro**: once per session (sessionStorage `ma-press-check`) the
+  hero loads as three misregistered passes — red (`--pencil`) and blue (`--accent`)
+  text-shadows under the ink — that slide into register (0.85s, starts 1.6s, after
+  the last line lands) while the regmark locks in (`reg-lock`). Any input skips it;
+  reduced-motion and `?still` never see it.
+- **Ctrl+P prints a clean proof**: real `@media print` stylesheet — black ink on
+  white, crop marks, jobline, "PRINTED FROM THE WORKING PROOF · MRKAXELUS@GMAIL.COM"
+  slug, all screen chrome stripped, sections reflowed with `break-inside: avoid`.
+- Custom cursor (dot; PROOF ↗ over rows; GRAB over headline; LIFT over the
+  dog-ear), grain overlay.
 
 ### Modes & keys
 - **M or P** — mess layer (also `?proof` URL / `#proof`). Esc exits.
@@ -136,6 +152,10 @@ signatures (Mark counts these himself):
   on manual toggle). Dark ink sheet, acid accents, brightened pencil red
   (`#F0603F`), stamp switches to normal blend (multiply made it invisible — fixed).
 - **R** — reset the loose type case.
+- **S** — press noise on/off (also the `[S]` decal). Opt-in, never persisted —
+  sound is a per-visit choice, not an ambush on the next load. Two sounds only:
+  letterpress clack when thrown type lands hard, stone tok when a stone drops.
+  WebAudio, synthesized, context created lazily on first enable.
 - **`?still`** — freezes all motion (press shots / deterministic screenshots).
 - **`?fps`** — dev-only frame meter (measured FPS + worst frame ms per window).
 - Reduced motion respected everywhere (no physics, no draw-ins, instant toggles).
@@ -144,6 +164,17 @@ signatures (Mark counts these himself):
 - Console: "you looked under here too? we'd get along. press M. — mark" (red mono).
 - Stamp: "MARK AXELUS — WORKING PROOF / STILL NOT DONE / AT MY DESK · date".
 - Every 9th visitor stone is a blue "signal stone."
+- Tab blur → title becomes "— come back, the kerning isn't done"; restores on focus.
+- Visitor stones carry a number + timestamp (`data-n`/`data-t`); hovering one shows
+  "Nº 023 — 3 DAYS AGO" (house stack says "THE HOUSE STACK — MINE").
+- The registration mark is a fidget: click → two fast turns, eases back to its
+  90s drift (`reg-fidget`).
+- Two idle minutes → "STILL HERE? IT STILL ISN'T DONE" fades in bottom-center
+  (re-arm throttled to 1/s so mousemove storms don't churn timers).
+- Mess layer: the cat tail-flicks every 6–15s once drawn in (`tail-flick`,
+  scheduled only while M is on — `catLife()` in `setProof`).
+- Mess layer, 23:00–06:00 desk time only (`body.late-desk`, ticked with the clock):
+  one extra outro scrawl — "you're up late too?" — day visitors never see it.
 
 ---
 
@@ -164,7 +195,9 @@ signatures (Mark counts these himself):
   fonts.ready, hero animationend, resize.
 - **Stones:** `stonePath()` seeded generator (mulberry32) draws all stones — yard,
   cairn indicator, trail. Same visual language everywhere.
-- **localStorage keys:** `cairn-stones-v1`, `ma-night`, `ma-accent-i`, `ma-visits`.
+- **localStorage keys:** `cairn-stones-v1` (stones now also store `t` timestamp +
+  `n` sequence number), `ma-night`, `ma-accent-i`, `ma-visits`, `ma-stone-seq`.
+  sessionStorage: `ma-press-check`. Noise preference is deliberately NOT stored.
 - **Loose type physics:** in main.js — `GRAV = 2400`, bounce `0.42`, wall bounce
   `0.5`. Two numbers to tune feel.
 - **Perf rules (July 2026 pass — Mark reported cursor lag/chop):**
@@ -229,13 +262,24 @@ signatures (Mark counts these himself):
 9. Performance pass (cursor felt laggy/choppy): killed per-frame forced reflows,
    dot now 1:1, grain tiled, ink pooling gated to the hero. Next.js rejected as a
    perf fix — see perf rules in §5.
+10. Delights batch (branch `prototypes-big-three`, off `prototypes-delights`) —
+    Mark picked "the big three": the **dog-ear** (drag the corner, proof peels
+    back over the mess, peel far enough to fall in), the **press-check intro**
+    (once per session, misregistered passes slide into register), and a real
+    **print stylesheet** (Ctrl+P → clean proof sheet). Plus the small delights:
+    tab-blur title, visit-counter odometer, regmark fidget spin, stone
+    timestamps/hover tips, idle whisper, opt-in press noise ([S] decal), cat
+    tail-flick, and the 23:00–06:00-only "you're up late too?" scrawl. All
+    verified headless (Playwright): 12/12 behaviors pass, no console errors.
 
 ## 8. Ideas discussed but not built (fair game later)
 
 - Project detail pages, each as its own proof sheet / case study.
 - Desk board fed from a small JSON Mark edits.
-- Cat blinking or tail-flick after she's drawn.
 - Stone-skipping or cairn-balance mini-game (parked — don't dilute the guestbook).
+- Hidden **cyanotype proof** (blueprint-blue paper, white ink, found by a quiet
+  gesture, not a fourth paint chip). Print-authentic but it's a third full palette
+  to maintain across night mode + mess — only build it if Mark says he's in love.
 
 ---
 

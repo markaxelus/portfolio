@@ -1307,3 +1307,322 @@ body.pointer-seen .cursor { opacity: 1; }
   #pile g.drop-wrap path.dropping { animation: none !important; }
   .hl .ch { transition: none !important; }
 }
+
+/* ============================================================
+   PRESS CHECK — the sheet comes into register (once per session)
+   three passes (red, blue, ink) slide home; the regmark locks
+   ============================================================ */
+
+@keyframes press-register {
+  0% {
+    text-shadow:
+      -0.05em 0.018em 0 var(--pencil),
+      0.044em -0.014em 0 var(--accent);
+  }
+  100% {
+    text-shadow:
+      0 0 0 var(--pencil),
+      0 0 0 var(--accent);
+  }
+}
+.press-check .hero-title {
+  /* the lines rise misregistered (last word lands ~1.56s into the
+     entrance), then the passes slide home in under a second */
+  animation: press-register 0.85s var(--ease-out) 1.6s both;
+}
+@keyframes reg-lock {
+  0%   { transform: rotate(-70deg) scale(1.5); opacity: 0; }
+  55%  { opacity: 1; }
+  100% { transform: rotate(0deg) scale(1); opacity: 1; }
+}
+.press-check .regmark {
+  animation: reg-lock 0.85s var(--ease-out) both, reg-spin 90s linear 0.85s infinite;
+}
+
+/* ============================================================
+   THE DOG-EAR — lift the corner, peek at what's underneath
+   ============================================================ */
+
+@property --de-p {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 16px;
+}
+
+/* invisible grab zone: only the diagonal corner half takes the pointer */
+.de-hot {
+  position: fixed;
+  right: calc(var(--frame) - 12px);
+  bottom: calc(var(--frame) - 12px);
+  width: 84px;
+  height: 84px;
+  z-index: 54;
+  border: 0;
+  padding: 0;
+  background: none;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  cursor: grab;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.proof .de-hot { pointer-events: none; }
+
+.dogear {
+  --de-p: 16px;
+  position: fixed;
+  right: var(--frame);
+  bottom: var(--frame);
+  width: 300px;
+  height: 300px;
+  z-index: 58;
+  pointer-events: none;
+  transition: --de-p 0.55s var(--ease-thunk), opacity 0.35s var(--ease-out);
+}
+.dogear.dragging { transition: opacity 0.35s var(--ease-out); }
+.de-hot:hover + .dogear,
+.de-hot:focus-visible + .dogear { --de-p: 30px; }
+.proof .dogear { opacity: 0; }
+
+/* what's under the page IS the mess */
+.de-under, .de-flap { position: absolute; inset: 0; }
+.de-under {
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0, transparent 23px,
+      rgba(199, 54, 31, 0.18) 23px, rgba(199, 54, 31, 0.18) 24px),
+    var(--stone);
+  clip-path: polygon(
+    100% 100%,
+    calc(100% - var(--de-p)) 100%,
+    100% calc(100% - var(--de-p))
+  );
+}
+.night .de-under {
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0, transparent 23px,
+      rgba(240, 96, 63, 0.22) 23px, rgba(240, 96, 63, 0.22) 24px),
+    var(--stone);
+}
+.de-scrawl {
+  position: absolute;
+  right: -3px;
+  bottom: 56px;
+  width: 150px;
+  text-align: center;
+  transform: rotate(-45deg);
+  font-size: 1.25rem;
+  color: var(--graphite);
+  transition: color 0.25s var(--ease-out);
+}
+.dogear.past .de-scrawl { color: var(--pencil); }
+
+/* the turned-back corner: backside of the sheet */
+.de-flap {
+  background: linear-gradient(
+    135deg,
+    var(--stone-deep) calc((600px - var(--de-p) * 2) / 1.414),
+    color-mix(in srgb, var(--stone-deep) 76%, #000) calc((600px - var(--de-p)) / 1.414)
+  );
+  clip-path: polygon(
+    calc(100% - var(--de-p)) 100%,
+    100% calc(100% - var(--de-p)),
+    calc(100% - var(--de-p)) calc(100% - var(--de-p))
+  );
+  filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.28));
+}
+
+/* the cursor knows */
+.cursor.is-peel {
+  width: 52px;
+  height: 52px;
+  background: transparent;
+  border-color: #fff;
+}
+.cursor.is-peel .cursor-label { opacity: 1; }
+
+/* ============================================================
+   PRESS NOISE — opt-in, muted by default
+   ============================================================ */
+
+.noise-toggle {
+  position: fixed;
+  top: calc(var(--frame) + 1.1vw + 1.35rem);
+  right: calc(var(--frame) + 1.4vw);
+  z-index: 55;
+  border: 0;
+  background: none;
+  padding: 0.25rem 0;
+  font-family: "Space Mono", monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.6;
+  cursor: pointer;
+}
+.noise-toggle:hover { opacity: 1; color: var(--accent); }
+.noise-toggle[aria-pressed="true"] { color: var(--acid); opacity: 0.9; }
+.proof .noise-toggle { opacity: 0.35; }
+
+/* ============================================================
+   SMALL DELIGHTS — idle whisper, stone tips, odometer, the tail
+   ============================================================ */
+
+/* two minutes of nothing */
+.idle-line {
+  position: fixed;
+  bottom: calc(var(--frame) + 0.8rem);
+  left: 50%;
+  transform: translate(-50%, 5px);
+  z-index: 45;
+  opacity: 0;
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  pointer-events: none;
+  color: var(--ink);
+  font-size: 0.55rem;
+}
+.idle-line.on { opacity: 0.65; transform: translate(-50%, 0); }
+
+/* who left this one, and when */
+.stone-tip {
+  position: fixed;
+  z-index: 72;
+  transform: translate(-50%, -140%);
+  background: var(--ink);
+  color: var(--stone);
+  padding: 0.32rem 0.5rem;
+  font-size: 0.55rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.25s var(--ease-out);
+  pointer-events: none;
+}
+.stone-tip.on { opacity: 1; }
+#pile path { pointer-events: auto; }
+
+/* the visit counter rolls like an odometer */
+.odo {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  vertical-align: -0.18em;
+}
+.odo-reel { display: block; }
+.odo-reel span { display: block; height: 1em; line-height: 1; }
+body.odo-live .odo-reel { transition: transform 0.9s var(--ease-out); }
+
+/* the regmark is also a fidget */
+.regmark { pointer-events: auto; cursor: pointer; }
+@keyframes reg-fidget { to { transform: rotate(720deg); } }
+.regmark.fidget { animation: reg-fidget 0.9s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* the cat, alive at last (mess layer) */
+.cat .cat-tail { transform-box: fill-box; transform-origin: 0% 100%; }
+.cat.flick .cat-tail { animation: tail-flick 0.55s var(--ease-out); }
+@keyframes tail-flick {
+  30%  { transform: rotate(-11deg); }
+  62%  { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* only exists 23:00–06:00 desk time */
+.n-uplate {
+  display: none;
+  top: calc(12% + 3.4rem);
+  right: 22%;
+  font-size: 1.5rem;
+  --tilt: -2deg;
+}
+.late-desk .n-uplate { display: block; }
+
+@media (max-width: 820px) {
+  .noise-toggle { top: calc(var(--frame) + 8vw + 1.35rem); }
+  .de-hot { width: 68px; height: 68px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press-check .hero-title, .press-check .regmark { animation: none !important; }
+  .regmark.fidget { animation: none !important; }
+  .dogear { transition: opacity 0.01s !important; }
+  .odo-reel { transition: none !important; }
+  .idle-line { transition: none !important; }
+  .stone-tip { transition: none !important; }
+  .cat.flick .cat-tail { animation: none !important; }
+}
+
+/* ============================================================
+   CTRL+P — printing produces a clean proof sheet
+   ============================================================ */
+
+.print-slug { display: none; }
+
+@media print {
+  @page { margin: 12mm; }
+
+  body, body.night {
+    --stone: #fff;
+    --stone-deep: #ececec;
+    --ink: #000;
+    --accent: #000;
+    --acid: #000;
+    --pencil: #000;
+    --graphite: rgba(0, 0, 0, 0.55);
+    --hairline: rgba(0, 0, 0, 0.3);
+    --frame: 0px;
+    background: #fff;
+    color: #000;
+  }
+
+  /* nothing moves on paper */
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    text-shadow: none !important;
+  }
+  .hl, .hl .ch { transform: none !important; }
+  .hl .ch { font-variation-settings: "opsz" 144, "wght" 480, "SOFT" 0, "WONK" 0 !important; }
+  .hl .amp .ch { font-variation-settings: "opsz" 144, "wght" 340, "SOFT" 0, "WONK" 0 !important; }
+  .final { opacity: 1 !important; filter: none !important; }
+
+  /* screen chrome stays on screen */
+  .grain, .frame, .cursor, .reveal, .cairn-ind, .d-scroll,
+  .tape, .hazard, .chips, .night-toggle, .noise-toggle,
+  .corner, .ticker, .under, .proof-fixed, .proof-notes,
+  .idle-line, .stone-tip, .dogear, .de-hot, .loose-decal,
+  .amark, .ghost-m, .d-cluster, .d-scatter, .d-cross, .d-run,
+  .d-outro, .row-thumb, .fps-meter, .regmark {
+    display: none !important;
+  }
+
+  /* proof furniture rides every page */
+  .sheet { opacity: 1 !important; color: #000; }
+  .crop.tl { top: 0; left: 0; }
+  .crop.tr { top: 0; right: 0; }
+  .crop.bl { bottom: 0; left: 0; }
+  .crop.br { bottom: 0; right: 0; }
+  .jobline { bottom: 0; font-size: 7pt; }
+  .print-slug {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 7pt;
+    letter-spacing: 0.14em;
+  }
+
+  /* the sheet reflows as a document */
+  .page { padding: 10mm 0 14mm; }
+  .hero { min-height: 0; padding: 10mm 0 8mm; }
+  .hero-title { font-size: 58pt; line-height: 0.9; }
+  .eyebrow { margin-bottom: 6mm; }
+  .trail, .index, .desk, .yard, .outro { padding: 8mm 0; }
+  .row { padding: 5mm 0; break-inside: avoid; }
+  .row-title { font-size: 26pt; }
+  .desk-row, .mile, .yard, .outro { break-inside: avoid; }
+  .outro-title { font-size: 34pt; }
+  .outro-title a { border-bottom-width: 1pt; }
+}

@@ -133,6 +133,9 @@
   var clockEl = document.getElementById("clock");
   function tickClock() {
     if (clockEl) clockEl.textContent = " — " + deskTime() + " AT MY DESK";
+    /* one scrawl in the outro only exists 23:00–06:00 desk time */
+    var h = deskHour();
+    document.body.classList.toggle("late-desk", h >= 23 || h < 6);
   }
   tickClock();
   setInterval(tickClock, 30000);
@@ -145,10 +148,14 @@
   if (jd) jd.textContent = dateStr;
   if (sd) sd.textContent = dateStr;
 
-  function deskStatus() {
-    var h = +new Intl.DateTimeFormat("en-GB", {
+  function deskHour() {
+    return +new Intl.DateTimeFormat("en-GB", {
       timeZone: DESK_TZ, hour: "2-digit", hour12: false
     }).format(new Date());
+  }
+
+  function deskStatus() {
+    var h = deskHour();
     return (h >= 8 && h < 19)
       ? "I AM PROBABLY AT THE DESK"
       : "THE DESK SLEEPS — WRITE ANYWAY";
@@ -162,6 +169,9 @@
     "THE KERNING IS DONE — IT ISN’T",
     "PRESS M FOR THE MESS",
     "PRESS N FOR NIGHT OFFICE",
+    "LIFT THE BOTTOM-RIGHT CORNER — GENTLY",
+    "CTRL+P PRINTS A CLEAN PROOF",
+    "PRESS S FOR PRESS NOISE",
     "THE HEADLINE IS LOOSE TYPE — GRAB IT",
     "THE CHIPS AT THE BOTTOM ARE PAINT",
     "ONE-PERSON OPERATION"
@@ -277,6 +287,7 @@
       indexEl.classList.add("is-hovering");
       rows.forEach(function (r) { r.classList.remove("is-active"); });
       row.classList.add("is-active");
+      cursorLabel.textContent = "PROOF ↗";
       cursorEl.classList.add("is-view");
 
       if (+row.dataset.plate !== curPlate) {
@@ -427,11 +438,13 @@
       applyChar(c);
       var r = c.el.getBoundingClientRect();
       if (r.bottom > floor) {
+        var impact = c.vy;
         c.y -= r.bottom - floor;
         c.vy = -c.vy * 0.42;
         c.vx *= 0.88;
         c.vr *= 0.8;
         if (Math.abs(c.vy) < 60) c.vy = 0;
+        if (impact > 220) sndClack(clamp(impact / 1800, 0.12, 1));
       }
       if (r.left < heroRect.left) { c.x += heroRect.left - r.left; c.vx = -c.vx * 0.5; }
       if (r.right > heroRect.right) { c.x -= r.right - heroRect.right; c.vx = -c.vx * 0.5; }
@@ -623,6 +636,7 @@
     } else {
       unwatchNotes();
     }
+    catLife(on);
   }
   function toggleProof() {
     setProof(!document.body.classList.contains("proof"));
@@ -633,6 +647,7 @@
   if (/(^|[?&])still/.test(location.search)) {
     document.documentElement.classList.add("still");
   }
+  var stillMode = document.documentElement.classList.contains("still");
   /* /?fps — dev-only frame meter (measured rate + worst frame in the window) */
   if (/(^|[?&])fps/.test(location.search)) {
     var fpsEl = document.createElement("div");
@@ -667,6 +682,7 @@
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.key === "m" || e.key === "M" || e.key === "p" || e.key === "P") toggleProof();
     if (e.key === "n" || e.key === "N") setNight(!isNight(), true);
+    if (e.key === "s" || e.key === "S") setNoise(!noiseOn);
     if (e.key === "Escape") setProof(false);
   });
 
@@ -734,23 +750,58 @@
   try { nightPref = localStorage.getItem("ma-night"); } catch (e) {}
   if (nightPref === null) {
     /* no opinion stored: the office goes dark on its own schedule */
-    var dh = +new Intl.DateTimeFormat("en-GB", {
-      timeZone: DESK_TZ, hour: "2-digit", hour12: false
-    }).format(new Date());
+    var dh = deskHour();
     setNight(dh >= 23 || dh < 6, false);
   } else {
     setNight(nightPref === "1", false);
   }
 
-  /* ============ visit counter ============ */
+  /* ============ visit counter — rolls like an odometer ============ */
   var visitEl = document.getElementById("visit-n");
+  var odoReels = [];
+  function odoDigits(n) {
+    return String(Math.min(Math.max(n, 0), 999)).padStart(3, "0").split("");
+  }
+  function buildOdo(el, n) {
+    el.textContent = "";
+    odoReels = odoDigits(n).map(function (d, i) {
+      var wrap = document.createElement("span");
+      wrap.className = "odo";
+      var reel = document.createElement("span");
+      reel.className = "odo-reel";
+      for (var k = 0; k <= 9; k++) {
+        var s = document.createElement("span");
+        s.textContent = String(k);
+        reel.appendChild(s);
+      }
+      reel.style.transform = "translateY(-" + d + "em)";
+      reel.style.transitionDelay = (i * 0.09) + "s";
+      wrap.appendChild(reel);
+      el.appendChild(wrap);
+      return reel;
+    });
+  }
+  function rollOdo(n) {
+    odoDigits(n).forEach(function (d, i) {
+      odoReels[i].style.transform = "translateY(-" + d + "em)";
+    });
+  }
   if (visitEl) {
-    var visits = 1;
+    var prevVisits = 0, visits = 1;
     try {
-      visits = (+(localStorage.getItem("ma-visits") || 0)) + 1;
+      prevVisits = +(localStorage.getItem("ma-visits") || 0);
+      visits = prevVisits + 1;
       localStorage.setItem("ma-visits", String(visits));
     } catch (e) {}
-    visitEl.textContent = String(Math.min(visits, 999)).padStart(3, "0");
+    if (reduced() || stillMode) {
+      buildOdo(visitEl, visits);
+    } else {
+      buildOdo(visitEl, prevVisits);
+      setTimeout(function () {
+        document.body.classList.add("odo-live");
+        requestAnimationFrame(function () { rollOdo(visits); });
+      }, 1500);
+    }
   }
 
   /* ============ cairn scroll indicator ============ */
@@ -817,6 +868,7 @@
     OURS.forEach(function (s) {
       var p = document.createElementNS(SVG_NS, "path");
       p.setAttribute("d", stonePath(500, bottom - s.ry, s.rx, s.ry, s.seed));
+      p.classList.add("house");
       pileEl.appendChild(p);
       bottom = bottom - 2 * s.ry + 3;
     });
@@ -835,12 +887,22 @@
 
   var visitorStones = loadStones();
 
+  /* every stone gets a number; older stones kept theirs implicitly */
+  var stoneSeq = 0;
+  try { stoneSeq = +(localStorage.getItem("ma-stone-seq") || 0); } catch (e) {}
+  visitorStones.forEach(function (s, i) {
+    if (!s.n) s.n = i + 1;
+    if (s.n > stoneSeq) stoneSeq = s.n;
+  });
+
   function drawStone(s, animate) {
     var g = document.createElementNS(SVG_NS, "g");
     g.setAttribute("class", "drop-wrap");
     g.setAttribute("transform", "translate(" + s.x + " 0)");
     var p = document.createElementNS(SVG_NS, "path");
     p.setAttribute("d", stonePath(0, GROUND_Y - s.ry + 1, s.rx, s.ry, s.seed));
+    if (s.n) p.dataset.n = String(s.n);
+    if (s.t) p.dataset.t = String(s.t);
     if (s.sig) p.classList.add("signal");
     if (animate && !reduced()) p.classList.add("dropping");
     g.appendChild(p);
@@ -869,8 +931,11 @@
       rx: Math.round(13 + rnd() * 14),
       ry: Math.round(6 + rnd() * 5),
       seed: seed,
-      sig: (visitorStones.length % 9) === 8
+      sig: (visitorStones.length % 9) === 8,
+      t: Date.now(),
+      n: ++stoneSeq
     };
+    try { localStorage.setItem("ma-stone-seq", String(stoneSeq)); } catch (e) {}
     visitorStones.push(s);
     if (visitorStones.length > MAX_STONES) {
       visitorStones.shift();
@@ -885,6 +950,7 @@
     }
     saveStones(visitorStones);
     updateCount();
+    setTimeout(sndTok, reduced() ? 80 : 400);
   }
 
   yardEl.addEventListener("click", function (e) {
@@ -898,6 +964,248 @@
       addStone(80 + Math.random() * 840);
     }
   });
+
+  /* ============ press noise: opt-in, muted by default ============ */
+  /* two sounds total — a letterpress clack when thrown type lands,
+     a stone tok when a visitor leaves one. nothing plays until the
+     [S] decal is pressed, and the preference is never persisted:
+     sound is a per-visit choice, not an ambush on the next load. */
+  var noiseBtn = document.getElementById("noise-btn");
+  var noiseOn = false;
+  var audioCtx = null;
+  function noiseCtx() {
+    if (!audioCtx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      audioCtx = new AC();
+    }
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+  }
+  function sndClack(v) {
+    if (!noiseOn) return;
+    var ctx = noiseCtx();
+    if (!ctx) return;
+    var t = ctx.currentTime;
+    /* metal type meets the bed: filtered noise tap over a wooden thump */
+    var len = Math.floor(ctx.sampleRate * 0.05);
+    var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    var data = buf.getChannelData(0);
+    for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    var src = ctx.createBufferSource();
+    src.buffer = buf;
+    var bp = ctx.createBiquadFilter();
+    bp.type = "bandpass"; bp.frequency.value = 2600; bp.Q.value = 1.4;
+    var g1 = ctx.createGain();
+    g1.gain.setValueAtTime(0.5 * v, t);
+    g1.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+    src.connect(bp); bp.connect(g1); g1.connect(ctx.destination);
+    src.start(t);
+    var osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(190, t);
+    osc.frequency.exponentialRampToValueAtTime(70, t + 0.08);
+    var g2 = ctx.createGain();
+    g2.gain.setValueAtTime(0.4 * v, t);
+    g2.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    osc.connect(g2); g2.connect(ctx.destination);
+    osc.start(t); osc.stop(t + 0.1);
+  }
+  function sndTok() {
+    if (!noiseOn) return;
+    var ctx = noiseCtx();
+    if (!ctx) return;
+    var t = ctx.currentTime;
+    /* stone on stone: one damped knock */
+    var osc = ctx.createOscillator();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(720, t);
+    osc.frequency.exponentialRampToValueAtTime(160, t + 0.06);
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0.5, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(t); osc.stop(t + 0.12);
+  }
+  function setNoise(on) {
+    noiseOn = !!on;
+    if (noiseOn) noiseCtx();
+    noiseBtn.setAttribute("aria-pressed", String(noiseOn));
+    noiseBtn.innerHTML = noiseOn
+      ? "[S] PRESS NOISE &mdash; ON"
+      : "[S] PRESS NOISE &mdash; OFF";
+    if (noiseOn) sndTok(); /* one knock so you know what you signed up for */
+  }
+  noiseBtn.addEventListener("click", function () { setNoise(!noiseOn); });
+
+  /* ============ press check: the sheet comes into register ============ */
+  /* once per session the hero loads as misregistered ink passes (red,
+     blue, ink) that slide home while the regmark locks in. any input
+     skips it; reduced motion and ?still never see it. */
+  (function pressCheck() {
+    if (reduced() || stillMode) return;
+    var seen = false;
+    try { seen = !!sessionStorage.getItem("ma-press-check"); } catch (e) {}
+    if (seen) return;
+    try { sessionStorage.setItem("ma-press-check", "1"); } catch (e) {}
+    document.body.classList.add("press-check");
+    var evs = ["keydown", "pointerdown", "wheel", "touchstart"];
+    function endPress() {
+      document.body.classList.remove("press-check");
+      evs.forEach(function (ev) { removeEventListener(ev, endPress, true); });
+    }
+    evs.forEach(function (ev) {
+      addEventListener(ev, endPress, { capture: true, passive: true });
+    });
+    setTimeout(endPress, 2600);
+  })();
+
+  /* ============ the dog-ear: lift the corner ============ */
+  /* drag the turned corner and the proof peels back over the mess.
+     let go and it snaps home; carry it far enough and you fall in. */
+  var deHot = document.getElementById("de-hot");
+  var dogear = document.getElementById("dogear");
+  var DE_MAX = 280;   /* the flap only reaches so far */
+  var DE_DROP = 170;  /* past this, you wanted the mess */
+  var peeling = null;
+
+  function dePeel(p) {
+    dogear.style.setProperty("--de-p", clamp(p, 16, DE_MAX) + "px");
+    var past = p > DE_DROP;
+    if (past !== dogear.classList.contains("past")) {
+      dogear.classList.toggle("past", past);
+      cursorLabel.textContent = past ? "LET GO" : "LIFT";
+    }
+  }
+  deHot.addEventListener("pointerdown", function (e) {
+    if (document.body.classList.contains("proof")) return;
+    e.preventDefault();
+    deHot.setPointerCapture(e.pointerId);
+    peeling = { id: e.pointerId };
+    dogear.classList.add("dragging");
+    cursorEl.classList.add("is-peel");
+    cursorLabel.textContent = "LIFT";
+  });
+  deHot.addEventListener("pointermove", function (e) {
+    if (!peeling || e.pointerId !== peeling.id) return;
+    /* how far the corner has been carried toward the middle of the page */
+    var dx = innerWidth - e.clientX, dy = innerHeight - e.clientY;
+    dePeel((dx + dy) / 2);
+  });
+  function deRelease(e) {
+    if (!peeling || e.pointerId !== peeling.id) return;
+    var wanted = dogear.classList.contains("past");
+    peeling = null;
+    dogear.classList.remove("dragging");
+    dogear.classList.remove("past");
+    dogear.style.removeProperty("--de-p"); /* transition carries it home */
+    cursorEl.classList.remove("is-peel");
+    if (wanted) setProof(true);
+  }
+  deHot.addEventListener("pointerup", deRelease);
+  deHot.addEventListener("pointercancel", deRelease);
+  /* keyboard gets the peek without the drag */
+  deHot.addEventListener("click", function (e) {
+    if (e.detail !== 0) return; /* pointer path handles the mouse */
+    if (document.body.classList.contains("proof")) return;
+    dePeel(150);
+    setTimeout(function () {
+      dogear.classList.remove("past");
+      dogear.style.removeProperty("--de-p");
+    }, 1200);
+  });
+
+  /* ============ the regmark is also a fidget ============ */
+  var regEl = document.querySelector(".regmark");
+  regEl.addEventListener("click", function () {
+    if (reduced()) return;
+    regEl.classList.remove("fidget");
+    void regEl.getBoundingClientRect(); /* restart mid-spin spins again */
+    regEl.classList.add("fidget");
+  });
+  regEl.addEventListener("animationend", function (e) {
+    if (e.animationName === "reg-fidget") regEl.classList.remove("fidget");
+  });
+
+  /* ============ the tab misses you ============ */
+  var baseTitle = document.title;
+  document.addEventListener("visibilitychange", function () {
+    document.title = document.hidden
+      ? "— come back, the kerning isn’t done"
+      : baseTitle;
+  });
+
+  /* ============ idle whisper: two minutes of nothing ============ */
+  var idleEl = document.getElementById("idle-line");
+  var idleT = null;
+  var idleLast = 0;
+  var IDLE_MS = 120000;
+  function idlePoke() {
+    var now = performance.now();
+    /* mousemove storms re-arm at most once a second */
+    if (now - idleLast < 1000 && !idleEl.classList.contains("on")) return;
+    idleLast = now;
+    idleEl.classList.remove("on");
+    clearTimeout(idleT);
+    idleT = setTimeout(function () { idleEl.classList.add("on"); }, IDLE_MS);
+  }
+  if (!stillMode) {
+    ["pointermove", "pointerdown", "keydown", "scroll", "touchstart"]
+      .forEach(function (ev) { addEventListener(ev, idlePoke, { passive: true }); });
+    idlePoke();
+  }
+
+  /* ============ who left this one, and when ============ */
+  var tipEl = document.getElementById("stone-tip");
+  function stoneAge(t) {
+    var d = Date.now() - t;
+    if (d < 60000) return "JUST NOW";
+    var m = Math.round(d / 60000);
+    if (m < 60) return m + " MIN AGO";
+    var h = Math.round(d / 3600000);
+    if (h < 24) return h + (h === 1 ? " HOUR AGO" : " HOURS AGO");
+    var days = Math.round(d / 86400000);
+    return days === 1 ? "YESTERDAY" : days + " DAYS AGO";
+  }
+  pileEl.addEventListener("pointerover", function (e) {
+    var p = e.target;
+    if (p.tagName !== "path") return;
+    if (p.classList.contains("house")) {
+      tipEl.textContent = "THE HOUSE STACK — MINE";
+    } else if (p.dataset.n) {
+      var label = "Nº " + String(p.dataset.n).padStart(3, "0");
+      if (p.dataset.t) label += " — " + stoneAge(+p.dataset.t);
+      if (p.classList.contains("signal")) label += " · SIGNAL STONE";
+      tipEl.textContent = label;
+    } else return;
+    var r = p.getBoundingClientRect();
+    tipEl.style.left = (r.left + r.width / 2) + "px";
+    tipEl.style.top = r.top + "px";
+    tipEl.classList.add("on");
+  });
+  pileEl.addEventListener("pointerout", function (e) {
+    if (e.target.tagName === "path") tipEl.classList.remove("on");
+  });
+
+  /* ============ the cat, alive at last (mess layer) ============ */
+  var catEl = document.querySelector(".cat");
+  var catT = null;
+  function catLife(on) {
+    clearTimeout(catT);
+    if (!on || !catEl || reduced() || stillMode) return;
+    (function nap() {
+      catT = setTimeout(function () {
+        /* only once she's been drawn in */
+        if (catEl.classList.contains("seen")) catEl.classList.add("flick");
+        nap();
+      }, 6000 + Math.random() * 9000);
+    })();
+  }
+  if (catEl) {
+    catEl.addEventListener("animationend", function (e) {
+      if (e.animationName === "tail-flick") catEl.classList.remove("flick");
+    });
+  }
 
   /* for the ones who open the hood */
   console.log(
