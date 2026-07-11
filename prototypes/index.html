@@ -48,6 +48,10 @@
 
   <button class="night-toggle" type="button" id="night-btn" aria-pressed="false">[N] NIGHT OFFICE <span class="moon">&#9686;</span></button>
   <button class="noise-toggle" type="button" id="noise-btn" aria-pressed="false">[S] PRESS NOISE &mdash; OFF</button>
+  <button class="light-toggle" type="button" id="light-btn" aria-pressed="false">[L] LIGHT TABLE &mdash; HOLD</button>
+
+  <!-- the light table glow (hold L) -->
+  <div class="lightglow" aria-hidden="true"></div>
 
   <!-- live telemetry -->
   <span class="d-scroll spec" aria-hidden="true">SCROLL <span id="scroll-pct">000</span>%</span>
@@ -364,6 +368,9 @@
       <div class="reveal-plate" id="reveal-plate"></div>
     </div>
   </div>
+
+  <!-- the printer's loupe (press and hold a plate) -->
+  <div class="loupe" id="loupe" aria-hidden="true"></div>
 
   <!-- custom cursor -->
   <div class="cursor" id="cursor" aria-hidden="true">

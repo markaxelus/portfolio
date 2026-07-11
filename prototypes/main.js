@@ -39,11 +39,17 @@
   /* duotone gradient + misregistered motif + halftone + proof slug +
      ghost numeral + grain, as an inline SVG data-URI */
 
+  /* micro: plate margin notes set at 9px — dots at 1:1, legible only
+     under the loupe */
   var PROJECTS = [
-    { num: "01", dark: "#0E0E22", bright: "#2A2AF0", motif: "arcs" },
-    { num: "02", dark: "#160E2C", bright: "#8E7BFF", motif: "stripes" },
-    { num: "03", dark: "#041D1C", bright: "#63D3C6", motif: "orbits" },
-    { num: "04", dark: "#22060F", bright: "#EE4E9B", motif: "steps" }
+    { num: "01", dark: "#0E0E22", bright: "#2A2AF0", motif: "arcs",
+      micro: "MRD-25 · PASS 2/4 · “MORE PREMIUM” MEANT QUIETER · APPROVED 03:12" },
+    { num: "02", dark: "#160E2C", bright: "#8E7BFF", motif: "stripes",
+      micro: "LRF-25 · WRONG STOCK, RIGHT ACCIDENT · KEPT IT" },
+    { num: "03", dark: "#041D1C", bright: "#63D3C6", motif: "orbits",
+      micro: "NOF-24 · BUILT AFTER 23:00 · OBVIOUSLY" },
+    { num: "04", dark: "#22060F", bright: "#EE4E9B", motif: "steps",
+      micro: "SGN-24 · SPLINTERS 11 · REGRETS 0" }
   ];
 
   function motifSVG(kind, color) {
@@ -98,7 +104,7 @@
         '</defs>' +
         '<rect width="800" height="1000" fill="' + p.dark + '"/>' +
         '<rect width="800" height="1000" fill="url(#duo)"/>' +
-        '<rect width="800" height="1000" fill="url(#ht)" opacity="0.1"/>' +
+        '<rect width="800" height="1000" fill="url(#ht)" opacity="0.14"/>' +
         /* misregistered red proof pass, then the true pass */
         '<g transform="translate(6 4)" opacity="0.4">' + motifSVG(p.motif, "#C7361F") + "</g>" +
         motifSVG(p.motif, p.bright) +
@@ -107,6 +113,12 @@
         '<g transform="rotate(-90 44 500)"><text x="44" y="500" text-anchor="middle" ' +
           'font-family="monospace" font-size="17" letter-spacing="5" fill="#DDDBD4" opacity="0.75">' +
           "M.A. &#8212; PROOF " + p.num + "/04 &#183; NOT FOR PRODUCTION</text></g>" +
+        /* margin whispers — 9px on an 800-wide plate: loupe-only.
+           kept inside the cover-crop safe band (y ≈ 250–780) */
+        '<g font-family="monospace" font-size="9" letter-spacing="1.5" fill="#DDDBD4">' +
+          '<text x="770" y="732" text-anchor="end" opacity="0.55">' + p.micro + '</text>' +
+          '<text x="770" y="748" text-anchor="end" opacity="0.4">IF YOU CAN READ THIS YOU FOUND THE LOUPE</text>' +
+        '</g>' +
         '<rect width="800" height="1000" filter="url(#gr)" opacity="0.14"/>' +
       '</svg>';
     return 'url("data:image/svg+xml;utf8,' + encodeURIComponent(svg) + '")';
@@ -171,6 +183,9 @@
     "PRESS N FOR NIGHT OFFICE",
     "CTRL+P PRINTS A CLEAN PROOF",
     "PRESS S FOR PRESS NOISE",
+    "HOLD L — THE LIGHT TABLE",
+    "PRESS AND HOLD A PLATE — LOUPE",
+    "SHIFT-DRAG THE HEADLINE — OFF REGISTER",
     "THE HEADLINE IS LOOSE TYPE — GRAB IT",
     "THE CHIPS AT THE BOTTOM ARE PAINT",
     "ONE-PERSON OPERATION"
@@ -243,28 +258,32 @@
 
   function frame() {
     if (trailEnabled() && seenPointer) {
-      if (reduced()) {
-        plate.x = mouse.x; plate.y = mouse.y;
-      } else {
-        plate.x = lerp(plate.x, mouse.x, LERP_PLATE);
-        plate.y = lerp(plate.y, mouse.y, LERP_PLATE);
-        /* settle when close so the writes below can stop */
-        if (Math.abs(plate.x - mouse.x) + Math.abs(plate.y - mouse.y) < 0.3) {
+      /* while the loupe is down the sheet holds still — you move the
+         glass, not the proof (also lets the glass reach the margins) */
+      if (!loupeOn) {
+        if (reduced()) {
           plate.x = mouse.x; plate.y = mouse.y;
+        } else {
+          plate.x = lerp(plate.x, mouse.x, LERP_PLATE);
+          plate.y = lerp(plate.y, mouse.y, LERP_PLATE);
+          /* settle when close so the writes below can stop */
+          if (Math.abs(plate.x - mouse.x) + Math.abs(plate.y - mouse.y) < 0.3) {
+            plate.x = mouse.x; plate.y = mouse.y;
+          }
         }
-      }
 
-      var vx = plate.x - prevPlateX;
-      prevPlateX = plate.x;
-      var skew = reduced() ? 0 : clamp(vx * 0.45, -9, 9);
-      var rot = reduced() ? 0 : clamp(vx * 0.06, -1.6, 1.6);
+        var vx = plate.x - prevPlateX;
+        prevPlateX = plate.x;
+        var skew = reduced() ? 0 : clamp(vx * 0.45, -9, 9);
+        var rot = reduced() ? 0 : clamp(vx * 0.06, -1.6, 1.6);
 
-      var plateTf =
-        "translate3d(" + r2(plate.x) + "px," + r2(plate.y) + "px,0)" +
-        " translate(-50%,-50%) skewX(" + r2(skew) + "deg) rotate(" + r2(rot) + "deg)";
-      if (plateTf !== lastPlateTf) {
-        lastPlateTf = plateTf;
-        revealEl.style.transform = plateTf;
+        var plateTf =
+          "translate3d(" + r2(plate.x) + "px," + r2(plate.y) + "px,0)" +
+          " translate(-50%,-50%) skewX(" + r2(skew) + "deg) rotate(" + r2(rot) + "deg)";
+        if (plateTf !== lastPlateTf) {
+          lastPlateTf = plateTf;
+          revealEl.style.transform = plateTf;
+        }
       }
 
       var dotTf =
@@ -272,6 +291,29 @@
       if (dotTf !== lastDotTf) {
         lastDotTf = dotTf;
         cursorEl.style.transform = dotTf;
+      }
+
+      /* the loupe rides the pointer over the plate — viewport math only.
+         the plate is background-size: cover (plate art is 800×1000), so
+         magnify the cover-fit rendering, crop offset included */
+      if (loupeOn) {
+        var wR = innerWidth * 0.30, hR = innerHeight * 0.38;
+        var coverW, coverH;
+        if (wR / hR > 0.8) { coverW = wR; coverH = wR / 0.8; }
+        else { coverH = hR; coverW = hR * 0.8; }
+        var ix = mouse.x - (plate.x - wR / 2) + (coverW - wR) / 2;
+        var iy = mouse.y - (plate.y - hR / 2) + (coverH - hR) / 2;
+        var loupeTf =
+          "translate3d(" + mouse.x + "px," + mouse.y + "px,0) translate(-50%,-50%)";
+        if (loupeTf !== lastLoupeTf) {
+          lastLoupeTf = loupeTf;
+          loupeEl.style.transform = loupeTf;
+        }
+        var bs = Math.round(coverW * LOUPE_M) + "px " + Math.round(coverH * LOUPE_M) + "px";
+        var bp = Math.round(LOUPE_R - ix * LOUPE_M) + "px " +
+                 Math.round(LOUPE_R - iy * LOUPE_M) + "px";
+        if (bs !== lastLoupeBs) { lastLoupeBs = bs; loupeEl.style.backgroundSize = bs; }
+        if (bp !== lastLoupeBp) { lastLoupeBp = bp; loupeEl.style.backgroundPosition = bp; }
       }
     }
     requestAnimationFrame(frame);
@@ -283,6 +325,7 @@
   rows.forEach(function (row) {
     row.addEventListener("mouseenter", function () {
       if (!trailEnabled()) return;
+      if (loupeOn) return; /* the glass is down — don't re-skin the sheet */
       indexEl.classList.add("is-hovering");
       rows.forEach(function (r) { r.classList.remove("is-active"); });
       row.classList.add("is-active");
@@ -303,6 +346,8 @@
 
     row.addEventListener("mouseleave", function () {
       if (!trailEnabled()) return;
+      /* the glass is down: the sheet stays on the table until it lifts */
+      if (loupeOn) { loupeLeftRow = true; return; }
       indexEl.classList.remove("is-hovering");
       row.classList.remove("is-active");
       cursorEl.classList.remove("is-view");
@@ -484,6 +529,7 @@
 
   chars.forEach(function (c) {
     c.el.addEventListener("pointerdown", function (e) {
+      if (e.shiftKey) return; /* shift-drag is the plate pull */
       if (!trailEnabled() || reduced()) return;
       if (document.body.classList.contains("proof")) return;
       e.preventDefault();
@@ -682,6 +728,7 @@
     if (e.key === "m" || e.key === "M" || e.key === "p" || e.key === "P") toggleProof();
     if (e.key === "n" || e.key === "N") setNight(!isNight(), true);
     if (e.key === "s" || e.key === "S") setNoise(!noiseOn);
+    if (e.key === "l" || e.key === "L") setLit(true); /* keyup lets go */
     if (e.key === "Escape") setProof(false);
   });
 
@@ -1171,6 +1218,114 @@
       if (e.animationName === "tail-flick") catEl.classList.remove("flick");
     });
   }
+
+  /* ============ tryout 1: the light table (hold L) ============ */
+  /* momentary, no mode: while held, the sheet goes backlit and the
+     mess bleeds through from underneath — dim, complete, in place */
+  var lightBtn = document.getElementById("light-btn");
+  function setLit(on) {
+    if (on && document.body.classList.contains("proof")) on = false;
+    document.body.classList.toggle("lit", on);
+    lightBtn.setAttribute("aria-pressed", String(on));
+  }
+  lightBtn.addEventListener("pointerdown", function (e) {
+    e.preventDefault();
+    setLit(true);
+  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(function (ev) {
+    lightBtn.addEventListener(ev, function () { setLit(false); });
+  });
+  document.addEventListener("keyup", function (e) {
+    if (e.key === "l" || e.key === "L") setLit(false);
+  });
+  addEventListener("blur", function () { setLit(false); });
+
+  /* ============ tryout 2: the printer's loupe ============ */
+  /* press and hold a plate: the glass magnifies the halftone and the
+     9px margin notes that are just dots at 1:1 */
+  var loupeEl = document.getElementById("loupe");
+  var LOUPE_M = 2.2, LOUPE_R = 92;
+  var loupeOn = false, loupeUsed = false, loupeLeftRow = false;
+  var lastLoupeTf = "", lastLoupeBs = "", lastLoupeBp = "";
+  rows.forEach(function (row) {
+    row.addEventListener("pointerdown", function (e) {
+      if (!trailEnabled() || !open || e.button !== 0) return;
+      e.preventDefault();
+      loupeOn = true;
+      loupeUsed = true;
+      loupeEl.style.backgroundImage = plates[curPlate];
+      loupeEl.classList.add("on");
+      cursorEl.classList.add("is-loupe");
+    });
+    /* a loupe press is not a navigation */
+    row.addEventListener("click", function (e) {
+      if (loupeUsed) { e.preventDefault(); loupeUsed = false; }
+    });
+  });
+  /* the canceled pointerdown suppresses compat mousemove events, so
+     feed the shared pointer position from pointermove while held */
+  document.addEventListener("pointermove", function (e) {
+    if (!loupeOn) return;
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
+  document.addEventListener("pointerup", function () {
+    if (!loupeOn) return;
+    loupeOn = false;
+    loupeEl.classList.remove("on");
+    cursorEl.classList.remove("is-loupe");
+    if (loupeLeftRow) {
+      /* the deferred mouseleave: put the sheet away too */
+      loupeLeftRow = false;
+      indexEl.classList.remove("is-hovering");
+      rows.forEach(function (r) { r.classList.remove("is-active"); });
+      cursorEl.classList.remove("is-view");
+      scalerEl.style.transform = "scale(0)";
+      open = false;
+    }
+  });
+
+  /* ============ tryout 3: the plate pull (shift-drag the headline) ============ */
+  /* the red and blue passes come off register and follow the hand,
+     with resistance; release and they thunk back into register */
+  var pullState = null;
+  var lastPullShadow = "";
+  function softPull(v) {
+    return clamp(Math.sign(v) * Math.pow(Math.abs(v), 0.72) * 2.2, -110, 110);
+  }
+  heroTitleEl.addEventListener("pointerdown", function (e) {
+    if (!e.shiftKey || !trailEnabled() || reduced()) return;
+    if (document.body.classList.contains("proof")) return;
+    e.preventDefault();
+    pullState = { x: e.clientX, y: e.clientY };
+    heroTitleEl.classList.remove("plates-return");
+    cursorEl.classList.add("is-grab");
+    cursorLabel.textContent = "OFF REGISTER";
+  });
+  document.addEventListener("pointermove", function (e) {
+    if (!pullState) return;
+    var rx = softPull(e.clientX - pullState.x);
+    var ry = softPull(e.clientY - pullState.y);
+    var shadow =
+      Math.round(rx * 0.75) + "px " + Math.round(ry * 0.75) + "px 0 var(--pencil), " +
+      Math.round(rx * -0.55) + "px " + Math.round(ry * -0.55) + "px 0 var(--accent)";
+    if (shadow !== lastPullShadow) {
+      lastPullShadow = shadow;
+      heroTitleEl.style.textShadow = shadow;
+    }
+  });
+  document.addEventListener("pointerup", function () {
+    if (!pullState) return;
+    pullState = null;
+    heroTitleEl.classList.add("plates-return");
+    heroTitleEl.style.textShadow = "0 0 0 var(--pencil), 0 0 0 var(--accent)";
+    cursorLabel.textContent = "GRAB";
+    setTimeout(function () {
+      heroTitleEl.classList.remove("plates-return");
+      heroTitleEl.style.textShadow = "";
+      lastPullShadow = "";
+    }, 600);
+  });
 
   /* ============ the page is awake ============ */
   /* every so often the page does one small unprompted thing: a letter

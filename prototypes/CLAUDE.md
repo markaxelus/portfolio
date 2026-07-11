@@ -315,6 +315,30 @@ signatures (Mark counts these himself):
     `margin-top: 10vh` (below the fold at load on all screens) and the jobline
     docked flush to the edge. Dog-ear is in the graveyard (§3); the fourth
     signature slot is open — candidates should be pitched to Mark first.
+14. (branch `prototypes-signature-4`, off prototypes-big-three) **Three
+    signature-Nº4 candidates built as tryouts** — Mark said "try the signature
+    slots but new branch". None is chosen yet; he picks, the rest get deleted.
+    - **Light table (hold L, or the [L] decal hold)**: momentary, no mode —
+      `body.lit` backlights the sheet (`.lightglow` radial, z 40, no blend
+      modes) and the mess bleeds through in place: `.under` at .55, notes /
+      amarks / stamp / chip-ring at ~.3, scrawls forced fully drawn. Gated
+      off inside the mess. Key L down/up + decal pointerdown/up.
+    - **Printer's loupe (press-hold a plate row)**: the reveal plate FREEZES
+      (frame loop skips the lerp while `loupeOn`), a 184px glass follows the
+      pointer magnifying the plate at 2.2× — background-size/position math
+      accounts for the plate's `background-size: cover` crop. Plates now carry
+      9px "margin whisper" micro-notes (per-project `micro` lines + "IF YOU
+      CAN READ THIS YOU FOUND THE LOUPE"), dots at 1:1, legible only under
+      glass; halftone bumped 0.10→0.14. Row mouseenter/mouseleave are guarded
+      while the glass is down (else the sheet re-skins mid-inspection); a
+      loupe press suppresses the row's click. GOTCHA: canceled pointerdown
+      suppresses compat mousemove, so a pointermove listener feeds mouse.x/y
+      while held.
+    - **Plate pull (shift-drag the headline)**: red/blue passes come off
+      register via inline text-shadow with a resistance curve (`softPull`,
+      pow 0.72, clamp ±110px), thunk back on release (`.plates-return`
+      transition). Shift is the discriminator vs loose-type grabs (char
+      pointerdown returns early on shiftKey). Cursor label OFF REGISTER.
 
 ## 8. Ideas discussed but not built (fair game later)
 
