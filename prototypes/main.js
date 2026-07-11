@@ -899,6 +899,7 @@
   });
   document.addEventListener("keydown", function (e) {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target && e.target.tagName === "INPUT") return; /* the ok slip types here */
     if ((e.key === "r" || e.key === "R") && anyLoose) resetCase();
   });
 
@@ -1051,6 +1052,8 @@
   }
   document.addEventListener("keydown", function (e) {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
+    /* initials typed on the ok slip are not mode switches */
+    if (e.target && e.target.tagName === "INPUT" && e.key !== "Escape") return;
     if (e.key === "m" || e.key === "M" || e.key === "p" || e.key === "P") toggleProof();
     if (e.key === "n" || e.key === "N") setNight(!isNight(), true);
     if (e.key === "s" || e.key === "S") setNoise(!noiseOn);
@@ -1866,6 +1869,108 @@
   if (platesDecal) {
     platesDecal.addEventListener("click", function () { regKick(2.6); });
   }
+
+  /* ============ the ok slip: the visitor signs the press check ============ */
+  /* you've read the sheet — you're the client at the press check now.
+     initials machine-set (typed, never handwritten: the hand belongs to
+     the mess), three stamp-tabs that commit on a ~620ms HOLD (stamping
+     should feel like stamping; the face says so) — plain Enter or Space
+     commits for keyboard people, Enter in the initials field passes the
+     sheet. the stamp thunks down in the accent, the jobline carries the
+     verdict permanently, and the mess argues back. re-stamping allowed:
+     changed your mind. noted. persisted (ma-ok-v1); prints on the proof. */
+  var OK_STORE = "ma-ok-v1";
+  var okInput = document.getElementById("ok-initials");
+  var okStampEl = document.getElementById("ok-stamp");
+  var okDateEl = document.getElementById("ok-date");
+  var jobOkEl = document.getElementById("job-ok");
+  var okTabs = Array.prototype.slice.call(document.querySelectorAll(".ok-tab"));
+  var okReply1 = document.getElementById("ok-reply1");
+  var okReply2 = document.getElementById("ok-reply2");
+  var okReply3 = document.getElementById("ok-reply3");
+  var OK_META = {
+    ok:   { face: "OK TO PRINT",      job: "PASSED FOR PRESS",
+            r1: "someone passed it. it is not done.", r2: "who let them in." },
+    corr: { face: "OK W/ CORRECTIONS", job: "OK WITH CORRECTIONS",
+            r1: "corrections. plural. i know about the kerning.", r2: "" },
+    re:   { face: "REPROOF",           job: "MARKED FOR REPROOF",
+            r1: "", r2: "yeah. i know." }
+  };
+  var okState = null;
+  try { okState = JSON.parse(localStorage.getItem(OK_STORE) || "null"); } catch (e) { okState = null; }
+  if (okDateEl) okDateEl.textContent = dateStr;
+
+  function renderOK(fresh) {
+    if (!okState || !OK_META[okState.v]) return;
+    var m = OK_META[okState.v];
+    okStampEl.innerHTML =
+      '<span class="oks1">' + m.face + '</span>' +
+      '<span class="oks2">“' + okState.ini + '” · ' + okState.time + '</span>';
+    okStampEl.classList.add("on");
+    if (fresh && !reduced() && !stillMode) {
+      okStampEl.classList.remove("thunk");
+      void okStampEl.getBoundingClientRect();
+      okStampEl.classList.add("thunk");
+    }
+    if (jobOkEl) {
+      jobOkEl.textContent = " · " + m.job +
+        (okState.v === "ok" ? " · OK" : "") +
+        " “" + okState.ini + "” · " + okState.time;
+    }
+    okTabs.forEach(function (tab) {
+      tab.setAttribute("aria-pressed", String(tab.dataset.verdict === okState.v));
+    });
+    if (okInput && !okInput.value && okState.ini !== "—") okInput.value = okState.ini;
+    /* the mess gets its reply */
+    if (okReply1) okReply1.textContent = m.r1;
+    if (okReply2) okReply2.textContent = m.r2;
+    if (okReply3) okReply3.textContent = okState.n > 1 ? "changed your mind. noted." : "";
+  }
+  function commitOK(verdict) {
+    if (!OK_META[verdict]) return;
+    var ini = (okInput.value || "").replace(/[^\w.\-]/g, "").toUpperCase().slice(0, 4) || "—";
+    okState = {
+      v: verdict,
+      ini: ini,
+      time: deskTime(),
+      n: okState && okState.v ? (okState.n || 1) + 1 : 1
+    };
+    try { localStorage.setItem(OK_STORE, JSON.stringify(okState)); } catch (e) {}
+    renderOK(true);
+    sndTok(); /* the stamp knocks, if the noise is on */
+  }
+  var okHoldT = null;
+  okTabs.forEach(function (tab) {
+    tab.addEventListener("pointerdown", function (e) {
+      if (e.button && e.button !== 0) return;
+      clearTimeout(okHoldT);
+      tab.classList.add("holding");
+      okHoldT = setTimeout(function () {
+        tab.classList.remove("holding");
+        commitOK(tab.dataset.verdict);
+      }, 620);
+    });
+    ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) {
+      tab.addEventListener(ev, function () {
+        clearTimeout(okHoldT);
+        tab.classList.remove("holding");
+      });
+    });
+    /* nothing is key-only — and nothing is hold-only either */
+    tab.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        commitOK(tab.dataset.verdict);
+      }
+    });
+  });
+  if (okInput) {
+    okInput.addEventListener("keydown", function (e) {
+      /* enter in the field is the affirmative: the sheet passes */
+      if (e.key === "Enter") { e.preventDefault(); commitOK("ok"); }
+    });
+  }
+  renderOK(false);
 
   /* ============ the tab misses you ============ */
   var baseTitle = document.title;

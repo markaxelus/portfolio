@@ -2234,6 +2234,8 @@ body.odo-live .odo-reel { transition: transform 0.9s var(--ease-out); }
   .press-check .hero-title, .press-check .regmark { animation: none !important; }
   .regmark.fidget { animation: none !important; }
   .hl .ch.rattle, .regmark.hiccup { animation: none !important; }
+  .ok-stamp.thunk { animation: none !important; }
+  .ok-tab::after, .ok-tab.holding::after { transition: none !important; }
   .odo-reel { transition: none !important; }
   .idle-line { transition: none !important; }
   .stone-tip { transition: none !important; }
@@ -2358,6 +2360,123 @@ body.proof .impline { opacity: 0 !important; }
 }
 
 /* ============================================================
+   THE OK SLIP — the visitor signs the press check
+   (Direction Nº 003, P3). a typeset approval slip: machine-set
+   initials (typed, never handwritten — the hand lives in the
+   mess), three stamp-tabs that commit on a HOLD and say so on
+   their face, a stamp that thunks down in the accent ink, and a
+   jobline that carries the verdict forever after.
+   ============================================================ */
+
+.okslip {
+  position: relative;
+  grid-column: 1;
+  justify-self: start;
+  width: min(100%, 30rem);
+  margin-top: 2.5rem;
+  border: 1px solid var(--ink);
+  padding: 1rem 1.2rem 1.1rem;
+}
+.ok-head { letter-spacing: 0.2em; opacity: 0.8; }
+.ok-sheet { opacity: 0.5; font-size: 0.55rem; margin-top: 0.15rem; }
+.ok-by {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin: 0.95rem 0 0.75rem;
+  opacity: 0.85;
+}
+.ok-by input {
+  border: 0;
+  border-bottom: 1px solid var(--hairline);
+  background: none;
+  color: var(--ink);
+  font-family: "Space Mono", monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.2rem;
+  width: 7ch;
+  border-radius: 0;
+}
+.ok-by input:focus { outline: none; border-bottom-color: var(--accent); }
+.ok-by input::placeholder { color: var(--graphite); }
+.ok-tabs { display: flex; flex-direction: column; gap: 0.45rem; }
+.ok-tab {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  border: 1px solid var(--hairline);
+  background: var(--stone);
+  color: var(--ink);
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  transition:
+    border-color 0.25s var(--ease-out),
+    color 0.25s var(--ease-out),
+    background-color 0.5s var(--ease-out);
+}
+.ok-tab em { font-style: normal; opacity: 0.45; font-size: 0.5rem; letter-spacing: 0.2em; }
+.ok-tab:hover { border-color: var(--ink); }
+/* the ink rises while you hold — stamping should feel like stamping */
+.ok-tab::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0.16;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.15s var(--ease-out);
+  pointer-events: none;
+}
+.ok-tab.holding::after { transform: scaleY(1); transition: transform 0.62s linear; }
+.ok-tab[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.ok-fine { opacity: 0.4; font-size: 0.5rem; margin-top: 0.7rem; }
+
+/* the stamp: machine-crisp, accent ink, a few degrees off square —
+   the same double-ring construction as the mess stamp, none of its
+   hand (that one is rubber; this one is steel) */
+.ok-stamp {
+  position: absolute;
+  right: -1.1rem;
+  top: 44%;
+  padding: 0.55rem 0.95rem 0.5rem;
+  border: 2px solid var(--accent);
+  box-shadow: inset 0 0 0 3px var(--stone), inset 0 0 0 4px var(--accent);
+  background: color-mix(in srgb, var(--stone) 82%, transparent);
+  color: var(--accent);
+  text-align: center;
+  transform: rotate(-4deg);
+  opacity: 0;
+  pointer-events: none;
+}
+.ok-stamp.on { opacity: 0.92; }
+.ok-stamp .oks1 { display: block; font-size: 0.78rem; letter-spacing: 0.2em; font-weight: 700; white-space: nowrap; }
+.ok-stamp .oks2 { display: block; font-size: 0.55rem; letter-spacing: 0.14em; margin-top: 0.2rem; white-space: nowrap; }
+@keyframes ok-thunk {
+  0%   { transform: rotate(-4deg) scale(1.7); opacity: 0; }
+  55%  { opacity: 0.92; }
+  74%  { transform: rotate(-4deg) scale(0.94); }
+  100% { transform: rotate(-4deg) scale(1); opacity: 0.92; }
+}
+.ok-stamp.thunk { animation: ok-thunk 0.4s var(--ease-thunk) both; }
+
+/* the mess replies beside the slip */
+.n-okr1 { left: 2%; bottom: 30%; --tilt: -2deg; }
+.n-okr2 { left: 7%; bottom: 24%; --tilt: 1.4deg; }
+.n-okr3 { left: 4%; bottom: 18%; --tilt: -1deg; }
+
+@media (max-width: 820px) {
+  /* the overhanging stamp would widen the pocket proof — tuck it in */
+  .ok-stamp { right: 0.2rem; }
+}
+
+/* ============================================================
    CTRL+P — printing produces a clean proof sheet
    ============================================================ */
 
@@ -2443,6 +2562,11 @@ body.proof .impline { opacity: 0 !important; }
   .olink { border: 0; padding: 0; background: none; }
   .olink svg { display: none; }
   .olink::after { content: " — " attr(href); }
+
+  /* the ok slip prints — it's part of the proof — minus the screen
+     instructions; a committed stamp prints in black like everything */
+  .ok-fine { display: none !important; }
+  .okslip { break-inside: avoid; }
 
   /* the sheet always prints struck (beforeprint strikes it in js;
      this is the belt for renderers that skip the event) */
