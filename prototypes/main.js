@@ -288,7 +288,7 @@
     /* reading samples: monotonic max-y → drawn length (this is what
        makes the reveal dart between notes and linger inside loops) */
     thSamples = [];
-    var maxY = 0, K = 110, k, q2;
+    var maxY = 0, K = 400, k, q2;
     for (k = 0; k <= K; k++) {
       q2 = thA.getPointAtLength(thLenA * k / K);
       maxY = Math.max(maxY, q2.y);
@@ -301,10 +301,17 @@
     }
     lastThA = -1;
     lastThB = -1;
+    thCur = 0;
     updateThread();
   }
 
-  function updateThread() {
+  /* the pen has a speed: the drawn length chases the scroll target
+     through a capped lerp, so the stroke FLOWS — no snapping, no
+     chunks appearing at once, however hard you scroll */
+  var thCur = 0, thTgt = 0, thAnimOn = false, thPrevT = 0;
+  var TH_SPEED = 3600; /* px of stroke per second, at full sprint */
+
+  function updateThread(entering) {
     if (!thSamples.length) return;
     var full = stillMode || reduced();
     var target = full ? Infinity : scrollY + innerHeight * 0.86;
@@ -314,11 +321,51 @@
       if (thSamples[mid].y <= target) lo = mid; else hi = mid - 1;
     }
     var s = thSamples[lo];
-    var lenA = s.p === 0 ? s.len : thLenA;
-    var lenB = s.p === 1 ? s.len : 0;
-    if (thSamples[0].y > target) { lenA = 0; lenB = 0; }
-    var offA = Math.round(thLenA - lenA);
-    var offB = Math.round(thLenB - lenB);
+    var total = s.p === 0 ? s.len : thLenA + s.len;
+    if (thSamples[0].y > target) total = 0;
+    thTgt = total;
+    if (full) {
+      thCur = thTgt;
+      threadRender();
+      return;
+    }
+    /* ONLY on mess-entry: retrace just the last stretch instead of
+       re-writing the whole tour from the top. never during scroll —
+       the pen's speed cap is what keeps the stroke continuous. */
+    if (entering === true && thTgt - thCur > 1100) thCur = thTgt - 1100;
+    if (!thAnimOn) {
+      thAnimOn = true;
+      thPrevT = performance.now();
+      requestAnimationFrame(threadStep);
+    }
+  }
+  function threadStep(now) {
+    if (!document.body.classList.contains("proof")) {
+      thCur = thTgt;
+      threadRender();
+      thAnimOn = false;
+      return;
+    }
+    var dt = Math.min(0.05, (now - thPrevT) / 1000);
+    thPrevT = now;
+    var diff = thTgt - thCur;
+    if (Math.abs(diff) < 0.6) {
+      thCur = thTgt;
+      threadRender();
+      thAnimOn = false;
+      return;
+    }
+    var step = clamp(diff * 0.16, -TH_SPEED * dt, TH_SPEED * dt);
+    if (Math.abs(step) < 1.4) step = Math.sign(diff) * Math.min(Math.abs(diff), 1.4);
+    thCur += step;
+    threadRender();
+    requestAnimationFrame(threadStep);
+  }
+  function threadRender() {
+    var lenA = Math.min(thLenA, thCur);
+    var lenB = Math.max(0, Math.min(thLenB, thCur - thLenA));
+    var offA = (thLenA - lenA).toFixed(1);
+    var offB = (thLenB - lenB).toFixed(1);
     if (offA !== lastThA) {
       lastThA = offA;
       thA.style.strokeDashoffset = offA;
@@ -333,7 +380,8 @@
     thScratch.classList.toggle("on", thSpurLen > 0 && lenA >= thSpurLen + 70);
     thArrow.classList.toggle("on", thLenB > 0 && lenB >= thLenB - 4);
     /* the tip: the pen is writing this right now */
-    if (full || (thLenB > 0 && lenB >= thLenB - 2) || lenA <= 1) {
+    var full = stillMode || reduced();
+    if (full || (thLenB > 0 && lenB >= thLenB - 2) || thCur <= 1) {
       thTip.style.opacity = "0";
     } else {
       var onB = lenB > 0;
@@ -899,7 +947,7 @@
       scalerEl.style.transform = "scale(0)";
       open = false;
       if (!messObserver) watchNotes();
-      updateThread(); /* the thread meets you at your scroll position */
+      updateThread(true); /* the thread meets you at your scroll position */
       cacheInkNotes(); /* fresh ink needs to know where the notes live */
     } else {
       unwatchNotes();
@@ -1503,55 +1551,6 @@
       if (wetEl) wetEl.classList.add("wet");
     }
   });
-
-  /* ============ play the typeface: the specimen is an instrument ============ */
-  /* grab the 144pt ampersand — x is weight, y is optical size, the axis
-     label ticks live, release springs home with the thunk. loose type is
-     the rowdy toy; this is the precision toy. */
-  var ampBig = document.querySelector(".spec-amp.s5");
-  var ampLab = ampBig && ampBig.querySelector("i");
-  var ampPlay = null;
-  if (ampBig) {
-    ampBig.addEventListener("pointerdown", function (e) {
-      if (!trailEnabled() || reduced()) return;
-      e.preventDefault();
-      ampBig.setPointerCapture(e.pointerId);
-      ampPlay = { x: e.clientX, y: e.clientY, o: 144, w: 540 };
-      ampBig.classList.remove("springing");
-      ampBig.classList.add("playing");
-      cursorLabel.textContent = "PLAY";
-      cursorEl.classList.add("is-grab");
-    });
-    document.addEventListener("pointermove", function (e) {
-      if (!ampPlay) return;
-      var w = Math.round(clamp(540 + (e.clientX - ampPlay.x) * 1.4, 340, 900));
-      var o = Math.round(clamp(144 - (e.clientY - ampPlay.y) * 0.55, 9, 144));
-      if (w === ampPlay.w && o === ampPlay.o) return;
-      ampPlay.w = w;
-      ampPlay.o = o;
-      ampBig.style.fontVariationSettings =
-        '"opsz" ' + o + ', "wght" ' + w + ', "SOFT" 0, "WONK" 1';
-      ampLab.textContent = o + " · " + w + " · WONK";
-    });
-    document.addEventListener("pointerup", function () {
-      if (!ampPlay) return;
-      ampPlay = null;
-      ampBig.classList.remove("playing");
-      ampBig.classList.add("springing");
-      ampBig.style.fontVariationSettings = "";
-      ampLab.textContent = "144 · 540 · WONK";
-      cursorEl.classList.remove("is-grab");
-      setTimeout(function () { ampBig.classList.remove("springing"); }, 680);
-    });
-    ampBig.addEventListener("mouseenter", function () {
-      if (!trailEnabled() || ampPlay) return;
-      cursorLabel.textContent = "PLAY";
-      cursorEl.classList.add("is-grab");
-    });
-    ampBig.addEventListener("mouseleave", function () {
-      if (!ampPlay) cursorEl.classList.remove("is-grab");
-    });
-  }
 
   /* ============ tryout 1: the light table (hold L) ============ */
   /* momentary, no mode: while held, the sheet goes backlit and the

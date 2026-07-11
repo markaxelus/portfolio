@@ -96,6 +96,10 @@ signatures (Mark counts these himself):
   Mark: "not a fan of that ring." LESSON: big abstract ghost fillers die here;
   the hero wants real OBJECTS with craft (specimen, plates, stones). Replaced
   by the ampersand specimen (§4.1).
+- **Play-the-typeface (drag instrument on the 144pt &)** — built, pulled same
+  day. Mark: "Im not saying to make like play... I want elements that can
+  fill in the gap like that [the & cascade] was a good start." The hero
+  wants quiet PRINT FURNITURE that fills, not toys. Hover-swell stays.
 
 ---
 
@@ -114,11 +118,14 @@ signatures (Mark counts these himself):
      Dims as `.final`-alike in mess; hidden ≤820px; PRINTS (it's content).
      Replaced the ghost M and the ghost target (both graveyarded — no more
      abstract ghost fillers).
-   - **PLAY THE TYPEFACE**: the 144pt & is an instrument — pointer-drag it,
-     x = wght (340–900), y = opsz (9–144), the axis label ticks live,
-     release springs home (`--ease-thunk`). Cursor label PLAY. GOTCHA
-     RECORDED: `.hero-title.landed .hl { animation: none; transform: none }`
-     is REQUIRED — a filled entrance transform makes each full-width .hl a
+   - The specimen is a COMPOSED PLATE, not a floater: header rule +
+     cascade + footer caption ("ONE GLYPH, PULLED AT EVERY SIZE · NOT FOR
+     RESALE"), with the **ink calibration TONE BAR** (8 steps, 10→80%,
+     rotated caption) beside it and the dashed **FOLD LINE** at 57%
+     structuring the void ("the void is measured, not empty"). Hover
+     still swells the glyphs. GOTCHA RECORDED:
+     `.hero-title.landed .hl { animation: none; transform: none }` is
+     REQUIRED — a filled entrance transform makes each full-width .hl a
      stacking context that steals the specimen's pointer events.
    - **REPAINT = REPRINT**: clicking a paint chip re-registers the headline
      (0.45s press-register flash in the new accent). Chip clicks only —
@@ -152,6 +159,13 @@ signatures (Mark counts these himself):
    #th-scratch, #th-arrow, pathLength=1) toggle by drawn-length
    thresholds. Anchors hidden at a breakpoint are skipped gracefully.
    Full-drawn under `?still`/reduced motion. z 4.
+   **THE PEN HAS A SPEED** (Mark: "the line should be smooth but its
+   snapping"): the drawn length CHASES the scroll target through a
+   capped lerp (`threadStep` rAF, TH_SPEED 3600 px/s, lerp .16) — a
+   violent scroll becomes a continuous sprint, scrolling up retracts
+   smoothly (verified ≤61px stroke/frame both directions). The
+   catch-up clamp (retrace only the last 1100px) fires ONLY on
+   mess-entry — `updateThread(true)` — never during scroll.
 4. **SELECTED WORK** — 4 fictional placeholder projects (Meridian, Low Relief,
    Night Office, Signal Garden), each with one-line description, REF// part number,
    generated duotone SVG plates (halftone, misregistered red pass, proof slug,

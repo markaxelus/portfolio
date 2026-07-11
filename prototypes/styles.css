@@ -847,11 +847,62 @@ body.has-cursor .loose-decal:hover { opacity: 1; color: var(--accent); }
   font-size: clamp(6.5rem, 9.5vw, 11rem);
   font-style: italic;
   color: var(--accent);
-  cursor: none;
-  touch-action: none;
 }
-.spec-amp.playing { transition: none; }
-.spec-amp.springing { transition: font-variation-settings 0.6s var(--ease-thunk); }
+.spec-foot {
+  color: var(--graphite);
+  font-size: 0.5rem;
+  border-top: 1px solid var(--hairline);
+  padding-top: 0.45rem;
+  margin-top: 0.6rem;
+}
+
+/* the ink calibration bar — proof-sheet furniture beside the specimen */
+.tonebar {
+  position: absolute;
+  right: 22vw;
+  top: 12vh;
+  width: 13px;
+  height: 32vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 0;
+  pointer-events: none;
+}
+.tonebar i {
+  flex: 1;
+  background: var(--ink);
+  opacity: var(--t);
+  border-bottom: 1px solid var(--stone);
+}
+.tonebar .mono {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  right: -0.3rem;
+  writing-mode: vertical-rl;
+  color: var(--graphite);
+  font-size: 0.5rem;
+  white-space: nowrap;
+}
+
+/* the fold line — the void is measured, not empty */
+.foldline {
+  position: absolute;
+  left: 57%;
+  top: 5vh;
+  bottom: 9vh;
+  border-left: 1px dashed var(--hairline);
+  z-index: 0;
+  pointer-events: none;
+}
+.foldline i {
+  position: absolute;
+  top: -0.4rem;
+  left: 0.45rem;
+  font-style: normal;
+  color: var(--graphite);
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+}
 
 /* grip tape — name running up the left edge */
 .tape {
@@ -1356,7 +1407,7 @@ body.pointer-seen .cursor { opacity: 1; }
   .outro-meta { text-align: left; }
   .cairn-ind, .regmark, .chips, .chip-ring, .n-chips, .n-night { display: none; }
   .tape, .hz-r, .d-cluster, .d-scatter, .d-cross, .d-scroll { display: none; }
-  .specimen { display: none; }
+  .specimen, .tonebar, .foldline { display: none; }
   .night-toggle { top: calc(var(--frame) + 8vw + 0.9rem); }
   .jobline { font-size: 0.48rem; bottom: 2px; }
   .crop { display: none; }
