@@ -126,38 +126,60 @@
 
   var plates = PROJECTS.map(plateURI);
 
-  /* ============ the ghost target: an oversized registration mark ============ */
-  /* replaced the ghost M. — rings, degree ticks, a halftone band, and a
-     second pass a hair off register in the accent */
-  (function ghostTarget() {
-    var el = document.getElementById("ghost-target");
-    if (!el) return;
-    var rnd = mulberry32(48);
-    var s = "";
-    [278, 246, 210, 168, 128, 92, 60].forEach(function (r, i) {
-      s += '<circle r="' + r + '" fill="none" stroke-width="' +
-        (i % 3 === 0 ? 9 : 2.2) + '" opacity="' + (0.45 + rnd() * 0.55).toFixed(2) + '"/>';
-    });
-    for (var a = 0; a < 360; a += 6) {
-      var big = a % 30 === 0;
-      var r1 = big ? 256 : 265;
-      var rad = (a * Math.PI) / 180;
-      s += '<line x1="' + (Math.cos(rad) * r1).toFixed(1) + '" y1="' + (Math.sin(rad) * r1).toFixed(1) +
-        '" x2="' + (Math.cos(rad) * 278).toFixed(1) + '" y2="' + (Math.sin(rad) * 278).toFixed(1) +
-        '" stroke-width="' + (big ? 3 : 1.2) + '"/>';
+  /* ============ the thought-thread: the mess has a spine ============ */
+  /* one continuous pencil line meandering from the top of the sheet to
+     the outro, drawn in by your scroll — the chain of thought that
+     connects the scrawls. mess-only. */
+  var threadSvg = document.getElementById("thread");
+  var threadPath = document.getElementById("thread-path");
+  var threadLen = 0;
+  var threadH = 1;
+  var lastThreadOff = -1;
+  function buildThread() {
+    if (!threadSvg) return;
+    var page = document.querySelector(".page");
+    var W = page.clientWidth;
+    var H = page.scrollHeight;
+    threadH = H;
+    threadSvg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    threadSvg.style.height = H + "px";
+    var rnd = mulberry32(7);
+    var pts = [[W * 0.24, 190]];
+    var y = 190, side = 1;
+    while (y < H - 420) {
+      y += 300 + rnd() * 320;
+      pts.push([W * (0.5 + side * (0.16 + rnd() * 0.24)), y + (rnd() - 0.5) * 90]);
+      side = -side;
     }
-    s += '<path d="M-292,0 H292 M0,-292 V292" fill="none" stroke-width="2"/>';
-    s += '<circle r="14" fill="none" stroke-width="4"/><circle r="4"/>';
-    /* one quadrant carries a halftone band, like a tone test */
-    for (var q = 0; q < 26; q++) {
-      var ang = (-0.46 + q / 26) * (Math.PI / 2);
-      for (var rr = 106; rr <= 154; rr += 12) {
-        s += '<circle cx="' + (Math.cos(ang) * rr).toFixed(1) + '" cy="' + (Math.sin(ang) * rr).toFixed(1) +
-          '" r="' + (1.4 + rnd() * 2.8).toFixed(1) + '"/>';
-      }
+    pts.push([W * 0.3, H - 260]); /* it ends at "Write to me." */
+    function mid(p, q) { return [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]; }
+    var d = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1);
+    for (var i = 1; i < pts.length - 1; i++) {
+      var m = mid(pts[i], pts[i + 1]);
+      d += " Q" + pts[i][0].toFixed(1) + " " + pts[i][1].toFixed(1) +
+           " " + m[0].toFixed(1) + " " + m[1].toFixed(1);
     }
-    el.innerHTML = '<g class="gt-pass2">' + s + "</g><g class=\"gt-pass1\">" + s + "</g>";
-  })();
+    d += " L" + pts[pts.length - 1][0].toFixed(1) + " " + pts[pts.length - 1][1].toFixed(1);
+    threadPath.setAttribute("d", d);
+    threadLen = threadPath.getTotalLength();
+    threadPath.style.strokeDasharray = threadLen + " " + threadLen;
+    lastThreadOff = -1;
+    updateThread();
+  }
+  function updateThread() {
+    if (!threadLen) return;
+    var f;
+    if (stillMode || reduced()) {
+      f = 1; /* fully drawn — no scroll choreography */
+    } else {
+      f = clamp((scrollY + innerHeight * 0.92) / threadH, 0, 1);
+    }
+    var off = Math.round(threadLen * (1 - f));
+    if (off !== lastThreadOff) {
+      lastThreadOff = off;
+      threadPath.style.strokeDashoffset = off;
+    }
+  }
 
   /* static thumbnails for touch / narrow viewports */
   var rows = Array.prototype.slice.call(document.querySelectorAll(".row"));
@@ -711,10 +733,17 @@
       scalerEl.style.transform = "scale(0)";
       open = false;
       if (!messObserver) watchNotes();
+      updateThread(); /* the thread meets you at your scroll position */
     } else {
       unwatchNotes();
     }
     catLife(on);
+    /* the project sheet carries its own mess button — keep it honest */
+    var pvm = document.getElementById("pv-mess");
+    if (pvm) {
+      pvm.textContent = on ? "OK, ENOUGH" : "SEE THE MESS";
+      pvm.setAttribute("aria-pressed", String(on));
+    }
   }
   function toggleProof() {
     setProof(!document.body.classList.contains("proof"));
@@ -772,11 +801,18 @@
   var resizeT;
   window.addEventListener("resize", function () {
     clearTimeout(resizeT);
-    resizeT = setTimeout(positionAnchors, 150);
+    resizeT = setTimeout(function () {
+      positionAnchors();
+      buildThread();
+    }, 150);
   });
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(positionAnchors);
+    document.fonts.ready.then(function () {
+      positionAnchors();
+      buildThread();
+    });
   }
+  buildThread();
   /* re-measure once the hero settles (proof may open mid-entrance) */
   var lastLine = document.querySelector(".hl-mask:nth-child(3) .hl");
   if (lastLine) lastLine.addEventListener("animationend", positionAnchors, { once: true });
@@ -917,8 +953,6 @@
   var scrollQueued = false;
   var pctEl = document.getElementById("scroll-pct");
   var lastPct = "";
-  var ghostEl = document.querySelector(".ghost-target");
-  var lastGy = 0;
   function onScroll() {
     if (scrollQueued) return;
     scrollQueued = true;
@@ -934,15 +968,8 @@
         lastPct = pct;
         pctEl.textContent = pct; /* rewriting identical text still dirties layout */
       }
-      /* the ghost M leaves slower than the page — depth reads as life.
-         transform-only write, skipped once the hero is long gone */
-      if (ghostEl && !reduced() && scrollY < innerHeight * 1.8) {
-        var gy = Math.round(scrollY * 0.12);
-        if (gy !== lastGy) {
-          lastGy = gy;
-          ghostEl.style.transform = "translate3d(0," + gy + "px,0)";
-        }
-      }
+      /* the thought-thread draws in with the scroll (mess only) */
+      if (document.body.classList.contains("proof")) updateThread();
     });
   }
   window.addEventListener("scroll", onScroll, { passive: true });
@@ -1390,7 +1417,8 @@
       attr: "CEO, MERIDIAN",
       notes: [
         { pen: "hand-k", pos: "n-pv1", text: "the ceo said “premium” nine times. i counted." },
-        { pen: "hand-b", pos: "n-pv2", text: "quiet won." }
+        { pen: "hand-b", pos: "n-pv2", text: "quiet won." },
+        { pen: "hand-k", pos: "n-pv3", text: "six weeks. never again. (again.)" }
       ]
     },
     {
@@ -1406,7 +1434,8 @@
       attr: "ANA VASQUEZ",
       notes: [
         { pen: "hand-k", pos: "n-pv1", text: "grey Nº4 was correct. fight me." },
-        { pen: "hand-b", pos: "n-pv2", text: "the wrong stock was the right stock." }
+        { pen: "hand-b", pos: "n-pv2", text: "the wrong stock was the right stock." },
+        { pen: "hand-b", pos: "n-pv3", text: "ana cried at the unboxing. me too, quietly." }
       ]
     },
     {
@@ -1422,7 +1451,8 @@
       attr: "HEAD OF PIPELINE, RENDERHAUS",
       notes: [
         { pen: "hand-k", pos: "n-pv1", text: "shipped v1 at 03:40. obviously." },
-        { pen: "hand-b", pos: "n-pv2", text: "fav. still fav." }
+        { pen: "hand-b", pos: "n-pv2", text: "fav. still fav." },
+        { pen: "hand-k", pos: "n-pv3", text: "the embers were a bug. promoted to feature." }
       ]
     },
     {
@@ -1438,7 +1468,8 @@
       attr: "COMMISSIONING CURATOR",
       notes: [
         { pen: "hand-k", pos: "n-pv1", text: "splinter count: eleven. worth it." },
-        { pen: "hand-b", pos: "n-pv2", text: "a tram went past and it rained light." }
+        { pen: "hand-b", pos: "n-pv2", text: "a tram went past and it rained light." },
+        { pen: "hand-k", pos: "n-pv3", text: "the toddlers tried. the meadow held." }
       ]
     }
   ];
@@ -1476,6 +1507,7 @@
       '<div class="pv-sheet">' +
         '<span class="pv-num" aria-hidden="true">' + p.num + '</span>' +
         '<button class="pv-close mono" id="pv-close" type="button">CLOSE &#10005; <em>ESC</em></button>' +
+        '<button class="pv-messbtn mono" id="pv-mess" type="button"></button>' +
         '<header class="pv-head">' +
           '<p class="pv-kicker mono">PROOF SHEET Nº 0' + (i + 2) + " &middot; " + ref + " &middot; " + kind + "</p>" +
           '<h2 class="pv-title">' + title + "</h2>" +
@@ -1523,6 +1555,9 @@
     var target = "#p-0" + (i + 1);
     if (location.hash !== target) history.pushState(null, "", target);
     document.getElementById("pv-close").addEventListener("click", closeProject);
+    var pvm = document.getElementById("pv-mess");
+    pvm.textContent = document.body.classList.contains("proof") ? "OK, ENOUGH" : "SEE THE MESS";
+    pvm.addEventListener("click", toggleProof);
     document.getElementById("pv-next").addEventListener("click", function (e) {
       e.preventDefault();
       openProject(+this.dataset.next);
@@ -1531,6 +1566,11 @@
     if (messObserver) {
       Array.prototype.slice.call(pvEl.querySelectorAll(".note")).forEach(function (el) {
         messObserver.observe(el);
+      });
+    } else if (document.body.classList.contains("proof")) {
+      /* ?still has no observer — the notes are simply there */
+      Array.prototype.slice.call(pvEl.querySelectorAll(".note")).forEach(function (el) {
+        el.classList.add("seen");
       });
     }
   }

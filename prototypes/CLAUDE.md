@@ -92,7 +92,10 @@ signatures (Mark counts these himself):
   replacement "big gesture" is an open question — do not rebuild the peel.
 - **The ghost M.** — the huge 36vw italic glyph bleeding off the hero's right
   edge. Mark: "can we have something else instead of the M... Im not a fan."
-  Replaced by the ghost target (see §4.1).
+- **The ghost target** — its replacement, an oversized faint registration ring.
+  Mark: "not a fan of that ring." LESSON: big abstract ghost fillers die here;
+  the hero wants real OBJECTS with craft (specimen, plates, stones). Replaced
+  by the ampersand specimen (§4.1).
 
 ---
 
@@ -103,11 +106,14 @@ signatures (Mark counts these himself):
    - **LOOSE TYPE**: grab a letter → letterpress physics (gravity, bounce, spin
      inside the hero). Decal `[!] LOOSE TYPE — GRAB A LETTER` ↔ `[R] RESET THE CASE`
      (click or key R). Cursor label GRAB / WHEEE. Desktop fine-pointer only.
-   - Bio right column; the **ghost target** bleeding off the right edge — an
-     oversized registration mark (rings, degree ticks, one halftone band),
-     generated in JS (`ghostTarget()`, seeded), printed twice with the second
-     pass 5px off register in the current accent. Replaced the ghost M. (Mark
-     wasn't a fan — see graveyard). Keeps the 0.12× scroll parallax.
+   - Bio right column; the **ampersand specimen** on the right edge — his
+     favourite glyph cascading through Fraunces' optical sizes (9→144) with
+     tiny mono axis labels, like a torn corner of a specimen book. The 144pt
+     one is italic in the accent (echoes the headline amp). Each glyph swells
+     on hover (CSS font-variation transition, `calc(var(--w) + 90)` + SOFT).
+     Dims as `.final`-alike in mess; hidden ≤820px; PRINTS (it's content).
+     Replaced the ghost M and the ghost target (both graveyarded — no more
+     abstract ghost fillers).
 2. **Ticker** — personal marquee ("THE KERNING IS DONE — IT ISN'T", desk status by
    LA hour, hints for M / N / chips / loose type). Pauses in mess mode.
    Has `margin-top: 10vh` so it never parks at the fold on load — the hero is
@@ -118,6 +124,12 @@ signatures (Mark counts these himself):
    (2019→2026, 2026 stone is accent-colored). Serif facts on main page; the five
    red asides ("terrifying. correct." etc.) are MESS-ONLY notes, plus "the gap in
    2022? we don't talk about 2022."
+3½. **THE THOUGHT-THREAD (mess only)** — the spine of the hidden page: one
+   continuous pencil line (`#thread`, seeded meander built by `buildThread()`
+   at init/fonts/resize) running from the top of the sheet to "Write to me.",
+   drawn in by scroll via stroke-dashoffset in the existing scroll rAF
+   (`updateThread()`, write-only; full-drawn under `?still`/reduced motion;
+   synced on mess-enter). z 4 — over the dimmed finals, under the notes.
 4. **SELECTED WORK** — 4 fictional placeholder projects (Meridian, Low Relief,
    Night Office, Signal Garden), each with one-line description, REF// part number,
    generated duotone SVG plates (halftone, misregistered red pass, proof slug,
@@ -213,6 +225,14 @@ signatures (Mark counts these himself):
   scheduled only while M is on — `catLife()` in `setProof`).
 - Mess layer, 23:00–06:00 desk time only (`body.late-desk`, ticked with the clock):
   one extra outro scrawl — "you're up late too?" — day visitors never see it.
+- **The desk lamp**: entering the mess WARMS the paper — `body.proof` swaps
+  `--stone`/`--stone-deep` a few degrees warmer (day `#E1DBCC`, night
+  `#1A160E` via `body.night.proof`). Cozy was an explicit ask.
+- **The music corner** (desk, mess): a hand-drawn record that spins (7s
+  linear, only while the mess is open + drawn in; reduced-motion off) with
+  tonearm, two ♪ doodles, and "side B. again." in the day pen.
+- **The mood gauge** (index, mess): an arc with three ticks, the needle hard
+  on the third — "fine · tired · *tired but wired* ←".
 
 ---
 

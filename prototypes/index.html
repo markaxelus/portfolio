@@ -82,10 +82,23 @@
 
   <main class="page" id="top">
 
+    <!-- the thought-thread: one pencil line from the top of the mess to
+         the bottom, drawn in by your scroll (mess only; built by main.js) -->
+    <svg class="thread" id="thread" aria-hidden="true" preserveAspectRatio="none">
+      <path id="thread-path" fill="none"/>
+    </svg>
+
     <!-- hero -->
     <section class="hero" id="hero">
-      <!-- the ghost target: oversized registration mark, two passes -->
-      <svg class="ghost-target final" id="ghost-target" viewBox="-300 -300 600 600" aria-hidden="true"></svg>
+      <!-- the specimen: his favourite glyph, at every optical size -->
+      <div class="specimen final" aria-hidden="true">
+        <span class="spec-head mono">SPECIMEN &mdash; FRAUNCES VF &middot; OPSZ 9&rarr;144</span>
+        <span class="spec-amp s1" style="--o:9;   --w:420">&amp;<i class="mono">9 &middot; 420</i></span>
+        <span class="spec-amp s2" style="--o:24;  --w:450">&amp;<i class="mono">24 &middot; 450</i></span>
+        <span class="spec-amp s3" style="--o:56;  --w:480">&amp;<i class="mono">56 &middot; 480</i></span>
+        <span class="spec-amp s4" style="--o:96;  --w:510">&amp;<i class="mono">96 &middot; 510</i></span>
+        <span class="spec-amp s5" style="--o:144; --w:540; --k:1">&amp;<i class="mono">144 &middot; 540 &middot; WONK</i></span>
+      </div>
 
       <!-- machine decals -->
       <div class="d-cluster spec final">
@@ -236,6 +249,14 @@
           <span class="hand-k">you said that in march.</span>
           <span class="hand-b">&hellip;one more pass.</span>
         </div>
+
+        <!-- the gauge -->
+        <svg class="note scrawl dd-mood" style="--d:.88s" viewBox="0 0 120 78" aria-hidden="true">
+          <path class="draw" pathLength="1" d="M14,64 A46,46 0 0 1 106,64" fill="none"/>
+          <path class="draw" pathLength="1" d="M24,50 L29,55 M60,32 L60,40 M96,50 L91,55" fill="none" opacity=".6"/>
+          <path class="draw" pathLength="1" d="M60,64 L89,41 M60,68 a4,4 0 1,0 0.1,0" fill="none"/>
+        </svg>
+        <span class="note hand-b n-mood" style="--d:1s">fine &middot; tired &middot; <em>tired but wired</em> &larr;</span>
       </div>
 
       <a class="row" id="p-01" href="#p-01" data-plate="0">
@@ -326,6 +347,25 @@
           <span class="hand-k">touch grass</span>
           <span class="hand-b">(tomorrow)</span>
         </div>
+
+        <!-- the record: it spins for as long as the mess is open -->
+        <svg class="note scrawl dd-vinyl" style="--d:.5s" viewBox="0 0 150 115" aria-hidden="true">
+          <g class="vinyl-spin">
+            <circle class="draw" pathLength="1" cx="62" cy="58" r="42" fill="none"/>
+            <circle class="draw" pathLength="1" cx="62" cy="58" r="33" fill="none" opacity=".5"/>
+            <circle class="draw" pathLength="1" cx="62" cy="58" r="26" fill="none" opacity=".35"/>
+            <circle class="draw" pathLength="1" cx="62" cy="58" r="13" fill="none"/>
+            <path class="draw" pathLength="1" d="M62,54 a4,4 0 1,0 0.1,0" fill="none"/>
+            <path class="draw" pathLength="1" d="M77,29 L88,45" fill="none" opacity=".55"/>
+          </g>
+          <path class="draw" pathLength="1" d="M124,14 L124,52 C124,62 114,64 109,57" fill="none"/>
+          <path class="draw" pathLength="1" d="M118,10 L130,10" fill="none" opacity=".6"/>
+        </svg>
+        <svg class="note scrawl dd-notes" style="--d:.68s" viewBox="0 0 70 46" aria-hidden="true">
+          <path class="draw" pathLength="1" d="M12,34 a5,3.6 0 1,0 0.1,0 M16,33 V12 L34,7 V28 M30,32 a5,3.6 0 1,0 0.1,0" fill="none"/>
+          <path class="draw" pathLength="1" d="M52,26 a4,3 0 1,0 0.1,0 M55,25 V8 C60,10 62,13 60,18" fill="none" opacity=".7"/>
+        </svg>
+        <span class="note hand-k n-vinyl" style="--d:.8s">side B. again.</span>
       </div>
     </section>
 

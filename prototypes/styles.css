@@ -773,24 +773,55 @@ body.has-cursor .loose-decal:hover { opacity: 1; color: var(--accent); }
   pointer-events: none;
 }
 
-/* the ghost target — an oversized registration mark bleeding off the
-   right edge, printed twice, a hair off register */
-.ghost-target {
+/* the specimen — his favourite glyph at every optical size, like a
+   torn corner of a type-specimen book */
+.specimen {
   position: absolute;
-  right: -7vw;
-  top: 3vw;
-  width: 38vw;
-  height: 38vw;
+  right: 3.5vw;
+  top: 10vh;
   z-index: 0;
-  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
   user-select: none;
+  -webkit-user-select: none;
+  text-align: right;
 }
-.ghost-target .gt-pass1 { stroke: var(--ink); fill: var(--ink); opacity: 0.075; }
-.ghost-target .gt-pass2 {
-  stroke: var(--accent);
-  fill: var(--accent);
-  opacity: 0.055;
-  transform: translate(5px, 3px);
+.spec-head {
+  color: var(--graphite);
+  font-size: 0.52rem;
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 0.45rem;
+  margin-bottom: 0.5rem;
+}
+.spec-amp {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  line-height: 0.9;
+  font-weight: 500;
+  color: var(--ink);
+  font-variation-settings: "opsz" var(--o), "wght" var(--w), "SOFT" 0, "WONK" var(--k, 0);
+  transition: font-variation-settings 0.35s var(--ease-out);
+}
+.spec-amp:hover {
+  font-variation-settings: "opsz" var(--o), "wght" calc(var(--w) + 90), "SOFT" 70, "WONK" var(--k, 0);
+}
+.spec-amp i {
+  font-style: normal;
+  color: var(--graphite);
+  font-size: 0.5rem;
+  order: -1; /* the axis label sits to the left, like a specimen sheet */
+}
+.spec-amp.s1 { font-size: 1.35rem; }
+.spec-amp.s2 { font-size: 2.2rem; }
+.spec-amp.s3 { font-size: 3.6rem; }
+.spec-amp.s4 { font-size: 6rem; }
+.spec-amp.s5 {
+  font-size: clamp(6.5rem, 9.5vw, 11rem);
+  font-style: italic;
+  color: var(--accent);
 }
 
 /* grip tape — name running up the left edge */
@@ -1039,7 +1070,7 @@ body:not(.proof) .note { transition-delay: 0s; }
 .proof .d-run, .proof .d-scroll, .proof .row-ref, .proof .d-outro { opacity: 0.15; }
 .proof .tape { opacity: 0.12; }
 .proof .hazard { opacity: 0.25; }
-.proof .ghost-target { opacity: 0.35; }
+.proof .specimen { opacity: 0.34; filter: saturate(0.5); }
 .proof .night-toggle { opacity: 0.35; }
 
 /* mess notes for the interactive decals */
@@ -1295,7 +1326,7 @@ body.pointer-seen .cursor { opacity: 1; }
   .outro-meta { text-align: left; }
   .cairn-ind, .regmark, .chips, .chip-ring, .n-chips, .n-night { display: none; }
   .tape, .hz-r, .d-cluster, .d-scatter, .d-cross, .d-scroll { display: none; }
-  .ghost-target { width: 64vw; height: 64vw; right: -22vw; }
+  .specimen { display: none; }
   .night-toggle { top: calc(var(--frame) + 8vw + 0.9rem); }
   .jobline { font-size: 0.48rem; bottom: 2px; }
   .crop { display: none; }
@@ -1645,10 +1676,73 @@ html.pv-open { overflow: hidden; }
   font-size: 0.55rem;
 }
 
+/* the mess works in here exactly like it does out there:
+   the red grid rises, the case ghosts back, the pens speak */
+.proof .pv-sheet::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 23px,
+      rgba(199, 54, 31, 0.13) 23px,
+      rgba(199, 54, 31, 0.13) 24px
+    ),
+    linear-gradient(to right, rgba(199, 54, 31, 0.3) 0, rgba(199, 54, 31, 0.3) 1px, transparent 1px),
+    linear-gradient(to left, rgba(199, 54, 31, 0.3) 0, rgba(199, 54, 31, 0.3) 1px, transparent 1px);
+  background-position: 0 0, 1.4vw 0, calc(100% - 1.4vw) 0;
+  background-repeat: repeat, no-repeat, no-repeat;
+}
+.night.proof .pv-sheet::before {
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 23px,
+      rgba(240, 96, 63, 0.16) 23px,
+      rgba(240, 96, 63, 0.16) 24px
+    ),
+    linear-gradient(to right, rgba(240, 96, 63, 0.35) 0, rgba(240, 96, 63, 0.35) 1px, transparent 1px),
+    linear-gradient(to left, rgba(240, 96, 63, 0.35) 0, rgba(240, 96, 63, 0.35) 1px, transparent 1px);
+}
+.pv-head, .pv-grid, .pv-next, .pv-num, .pv-jobline {
+  transition: opacity 0.5s var(--ease-out), filter 0.5s var(--ease-out);
+}
+.proof .pv-head, .proof .pv-grid, .proof .pv-next,
+.proof .pv-num, .proof .pv-jobline {
+  opacity: 0.34;
+  filter: saturate(0.5);
+}
+.proof .pv-num { opacity: 0.02; }
+
+/* the sheet has its own way into the mess */
+.pv-messbtn {
+  position: fixed;
+  bottom: calc(var(--frame) - 0.85em);
+  right: calc(var(--frame) + 1.4vw);
+  z-index: 66;
+  padding: 0.5rem 0.65rem;
+  background: var(--stone);
+  border: 1px solid var(--hairline);
+  cursor: pointer;
+  color: inherit;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.7;
+  transition: color 0.25s, background-color 0.25s, border-color 0.25s;
+}
+.pv-messbtn:hover { background: var(--pencil); border-color: var(--pencil); color: var(--stone); }
+.proof .pv-messbtn { color: var(--pencil); border-color: var(--pencil); }
+
 /* the mess annotates the case too */
 .pv-notes { z-index: 5; }
 .n-pv1 { top: 12rem; right: 6vw; --tilt: -2deg; }
 .n-pv2 { top: 30rem; left: 16rem; --tilt: 1.5deg; }
+.n-pv3 { bottom: 15rem; left: 42%; --tilt: -1.5deg; }
 
 @media (max-width: 820px) {
   .pv-grid { grid-template-columns: 1fr; gap: 2rem; }
@@ -1660,6 +1754,40 @@ html.pv-open { overflow: hidden; }
 /* ============================================================
    MESS ADDITIONS — the desk keeps talking
    ============================================================ */
+
+/* the desk lamp: entering the mess warms the paper */
+body.proof { --stone: #E1DBCC; --stone-deep: #D2CBB9; }
+body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
+
+/* the thought-thread: one pencil line, drawn by your scroll */
+.thread {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 4;
+  pointer-events: none;
+  display: none;
+}
+.proof .thread { display: block; }
+.thread path {
+  stroke: var(--pencil);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  opacity: 0.5;
+}
+
+/* the record spins for as long as the mess is open */
+.dd-vinyl { left: 4%; top: 22%; width: 128px; }
+.vinyl-spin { transform-box: fill-box; transform-origin: 50% 50%; }
+.proof .dd-vinyl.seen .vinyl-spin { animation: vinyl-spin 7s linear infinite; }
+@keyframes vinyl-spin { to { transform: rotate(360deg); } }
+.dd-notes { left: 15%; top: 8%; width: 56px; }
+.n-vinyl { left: 5%; top: 66%; --tilt: -2deg; }
+
+/* the gauge */
+.dd-mood { left: 3%; bottom: 4%; width: 104px; }
+.n-mood { left: 12%; bottom: 3%; --tilt: 1.5deg; }
 
 .n-noscale { bottom: 6vh; left: calc(var(--frame) + 3vw); --tilt: -1deg; }
 
@@ -1695,7 +1823,12 @@ html.pv-open { overflow: hidden; }
 .n-rip { right: 21%; bottom: 5%; --tilt: 2deg; text-align: center; }
 
 @media (max-width: 820px) {
-  .dd-ttt, .n-ttt, .argue, .dd-map, .n-map { display: none; }
+  .dd-ttt, .n-ttt, .argue, .dd-map, .n-map,
+  .dd-vinyl, .dd-notes, .n-vinyl, .dd-mood, .n-mood { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proof .dd-vinyl.seen .vinyl-spin { animation: none !important; }
 }
 
 /* ============================================================
@@ -1872,7 +2005,7 @@ body.odo-live .odo-reel { transition: transform 0.9s var(--ease-out); }
   .light-toggle, .lightglow, .loupe,
   .corner, .ticker, .under, .proof-fixed, .proof-notes,
   .idle-line, .stone-tip, .loose-decal,
-  .amark, .ghost-target, .pv, .d-cluster, .d-scatter, .d-cross, .d-run,
+  .amark, .pv, .thread, .d-cluster, .d-scatter, .d-cross, .d-run,
   .d-outro, .row-thumb, .fps-meter, .regmark {
     display: none !important;
   }
