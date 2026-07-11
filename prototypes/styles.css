@@ -525,7 +525,7 @@ button.corner {
 }
 
 /* ---------- visitors' cairn ---------- */
-.yard { padding: 0 1.4vw 6vw; }
+.yard { position: relative; padding: 0 1.4vw 6vw; }
 .yard-head {
   display: flex;
   justify-content: space-between;
@@ -773,20 +773,24 @@ body.has-cursor .loose-decal:hover { opacity: 1; color: var(--accent); }
   pointer-events: none;
 }
 
-/* the big ghost glyph — clipped by the frame like it grew too big */
-.ghost-m {
+/* the ghost target — an oversized registration mark bleeding off the
+   right edge, printed twice, a hair off register */
+.ghost-target {
   position: absolute;
-  right: -5vw;
-  top: 4vw;
-  font-size: 36vw;
-  line-height: 0.8;
-  font-style: italic;
-  font-weight: 340;
-  font-variation-settings: "opsz" 144;
-  opacity: 0.05;
+  right: -7vw;
+  top: 3vw;
+  width: 38vw;
+  height: 38vw;
   z-index: 0;
-  user-select: none;
   pointer-events: none;
+  user-select: none;
+}
+.ghost-target .gt-pass1 { stroke: var(--ink); fill: var(--ink); opacity: 0.075; }
+.ghost-target .gt-pass2 {
+  stroke: var(--accent);
+  fill: var(--accent);
+  opacity: 0.055;
+  transform: translate(5px, 3px);
 }
 
 /* grip tape — name running up the left edge */
@@ -1035,7 +1039,7 @@ body:not(.proof) .note { transition-delay: 0s; }
 .proof .d-run, .proof .d-scroll, .proof .row-ref, .proof .d-outro { opacity: 0.15; }
 .proof .tape { opacity: 0.12; }
 .proof .hazard { opacity: 0.25; }
-.proof .ghost-m { opacity: 0.018; }
+.proof .ghost-target { opacity: 0.35; }
 .proof .night-toggle { opacity: 0.35; }
 
 /* mess notes for the interactive decals */
@@ -1291,7 +1295,7 @@ body.pointer-seen .cursor { opacity: 1; }
   .outro-meta { text-align: left; }
   .cairn-ind, .regmark, .chips, .chip-ring, .n-chips, .n-night { display: none; }
   .tape, .hz-r, .d-cluster, .d-scatter, .d-cross, .d-scroll { display: none; }
-  .ghost-m { font-size: 60vw; right: -12vw; opacity: 0.04; }
+  .ghost-target { width: 64vw; height: 64vw; right: -22vw; }
   .night-toggle { top: calc(var(--frame) + 8vw + 0.9rem); }
   .jobline { font-size: 0.48rem; bottom: 2px; }
   .crop { display: none; }
@@ -1463,6 +1467,236 @@ body.has-cursor .loupe { display: block; }
 /* --- 3. the plate pull: shift-drag the headline and the red/blue
    passes come off register, following the hand; thunk back on release --- */
 .hero-title.plates-return { transition: text-shadow 0.55s var(--ease-thunk); }
+
+/* ============================================================
+   THE PROJECT VIEWER — every project is its own proof sheet
+   ============================================================ */
+
+.pv {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--stone);
+  overflow-y: auto;
+  overflow-x: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease-out);
+}
+.pv-open .pv { opacity: 1; pointer-events: auto; }
+html.pv-open { overflow: hidden; }
+.pv-open .reveal, .pv-open .idle-line { display: none !important; }
+
+.pv-sheet {
+  position: relative;
+  min-height: 100%;
+  padding: clamp(3rem, 7vh, 6rem) clamp(1.4rem, 6vw, 7rem) 0;
+  animation: pv-rise 0.45s var(--ease-out) both;
+}
+@keyframes pv-rise {
+  from { opacity: 0; transform: translateY(3vh); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.pv-num {
+  position: absolute;
+  top: -6vw;
+  right: -4vw;
+  font-size: 42vw;
+  line-height: 1;
+  font-weight: 500;
+  opacity: 0.05;
+  pointer-events: none;
+  user-select: none;
+}
+.pv-close {
+  position: fixed;
+  top: calc(var(--frame) - 0.85em);
+  right: calc(var(--frame) + 1.4vw);
+  z-index: 66;
+  padding: 0.5rem 0.65rem;
+  background: var(--stone);
+  border: 1px solid var(--hairline);
+  cursor: pointer;
+  color: inherit;
+  transition: color 0.25s, background-color 0.25s, border-color 0.25s;
+}
+.pv-close:hover { background: var(--ink); color: var(--stone); border-color: var(--ink); }
+.pv-close em { font-style: normal; opacity: 0.5; }
+
+.pv-head { max-width: 60rem; }
+.pv-kicker { color: var(--accent); }
+.pv-title {
+  font-size: clamp(3.4rem, 9vw, 9.5rem);
+  line-height: 0.9;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  margin: 1.2rem 0 1.4rem -0.04em;
+}
+.pv-lede {
+  font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+  max-width: 44ch;
+  line-height: 1.4;
+}
+
+.pv-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 15rem) minmax(0, 1fr);
+  gap: 3rem clamp(2rem, 5vw, 5rem);
+  margin-top: clamp(2.5rem, 6vh, 4.5rem);
+}
+.pv-meta {
+  position: sticky;
+  top: 4rem;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  border-top: 1px solid var(--ink);
+  padding-top: 1rem;
+}
+.pv-meta span {
+  display: block;
+  color: var(--graphite);
+  font-size: 0.52rem;
+  margin-bottom: 0.15rem;
+}
+.pv-meta ul { list-style: none; }
+.pv-meta li { padding: 0.12rem 0; }
+
+.pv-body { max-width: 62rem; padding-bottom: 2rem; }
+.pv-plate {
+  width: 100%;
+  aspect-ratio: 8 / 5;
+  background-size: cover;
+  background-position: center 30%;
+  border: 1px solid var(--ink);
+  margin-bottom: clamp(2rem, 5vh, 3.5rem);
+}
+.pv-body h3 {
+  color: var(--accent);
+  margin: 2.6rem 0 0.9rem;
+}
+.pv-body > p {
+  font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+  line-height: 1.55;
+  max-width: 58ch;
+}
+.pv-duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin-top: 2.6rem;
+}
+.pv-duo figure {
+  aspect-ratio: 3 / 2;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--ink);
+}
+.pv-stats {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+  margin-top: 2.6rem;
+  border-top: 1px solid var(--ink);
+  padding-top: 1.4rem;
+}
+.pv-stats b {
+  display: block;
+  font-size: clamp(2.2rem, 4.5vw, 4rem);
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+.pv-stats .mono { color: var(--graphite); font-size: 0.55rem; }
+.pv-quote {
+  margin: 3rem 0 0;
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  line-height: 1.25;
+  font-style: italic;
+  max-width: 30ch;
+}
+.pv-quote footer { margin-top: 1rem; font-style: normal; color: var(--graphite); }
+
+.pv-next {
+  display: block;
+  margin: clamp(3rem, 8vh, 5.5rem) calc(-1 * clamp(1.4rem, 6vw, 7rem)) 0;
+  padding: clamp(2rem, 5vh, 3.5rem) clamp(1.4rem, 6vw, 7rem) clamp(2.6rem, 6vh, 4rem);
+  border-top: 1px solid var(--ink);
+  transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out);
+}
+.pv-next .mono { color: var(--graphite); transition: color 0.3s; }
+.pv-next b {
+  display: block;
+  font-size: clamp(2.6rem, 7vw, 6.5rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-top: 0.5rem;
+}
+.pv-next:hover { background: var(--ink); color: var(--stone); }
+.pv-next:hover .mono { color: var(--stone); }
+.pv-jobline {
+  display: block;
+  text-align: center;
+  padding: 1.2rem 0 0.6rem;
+  color: var(--graphite);
+  font-size: 0.55rem;
+}
+
+/* the mess annotates the case too */
+.pv-notes { z-index: 5; }
+.n-pv1 { top: 12rem; right: 6vw; --tilt: -2deg; }
+.n-pv2 { top: 30rem; left: 16rem; --tilt: 1.5deg; }
+
+@media (max-width: 820px) {
+  .pv-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .pv-meta { position: static; }
+  .pv-duo, .pv-stats { grid-template-columns: 1fr; }
+  .pv-num { font-size: 70vw; }
+}
+
+/* ============================================================
+   MESS ADDITIONS — the desk keeps talking
+   ============================================================ */
+
+.n-noscale { bottom: 6vh; left: calc(var(--frame) + 3vw); --tilt: -1deg; }
+
+.dd-ttt { right: 8%; top: -3.4rem; width: 74px; }
+.n-ttt { right: 3%; top: 2.2rem; --tilt: 2deg; }
+
+.argue {
+  top: 30%;
+  right: 3%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  max-width: 15rem;
+}
+.argue .hand-b { padding-left: 1.6rem; }
+
+.todo {
+  top: 5.2rem;
+  right: 6%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--pencil-soft);
+  transform: rotate(1.2deg);
+}
+.todo-head { color: var(--pencil); font-size: 0.52rem; margin-bottom: 0.25rem; }
+
+.dd-map { left: 2%; bottom: -0.4rem; width: 180px; }
+.n-map { left: 2%; bottom: -2.6rem; --tilt: -1.5deg; }
+
+.dd-rip { right: 27%; bottom: 13%; width: 130px; }
+.n-rip { right: 21%; bottom: 5%; --tilt: 2deg; text-align: center; }
+
+@media (max-width: 820px) {
+  .dd-ttt, .n-ttt, .argue, .dd-map, .n-map { display: none; }
+}
 
 /* ============================================================
    PRESS NOISE — opt-in, muted by default
@@ -1638,7 +1872,7 @@ body.odo-live .odo-reel { transition: transform 0.9s var(--ease-out); }
   .light-toggle, .lightglow, .loupe,
   .corner, .ticker, .under, .proof-fixed, .proof-notes,
   .idle-line, .stone-tip, .loose-decal,
-  .amark, .ghost-m, .d-cluster, .d-scatter, .d-cross, .d-run,
+  .amark, .ghost-target, .pv, .d-cluster, .d-scatter, .d-cross, .d-run,
   .d-outro, .row-thumb, .fps-meter, .regmark {
     display: none !important;
   }

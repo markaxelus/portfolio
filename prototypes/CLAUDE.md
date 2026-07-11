@@ -90,6 +90,9 @@ signatures (Mark counts these himself):
   like this peeling thing I think we need to think of something else u can
   bring back the button." Removed July 2026; the corner button is back. A
   replacement "big gesture" is an open question — do not rebuild the peel.
+- **The ghost M.** — the huge 36vw italic glyph bleeding off the hero's right
+  edge. Mark: "can we have something else instead of the M... Im not a fan."
+  Replaced by the ghost target (see §4.1).
 
 ---
 
@@ -100,7 +103,11 @@ signatures (Mark counts these himself):
    - **LOOSE TYPE**: grab a letter → letterpress physics (gravity, bounce, spin
      inside the hero). Decal `[!] LOOSE TYPE — GRAB A LETTER` ↔ `[R] RESET THE CASE`
      (click or key R). Cursor label GRAB / WHEEE. Desktop fine-pointer only.
-   - Bio top-right column; ghost `M.` glyph bleeding off the right edge.
+   - Bio right column; the **ghost target** bleeding off the right edge — an
+     oversized registration mark (rings, degree ticks, one halftone band),
+     generated in JS (`ghostTarget()`, seeded), printed twice with the second
+     pass 5px off register in the current accent. Replaced the ghost M. (Mark
+     wasn't a fan — see graveyard). Keeps the 0.12× scroll parallax.
 2. **Ticker** — personal marquee ("THE KERNING IS DONE — IT ISN'T", desk status by
    LA hour, hints for M / N / chips / loose type). Pauses in mess mode.
    Has `margin-top: 10vh` so it never parks at the fold on load — the hero is
@@ -116,7 +123,20 @@ signatures (Mark counts these himself):
    generated duotone SVG plates (halftone, misregistered red pass, proof slug,
    ghost numeral). Cursor-trailing plate reveal on hover (desktop), static thumbs
    on touch. Row titles go WONK on hover. Mess: row notes, "fav." circle on 03,
-   the cat + zzz on row 04.
+   the cat + zzz on row 04, and the pen argument ("ship it." / "one more pass.").
+   **Clicking a row opens the PROJECT VIEWER** (`#pv`, z 60): each project is
+   its own full proof sheet — accent kicker, giant title, sticky meta rail
+   (CLIENT/ROLE/STACK/WHEN/MADE), plate hero, THE BRIEF / THE NERVE sections,
+   two generated specimen details (`detailURI`), a 3-figure outcome row, pull
+   quote, giant NEXT PROOF handoff (hover inverts), per-sheet jobline, ghost
+   numeral. Case copy lives in `CASE` in main.js (ALL PLACEHOLDER). Routing:
+   `#p-01…04` deep links, hashchange + back button, Esc closes (before mess),
+   history entries deduped. Loupe vs click on rows: press-and-HOLD 230ms
+   summons the glass; a quick click opens the sheet. Data-URI backgrounds are
+   assigned as JS properties (quotes break inline style attributes). Mess-mode
+   notes render inside each sheet (`c.notes`, observed on open if the mess is
+   already up). Anatomy follows awwwards case-study conventions (researched:
+   context-first meta, long-form magazine flow, next/prev footer).
 5. **AT THE DESK — RIGHT NOW-ISH** — BUILDING "This site. Again." / READING "The
    Shape of Design, again" / LISTENING "The same three albums, on loop" / COFFEE
    "Nº 094 this quarter". Mess: "update this, mark. it's been three weeks.",
@@ -339,7 +359,17 @@ signatures (Mark counts these himself):
       pow 0.72, clamp ±110px), thunk back on release (`.plates-return`
       transition). Shift is the discriminator vs loose-type grabs (char
       pointerdown returns early on shiftKey). Cursor label OFF REGISTER.
-15. **The bonsai + page-cat experiments live on branch `prototypes-cat`**
+15. (`prototypes-signature-4`) **Ghost target + project viewer + mess
+    expansion**, from Mark's brief ("something else instead of the M...
+    build out the actual projects page... more content on the hidden page...
+    draw inspirations from the awwwards websites"). Ghost M → generated
+    registration-target (§4.1); the project viewer (§4.4) with placeholder
+    case copy; mess additions: TODAY card w/ struck items (desk), pen
+    argument (index), tic-tac-toe "cat's game. both players were me."
+    (trail), hand sitemap (yard — NOTE: .yard needed position:relative),
+    RIP tombstones for the graveyard features (outro), "do not scale" (hero).
+    Loupe changed to press-and-hold (230ms) so row clicks open sheets.
+16. **The bonsai + page-cat experiments live on branch `prototypes-cat`**
     (commits 8d191ba → 2757544, on top of this branch). Mark asked for a
     hero bonsai and a living cat, iterated through four versions (choreo
     vignette → living rig → legged walk + yarn physics → real silhouettes

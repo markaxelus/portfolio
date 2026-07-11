@@ -126,6 +126,39 @@
 
   var plates = PROJECTS.map(plateURI);
 
+  /* ============ the ghost target: an oversized registration mark ============ */
+  /* replaced the ghost M. — rings, degree ticks, a halftone band, and a
+     second pass a hair off register in the accent */
+  (function ghostTarget() {
+    var el = document.getElementById("ghost-target");
+    if (!el) return;
+    var rnd = mulberry32(48);
+    var s = "";
+    [278, 246, 210, 168, 128, 92, 60].forEach(function (r, i) {
+      s += '<circle r="' + r + '" fill="none" stroke-width="' +
+        (i % 3 === 0 ? 9 : 2.2) + '" opacity="' + (0.45 + rnd() * 0.55).toFixed(2) + '"/>';
+    });
+    for (var a = 0; a < 360; a += 6) {
+      var big = a % 30 === 0;
+      var r1 = big ? 256 : 265;
+      var rad = (a * Math.PI) / 180;
+      s += '<line x1="' + (Math.cos(rad) * r1).toFixed(1) + '" y1="' + (Math.sin(rad) * r1).toFixed(1) +
+        '" x2="' + (Math.cos(rad) * 278).toFixed(1) + '" y2="' + (Math.sin(rad) * 278).toFixed(1) +
+        '" stroke-width="' + (big ? 3 : 1.2) + '"/>';
+    }
+    s += '<path d="M-292,0 H292 M0,-292 V292" fill="none" stroke-width="2"/>';
+    s += '<circle r="14" fill="none" stroke-width="4"/><circle r="4"/>';
+    /* one quadrant carries a halftone band, like a tone test */
+    for (var q = 0; q < 26; q++) {
+      var ang = (-0.46 + q / 26) * (Math.PI / 2);
+      for (var rr = 106; rr <= 154; rr += 12) {
+        s += '<circle cx="' + (Math.cos(ang) * rr).toFixed(1) + '" cy="' + (Math.sin(ang) * rr).toFixed(1) +
+          '" r="' + (1.4 + rnd() * 2.8).toFixed(1) + '"/>';
+      }
+    }
+    el.innerHTML = '<g class="gt-pass2">' + s + "</g><g class=\"gt-pass1\">" + s + "</g>";
+  })();
+
   /* static thumbnails for touch / narrow viewports */
   var rows = Array.prototype.slice.call(document.querySelectorAll(".row"));
   rows.forEach(function (row) {
@@ -718,8 +751,9 @@
   if (/(^|[?&])proof/.test(location.search) || location.hash === "#proof") {
     setProof(true);
   }
-  /* arrive at anchors instantly; smooth scrolling is for in-page moves */
-  if (location.hash && location.hash !== "#proof") {
+  /* arrive at anchors instantly; smooth scrolling is for in-page moves.
+     project hashes open their proof sheet instead (see the viewer). */
+  if (location.hash && location.hash !== "#proof" && !/^#p-0[1-4]$/.test(location.hash)) {
     var landing = document.getElementById(location.hash.slice(1));
     if (landing) landing.scrollIntoView({ behavior: "instant", block: "start" });
   }
@@ -729,7 +763,10 @@
     if (e.key === "n" || e.key === "N") setNight(!isNight(), true);
     if (e.key === "s" || e.key === "S") setNoise(!noiseOn);
     if (e.key === "l" || e.key === "L") setLit(true); /* keyup lets go */
-    if (e.key === "Escape") setProof(false);
+    if (e.key === "Escape") {
+      if (document.body.classList.contains("pv-open")) closeProject();
+      else setProof(false);
+    }
   });
 
   var resizeT;
@@ -880,7 +917,7 @@
   var scrollQueued = false;
   var pctEl = document.getElementById("scroll-pct");
   var lastPct = "";
-  var ghostEl = document.querySelector(".ghost-m");
+  var ghostEl = document.querySelector(".ghost-target");
   var lastGy = 0;
   function onScroll() {
     if (scrollQueued) return;
@@ -1247,15 +1284,21 @@
   var LOUPE_M = 2.2, LOUPE_R = 92;
   var loupeOn = false, loupeUsed = false, loupeLeftRow = false;
   var lastLoupeTf = "", lastLoupeBs = "", lastLoupeBp = "";
+  var loupeDelayT = null;
   rows.forEach(function (row) {
     row.addEventListener("pointerdown", function (e) {
       if (!trailEnabled() || !open || e.button !== 0) return;
       e.preventDefault();
-      loupeOn = true;
-      loupeUsed = true;
-      loupeEl.style.backgroundImage = plates[curPlate];
-      loupeEl.classList.add("on");
-      cursorEl.classList.add("is-loupe");
+      /* press-and-HOLD summons the glass; a quick click stays a click
+         (and opens the project sheet instead) */
+      clearTimeout(loupeDelayT);
+      loupeDelayT = setTimeout(function () {
+        loupeOn = true;
+        loupeUsed = true;
+        loupeEl.style.backgroundImage = plates[curPlate];
+        loupeEl.classList.add("on");
+        cursorEl.classList.add("is-loupe");
+      }, 230);
     });
     /* a loupe press is not a navigation */
     row.addEventListener("click", function (e) {
@@ -1270,6 +1313,7 @@
     mouse.y = e.clientY;
   });
   document.addEventListener("pointerup", function () {
+    clearTimeout(loupeDelayT);
     if (!loupeOn) return;
     loupeOn = false;
     loupeEl.classList.remove("on");
@@ -1325,6 +1369,196 @@
       heroTitleEl.style.textShadow = "";
       lastPullShadow = "";
     }, 600);
+  });
+
+  /* ============ the project viewer: every project is a proof sheet ============ */
+  /* awwwards case-study anatomy, in this site's language: context-first
+     meta rail, plate hero, THE BRIEF / THE NERVE, specimen details,
+     outcome figures, a quote, and a giant NEXT PROOF handoff.
+     placeholder copy throughout — awaiting mark's real projects. */
+  var CASE = [
+    {
+      client: "Meridian Climate, Inc.",
+      role: "Identity · Art direction · Design & build",
+      stack: "Figma · TypeScript · WebGL",
+      when: "Feb–Mar 2025 · six weeks",
+      brief: "Meridian turns satellite data into climate-risk reports for banks. They arrived with a deck full of gradients and the word “premium” underlined twice. What they actually needed was to look like the only adults in a room full of dashboards.",
+      nerve: "I threw out the gradients and set the whole identity in one serif and one mono — the data does the talking, the type holds its nerve. Their live feeds render as slow, quiet WebGL fields instead of dashboard confetti. The client asked for more premium. I made it quieter.",
+      made: ["Wordmark & type system", "Report template suite", "Marketing site, design → build", "Data-field WebGL renderer"],
+      outcome: [["6", "WEEKS, SKETCH TO LAUNCH"], ["1", "TYPEFACE — THEY HAD SEVEN"], ["+38%", "TIME ON PAGE"]],
+      quote: "“We asked for premium. He gave us calm. Turns out that’s what premium is.”",
+      attr: "CEO, MERIDIAN",
+      notes: [
+        { pen: "hand-k", pos: "n-pv1", text: "the ceo said “premium” nine times. i counted." },
+        { pen: "hand-b", pos: "n-pv2", text: "quiet won." }
+      ]
+    },
+    {
+      client: "Ana Vasquez, sculptor",
+      role: "Art direction · Typesetting · Print production",
+      stack: "InDesign · Litho · Two stocks",
+      when: "2025 · 240 pages",
+      brief: "A 240-page monograph for a sculptor who works in plaster and shadow. The catalogue-raisonné problem, stated plainly: how do you print work whose entire point is that it barely photographs?",
+      nerve: "We shot everything in raking light and printed the plates in a duotone of black and a custom warm grey — no full colour anywhere in the book. The first proof came back on the wrong stock: textured, not coated. It made the plaster look like plaster. We kept it, and reprinted the cover to match the mistake.",
+      made: ["Book design & typesetting", "Plate photography direction", "Four press checks", "Slipcase edition of 200"],
+      outcome: [["240", "PAGES, ONE PAIR OF HANDS"], ["2", "INKS — THAT’S THE POINT"], ["200", "SLIPCASES, SOLD OUT"]],
+      quote: "“He argued with the printer about grey for an hour. The book won.”",
+      attr: "ANA VASQUEZ",
+      notes: [
+        { pen: "hand-k", pos: "n-pv1", text: "grey Nº4 was correct. fight me." },
+        { pen: "hand-b", pos: "n-pv2", text: "the wrong stock was the right stock." }
+      ]
+    },
+    {
+      client: "Renderhaus GmbH",
+      role: "Product design · Front-end · The whole thing",
+      stack: "TypeScript · WebGL · WebSockets",
+      when: "2024 · in production",
+      brief: "A render farm needed a dashboard their artists could leave open all night — four hundred machines, thousands of jobs, and every existing tool looked like a spreadsheet having a panic attack.",
+      nerve: "Dark by default, quiet by design: the interface only speaks when something needs a human. Job queues render as a slow field of embers — brighter means hotter. Alarms are typographic, never red. It’s the only dashboard I know of that people screenshot for fun.",
+      made: ["Information architecture", "Design system, dark-first", "WebGL job-field visualisation", "Production build, TypeScript"],
+      outcome: [["400", "MACHINES, ONE SCREEN"], ["0", "RED, ANYWHERE"], ["23:00", "WHEN IT LOOKS BEST"]],
+      quote: "“Our night shift refuses to use anything else. So does our day shift.”",
+      attr: "HEAD OF PIPELINE, RENDERHAUS",
+      notes: [
+        { pen: "hand-k", pos: "n-pv1", text: "shipped v1 at 03:40. obviously." },
+        { pen: "hand-b", pos: "n-pv2", text: "fav. still fav." }
+      ]
+    },
+    {
+      client: "Stadtwerke Kulturfonds",
+      role: "Concept · Fabrication · Code",
+      stack: "RF sensors · LEDs · C++ · Plywood",
+      when: "2024 · public installation",
+      brief: "A commission to make the city’s invisible radio traffic visible in a public square — without a single screen. The brief said “family friendly.” I heard “must survive toddlers.”",
+      nerve: "One hundred and twelve stalks of light in a plywood meadow, each listening to its own slice of spectrum. Phones make ripples. A passing tram makes weather. I built the lot — sensors, boards, firmware, joinery — and I am still pulling splinters from my palms. Still worth it.",
+      made: ["Concept & spatial design", "Sensor + LED hardware", "Firmware, C++", "Fabrication — three weeks on site"],
+      outcome: [["112", "STALKS OF LIGHT"], ["6", "WEEKS OUTDOORS, ZERO FAILURES"], ["1", "TODDLER-PROOF MEADOW"]],
+      quote: "“The square has a heartbeat now.”",
+      attr: "COMMISSIONING CURATOR",
+      notes: [
+        { pen: "hand-k", pos: "n-pv1", text: "splinter count: eleven. worth it." },
+        { pen: "hand-b", pos: "n-pv2", text: "a tram went past and it rained light." }
+      ]
+    }
+  ];
+
+  /* specimen details: two generated close-ups per project */
+  function detailURI(p, v) {
+    var inner = v === 0
+      ? '<g transform="translate(-260 -160) scale(2.1)" opacity="0.9">' + motifSVG(p.motif, p.bright) + "</g>"
+      : '<g transform="translate(10 7)" opacity="0.35">' + motifSVG(p.motif, "#C7361F") + "</g>" +
+        '<g opacity="0.92">' + motifSVG(p.motif, p.bright) + "</g>";
+    var svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">' +
+      '<rect width="1200" height="760" fill="' + p.dark + '"/>' +
+      '<g transform="translate(200 -60)">' + inner + "</g>" +
+      '<text x="30" y="736" font-family="monospace" font-size="15" letter-spacing="4" fill="#DDDBD4" opacity="0.7">DETAIL 0' +
+      (v + 1) + " &#183; PLATE " + p.num + " &#183; NOT FOR PRODUCTION</text>" +
+      "</svg>";
+    return 'url("data:image/svg+xml;utf8,' + encodeURIComponent(svg) + '")';
+  }
+
+  var pvEl = document.getElementById("pv");
+  var pvIdx = -1;
+
+  function buildPV(i) {
+    var p = PROJECTS[i];
+    var c = CASE[i];
+    var row = rows[i];
+    var title = row.querySelector(".row-title").textContent;
+    var kind = row.querySelector(".row-meta").childNodes[0].textContent;
+    var ref = row.querySelector(".row-ref").textContent;
+    var desc = row.querySelector(".row-desc").textContent;
+    var next = (i + 1) % PROJECTS.length;
+    var nextTitle = rows[next].querySelector(".row-title").textContent;
+    return '' +
+      '<div class="pv-sheet">' +
+        '<span class="pv-num" aria-hidden="true">' + p.num + '</span>' +
+        '<button class="pv-close mono" id="pv-close" type="button">CLOSE &#10005; <em>ESC</em></button>' +
+        '<header class="pv-head">' +
+          '<p class="pv-kicker mono">PROOF SHEET Nº 0' + (i + 2) + " &middot; " + ref + " &middot; " + kind + "</p>" +
+          '<h2 class="pv-title">' + title + "</h2>" +
+          '<p class="pv-lede">' + desc + "</p>" +
+        "</header>" +
+        '<div class="pv-grid">' +
+          '<aside class="pv-meta mono">' +
+            '<div><span>CLIENT</span>' + c.client + "</div>" +
+            '<div><span>ROLE</span>' + c.role + "</div>" +
+            '<div><span>STACK</span>' + c.stack + "</div>" +
+            '<div><span>WHEN</span>' + c.when + "</div>" +
+            '<div><span>MADE</span><ul>' + c.made.map(function (m) { return "<li>" + m + "</li>"; }).join("") + "</ul></div>" +
+          "</aside>" +
+          '<div class="pv-body">' +
+            '<figure class="pv-plate"></figure>' +
+            '<h3 class="mono">THE BRIEF</h3><p>' + c.brief + "</p>" +
+            '<h3 class="mono">THE NERVE</h3><p>' + c.nerve + "</p>" +
+            '<div class="pv-duo"><figure></figure><figure></figure></div>' +
+            '<ul class="pv-stats">' + c.outcome.map(function (o) {
+              return '<li><b>' + o[0] + "</b><span class=\"mono\">" + o[1] + "</span></li>";
+            }).join("") + "</ul>" +
+            '<blockquote class="pv-quote">' + c.quote + '<footer class="mono">' + c.attr + "</footer></blockquote>" +
+          "</div>" +
+        "</div>" +
+        '<a class="pv-next" id="pv-next" href="#p-0' + (next + 1) + '" data-next="' + next + '">' +
+          '<span class="mono">NEXT PROOF &mdash; 0' + (next + 1) + "</span><b>" + nextTitle + " &rarr;</b></a>" +
+        '<span class="pv-jobline mono" aria-hidden="true">SHEET Nº 0' + (i + 2) + " &middot; " + title.toUpperCase() + " &middot; MARK AXELUS &middot; WORKING PROOF</span>" +
+        '<div class="proof-notes pv-notes" aria-hidden="true">' + c.notes.map(function (n, k) {
+          return '<span class="note ' + n.pen + " " + n.pos + '" style="--d:.' + (2 + k * 3) + 's">' + n.text + "</span>";
+        }).join("") + "</div>" +
+      "</div>";
+  }
+
+  function openProject(i) {
+    pvIdx = i;
+    pvEl.innerHTML = buildPV(i);
+    /* data-URI backgrounds carry quotes — assign as properties */
+    pvEl.querySelector(".pv-plate").style.backgroundImage = plates[i];
+    var duo = pvEl.querySelectorAll(".pv-duo figure");
+    duo[0].style.backgroundImage = detailURI(PROJECTS[i], 0);
+    duo[1].style.backgroundImage = detailURI(PROJECTS[i], 1);
+    document.body.classList.add("pv-open");
+    document.documentElement.classList.add("pv-open");
+    pvEl.scrollTop = 0;
+    var target = "#p-0" + (i + 1);
+    if (location.hash !== target) history.pushState(null, "", target);
+    document.getElementById("pv-close").addEventListener("click", closeProject);
+    document.getElementById("pv-next").addEventListener("click", function (e) {
+      e.preventDefault();
+      openProject(+this.dataset.next);
+    });
+    /* if the mess is already open, let it annotate this sheet too */
+    if (messObserver) {
+      Array.prototype.slice.call(pvEl.querySelectorAll(".note")).forEach(function (el) {
+        messObserver.observe(el);
+      });
+    }
+  }
+  function closeProject() {
+    if (pvIdx < 0) return;
+    pvIdx = -1;
+    document.body.classList.remove("pv-open");
+    document.documentElement.classList.remove("pv-open");
+    if (location.hash) history.pushState(null, "", location.pathname + location.search);
+    pvEl.innerHTML = "";
+  }
+  rows.forEach(function (row) {
+    row.addEventListener("click", function (e) {
+      if (e.defaultPrevented) return; /* that was a loupe press */
+      e.preventDefault();
+      openProject(+row.dataset.plate);
+    });
+  });
+  /* deep links: /#p-03 opens the sheet directly; the back button works */
+  if (/^#p-0[1-4]$/.test(location.hash)) {
+    openProject(+location.hash.slice(3) - 1);
+  }
+  addEventListener("hashchange", function () {
+    if (/^#p-0[1-4]$/.test(location.hash)) {
+      openProject(+location.hash.slice(3) - 1);
+    } else if (pvIdx >= 0) {
+      closeProject();
+    }
   });
 
   /* ============ the page is awake ============ */
