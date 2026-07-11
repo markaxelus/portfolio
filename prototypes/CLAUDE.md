@@ -114,6 +114,17 @@ signatures (Mark counts these himself):
      Dims as `.final`-alike in mess; hidden ≤820px; PRINTS (it's content).
      Replaced the ghost M and the ghost target (both graveyarded — no more
      abstract ghost fillers).
+   - **PLAY THE TYPEFACE**: the 144pt & is an instrument — pointer-drag it,
+     x = wght (340–900), y = opsz (9–144), the axis label ticks live,
+     release springs home (`--ease-thunk`). Cursor label PLAY. GOTCHA
+     RECORDED: `.hero-title.landed .hl { animation: none; transform: none }`
+     is REQUIRED — a filled entrance transform makes each full-width .hl a
+     stacking context that steals the specimen's pointer events.
+   - **REPAINT = REPRINT**: clicking a paint chip re-registers the headline
+     (0.45s press-register flash in the new accent). Chip clicks only —
+     not init, not night toggle.
+   - **THE PILE** (`.frame::before`): two offset sheet-edges + soft stack
+     shadow at bottom-right — the proof is the top sheet of a stack.
 2. **Ticker** — personal marquee ("THE KERNING IS DONE — IT ISN'T", desk status by
    LA hour, hints for M / N / chips / loose type). Pauses in mess mode.
    Has `margin-top: 10vh` so it never parks at the fold on load — the hero is
@@ -124,12 +135,23 @@ signatures (Mark counts these himself):
    (2019→2026, 2026 stone is accent-colored). Serif facts on main page; the five
    red asides ("terrifying. correct." etc.) are MESS-ONLY notes, plus "the gap in
    2022? we don't talk about 2022."
-3½. **THE THOUGHT-THREAD (mess only)** — the spine of the hidden page: one
-   continuous pencil line (`#thread`, seeded meander built by `buildThread()`
-   at init/fonts/resize) running from the top of the sheet to "Write to me.",
-   drawn in by scroll via stroke-dashoffset in the existing scroll rAF
-   (`updateThread()`, write-only; full-drawn under `?still`/reduced motion;
-   synced on mess-enter). z 4 — over the dimmed finals, under the notes.
+3½. **THE THOUGHT-THREAD = THE RE-READ (mess only)** — the spine of the
+   hidden page, redirected per Direction Nº 001 (Mark: the line was "too
+   linear... looks a bit dead... direct user eyes to certain spots").
+   The line is Mark re-reading his own margins at 2am: it ROUTES through
+   the real note positions (drafts → amp → line-height → do-not-scale →
+   [hesitation knot] → 2022 → tic-tac-toe LOOP → [spur toward "one more
+   pass", scratched out] → coffee LOOP → the record → TODAY-card LOOP →
+   the graves → arrow onto "Write to me."). Two path pairs: RED day pen
+   (#th-a) hands off to GRAPHITE 2am pen (#th-b) AT THE RECORD — the
+   scroll crosses midnight. A tip-dot rides the head of the stroke (the
+   pen is writing NOW); echo passes give pencil texture; reveal is mapped
+   by monotonic max-y samples so the pen darts between notes and lingers
+   inside loops (`thSamples`, binary search per scroll frame + one
+   getPointAtLength for the tip — no layout reads). Events (#th-spur,
+   #th-scratch, #th-arrow, pathLength=1) toggle by drawn-length
+   thresholds. Anchors hidden at a breakpoint are skipped gracefully.
+   Full-drawn under `?still`/reduced motion. z 4.
 4. **SELECTED WORK** — 4 fictional placeholder projects (Meridian, Low Relief,
    Night Office, Signal Garden), each with one-line description, REF// part number,
    generated duotone SVG plates (halftone, misregistered red pass, proof slug,
@@ -225,6 +247,14 @@ signatures (Mark counts these himself):
   scheduled only while M is on — `catLife()` in `setProof`).
 - Mess layer, 23:00–06:00 desk time only (`body.late-desk`, ticked with the clock):
   one extra outro scrawl — "you're up late too?" — day visitors never see it.
+- **The mess knows you** (`#knows-note`, under the stamp): visit-aware 2am
+  scrawl — v1 "first time here. look around." / v2–4 "back again. the
+  kerning still isn’t fixed." / v5+ "you again. leave a stone if you
+  haven’t." Uses the existing `ma-visits` counter.
+- **Fresh ink**: the scrawl nearest the cursor darkens a breath
+  (`.note.wet`, filter) — note positions cached on mess-entry
+  (`cacheInkNotes`), mousemove does pure math at ≤1/90ms. Kill-switch: the
+  class and one listener.
 - **The desk lamp**: entering the mess WARMS the paper — `body.proof` swaps
   `--stone`/`--stone-deep` a few degrees warmer (day `#E1DBCC`, night
   `#1A160E` via `body.night.proof`). Cozy was an explicit ask.
@@ -399,6 +429,17 @@ signatures (Mark counts these himself):
     with it; if Mark wants the tree WITHOUT the cat, strip the cat from
     that branch rather than rebuilding. The stock .ai sits untracked in
     prototypes/. Nothing from that branch is merged anywhere.
+
+18. (branch `prototypes-reread`, off prototypes-signature-4) **Direction
+    Nº 001 built** — Mark: "I dont want u to just use my ideas... ur a
+    senior art director... the line looks a bit dead... I like the hero
+    better but I think we can make it WAY better." Direction sheet first
+    (artifact "Direction Nº 001"), then all six ideas: the Re-read (see
+    §4.3½), Play-the-typeface, Repaint=Reprint, the Pile, the-mess-knows-
+    you, Fresh ink. Principle adopted: EVERY ELEMENT MUST BE AN ARTIFACT
+    OF THE PRINT WORLD, THE DESK WORLD, OR A DOOR BETWEEN THEM — pinned
+    in §3 graveyard lesson. HELD: loose-type after-images, live day-count
+    eyebrow. KILLED: weather, cursor trails, ghost objects, music player.
 
 ## 8. Ideas discussed but not built (fair game later)
 
