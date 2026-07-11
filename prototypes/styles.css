@@ -380,52 +380,97 @@ button.corner {
   to   { transform: translateX(-50%); }
 }
 
-/* ---------- the trail so far ---------- */
-.trail {
-  position: relative;
-  padding: 7vw 1.4vw 3vw;
+/* ---------- the trail so far: a figure, not a timeline ----------
+   FIG.1 — stones sized by the weight each year carried, on a ground line
+   measured through their actual bases (buildTerrain), the 2022 gap left
+   as a gap, the present stone proud of the line. no dashed connector —
+   the connector was the metronome tell. */
+.trail { position: relative; padding: 7vw 1.4vw 4vw; }
+.trail-frame {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  border-top: 1px solid var(--ink);
+  padding-top: 0.7rem;
+  margin-bottom: 5.5rem;
 }
-.trail-head { opacity: 0.6; margin-bottom: 3rem; }
-.miles {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 1.6rem;
-}
-.trail-path {
+.trail-head { opacity: 0.75; }
+.trail-cap { opacity: 0.45; text-align: right; }
+
+.terrain { position: relative; }
+.terrain-ground {
   position: absolute;
-  top: 4px;
-  left: -0.5%;
-  width: 101%;
-  height: 34px;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
   z-index: 0;
+  pointer-events: none;
+  overflow: visible;
 }
-.trail-path path {
-  stroke: var(--graphite);
-  stroke-width: 1.4;
-  stroke-dasharray: 5 7;
-  stroke-linecap: round;
-}
-.mile { position: relative; z-index: 1; }
-.mile-stone { display: block; width: 52px; height: 26px; }
-.mile-stone path {
+.terrain-ground .ground {
   stroke: var(--ink);
-  stroke-width: 1.5;
-  fill: var(--stone-deep);
+  stroke-width: 1.6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
-.mile:last-child .mile-stone path { fill: var(--accent); }
-.mile-year { color: var(--accent); margin: 0.7rem 0 0.3rem; }
+.terrain-ground .tick { stroke: var(--hairline); stroke-width: 1; }
+.terrain-ground .gap-ghost { stroke: var(--graphite); stroke-width: 1.2; stroke-dasharray: 3 4; fill: none; opacity: 0.6; }
+
+/* the stones sit on the ground; the measured line runs through their bases */
+.terrain-stones {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.15fr 1.05fr 0.66fr 0.82fr 1fr 1.2fr;
+  align-items: end;
+  height: 118px;
+}
+.stone-slot { display: flex; justify-content: center; align-items: flex-end; }
+.mile-stone {
+  display: block;
+  width: calc(58px * var(--sz, 1));
+  height: calc(33px * var(--sz, 1));
+  transform: translateY(calc(var(--lift, 0) * 1px));
+}
+.mile-stone path { stroke: var(--ink); stroke-width: 1.5; fill: var(--stone-deep); }
+.stone-slot.is-now .mile-stone path { fill: var(--accent); stroke: var(--ink); }
+.stone-gap { align-items: flex-end; }
+.gap-tick {
+  display: block;
+  width: 1px;
+  height: 22px;
+  background: repeating-linear-gradient(var(--graphite) 0 3px, transparent 3px 6px);
+  opacity: 0.65;
+}
+
+/* the legend — years + facts, aligned under their stones by the same grid */
+.terrain-labels {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.15fr 1.05fr 0.66fr 0.82fr 1fr 1.2fr;
+  gap: 0 1.1rem;
+  margin-top: 1.6rem;
+}
+.mile-label { min-width: 0; }
+.mile-year { color: var(--accent); margin: 0 0 0.35rem; }
 .mile-fact {
-  font-size: clamp(0.95rem, 1.15vw, 1.15rem);
+  font-size: clamp(0.88rem, 1.02vw, 1.08rem);
   font-variation-settings: "opsz" 20;
-  line-height: 1.35;
-  max-width: 20ch;
-  opacity: 0.85;
+  line-height: 1.32;
+  max-width: 22ch;
+  opacity: 0.82;
 }
-.mile-note { bottom: -8%; font-size: 1.25rem; --tilt: -2deg; }
+.mile-label-gap { opacity: 0.5; }
+.mile-label-gap .mile-year { color: var(--graphite); }
+.gap-fact { opacity: 0.4; }
+
+/* mess scrawls under the figure (proof layer only) */
+.mile-note { top: 46%; font-size: 1.25rem; --tilt: -2deg; }
 .mile-note:nth-child(odd) { --tilt: 1.6deg; }
-.n-2022 { top: 6%; left: 36%; --tilt: -3deg; }
-.n-2025 { top: 24%; right: 6%; --tilt: 2deg; }
+.n-2022 { top: 2%; left: 33%; --tilt: -3deg; }
+.n-2025 { bottom: 6%; right: 6%; --tilt: 2deg; }
 
 /* ---------- at the desk ---------- */
 .desk {
@@ -1511,8 +1556,14 @@ body.pointer-seen .cursor { opacity: 1; }
     grid-template-rows: auto auto;
     padding: 6vw 1vw;
   }
-  .miles { grid-template-columns: 1fr 1fr; gap: 2rem 1.5rem; }
-  .trail-path { display: none; }
+  /* the figure compacts: stones stay a row on a hairline ground, the
+     legend drops to two readable columns */
+  .terrain-ground { display: none; }
+  .terrain-stones { height: 80px; border-bottom: 1px solid var(--ink); }
+  .terrain-labels { grid-template-columns: 1fr 1fr; gap: 1.7rem 1.2rem; margin-top: 1.8rem; }
+  .mile-label-gap { display: none; }
+  .trail-frame { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
+  .trail-cap { text-align: left; }
   .desk-row { grid-template-columns: 6.5rem minmax(0, 1fr); gap: 1rem; }
   .colophon { grid-column: 1; text-align: left; }
   .row-desc { grid-column: 2; }
@@ -2257,9 +2308,12 @@ body.odo-live .odo-reel { transition: transform 0.9s var(--ease-out); }
   .corner, .ticker, .under, .proof-fixed, .proof-notes,
   .idle-line, .stone-tip, .loose-decal,
   .amark, .pv, .thread, .d-cluster, .d-scatter, .d-cross, .d-run,
-  .d-outro, .row-thumb, .fps-meter, .regmark {
+  .d-outro, .row-thumb, .fps-meter, .regmark, .terrain-ground {
     display: none !important;
   }
+  /* the figure prints as stones on a plain rule + its legend */
+  .terrain-stones { border-bottom: 1px solid #000; height: 60px; }
+  .mile-label { break-inside: avoid; }
 
   /* proof furniture rides every page */
   .sheet { opacity: 1 !important; color: #000; }

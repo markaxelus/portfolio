@@ -196,45 +196,49 @@
       <div class="ticker-track" id="ticker-track"></div>
     </div>
 
-    <!-- the trail so far -->
+    <!-- the trail so far: composed as a figure, not a timeline —
+         stones of the weight each year carried, on measured ground,
+         the 2022 gap left as a gap, the present stone proud of the line -->
     <section class="trail" id="trail">
-      <p class="trail-head mono final">THE TRAIL SO FAR &mdash; ONE STONE PER YEAR THAT MATTERED</p>
-      <div class="miles final">
-        <svg class="trail-path" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M8,26 C150,18 280,30 420,24 C560,18 700,30 840,22 C960,16 1100,26 1192,20" fill="none"/>
-        </svg>
-        <div class="mile">
-          <svg class="mile-stone" viewBox="0 0 60 30" aria-hidden="true"></svg>
-          <p class="mile-year mono">2019</p>
-          <p class="mile-fact">Quit the agency job to go it alone.</p>
+      <div class="trail-frame final">
+        <p class="trail-head mono">FIG.1 &mdash; THE TRAIL SO FAR</p>
+        <p class="trail-cap mono">ONE STONE PER YEAR THAT MATTERED &middot; 2019&ndash;2026 &middot; NOT TO SCALE</p>
+      </div>
+      <div class="terrain final" id="terrain">
+        <svg class="terrain-ground" id="terrain-ground" aria-hidden="true" preserveAspectRatio="none"></svg>
+        <div class="terrain-stones">
+          <div class="stone-slot" style="--sz:1.18; --lift:0">
+            <svg class="mile-stone" viewBox="0 0 60 34" aria-hidden="true"></svg>
+          </div>
+          <div class="stone-slot" style="--sz:1; --lift:-11">
+            <svg class="mile-stone" viewBox="0 0 60 34" aria-hidden="true"></svg>
+          </div>
+          <div class="stone-slot stone-gap" aria-hidden="true"><span class="gap-tick"></span></div>
+          <div class="stone-slot" style="--sz:.7; --lift:9">
+            <svg class="mile-stone" viewBox="0 0 60 34" aria-hidden="true"></svg>
+          </div>
+          <div class="stone-slot" style="--sz:.92; --lift:-5">
+            <svg class="mile-stone" viewBox="0 0 60 34" aria-hidden="true"></svg>
+          </div>
+          <div class="stone-slot is-now" style="--sz:1.08; --lift:-28">
+            <svg class="mile-stone" viewBox="0 0 60 34" aria-hidden="true"></svg>
+          </div>
         </div>
-        <div class="mile">
-          <svg class="mile-stone" viewBox="0 0 60 30" aria-hidden="true"></svg>
-          <p class="mile-year mono">2021</p>
-          <p class="mile-fact">First book I designed came off the press.</p>
-        </div>
-        <div class="mile">
-          <svg class="mile-stone" viewBox="0 0 60 30" aria-hidden="true"></svg>
-          <p class="mile-year mono">2023</p>
-          <p class="mile-fact">Taught myself WebGL for one project.</p>
-        </div>
-        <div class="mile">
-          <svg class="mile-stone" viewBox="0 0 60 30" aria-hidden="true"></svg>
-          <p class="mile-year mono">2024</p>
-          <p class="mile-fact">Clients started arriving by word of mouth.</p>
-        </div>
-        <div class="mile">
-          <svg class="mile-stone" viewBox="0 0 60 30" aria-hidden="true"></svg>
-          <p class="mile-year mono">2026</p>
-          <p class="mile-fact">You&rsquo;re here, reading this.</p>
+        <div class="terrain-labels">
+          <div class="mile-label"><p class="mile-year mono">2019</p><p class="mile-fact">Quit the agency job to go it alone.</p></div>
+          <div class="mile-label"><p class="mile-year mono">2021</p><p class="mile-fact">First book I designed came off the press.</p></div>
+          <div class="mile-label mile-label-gap"><p class="mile-year mono">2022</p><p class="mile-fact gap-fact">&mdash;</p></div>
+          <div class="mile-label"><p class="mile-year mono">2023</p><p class="mile-fact">Taught myself WebGL for one project.</p></div>
+          <div class="mile-label"><p class="mile-year mono">2024</p><p class="mile-fact">Clients started arriving by word of mouth.</p></div>
+          <div class="mile-label"><p class="mile-year mono is-now-year">2026</p><p class="mile-fact">You&rsquo;re here, reading this.</p></div>
         </div>
       </div>
       <div class="proof-notes" aria-hidden="true">
-        <span class="note hand-k mile-note" style="--d:.1s; left:1%;">terrifying. correct.</span>
-        <span class="note hand-k mile-note" style="--d:.2s; left:21%;">slept next to the proofs.</span>
-        <span class="note hand-k mile-note" style="--d:.3s; left:41%;">out of spite, honestly.</span>
-        <span class="note hand-k mile-note" style="--d:.4s; left:61%;">the good kind of busy.</span>
-        <span class="note hand-k mile-note" style="--d:.5s; left:81%;">leave a stone on the way out.</span>
+        <span class="note hand-k mile-note" style="--d:.1s; left:4%;">terrifying. correct.</span>
+        <span class="note hand-k mile-note" style="--d:.2s; left:23%;">slept next to the proofs.</span>
+        <span class="note hand-k mile-note" style="--d:.3s; left:53%;">out of spite, honestly.</span>
+        <span class="note hand-k mile-note" style="--d:.4s; left:70%;">the good kind of busy.</span>
+        <span class="note hand-k mile-note" style="--d:.5s; left:87%;">leave a stone on the way out.</span>
         <span class="note hand-b n-2022" style="--d:.6s">the gap in 2022? we don&rsquo;t talk about 2022.</span>
         <span class="note hand-k n-2025" style="--d:.7s">2025 was mostly invoices.</span>
 
@@ -342,10 +346,59 @@
     <!-- at the desk -->
     <section class="desk" id="desk">
       <p class="desk-head mono final">AT THE DESK &mdash; RIGHT NOW-ISH</p>
-      <div class="desk-row final"><span class="mono desk-k">BUILDING</span><span class="desk-v">This site. Again.</span></div>
-      <div class="desk-row final"><span class="mono desk-k">READING</span><span class="desk-v">The Shape of Design, again</span></div>
-      <div class="desk-row final"><span class="mono desk-k">LISTENING</span><span class="desk-v">The same three albums, on loop</span></div>
-      <div class="desk-row final"><span class="mono desk-k">COFFEE</span><span class="desk-v">Nº 094 this quarter</span></div>
+      <div class="desk-rows">
+        <div class="desk-row final"><span class="mono desk-k">BUILDING</span><span class="desk-v">This site. Again.</span></div>
+        <div class="desk-row final"><span class="mono desk-k">READING</span><span class="desk-v">The Shape of Design, again</span></div>
+        <div class="desk-row final"><span class="mono desk-k">LISTENING</span><span class="desk-v">The same three albums, on loop</span></div>
+        <div class="desk-row final"><span class="mono desk-k">COFFEE</span><span class="desk-v">Nº 094 this quarter</span></div>
+      </div>
+
+      <!-- the operator's plate: the person, printed in the site's inks.
+           screened duotone + one misregistered red pass on the FINAL layer;
+           the mess holds the unscreened original, taped over it. -->
+      <figure class="op" id="op" aria-label="Portrait of Mark Axelus, printed as a halftone plate">
+        <svg class="op-print final" viewBox="0 0 800 1000" role="img"
+             aria-label="Mark Axelus &mdash; one ink and one red pass">
+          <defs>
+            <filter id="op-duo" color-interpolation-filters="sRGB">
+              <feColorMatrix type="saturate" values="0"/>
+              <feComponentTransfer>
+                <feFuncR type="table" tableValues="0.086 1"/>
+                <feFuncG type="table" tableValues="0.082 1"/>
+                <feFuncB type="table" tableValues="0.059 1"/>
+              </feComponentTransfer>
+            </filter>
+            <filter id="op-red" color-interpolation-filters="sRGB">
+              <feColorMatrix type="saturate" values="0"/>
+              <feComponentTransfer>
+                <feFuncR type="table" tableValues="0.780 1"/>
+                <feFuncG type="table" tableValues="0.212 1"/>
+                <feFuncB type="table" tableValues="0.122 1"/>
+              </feComponentTransfer>
+            </filter>
+            <pattern id="op-ht" width="9" height="9" patternUnits="userSpaceOnUse">
+              <circle cx="4.5" cy="4.5" r="1.5" fill="#DDDBD4"/>
+            </pattern>
+            <filter id="op-gr"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+          </defs>
+          <rect width="800" height="1000" fill="#DDDBD4"/>
+          <g class="op-redpass" opacity="0.55">
+            <image href="operator.jpg" width="800" height="1000" preserveAspectRatio="xMidYMid slice" filter="url(#op-red)"/>
+          </g>
+          <g class="op-inkpass">
+            <image href="operator.jpg" width="800" height="1000" preserveAspectRatio="xMidYMid slice" filter="url(#op-duo)"/>
+          </g>
+          <rect width="800" height="1000" fill="url(#op-ht)" opacity="0.12"/>
+          <g transform="rotate(-90 44 500)"><text x="44" y="500" text-anchor="middle"
+              font-family="monospace" font-size="17" letter-spacing="5" fill="#16150F" opacity="0.55">M.A. &#8212; THE OPERATOR &#183; PROOF 00/04 &#183; NOT FOR PRODUCTION</text></g>
+          <rect width="800" height="1000" filter="url(#op-gr)" opacity="0.12"/>
+        </svg>
+        <figcaption class="op-cap mono final">THE OPERATOR &mdash; M. AXELUS<br>ONE INK + ONE RED PASS<br>NOT RETOUCHED</figcaption>
+        <div class="op-candid" aria-hidden="true">
+          <img src="operator.jpg" alt="" loading="lazy">
+          <span class="note hand-k n-opc" style="--d:.9s">me, apparently.</span>
+        </div>
+      </figure>
       <div class="proof-notes" aria-hidden="true">
         <span class="note hand-k n-desk" style="--d:.2s">update this, mark. it&rsquo;s been three weeks.</span>
         <svg class="note scrawl dd-cup" style="--d:.34s" viewBox="0 0 60 70" aria-hidden="true">
@@ -423,6 +476,14 @@
         </svg>
       </div>
       <p class="outro-meta mono final">MRKAXELUS@GMAIL.COM<br>REPLIES WITHIN 48H</p>
+      <div class="outro-links final">
+        <a class="olink mono" href="https://github.com/markaxelus" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>GITHUB&nbsp;&nearr;
+        </a>
+        <a class="olink mono" href="https://www.linkedin.com/in/markaxelus" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M14.816 0H1.18C.528 0 0 .516 0 1.153v13.694C0 15.484.528 16 1.18 16h13.635c.652 0 1.185-.516 1.185-1.153V1.153C16 .516 15.468 0 14.816 0ZM4.745 13.635H2.37V6h2.375v7.635ZM3.558 4.955a1.376 1.376 0 1 1 0-2.752 1.376 1.376 0 0 1 0 2.752Zm10.074 8.68h-2.37V9.922c0-.886-.018-2.025-1.234-2.025-1.235 0-1.424.964-1.424 1.96v3.778h-2.37V6H8.51v1.04h.033c.317-.6 1.09-1.233 2.246-1.233 2.4 0 2.843 1.58 2.843 3.637v4.191Z"/></svg>LINKEDIN&nbsp;&nearr;
+        </a>
+      </div>
       <p class="colophon mono final">SET IN FRAUNCES &amp; SPACE MONO ( + TWO PENS )<br>
         NO FRAMEWORK &middot; NO TRACKERS &middot; HAND-BUILT<br>
         24PX GRID &middot; 3 INKS &middot; 1 CAT</p>

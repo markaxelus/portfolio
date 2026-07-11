@@ -1059,15 +1059,18 @@
     clearTimeout(resizeT);
     resizeT = setTimeout(function () {
       positionAnchors();
+      buildTerrain();
       buildThread();
     }, 150);
   });
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function () {
       positionAnchors();
+      buildTerrain();
       buildThread();
     });
   }
+  buildTerrain();
   buildThread();
   /* re-measure once the hero settles (proof may open mid-entrance) */
   var lastLine = document.querySelector(".hl-mask:nth-child(3) .hl");
@@ -1084,12 +1087,64 @@
     releaseMasks();
   }
 
-  /* ============ the trail: one stone per year ============ */
-  Array.prototype.slice.call(document.querySelectorAll(".mile-stone")).forEach(function (svg, i) {
+  /* ============ the trail: a figure of stones on measured ground ============ */
+  /* each stone sits at the bottom of its 60×34 box (base ≈ y33) so the
+     ground line — drawn through the measured bases — meets it cleanly. */
+  Array.prototype.slice.call(document.querySelectorAll(".terrain-stones .mile-stone")).forEach(function (svg, i) {
     var p = document.createElementNS(SVG_NS, "path");
-    p.setAttribute("d", stonePath(30, 15, 21, 9, 201 + i * 17));
+    p.setAttribute("d", stonePath(30, 24, 22, 9, 201 + i * 17));
     svg.appendChild(p);
   });
+
+  /* the ground is measured, not drawn: one line through the actual stone
+     bases (so it follows their sizes + lifts), with hairline drops to the
+     legend. re-run on load / fonts.ready / resize, never in a frame loop. */
+  function buildTerrain() {
+    var terrain = document.getElementById("terrain");
+    var svg = document.getElementById("terrain-ground");
+    if (!terrain || !svg) return;
+    var slots = Array.prototype.slice.call(terrain.querySelectorAll(".stone-slot"));
+    var labelsEl = terrain.querySelector(".terrain-labels");
+    var tr = terrain.getBoundingClientRect();
+    var W = tr.width, H = tr.height;
+    if (W < 40 || !slots.length) return;
+    /* hidden at this breakpoint (mobile drops the measured ground) */
+    if (getComputedStyle(svg).display === "none") return;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    var anchors = slots.map(function (slot) {
+      var gap = slot.classList.contains("stone-gap");
+      var el = gap ? slot : slot.querySelector(".mile-stone");
+      var r = el.getBoundingClientRect();
+      return {
+        x: r.left - tr.left + r.width / 2,
+        y: gap ? r.bottom - tr.top - 10 : r.bottom - tr.top - 2,
+        gap: gap
+      };
+    });
+    var pts = [{ x: 2, y: anchors[0].y + 5 }];
+    anchors.forEach(function (a) { pts.push({ x: a.x, y: a.y }); });
+    pts.push({ x: W - 2, y: anchors[anchors.length - 1].y + 5 });
+    var d = "M" + pts[0].x.toFixed(1) + " " + pts[0].y.toFixed(1);
+    for (var i = 0; i < pts.length - 1; i++) {
+      var a = pts[i], b = pts[i + 1];
+      var mx = (a.x + b.x) / 2, my = Math.max(a.y, b.y) + 5;
+      d += " Q" + mx.toFixed(1) + " " + my.toFixed(1) + " " + b.x.toFixed(1) + " " + b.y.toFixed(1);
+    }
+    var labelTop = labelsEl ? (labelsEl.getBoundingClientRect().top - tr.top) : H;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    anchors.forEach(function (a) {
+      if (a.gap) return;
+      var ln = document.createElementNS(SVG_NS, "line");
+      ln.setAttribute("class", "tick");
+      ln.setAttribute("x1", a.x.toFixed(1)); ln.setAttribute("y1", (a.y + 3).toFixed(1));
+      ln.setAttribute("x2", a.x.toFixed(1)); ln.setAttribute("y2", (labelTop - 8).toFixed(1));
+      svg.appendChild(ln);
+    });
+    var path = document.createElementNS(SVG_NS, "path");
+    path.setAttribute("class", "ground");
+    path.setAttribute("d", d);
+    svg.appendChild(path);
+  }
 
   /* ============ paint chips: pick my accent ============ */
   /* ACCENTS + accentI are declared up top (the plates need them at build
