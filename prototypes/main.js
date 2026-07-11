@@ -615,6 +615,9 @@
     row.addEventListener("mouseenter", function () {
       if (!trailEnabled()) return;
       if (loupeOn) return; /* the glass is down — don't re-skin the sheet */
+      /* an unstruck row is unprinted paper — no plate reveal, no
+         choreography, until the line (or a click) strikes it */
+      if (row.classList.contains("unstruck")) return;
       indexEl.classList.add("is-hovering");
       rows.forEach(function (r) { r.classList.remove("is-active"); });
       row.classList.add("is-active");
@@ -979,6 +982,7 @@
     proofBtn.setAttribute("aria-pressed", String(on));
     proofBtn.textContent = on ? "OK, ENOUGH" : "SEE THE MESS";
     if (on) {
+      strikeAll(true); /* you can't annotate unprinted paper */
       chars.forEach(function (c) {
         c.el.style.fontVariationSettings = "";
         c.t = 0; c.lw = -1; c.ls = -1;
@@ -1060,6 +1064,8 @@
       positionAnchors();
       buildTerrain();
       buildThread();
+      measureStrikes();
+      checkStrikes();
     }, 150);
   });
   if (document.fonts && document.fonts.ready) {
@@ -1067,6 +1073,8 @@
       positionAnchors();
       buildTerrain();
       buildThread();
+      measureStrikes();
+      checkStrikes();
     });
   }
   buildTerrain();
@@ -1310,6 +1318,8 @@
         lastPct = pct;
         pctEl.textContent = pct; /* rewriting identical text still dirties layout */
       }
+      /* the impression line: cached positions vs scrollY — pure math */
+      checkStrikes();
       /* the thought-thread draws in with the scroll (mess only) */
       if (document.body.classList.contains("proof")) updateThread();
     });
@@ -1624,6 +1634,132 @@
   regEl.addEventListener("animationend", function (e) {
     if (e.animationName === "reg-fidget") regEl.classList.remove("fidget");
   });
+
+  /* ============ the impression line: the sheet prints as read ============ */
+  /* below a fixed hairline at 62% of the viewport every section is blind
+     impression — real type, uninked. as a section's top crosses the line
+     it STRIKES: the ink floods in, the unit shudders a pixel, the regmark
+     ticks one notch (ten units — a full first read turns the crosshair
+     exactly once). one-way, persisted (ma-struck-v1): return visits
+     arrive printed and the line retires; the colophon then admits how
+     many visits the pull took. struck is the DEFAULT state — js arms
+     .unstruck at boot and only the line, or a deliberate touch, takes it
+     away. the hero is always pre-struck: the press-check intro is its
+     strike. strike positions are cached (load/fonts/resize, same
+     discipline as buildTerrain) so the scroll rAF does pure math. */
+  var IMP_LINE = 0.62; /* keep in sync with .impline { top: 62vh } */
+  var STRIKE_SEL = [".ticker", ".trail", ".index-head",
+                    "#p-01", "#p-02", "#p-03", "#p-04",
+                    ".desk", ".yard", ".outro"];
+  var implineEl = document.getElementById("impline");
+  var strikeUnits = [];
+  var struckStore = {};
+  var regTicks = 0;
+  try { struckStore = JSON.parse(localStorage.getItem("ma-struck-v1") || "{}") || {}; } catch (e) { struckStore = {}; }
+
+  function saveStruck() {
+    try { localStorage.setItem("ma-struck-v1", JSON.stringify(struckStore)); } catch (e) {}
+  }
+  function measureStrikes() {
+    if (implineEl) implineEl.style.top = Math.round(innerHeight * IMP_LINE) + "px";
+    strikeUnits.forEach(function (u) {
+      if (u.struck) return;
+      /* anchor on the first visible child, not the padding box — the
+         type strikes when the type reaches the line (.trail carries
+         7vw of dead padding above its first rule) */
+      var a = u.el.firstElementChild || u.el;
+      var r = a.getBoundingClientRect();
+      if (r.width < 2 && r.height < 2) r = u.el.getBoundingClientRect();
+      u.top = r.top + scrollY;
+    });
+  }
+  function regTick() {
+    regTicks++;
+    regEl.style.rotate = (regTicks * 36) + "deg";
+  }
+  function colophonPulled() {
+    var el = document.getElementById("colo-pulled");
+    var n = 0;
+    try { n = +(localStorage.getItem("ma-pulled-n") || 0); } catch (e) {}
+    if (!el || !n) return;
+    el.innerHTML = "<br>" +
+      (n === 1 ? "PULLED IN ONE VISIT"
+               : "PULLED OVER " + String(n).padStart(3, "0") + " VISITS");
+  }
+  function retireLine() {
+    document.body.classList.remove("imp-armed");
+    try {
+      if (!localStorage.getItem("ma-pulled-n")) {
+        localStorage.setItem("ma-pulled-n",
+          String(Math.max(1, +(localStorage.getItem("ma-visits") || 1))));
+      }
+    } catch (e) {}
+    colophonPulled();
+  }
+  function strikeUnit(u, instant) {
+    if (u.struck) return;
+    u.struck = true;
+    struckStore[u.id] = 1;
+    saveStruck();
+    u.el.classList.remove("unstruck");
+    if (!instant && !stillMode && !reduced()) {
+      /* the flood (transitions ride on .striking) + the shudder — an
+         inline translate step: it composes with entrance transforms
+         and can't restart a filled animation the way a keyframe would */
+      u.el.classList.add("striking");
+      u.el.style.translate = "0 1px";
+      setTimeout(function () { u.el.style.translate = "0 -0.5px"; }, 90);
+      setTimeout(function () { u.el.style.translate = ""; }, 180);
+      clearTimeout(u.t);
+      u.t = setTimeout(function () { u.el.classList.remove("striking"); }, 500);
+      regTick();
+    }
+    if (!strikeUnits.some(function (s) { return !s.struck; })) retireLine();
+  }
+  function strikeAll(instant) {
+    /* ?proof calls setProof before this block runs — initStrikes
+       handles that arrival itself */
+    if (!strikeUnits) return;
+    strikeUnits.forEach(function (u) { strikeUnit(u, instant); });
+  }
+  function checkStrikes() {
+    if (!strikeUnits || !strikeUnits.length) return;
+    var lineY = scrollY + innerHeight * IMP_LINE;
+    for (var i = 0; i < strikeUnits.length; i++) {
+      if (!strikeUnits[i].struck && strikeUnits[i].top <= lineY) {
+        strikeUnit(strikeUnits[i]);
+      }
+    }
+  }
+  (function initStrikes() {
+    /* reduced motion / ?still ship fully printed — no line, nothing stored */
+    if (stillMode || reduced()) return;
+    STRIKE_SEL.forEach(function (sel) {
+      var el = document.querySelector(sel);
+      if (!el || struckStore[sel]) return; /* printed on an earlier visit */
+      strikeUnits.push({ el: el, id: sel, top: 0, struck: false, t: null });
+      el.classList.add("unstruck");
+    });
+    if (!strikeUnits.length) return; /* fully printed — the line has retired */
+    /* arriving straight in the mess: you can't annotate unprinted paper */
+    if (document.body.classList.contains("proof")) { strikeAll(true); return; }
+    document.body.classList.add("imp-armed");
+    measureStrikes();
+    checkStrikes();
+    strikeUnits.forEach(function (u) {
+      /* a deliberate touch prints the sheet where you touched it */
+      u.el.addEventListener("click", function () { strikeUnit(u); }, true);
+      u.el.addEventListener("focusin", function () { strikeUnit(u); });
+    });
+    /* pulling a paper proof pulls the whole sheet */
+    addEventListener("beforeprint", function () { strikeAll(true); });
+    if (mqReduce.addEventListener) {
+      mqReduce.addEventListener("change", function () {
+        if (reduced()) strikeAll(true);
+      });
+    }
+  })();
+  colophonPulled();
 
   /* ============ the tab misses you ============ */
   var baseTitle = document.title;

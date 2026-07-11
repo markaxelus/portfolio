@@ -14,6 +14,9 @@
   --pencil-soft: rgba(199, 54, 31, 0.55);
   --graphite: rgba(22, 21, 15, 0.55);
   --hairline: rgba(22, 21, 15, 0.28);
+  /* blind-impression rim (the impression line's unstruck state) */
+  --emb-hi: rgba(255, 255, 255, 0.5);
+  --emb-lo: rgba(22, 21, 15, 0.16);
   --frame: 2vw;
   --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
   --ease-thunk: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -29,6 +32,9 @@ body.night {
   --pencil-soft: rgba(240, 96, 63, 0.55);
   --graphite: rgba(221, 219, 212, 0.55);
   --hairline: rgba(221, 219, 212, 0.26);
+  /* night emboss: on dark paper the rim is mostly its highlight */
+  --emb-hi: rgba(221, 219, 212, 0.11);
+  --emb-lo: rgba(0, 0, 0, 0.55);
 }
 body { transition: background-color 0.5s var(--ease-out), color 0.5s var(--ease-out); }
 .night .grain {
@@ -2210,6 +2216,106 @@ body.odo-live .odo-reel { transition: transform 0.9s var(--ease-out); }
 }
 
 /* ============================================================
+   THE IMPRESSION LINE — the sheet prints as read (Direction Nº 003)
+   below a fixed hairline every section is blind impression: real
+   type, uninked. crossing the line strikes it — one-way, persisted.
+   struck is the DEFAULT (no-js, print, ?still, reduced motion and
+   return visits all get a printed sheet); js arms .unstruck at boot
+   and only the line — or a deliberate touch — takes it away. the
+   hero is always pre-struck: the press-check intro is its strike.
+   ============================================================ */
+
+.impline {
+  position: fixed;
+  left: calc(var(--frame) + 1.4vw);
+  right: calc(var(--frame) + 1.4vw);
+  top: 62vh; /* js keeps this in step with IMP_LINE */
+  border-top: 1px solid var(--hairline);
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-out);
+}
+/* instrument end-ticks, like the crop marks' little sister */
+.impline::before,
+.impline::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  width: 1px;
+  height: 7px;
+  background: var(--hairline);
+}
+.impline::before { left: 0; }
+.impline::after { right: 0; }
+.impline i {
+  position: absolute;
+  right: 0;
+  top: 0.45rem; /* the label sits on the blind side — the side it explains */
+  font-style: normal;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  color: var(--graphite);
+}
+body.imp-armed .impline {
+  opacity: 0.55;
+  animation: imp-in 0.6s var(--ease-out) 1.5s both;
+}
+@keyframes imp-in {
+  from { opacity: 0; }
+  to   { opacity: 0.55; }
+}
+/* the mess prints everything on entry — the line has nothing to do there */
+body.proof .impline { opacity: 0 !important; }
+
+/* the blind state. text embosses via transparent fill + a two-tone
+   rim (inherited, so one rule covers every descendant); svg linework
+   presses to the rim tone; plates ghost to almost nothing; borders
+   fade to the rim. !important: unprinted paper must beat every hover
+   and accent beneath it. */
+.unstruck, .unstruck * {
+  color: transparent !important;
+  text-shadow: 0 1px 1px var(--emb-hi), 0 -1px 1px var(--emb-lo) !important;
+  border-color: var(--emb-lo) !important;
+}
+.unstruck .mile-stone path,
+.unstruck #pile path {
+  stroke: var(--emb-lo) !important;
+  fill: transparent !important;
+}
+.unstruck #ground-line,
+.unstruck .terrain-ground .ground,
+.unstruck .terrain-ground .tick { stroke: var(--emb-lo) !important; }
+.unstruck .gap-tick, .unstruck .olink svg { opacity: 0.2; }
+.unstruck .op-print, .unstruck .row-thumb { opacity: 0.05; }
+/* the seam doesn't run until it's printed */
+.unstruck .ticker-track { animation-play-state: paused; }
+/* display type is soft until the ink hits — the axis strike;
+   body text strikes by color only (zero reflow) */
+.unstruck .row-title { font-variation-settings: "opsz" 100, "SOFT" 90, "WONK" 1; }
+.unstruck .outro-title { font-variation-settings: "opsz" 144, "SOFT" 90, "WONK" 1; }
+
+/* the strike: ink floods in fast. the transition lives on .striking so
+   it survives the class swap (~500ms), then each element's own rules
+   take back over. the 1px shudder is an inline translate step in js —
+   a keyframe here would restart entrance animations that fill. */
+.striking, .striking * {
+  transition:
+    color 0.12s ease,
+    text-shadow 0.12s ease,
+    opacity 0.14s ease,
+    border-color 0.12s ease,
+    fill 0.14s ease,
+    stroke 0.14s ease,
+    font-variation-settings 0.3s var(--ease-out);
+}
+
+/* the regmark counts the strikes — one notch (36°) per unit, a full
+   turn for a full first read. `rotate` composes with reg-spin, same
+   trick as the drift-correct hiccup. */
+.regmark { transition: rotate 0.4s var(--ease-thunk); }
+
+/* ============================================================
    CTRL+P — printing produces a clean proof sheet
    ============================================================ */
 
@@ -2295,4 +2401,16 @@ body.odo-live .odo-reel { transition: transform 0.9s var(--ease-out); }
   .olink { border: 0; padding: 0; background: none; }
   .olink svg { display: none; }
   .olink::after { content: " — " attr(href); }
+
+  /* the sheet always prints struck (beforeprint strikes it in js;
+     this is the belt for renderers that skip the event) */
+  .impline { display: none !important; }
+  .unstruck, .unstruck * {
+    color: #000 !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+    border-color: rgba(0, 0, 0, 0.3) !important;
+  }
+  .unstruck .mile-stone path,
+  .unstruck #pile path { stroke: #000 !important; fill: #ececec !important; }
 }

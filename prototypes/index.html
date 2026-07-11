@@ -52,6 +52,11 @@
   <!-- live telemetry -->
   <span class="d-scroll spec" aria-hidden="true">SCROLL <span id="scroll-pct">000</span>%</span>
 
+  <!-- the impression line: below it the sheet is blind — reading prints it -->
+  <div class="impline" id="impline" aria-hidden="true">
+    <i class="mono">IMPRESSION LINE &mdash; THE SHEET PRINTS AS READ</i>
+  </div>
+
   <!-- corner navigation -->
   <a class="corner tl mono" href="#top">MARK AXELUS</a>
   <a class="corner tr mono" href="mailto:mrkaxelus@gmail.com">CONTACT &nearr;</a>
@@ -483,7 +488,7 @@
       </div>
       <p class="colophon mono final">SET IN FRAUNCES &amp; SPACE MONO ( + TWO PENS )<br>
         NO FRAMEWORK &middot; NO TRACKERS &middot; HAND-BUILT<br>
-        24PX GRID &middot; 3 INKS &middot; 1 CAT</p>
+        24PX GRID &middot; 3 INKS &middot; 1 CAT<span id="colo-pulled"></span></p>
       <div class="proof-notes" aria-hidden="true">
         <span class="note hand-k big-line" style="--d:.2s">it just never stops, does it.</span>
         <span class="note hand-b big-reply" style="--d:.45s">you love it though. &mdash; 2am me</span>
