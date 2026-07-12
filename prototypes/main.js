@@ -509,6 +509,318 @@
   var plateEl = document.getElementById("reveal-plate");
   var indexEl = document.querySelector(".index");
 
+  /* ============ THE LINE: the shop's drying line ============ */
+  /* SELECTED WORK hangs from one strung wire — the four plates on
+     drop-cords of different lengths, salon-style, each with its own
+     rest-lean (unstructured on purpose: the wire meanders, nothing
+     is evenly spaced). the physics are LANGUID — heavy paper, slow
+     sway, a laggy hand, an overdamped drift home; never a snap.
+     machined hardware only (cleats, turnbuckle, bearing pulleys,
+     bar clips) — the desk keeps the handmade. geometry lives here;
+     the look lives in styles.css. perf: geometry is computed at
+     build/resize (reads happen there, never per frame); the one rAF
+     does pure math and writes only a changed rotate per sheet. */
+  var lineWireEl = document.getElementById("line-wire");
+  var lineWllEl = document.getElementById("line-wll");
+  var lineDockEl = document.getElementById("line-dock");
+  var lineOn = !!(lineWireEl && indexEl);
+  var lineItems = [];
+  var lineDraft = 0;
+  var lineVisible = true;
+  var lineDragUsed = false;
+
+  /* geometry as fractions of the section's padding box (W × BH) */
+  var LINE_GEO_D = {
+    height: function (vw, vh) { return Math.max(vh * 1.5, vw * 0.94); },
+    spans: [
+      { a: [0.030, 0.095], b: [0.970, 0.230], sag: 0.052 },
+      { a: [0.970, 0.230], b: [0.040, 0.590], sag: 0.058 },
+      { a: [0.040, 0.590], b: [0.580, 0.880], sag: 0.028 }
+    ],
+    sheets: [
+      { s: 0, t: 0.24, w: 0.215, drop: 0.012, lean: -1.1, z: 3 },
+      { s: 0, t: 0.63, w: 0.150, drop: 0.085, lean:  0.8, z: 4 },
+      { s: 1, t: 0.42, w: 0.235, drop: 0.030, lean: -0.5, z: 2 },
+      { s: 1, t: 0.80, w: 0.165, drop: 0.060, lean:  1.6, z: 3 }
+    ],
+    dock: { x: 0.62, y: 0.855, w: 0.24, h: 0.055 },
+    wll:  { x: 0.035, y: 0.415 },
+    cat:  { s: 1, t: 0.16 }
+  };
+  var LINE_GEO_M = {
+    height: function (vw, vh) { return vh * 3.3; },
+    spans: [
+      { a: [0.10, 0.052], b: [0.90, 0.130], sag: 0.011 },
+      { a: [0.90, 0.140], b: [0.10, 0.310], sag: 0.015 },
+      { a: [0.10, 0.320], b: [0.90, 0.495], sag: 0.015 },
+      { a: [0.90, 0.505], b: [0.12, 0.695], sag: 0.015 },
+      { a: [0.12, 0.695], b: [0.55, 0.915], sag: 0.008 }
+    ],
+    sheets: [
+      { s: 0, t: 0.50, w: 0.70, drop: 0.008, lean: -1.1, z: 2 },
+      { s: 1, t: 0.52, w: 0.60, drop: 0.028, lean:  0.9, z: 2 },
+      { s: 2, t: 0.50, w: 0.72, drop: 0.010, lean: -0.5, z: 2 },
+      { s: 3, t: 0.52, w: 0.62, drop: 0.036, lean:  1.5, z: 2 }
+    ],
+    dock: { x: 0.18, y: 0.930, w: 0.62, h: 0.034 },
+    wll:  { x: 0.06, y: 0.258 },
+    cat:  { s: 3, t: 0.16 }
+  };
+
+  function lineQ(p0, c, p1, t) {
+    var mt = 1 - t;
+    return {
+      x: mt * mt * p0.x + 2 * mt * t * c.x + t * t * p1.x,
+      y: mt * mt * p0.y + 2 * mt * t * c.y + t * t * p1.y
+    };
+  }
+
+  function buildLine() {
+    if (!lineOn) return;
+    var vw = innerWidth, vh = innerHeight;
+    var mobileLine = vw <= 820;
+    var GEO = mobileLine ? LINE_GEO_M : LINE_GEO_D;
+
+    indexEl.style.height = Math.round(GEO.height(vw, vh)) + "px";
+    /* reads happen here, in one place, never in the loop */
+    var W = indexEl.clientWidth;
+    var BH = indexEl.clientHeight;
+    var idxRect = indexEl.getBoundingClientRect();
+    var idxTop = idxRect.top + scrollY;
+    var idxLeft = idxRect.left + scrollX;
+
+    /* ---- the wire + hardware ---- */
+    lineWireEl.setAttribute("viewBox", "0 0 " + W + " " + BH);
+    var spansPx = GEO.spans.map(function (s) {
+      var p0 = { x: s.a[0] * W, y: s.a[1] * BH };
+      var p1 = { x: s.b[0] * W, y: s.b[1] * BH };
+      var c = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 + s.sag * BH };
+      return { p0: p0, p1: p1, c: c };
+    });
+    var svg = "";
+    spansPx.forEach(function (sp) {
+      var d = "M" + sp.p0.x.toFixed(1) + " " + sp.p0.y.toFixed(1) +
+              " Q" + sp.c.x.toFixed(1) + " " + sp.c.y.toFixed(1) + " " +
+              sp.p1.x.toFixed(1) + " " + sp.p1.y.toFixed(1);
+      svg += '<path class="w" d="' + d + '"/><path class="w-hi" d="' + d + '"/>';
+    });
+    function hwCleat(p) {
+      return '<g class="hw">' +
+        '<rect class="fill" x="' + (p.x - 4.5) + '" y="' + (p.y - 14) + '" width="9" height="20" rx="2"/>' +
+        '<circle class="dot" cx="' + p.x + '" cy="' + (p.y - 9.5) + '" r="1.5"/>' +
+        '<circle class="dot" cx="' + p.x + '" cy="' + (p.y + 1.5) + '" r="1.5"/></g>';
+    }
+    function hwPulley(p) {
+      return '<g class="hw">' +
+        '<line x1="' + p.x + '" y1="' + (p.y - 13) + '" x2="' + p.x + '" y2="' + p.y + '"/>' +
+        '<circle class="fill" cx="' + p.x + '" cy="' + p.y + '" r="6.4"/>' +
+        '<circle cx="' + p.x + '" cy="' + p.y + '" r="3"/>' +
+        '<circle class="dot" cx="' + p.x + '" cy="' + p.y + '" r="1.3"/></g>';
+    }
+    function hwTurnbuckle(sp) {
+      var m = lineQ(sp.p0, sp.c, sp.p1, 0.08);
+      var m2 = lineQ(sp.p0, sp.c, sp.p1, 0.13);
+      var ang = Math.atan2(m2.y - m.y, m2.x - m.x) * 57.3;
+      return '<g class="hw" transform="rotate(' + ang.toFixed(1) + " " + m.x.toFixed(1) + " " + m.y.toFixed(1) + ')">' +
+        '<rect class="fill" x="' + (m.x - 11) + '" y="' + (m.y - 3.2) + '" width="22" height="6.4" rx="3"/>' +
+        '<circle cx="' + (m.x - 14) + '" cy="' + m.y + '" r="2.4"/>' +
+        '<circle cx="' + (m.x + 14) + '" cy="' + m.y + '" r="2.4"/></g>';
+    }
+    svg += hwCleat(spansPx[0].p0);
+    svg += hwTurnbuckle(spansPx[0]);
+    for (var si = 1; si < spansPx.length; si++) svg += hwPulley(spansPx[si].p0);
+    svg += hwCleat(spansPx[spansPx.length - 1].p1);
+
+    /* ---- the sheets on their drop-cords ---- */
+    lineItems = [];
+    rows.forEach(function (row, i) {
+      var def = GEO.sheets[i];
+      if (!def) return;
+      var sp = spansPx[def.s];
+      var wp = lineQ(sp.p0, sp.c, sp.p1, def.t);        /* on the wire */
+      var w = Math.min(def.w * W, 560);
+      var clipY = wp.y + def.drop * BH;                  /* the clip, below the cord */
+      /* the drop-cord + its ring on the wire */
+      svg += '<circle class="hw dot" cx="' + wp.x.toFixed(1) + '" cy="' + wp.y.toFixed(1) + '" r="2.2"/>' +
+             '<line class="cord" x1="' + wp.x.toFixed(1) + '" y1="' + wp.y.toFixed(1) +
+             '" x2="' + wp.x.toFixed(1) + '" y2="' + (clipY - 16).toFixed(1) + '"/>';
+      row.style.left = Math.round(wp.x - w / 2) + "px";
+      row.style.top = Math.round(clipY + 2) + "px";
+      row.style.width = Math.round(w) + "px";
+      row.style.zIndex = def.z;
+      row.style.transform = "rotate(" + def.lean + "deg)";
+      lineItems.push({
+        el: row, i: i,
+        cx: idxLeft + wp.x, cyPage: idxTop + clipY,
+        faceEl: row.querySelector(".row-thumb"),
+        face: null,
+        lean: def.lean, th: def.lean,
+        A: 0.22 + (i * 7919 % 97) / 97 * 0.28,          /* deterministic variety */
+        w1: 0.05 + (i * 104729 % 89) / 89 * 0.05,
+        p1: (i * 31 % 7) * 0.9,
+        w2: 0.16 + (i * 15485863 % 83) / 83 * 0.12,
+        p2: (i * 17 % 5) * 1.3,
+        u: 0, du: 0, dragTarget: 0,
+        drag: false, hovered: false, steady: 0
+      });
+    });
+    lineWireEl.innerHTML = svg;
+
+    /* the instrument + the dock */
+    if (lineWllEl) {
+      lineWllEl.style.left = Math.round(GEO.wll.x * W) + "px";
+      lineWllEl.style.top = Math.round(GEO.wll.y * BH) + "px";
+    }
+    if (lineDockEl) {
+      lineDockEl.style.left = Math.round(GEO.dock.x * W) + "px";
+      lineDockEl.style.top = Math.round(GEO.dock.y * BH) + "px";
+      lineDockEl.style.width = Math.round(Math.min(GEO.dock.w * W, 420)) + "px";
+      lineDockEl.style.height = Math.round(GEO.dock.h * BH) + "px";
+    }
+
+    /* the cat sits on the wire now (mess layer; she just exists) */
+    var catEl2 = indexEl.querySelector(".cat");
+    if (catEl2 && GEO.cat) {
+      var csp = spansPx[GEO.cat.s];
+      var cp = lineQ(csp.p0, csp.c, csp.p1, GEO.cat.t);
+      catEl2.style.left = Math.round(cp.x - 59) + "px";
+      catEl2.style.top = Math.round(cp.y - 96) + "px";
+      catEl2.style.right = "auto";
+      var nCat = indexEl.querySelector(".n-cat");
+      if (nCat) {
+        nCat.style.left = Math.round(Math.max(8, cp.x - 59 - 190)) + "px";
+        nCat.style.top = Math.round(cp.y - 58) + "px";
+        nCat.style.right = "auto";
+      }
+      var zzz = indexEl.querySelector(".dd-zzz");
+      if (zzz) {
+        zzz.style.left = Math.round(cp.x + 52) + "px";
+        zzz.style.top = Math.round(cp.y - 136) + "px";
+        zzz.style.right = "auto";
+      }
+    }
+
+    /* face rects for the loupe — cached here, page coords (4 reads, build-time) */
+    lineItems.forEach(function (it) {
+      var r = it.faceEl.getBoundingClientRect();
+      it.face = { x: r.left + scrollX, y: r.top + scrollY, w: r.width, h: r.height };
+    });
+  }
+
+  /* ---- the loop: heavy paper, pure math, changed writes only ---- */
+  var lineT0 = performance.now();
+  function lineFrame(now) {
+    if (!lineOn) return;
+    if (lineVisible && !document.hidden) {
+      var t = (now - lineT0) / 1000;
+      lineDraft *= 0.955;                                /* the draft dies slowly */
+      for (var i = 0; i < lineItems.length; i++) {
+        var it = lineItems[i];
+        /* unstruck paper doesn't perform; the loupe holds its sheet still */
+        if (it.el.classList.contains("unstruck")) continue;
+        if (loupeOn && curPlate === it.i) continue;
+        var steadyTarget = it.hovered ? 1 : 0;
+        it.steady += (steadyTarget - it.steady) * 0.045;
+        var calm = 1 - it.steady;
+        var rest =
+          it.A * calm * Math.sin(it.w1 * t * 6.283 + it.p1) +
+          lineDraft * 1.4 * calm * Math.sin(it.w2 * t * 6.283 + it.p2);
+        if (it.drag) {
+          /* a heavy sheet follows the hand with lag — never snaps to it */
+          it.u += (it.dragTarget - it.u) * 0.055;
+        } else if (it.u !== 0 || it.du !== 0) {
+          /* overdamped drift home — no bounce (Mark: no snap) */
+          it.du += (-4.2 * it.u - 4.4 * it.du) * 0.016;
+          it.u += it.du;
+          if (Math.abs(it.u) < 0.02 && Math.abs(it.du) < 0.01) { it.u = 0; it.du = 0; }
+        }
+        var th = it.lean + rest + it.u;
+        if (Math.abs(th - it.th) > 0.03) {
+          it.th = th;
+          it.el.style.transform = "rotate(" + th.toFixed(2) + "deg)";
+        }
+      }
+    }
+    requestAnimationFrame(lineFrame);
+  }
+  var lineStill = document.documentElement.classList.contains("still");
+  if (lineOn && !lineStill) {
+    buildLine();
+    if (!reduced()) requestAnimationFrame(lineFrame);
+    /* the loop idles while the run is off screen */
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (en) { lineVisible = en.isIntersecting; });
+      }, { rootMargin: "25%" }).observe(indexEl);
+    }
+    /* your reading speed is a draft through the shop */
+    var lineLastY = scrollY;
+    addEventListener("scroll", function () {
+      var y = scrollY;
+      lineDraft = Math.min(1, lineDraft + Math.abs(y - lineLastY) * 0.0035);
+      lineLastY = y;
+    }, { passive: true });
+
+    /* ---- the hand on the sheet: lag in, drift back, never drop ---- */
+    var lineDragging = null;
+    var lineDragMoved = 0;
+    indexEl.addEventListener("pointerdown", function (e) {
+      var row = e.target.closest(".row");
+      if (!row || reduced()) return;
+      var it = lineItems[+row.dataset.plate];
+      if (!it || it.el.classList.contains("unstruck")) return;
+      lineDragging = it;
+      lineDragMoved = 0;
+      it.drag = true;
+      it.dragTarget = it.u;
+    });
+    addEventListener("pointermove", function (e) {
+      if (!lineDragging) return;
+      lineDragMoved++;
+      var dx = e.pageX - lineDragging.cx;
+      var dy = Math.max(40, e.pageY - lineDragging.cyPage);
+      lineDragging.dragTarget =
+        Math.max(-22, Math.min(22, Math.atan2(dx, dy) * 57.3 - lineDragging.lean));
+    });
+    function lineDrop() {
+      if (!lineDragging) return;
+      var it = lineDragging;
+      lineDragging = null;
+      it.drag = false;
+      it.du = 0;
+      if (lineDragMoved > 3) lineDragUsed = true;
+      /* a hard pull runs down the wire; the instrument reads it */
+      if (Math.abs(it.u) > 9) {
+        lineWireEl.classList.remove("hum");
+        void lineWireEl.offsetWidth;
+        lineWireEl.classList.add("hum");
+        var nb = lineItems[it.i - 1], na = lineItems[it.i + 1];
+        if (nb && !nb.drag) nb.du += it.u * 0.045;
+        if (na && !na.drag) na.du += it.u * 0.045;
+        if (lineWllEl) {
+          lineWllEl.innerHTML = "[W.L.L.] LOAD +" + Math.round(Math.abs(it.u) * 1.3) + "% — <em>HELD</em>";
+          lineWllEl.classList.add("blip");
+          clearTimeout(lineWllEl._t);
+          lineWllEl._t = setTimeout(function () {
+            lineWllEl.innerHTML = "[W.L.L.] 04 SHEETS — <em>HOLDS</em>";
+            lineWllEl.classList.remove("blip");
+          }, 1700);
+        }
+        logAct("pulled at sheet 0" + (it.i + 1) + ". the line held.");
+      }
+    }
+    addEventListener("pointerup", lineDrop);
+    addEventListener("pointercancel", lineDrop);
+    /* a drag is not a navigation (same pattern as the loupe press) */
+    rows.forEach(function (row) {
+      row.addEventListener("click", function (e) {
+        if (lineDragUsed) { e.preventDefault(); lineDragUsed = false; }
+      });
+    });
+  } else if (lineOn) {
+    buildLine(); /* ?still ships the hang, hung true, nothing moving */
+  }
+
   function syncMode() {
     document.body.classList.toggle("has-cursor", trailEnabled() && !reduced());
   }
@@ -610,22 +922,30 @@
   requestAnimationFrame(frame);
 
   /* ============ row choreography + reveal swap ============ */
-  var curPlate = -1;
+  var curPlate = -1, lastRevealPlate = -1;
   rows.forEach(function (row) {
     row.addEventListener("mouseenter", function () {
       if (!trailEnabled()) return;
       if (loupeOn) return; /* the glass is down — don't re-skin the sheet */
-      /* an unstruck row is unprinted paper — no plate reveal, no
-         choreography, until the line (or a click) strikes it */
+      /* an unstruck row is unprinted paper — no reveal, no choreography,
+         until the line (or a click) strikes it */
       if (row.classList.contains("unstruck")) return;
       indexEl.classList.add("is-hovering");
       rows.forEach(function (r) { r.classList.remove("is-active"); });
       row.classList.add("is-active");
       cursorLabel.textContent = "PROOF ↗";
       cursorEl.classList.add("is-view");
+      curPlate = +row.dataset.plate;
 
-      if (+row.dataset.plate !== curPlate) {
-        curPlate = +row.dataset.plate;
+      /* THE LINE: the sheet already IS the proof — no floating reveal.
+         hovering STEADIES it (the shop holds it still for you). */
+      if (lineOn) {
+        if (lineItems[curPlate]) lineItems[curPlate].hovered = true;
+        return;
+      }
+      /* flat-list fallback: the cursor-trailing plate reveal */
+      if (curPlate !== lastRevealPlate) {
+        lastRevealPlate = curPlate;
         plateEl.style.backgroundImage = plates[curPlate];
       }
       if (!open) {
@@ -638,11 +958,14 @@
 
     row.addEventListener("mouseleave", function () {
       if (!trailEnabled()) return;
-      /* the glass is down: the sheet stays on the table until it lifts */
       if (loupeOn) { loupeLeftRow = true; return; }
       indexEl.classList.remove("is-hovering");
       row.classList.remove("is-active");
       cursorEl.classList.remove("is-view");
+      if (lineOn) {
+        if (lineItems[+row.dataset.plate]) lineItems[+row.dataset.plate].hovered = false;
+        return;
+      }
       scalerEl.style.transform = "scale(0)";
       open = false;
     });
@@ -1079,6 +1402,7 @@
   window.addEventListener("resize", function () {
     clearTimeout(resizeT);
     resizeT = setTimeout(function () {
+      if (lineOn) buildLine();   /* the hang re-strings first — strike tops follow it */
       positionAnchors();
       buildTerrain();
       buildThread();
@@ -1088,6 +1412,7 @@
   });
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function () {
+      if (lineOn) buildLine();   /* re-hang once metrics are real */
       positionAnchors();
       buildTerrain();
       buildThread();
@@ -1634,6 +1959,96 @@
   }
   noiseBtn.addEventListener("click", function () { setNoise(!noiseOn); });
 
+  /* ============ make-ready: the press gets your sheet ready ============ */
+  /* the loading animation, in the shop's own fiction — first arrival
+     each session (same gate as the press check, which it hands into).
+     the regmark draws itself while the counter reads the REAL load
+     (fonts), min ~1s so it reads, max ~1.8s so it never stalls; on
+     release the mark flies home to the sheet's registration mark and
+     the held hero entrance resumes. any input skips the theater. */
+  var mrEl = document.getElementById("makeready");
+  var mrRan = false;
+  (function makeReady() {
+    if (!mrEl) return;
+    var seen = false;
+    try { seen = !!sessionStorage.getItem("ma-press-check"); } catch (e) {}
+    if (seen || reduced() || stillMode) {
+      mrEl.remove(); mrEl = null;
+      return;
+    }
+    mrRan = true;
+    var stateEl = document.getElementById("mr-state");
+    var countEl = document.getElementById("mr-count");
+    var t0 = performance.now();
+    var MIN = 1000, MAX = 1800;
+    var pct = 0, doneAt = 0, released = false;
+    var STATES = [
+      [0,   "SETTING THE FORME"],
+      [34,  "INKS 3/3 — LOADED"],
+      [68,  "REGISTER — CHECK"],
+      [100, "OK TO RUN"]
+    ];
+    var lastState = "";
+    var fontsIn = false;
+    try { document.fonts.ready.then(function () { fontsIn = true; }); }
+    catch (e) { fontsIn = true; }
+
+    function release() {
+      if (released || !mrEl) return;
+      released = true;
+      /* the mark flies home to the sheet's real instrument (one measured
+         read, event-time — never in the loop) */
+      var real = document.querySelector(".sheet .regmark");
+      var mk = mrEl.querySelector(".mr-mark");
+      if (real && mk) {
+        var r = real.getBoundingClientRect();
+        var m = mk.getBoundingClientRect();
+        if (r.width > 2) {
+          mk.style.transform =
+            "translate(" + Math.round(r.left + r.width / 2 - (m.left + m.width / 2)) + "px," +
+            Math.round(r.top + r.height / 2 - (m.top + m.height / 2)) + "px)" +
+            " scale(" + (r.width / m.width).toFixed(3) + ")";
+          mk.style.opacity = "0";
+        }
+      }
+      mrEl.classList.add("out");
+      setTimeout(function () {
+        if (mrEl) { mrEl.remove(); mrEl = null; }
+      }, 720);
+    }
+
+    function tick(now) {
+      if (!mrEl || released) return;
+      var el = now - t0;
+      /* the target tracks real readiness; the number eases toward it */
+      var target = fontsIn ? 100 : Math.min(86, el / 14);
+      pct += (target - pct) * 0.085;
+      if (el >= MAX) pct = 100;
+      var p = Math.min(100, Math.round(pct));
+      countEl.textContent = (p < 10 ? "0" : "") + p;
+      for (var i = STATES.length - 1; i >= 0; i--) {
+        if (p >= STATES[i][0]) {
+          if (lastState !== STATES[i][1]) {
+            lastState = STATES[i][1];
+            stateEl.textContent = lastState;
+            stateEl.classList.toggle("ok", STATES[i][0] === 100);
+          }
+          break;
+        }
+      }
+      if (p >= 100 && el >= MIN) {
+        if (!doneAt) doneAt = now;
+        if (now - doneAt > 240) { release(); return; }
+      }
+      requestAnimationFrame(tick);
+    }
+    /* any input skips it — same philosophy as the press check */
+    ["keydown", "pointerdown", "wheel", "touchstart"].forEach(function (ev) {
+      addEventListener(ev, release, { capture: true, passive: true, once: true });
+    });
+    requestAnimationFrame(tick);
+  })();
+
   /* ============ press check: the sheet comes into register ============ */
   /* once per session the hero loads as misregistered ink passes (red,
      blue, ink) that slide home while the regmark locks in. any input
@@ -1653,7 +2068,9 @@
     evs.forEach(function (ev) {
       addEventListener(ev, endPress, { capture: true, passive: true });
     });
-    setTimeout(endPress, 2600);
+    /* the hero's entrance clock pauses while make-ready holds the sheet,
+       so the failsafe stretches by the loader's window */
+    setTimeout(endPress, mrRan ? 4800 : 2600);
   })();
 
   /* ============ the regmark is also a fidget ============ */
@@ -2237,6 +2654,8 @@
   var loupedPlates = {};
   rows.forEach(function (row) {
     row.addEventListener("pointerdown", function (e) {
+      /* the line owns the press (drag-to-swing); the glass would fight it */
+      if (lineOn) return;
       if (!trailEnabled() || !open || e.button !== 0) return;
       e.preventDefault();
       /* press-and-HOLD summons the glass; a quick click stays a click

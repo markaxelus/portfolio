@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE LINE — everything hangs on it (mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,100..900,0..100;1,9..144,100..900,0..100&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     DIRECTION Nº 006 — THE LINE (playable mock, not a build)
+     One continuous drying line is strung through the whole page.
+     Everything Mark has made hangs on it, fresh off the press —
+     the headline, the plates, your copy — swaying, holding.
+     At the bottom the line lowers into the dock and YOUR sheet
+     unclips and lands on the delivered stack. It ships.
+     The hidden page's cairn falls; the line holds. Same person.
+     ============================================================ */
+  :root {
+    --stone: #DDDBD4;
+    --stone-deep: #CFCDC5;
+    --sheet: #E6E4DC;
+    --ink: #16150F;
+    --accent: #2A2AF0;
+    --acid: #B4C400;
+    --pencil: #C7361F;
+    --graphite: rgba(22, 21, 15, 0.55);
+    --hairline: rgba(22, 21, 15, 0.28);
+    --mono: "Space Mono", monospace;
+    --frame: 2.2vw;
+    --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { overflow-x: clip; }   /* the pocket-proof rule: nothing widens the ICB */
+  body {
+    background: var(--stone);
+    color: var(--ink);
+    font-family: "Fraunces", Georgia, serif;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: var(--mono); }
+
+  /* faint paper grain, pre-baked tile (perf rule: no live turbulence) */
+  .grain {
+    position: fixed; inset: 0; z-index: 30; pointer-events: none; opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  }
+
+  /* the world is tall; everything positions in page px computed by js */
+  #world { position: relative; height: 330vh; }
+
+  /* ---------- the wire ---------- */
+  #wire {
+    position: absolute; inset: 0; z-index: 2;
+    width: 100%; height: 100%;
+    overflow: visible; pointer-events: none;
+  }
+  #wire path.w {
+    fill: none; stroke: var(--ink); stroke-width: 1.8;
+  }
+  #wire path.w-hi {          /* the glint that makes it steel */
+    fill: none; stroke: rgba(255, 255, 255, 0.55); stroke-width: 0.7;
+    transform: translateY(-1px);
+  }
+  #wire .pulley circle { fill: var(--stone); stroke: var(--ink); stroke-width: 1.6; }
+  #wire .pulley .hub { fill: var(--ink); stroke: none; }
+  #wire .pulley .arm { stroke: var(--ink); stroke-width: 1.6; }
+  /* the line shivers when a sheet is flung — brief, decaying */
+  #wire.hum { animation: hum 0.55s ease-out; }
+  @keyframes hum {
+    0% { transform: translateY(0); } 18% { transform: translateY(1.6px); }
+    40% { transform: translateY(-1.1px); } 66% { transform: translateY(0.6px); }
+    100% { transform: translateY(0); }
+  }
+
+  /* ---------- things that hang ---------- */
+  .hang {
+    position: absolute; z-index: 3;
+    will-change: transform;
+    transform-origin: 50% 0;           /* the clip is the pivot */
+    filter: drop-shadow(0 14px 22px rgba(22, 21, 15, 0.18));
+  }
+  .hang .clip {
+    position: absolute; left: 50%; top: -20px;
+    width: 22px; height: 26px; margin-left: -11px;
+  }
+  .hang .clip path { stroke: var(--ink); stroke-width: 1.6; fill: var(--stone-deep); }
+  .hang .clip circle { fill: var(--ink); }
+  .face {
+    background: var(--sheet);
+    border: 1px solid rgba(22, 21, 15, 0.14);
+    position: relative;
+  }
+  .face .cropx {
+    position: absolute; width: 10px; height: 10px; opacity: 0.5; pointer-events: none;
+  }
+  .face .cropx.a { top: 5px; left: 5px; border-top: 1px solid var(--ink); border-left: 1px solid var(--ink); }
+  .face .cropx.b { top: 5px; right: 5px; border-top: 1px solid var(--ink); border-right: 1px solid var(--ink); }
+  .face .cropx.c { bottom: 5px; left: 5px; border-bottom: 1px solid var(--ink); border-left: 1px solid var(--ink); }
+  .face .cropx.d { bottom: 5px; right: 5px; border-bottom: 1px solid var(--ink); border-right: 1px solid var(--ink); }
+  .hang.grab { cursor: grab; }
+  .hang.grab:active { cursor: grabbing; }
+
+  /* hero word-sheets */
+  .word-face {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0.05em 0.14em 0.12em;
+  }
+  .word-face .word {
+    font-weight: 480; font-variation-settings: "opsz" 144;
+    line-height: 0.9; letter-spacing: -0.035em; white-space: nowrap;
+  }
+  .word-face .amp { font-style: italic; font-weight: 340; color: var(--accent); }
+  .face .slug {
+    position: absolute; left: 12px; bottom: 6px;
+    font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.22em;
+    color: var(--graphite); pointer-events: none; white-space: nowrap;
+  }
+  /* the little tag wired to a clip */
+  .tag {
+    position: absolute; top: -14px; left: calc(50% + 16px);
+    font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.18em;
+    background: var(--sheet); border: 1px solid var(--hairline);
+    padding: 3px 6px 2px; color: var(--graphite);
+    transform: rotate(4deg); transform-origin: 0 0; white-space: nowrap;
+  }
+  .tag.wet { color: var(--pencil); border-color: var(--pencil); }
+
+  /* plate sheets (the work) */
+  .plate-face { padding: 10px 10px 0; }
+  .plate-face img, .plate-face svg.pl { display: block; width: 100%; height: auto; }
+  .plate-face .pstrip {
+    height: 30px; display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.18em;
+    color: var(--graphite); white-space: nowrap; overflow: hidden; gap: 10px;
+  }
+  .pstrip .cb { display: flex; gap: 2.5px; }
+  .pstrip .cb i { width: 9px; height: 9px; display: block; }
+
+  /* small slips (bio, load tag, your copy, ok pad) */
+  .slip-face { padding: 14px 16px; font-family: var(--mono); }
+  .slip-face .k { font-size: 8.5px; letter-spacing: 0.26em; color: var(--graphite); display: block; margin-bottom: 7px; }
+  .slip-face .v { font-size: 11px; line-height: 1.65; letter-spacing: 0.04em; }
+  .slip-face .v em { font-style: normal; color: var(--accent); }
+  .slip-face .v b { font-weight: 700; color: var(--pencil); }
+
+  /* wall print (static, printed on the page behind the line) */
+  .wall {
+    position: absolute; z-index: 1; font-family: var(--mono);
+    letter-spacing: 0.24em; color: var(--graphite);
+  }
+  .wall.h { font-size: clamp(0.55rem, 0.8vw, 0.72rem); }
+  .wall em { font-style: normal; color: var(--accent); }
+  .wall .rule { display: block; width: 5.5em; height: 1px; background: var(--hairline); margin-bottom: 0.8em; }
+
+  /* the dock */
+  #dock { position: absolute; z-index: 3; }
+  #dock .table {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 1.5px;
+    background: var(--ink);
+  }
+  #dock .table::after {
+    content: ""; position: absolute; left: 8%; right: 8%; top: 2.5px; height: 1px;
+    background: var(--hairline);
+  }
+  #stack { position: absolute; bottom: 1.5px; left: 6%; width: 62%; }
+  #stack .lay {
+    position: relative; height: 7px;
+    background: var(--sheet); border: 1px solid rgba(22, 21, 15, 0.3);
+    border-bottom: none; margin: 0 auto;
+  }
+  #stack .lay:nth-child(odd) { transform: translateX(2px) }
+  #stack .lay:nth-child(even) { transform: translateX(-2px) }
+  #dock .tally {
+    position: absolute; left: 6%; bottom: -34px;
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.22em;
+    color: var(--graphite); white-space: nowrap;
+  }
+  #dock .tally em { font-style: normal; color: var(--acid); }
+  #stamp {
+    position: absolute; right: 4%; bottom: 26px; z-index: 5;  /* stamps ACROSS the delivered sheet */
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.26em;
+    color: var(--pencil); border: 1.6px solid var(--pencil);
+    padding: 7px 10px 6px; transform: rotate(-4deg);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  #stamp.on { opacity: 0.9; animation: thunk 0.34s var(--ease-out); }
+  @keyframes thunk {
+    0% { transform: rotate(-4deg) scale(1.7); opacity: 0; }
+    62% { transform: rotate(-4deg) scale(0.96); opacity: 1; }
+    100% { transform: rotate(-4deg) scale(1); }
+  }
+
+  /* outro print */
+  .outro-print { position: absolute; z-index: 1; }
+  .outro-print .big {
+    font-weight: 480; font-variation-settings: "opsz" 144;
+    font-size: clamp(2rem, 5.4vw, 6rem); line-height: 0.95; letter-spacing: -0.03em;
+  }
+  .outro-print .big em { font-style: italic; font-weight: 340; color: var(--accent); }
+  .outro-print .sub { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.22em; color: var(--graphite); margin-top: 1.2rem; }
+
+  /* fixed furniture */
+  .bk { position: fixed; z-index: 20; width: 64px; height: 64px; border: 0 solid var(--ink); opacity: 0.6; pointer-events: none; }
+  .bk.tl { top: var(--frame); left: var(--frame); border-top-width: 1.4px; border-left-width: 1.4px; }
+  .bk.tr { top: var(--frame); right: var(--frame); border-top-width: 1.4px; border-right-width: 1.4px; }
+  .bk.bl { bottom: var(--frame); left: var(--frame); border-bottom-width: 1.4px; border-left-width: 1.4px; }
+  .bk.br { bottom: var(--frame); right: var(--frame); border-bottom-width: 1.4px; border-right-width: 1.4px; }
+  .cap {
+    position: fixed; z-index: 21; left: calc(var(--frame) + 18px); bottom: calc(var(--frame) + 14px);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--graphite);
+  }
+  .cap b { font-weight: 700; color: var(--ink); }
+  .hint {
+    position: fixed; z-index: 21; right: calc(var(--frame) + 18px); top: calc(var(--frame) + 12px);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--accent);
+    text-align: right;
+  }
+  .jobline {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 22;
+    background: color-mix(in srgb, var(--stone) 88%, var(--ink));
+    border-top: 1px solid rgba(22, 21, 15, 0.16);
+    display: flex; justify-content: space-between; gap: 14px;
+    padding: 7px 16px 6px; font-family: var(--mono);
+    font-size: 9.5px; letter-spacing: 0.2em; color: rgba(22, 21, 15, 0.66);
+    white-space: nowrap;
+  }
+  .jobline em { font-style: normal; color: var(--accent); }
+  .jobline b { font-weight: 400; color: var(--pencil); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hang { transform: none !important; }
+    #wire.hum { animation: none; }
+  }
+  @media (max-width: 640px) {
+    .jobline span:last-child { display: none; }
+    .jobline span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; }
+    .hint, .cap { display: none; }   /* the jobline carries it on a pocket sheet */
+    #dock .tally { font-size: 8.5px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="grain" aria-hidden="true"></div>
+
+  <div id="world">
+    <!-- wall print gets positioned by js alongside the line geometry -->
+    <div class="wall h" id="wall-eyebrow">( ONE-PERSON PRACTICE — <em>EST. 2019</em> )<br><span style="opacity:.72">FRESH OFF THE PRESS · HUNG TO DRY</span></div>
+    <div class="wall h" id="wall-work"><span class="rule"></span>SELECTED WORK — ON THE LINE<br><span style="opacity:.72">02 SHEETS · STILL DRYING</span></div>
+    <div class="wall h" id="wall-run"><span class="rule"></span>THE LINE LOWERS HERE<br><span style="opacity:.72">DELIVERY DOCK · SIGN ON RECEIPT</span></div>
+
+    <div class="outro-print" id="outro-print">
+      <p class="big">Got a brief?<br><em>Write to me.</em></p>
+      <p class="sub">MRKAXELUS@GMAIL.COM · THE LINE HOLDS</p>
+    </div>
+
+    <svg id="wire" aria-hidden="true"></svg>
+
+    <!-- the dock -->
+    <div id="dock" aria-hidden="true">
+      <div class="table"></div>
+      <div id="stack"></div>
+      <span class="tally" id="tally">THE RUN — <em>003</em> DELIVERED · YOURS IS ON THE LINE</span>
+      <span id="stamp">DELIVERED · <span id="stamp-t">23:41</span></span>
+    </div>
+  </div>
+
+  <!-- fixed furniture -->
+  <i class="bk tl"></i><i class="bk tr"></i><i class="bk bl"></i><i class="bk br"></i>
+  <span class="cap">IDENTITY — <b>THE LINE</b> · it dries, it ships, the line holds</span>
+  <span class="hint">BRUSH A SHEET — THE LINE HOLDS<br><span style="opacity:.6">SCROLL — FOLLOW IT DOWN</span></span>
+  <div class="jobline">
+    <span>SHEET Nº 001 · MARK AXELUS · WORKING PROOF</span>
+    <span id="jl-mid">4 SHEETS ON THE LINE · <em>DELIVERY BELOW</em></span>
+    <span>D50 5000K · 23:41 AT THE DESK</span>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+  var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var world = document.getElementById("world");
+  var wire = document.getElementById("wire");
+
+  /* ---------- geometry (all in page px, computed — zero DOM reads in loops) ---------- */
+  var V = { w: innerWidth, h: innerHeight, H: 0 };
+
+  /* span anchors in (vw, vh-of-page) units; sag in vh.
+     desktop: long crossing spans. mobile: one word per short span,
+     steeper zigzag, anchors pulled inboard (pocket-proof rule). */
+  var SPANS_D = [
+    { a: [4, 4],    b: [97, 24],  sag: 7  },   /* A — the headline dries here */
+    { a: [97, 24],  b: [3, 88],   sag: 8  },   /* B — bio + load tag */
+    { a: [3, 88],   b: [96, 170], sag: 9  },   /* C — the work */
+    { a: [96, 170], b: [8, 252],  sag: 8  },   /* D — your copy + ok pad */
+    { a: [8, 252],  b: [34, 298], sag: 4  }    /* E — down into the dock */
+  ];
+  var SPANS_M = [
+    { a: [10, 3],   b: [90, 13],  sag: 2.5 },
+    { a: [90, 15],  b: [10, 30],  sag: 3   },
+    { a: [10, 32],  b: [90, 48],  sag: 3   },
+    { a: [90, 48],  b: [8, 96],   sag: 5   },
+    { a: [8, 96],   b: [92, 170], sag: 6   },
+    { a: [92, 170], b: [10, 252], sag: 6   },
+    { a: [10, 252], b: [50, 298], sag: 3   }
+  ];
+  var SPANS = SPANS_D;
+  var mobile = false;
+
+  /* what hangs where: pos = { d: [span, t], m: [span, t] } */
+  var ITEMS = [
+    { pos: { d: [0, 0.20], m: [0, 0.50] }, kind: "word", word: "Code,",  wvw: 27, mvw: 66 },
+    { pos: { d: [0, 0.50], m: [1, 0.50] }, kind: "word", word: "design", wvw: 30, mvw: 74 },
+    { pos: { d: [0, 0.80], m: [2, 0.50] }, kind: "word", word: "&nerve", wvw: 28, mvw: 70, amp: true },
+    { pos: { d: [1, 0.30], m: [3, 0.30] }, kind: "slip", id: "bio",
+      k: "THE OPERATOR —",
+      v: "I’m Mark. I design and build interfaces that hold their nerve. I work slowly, ship rarely, and put everything on the page." },
+    { pos: { d: [1, 0.64], m: [3, 0.72] }, kind: "slip", id: "load",
+      k: "LINE CERT · W.L.L.",
+      v: "SAFE WORKING LOAD:<br><em>EVERYTHING SO FAR.</em><br>LAST INSPECTED — TONIGHT." },
+    { pos: { d: [2, 0.32], m: [4, 0.30] }, kind: "plate", img: "gate-plate-03.png",
+      strip: "NIGHT OFFICE — RENDERHAUS · REF//NOF-24 · PASS 3/3" },
+    { pos: { d: [2, 0.70], m: [4, 0.72] }, kind: "plate", gen: true,
+      strip: "MERIDIAN — WAYFINDING · REF//MRD-25 · PASS 3/3" },
+    { pos: { d: [3, 0.40], m: [5, 0.42] }, kind: "slip", id: "yours",
+      k: "SHEET Nº 001 — YOUR COPY",
+      v: "WORKING PROOF · PULLED TONIGHT<br>DRY BY THE TIME YOU REACH<br>THE BOTTOM. <b>THEN IT SHIPS.</b>" },
+    { pos: { d: [3, 0.78], m: [5, 0.80] }, kind: "slip", id: "okpad",
+      k: "OK PAD —",
+      v: "PASSED FOR PRESS ______<br>CORRECTIONS &nbsp;&nbsp;&nbsp;&nbsp; ______" }
+  ];
+
+  var spansPx = [];   /* {p0,p1,c, path} */
+  var items = [];     /* live objects */
+  var draft = 0;      /* scroll-draft envelope */
+  var lastScroll = 0;
+
+  function vw(x) { return x / 100 * V.w; }
+  function vh(y) { return y / 100 * V.h; }
+
+  /* quadratic bezier point + tangent angle */
+  function qPoint(p0, c, p1, t) {
+    var mt = 1 - t;
+    return {
+      x: mt * mt * p0.x + 2 * mt * t * c.x + t * t * p1.x,
+      y: mt * mt * p0.y + 2 * mt * t * c.y + t * t * p1.y
+    };
+  }
+
+  function buildWire() {
+    V.w = innerWidth; V.h = innerHeight; V.H = world.offsetHeight; /* one read, outside loops */
+    mobile = V.w <= 640;
+    SPANS = mobile ? SPANS_M : SPANS_D;
+    wire.setAttribute("viewBox", "0 0 " + V.w + " " + V.H);
+    wire.setAttribute("width", V.w);
+    wire.setAttribute("height", V.H);
+    var svg = "";
+    spansPx = SPANS.map(function (s) {
+      var p0 = { x: vw(s.a[0]), y: vh(s.a[1]) };
+      var p1 = { x: vw(s.b[0]), y: vh(s.b[1]) };
+      var c = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 + vh(s.sag) };
+      var d = "M" + p0.x.toFixed(1) + " " + p0.y.toFixed(1) +
+              " Q" + c.x.toFixed(1) + " " + c.y.toFixed(1) + " " +
+              p1.x.toFixed(1) + " " + p1.y.toFixed(1);
+      svg += '<path class="w" d="' + d + '"/><path class="w-hi" d="' + d + '"/>';
+      return { p0: p0, p1: p1, c: c };
+    });
+    /* pulleys at every junction + the top feed */
+    spansPx.forEach(function (sp, i) {
+      [sp.p0].concat(i === spansPx.length - 1 ? [sp.p1] : []).forEach(function (p) {
+        svg += '<g class="pulley">' +
+          '<line class="arm" x1="' + p.x + '" y1="' + (p.y - 14) + '" x2="' + p.x + '" y2="' + p.y + '"/>' +
+          '<circle cx="' + p.x + '" cy="' + p.y + '" r="7"/>' +
+          '<circle class="hub" cx="' + p.x + '" cy="' + p.y + '" r="1.8"/></g>';
+      });
+    });
+    wire.innerHTML = svg;
+  }
+
+  /* generated second plate: ink field + accent linework, echoing plateURI style */
+  function genPlate() {
+    return '<svg class="pl" viewBox="0 0 2000 1250" aria-hidden="true">' +
+      '<rect width="2000" height="1250" fill="#16150F"/>' +
+      '<g fill="none" stroke="#2A2AF0" stroke-width="7" opacity="0.85">' +
+      '<circle cx="640" cy="540" r="300"/><circle cx="640" cy="540" r="205"/>' +
+      '<path d="M180 1030 H1830 M180 950 H1400"/></g>' +
+      '<g fill="none" stroke="#C7361F" stroke-width="6" opacity="0.5" transform="translate(14,10)">' +
+      '<circle cx="640" cy="540" r="300"/></g>' +
+      '<text x="1560" y="1120" font-family="monospace" font-size="230" fill="#DDDBD4" opacity="0.16" font-style="italic">01</text>' +
+      '<rect width="2000" height="1250" fill="url(#ht6)" opacity="0.12"/>' +
+      '<defs><pattern id="ht6" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="4.5" cy="4.5" r="1.4" fill="#DDDBD4"/></pattern></defs></svg>';
+  }
+
+  var CLIP_SVG = '<svg class="clip" viewBox="0 0 22 26" aria-hidden="true">' +
+    '<path d="M4 10 L4 3 Q4 1 6 1 L16 1 Q18 1 18 3 L18 10 L15 24 L7 24 Z"/>' +
+    '<circle cx="11" cy="6" r="1.7"/></svg>';
+
+  function buildItems() {
+    items.forEach(function (it) { it.el.remove(); });
+    items = [];
+    ITEMS.forEach(function (def, idx) {
+      var pos = mobile ? def.pos.m : def.pos.d;
+      var sp = spansPx[pos[0]];
+      var p = qPoint(sp.p0, sp.c, sp.p1, pos[1]);
+      var el = document.createElement("div");
+      el.className = "hang grab";
+      var w;
+      if (def.kind === "word") {
+        w = Math.min(vw(mobile ? def.mvw : def.wvw), V.w * 0.86);
+        var fs = w / (def.word.length * 0.52);
+        el.innerHTML = CLIP_SVG +
+          '<div class="face word-face" style="width:' + w + 'px; height:' + (fs * 1.16) + 'px">' +
+          '<span class="word" style="font-size:' + fs + 'px">' +
+          (def.amp ? '<span class="amp">&amp;</span>&nbsp;' + def.word.slice(1) : def.word) +
+          "</span>" +
+          '<i class="cropx a"></i><i class="cropx b"></i><i class="cropx c"></i><i class="cropx d"></i>' +
+          '<span class="slug">PASS 3/3 · IN REGISTER</span></div>' +
+          (def.t > 0.7 ? '<span class="tag wet">PULLED 30S AGO — STILL WET</span>'
+                       : (def.t < 0.3 ? '<span class="tag">DRYING</span>' : ""));
+      } else if (def.kind === "plate") {
+        w = Math.min(vw(mobile ? 82 : 34), 560);
+        el.innerHTML = CLIP_SVG +
+          '<figure class="face plate-face" style="width:' + w + 'px">' +
+          (def.img ? '<img src="' + def.img + '" alt="">' : genPlate()) +
+          '<figcaption class="pstrip"><span>' + def.strip + "</span>" +
+          '<span class="cb"><i style="background:#16150F"></i><i style="background:rgba(22,21,15,.6)"></i>' +
+          '<i style="background:#C7361F"></i><i style="background:#2A2AF0"></i>' +
+          '<i style="background:#DDDBD4; outline:1px solid rgba(22,21,15,.35); outline-offset:-1px"></i></span>' +
+          "</figcaption></figure>" +
+          '<span class="tag">DRYING · DO NOT TOUCH THE FACE</span>';
+      } else {
+        w = def.id === "bio"
+          ? Math.min(vw(mobile ? 66 : 24), 340)
+          : Math.min(vw(mobile ? 54 : 19), 250);
+        el.innerHTML = CLIP_SVG +
+          '<div class="face slip-face" style="width:' + w + 'px">' +
+          '<span class="k">' + def.k + '</span><span class="v">' + def.v + "</span>" +
+          '<i class="cropx a"></i><i class="cropx b"></i><i class="cropx c"></i><i class="cropx d"></i></div>' +
+          (def.id === "yours" ? '<span class="tag wet">YOURS</span>' : "");
+      }
+      el.style.left = (p.x - w / 2) + "px";
+      el.style.top = (p.y + 4) + "px";
+      world.appendChild(el);
+      items.push({
+        el: el, def: def, idx: idx,
+        cx: p.x, cy: p.y,
+        th: 0,                              /* current written angle */
+        A: 0.5 + Math.random() * 0.7,       /* idle amplitude, deg */
+        w1: 0.35 + Math.random() * 0.25,    /* idle rate */
+        p1: Math.random() * 6.28,
+        w2: 0.9 + Math.random() * 0.5,      /* draft rate */
+        p2: Math.random() * 6.28,
+        u: 0, du: 0,                        /* spring offset (drag/flick) */
+        drag: false, delivered: false
+      });
+    });
+  }
+
+  function placeWalls() {
+    var e;
+    e = document.getElementById("wall-eyebrow");
+    e.style.left = vw(6) + "px"; e.style.top = vh(mobile ? 58 : 56) + "px";
+    e = document.getElementById("wall-work");
+    e.style.left = vw(8) + "px"; e.style.top = vh(112) + "px";
+    e = document.getElementById("wall-run");
+    e.style.left = vw(mobile ? 10 : 52) + "px"; e.style.top = vh(238) + "px";
+    e = document.getElementById("outro-print");
+    e.style.left = vw(mobile ? 10 : 48) + "px"; e.style.top = vh(mobile ? 310 : 288) + "px";
+    var dock = document.getElementById("dock");
+    dock.style.left = vw(mobile ? 14 : 12) + "px";
+    dock.style.top = vh(288) + "px";
+    dock.style.width = Math.min(vw(mobile ? 72 : 30), 460) + "px";
+    dock.style.height = vh(18) + "px";
+    var stack = document.getElementById("stack");
+    if (!stack.childElementCount) {
+      for (var i = 0; i < 3; i++) {
+        var lay = document.createElement("div");
+        lay.className = "lay";
+        lay.style.width = (92 - i * 3) + "%";
+        stack.appendChild(lay);
+      }
+    }
+  }
+
+  function buildAll() {
+    buildWire();
+    buildItems();
+    placeWalls();
+  }
+  buildAll();
+
+  /* ---------- the loop: pure math, transform writes only ---------- */
+  var t0 = performance.now();
+  function frame(now) {
+    var t = (now - t0) / 1000;
+    draft *= 0.94;
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i];
+      if (it.delivered) continue;
+      var rest = reduced ? 0 :
+        it.A * Math.sin(it.w1 * t * 6.28 + it.p1) +
+        draft * 4.5 * Math.sin(it.w2 * t * 6.28 + it.p2);
+      if (!it.drag && (it.u !== 0 || it.du !== 0)) {
+        /* damped spring back to the breeze */
+        it.du += (-14 * it.u - 4.6 * it.du) * 0.016;
+        it.u += it.du * 0.016 * 60;
+        if (Math.abs(it.u) < 0.02 && Math.abs(it.du) < 0.02) { it.u = 0; it.du = 0; }
+      }
+      var th = rest + it.u;
+      if (Math.abs(th - it.th) > 0.04) {
+        it.th = th;
+        it.el.style.transform = "rotate(" + th.toFixed(2) + "deg)";
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  if (!reduced) requestAnimationFrame(frame);
+
+  /* scroll is a draft through the shop */
+  addEventListener("scroll", function () {
+    var y = scrollY;
+    draft = Math.min(1, draft + Math.abs(y - lastScroll) * 0.0045);
+    lastScroll = y;
+  }, { passive: true });
+
+  /* ---------- brushing + dragging: the line holds ---------- */
+  var dragging = null;
+  world.addEventListener("pointerdown", function (e) {
+    var el = e.target.closest(".hang");
+    if (!el || reduced) return;
+    var it = items.find(function (o) { return o.el === el; });
+    if (!it || it.delivered) return;
+    dragging = it; it.drag = true;
+    el.setPointerCapture && el.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  addEventListener("pointermove", function (e) {
+    if (!dragging) return;
+    var dx = e.pageX - dragging.cx;
+    var dy = Math.max(30, e.pageY - dragging.cy);
+    var target = Math.atan2(dx, dy) * 57.3;
+    dragging.u = Math.max(-30, Math.min(30, target));
+  });
+  addEventListener("pointerup", function () {
+    if (!dragging) return;
+    var it = dragging; dragging = null; it.drag = false;
+    it.du = -it.u * 0.9;                 /* let go — it swings */
+    if (Math.abs(it.u) > 12) {
+      wire.classList.remove("hum"); void wire.offsetWidth; wire.classList.add("hum");
+      var nb = items[it.idx - 1], na = items[it.idx + 1];   /* neighbours answer */
+      if (nb && !nb.drag) nb.du += it.u * 0.11;
+      if (na && !na.drag) na.du += it.u * 0.11;
+    }
+  });
+
+  /* ---------- the delivery: your sheet unclips and ships ---------- */
+  var delivered = false;
+  function deliver() {
+    if (delivered) return;
+    delivered = true;
+    var it = items.find(function (o) { return o.def.id === "yours"; });
+    var stack = document.getElementById("stack");
+    /* target: flat on the stack, bottom edge ON the table (one build-time
+       read of the sheet's height — a one-shot moment, never in a loop) */
+    var dockL = vw(mobile ? 14 : 12), dockT = vh(288), dockH = vh(18);
+    var dockW = Math.min(vw(mobile ? 72 : 30), 460);
+    var shH = it.el.offsetHeight;
+    var tx = dockL + dockW * 0.06 + dockW * 0.31;
+    var ty = dockT + dockH - shH - 8;
+    it.delivered = true;
+    it.el.classList.remove("grab");
+    it.el.style.zIndex = 2;   /* under the dock chrome — the stamp lands ON the sheet */
+    it.el.style.transition = "transform 1.15s cubic-bezier(0.4, 0, 0.6, 1), filter 1.15s";
+    it.el.style.transform = "translate(" + (tx - it.cx) + "px," + (ty - it.cy) + "px) rotate(0.5deg) scale(0.92)";
+    it.el.style.filter = "drop-shadow(0 2px 4px rgba(22,21,15,0.25))";
+    var clip = it.el.querySelector(".clip");
+    if (clip) clip.style.opacity = "0";  /* the clip stays on the line, in fiction */
+    setTimeout(function () {
+      var lay = document.createElement("div");
+      lay.className = "lay"; lay.style.width = "95%";
+      lay.style.background = "var(--sheet)";
+      stack.appendChild(lay);
+      document.getElementById("tally").innerHTML = "THE RUN — <em>004</em> DELIVERED · YOURS JUST LANDED";
+      var st = document.getElementById("stamp");
+      var d = new Date();
+      document.getElementById("stamp-t").textContent =
+        String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+      st.classList.add("on");
+      document.getElementById("jl-mid").innerHTML = "<b>DELIVERED</b> · SHEET Nº 001 · <em>SIGNED ON RECEIPT</em>";
+    }, reduced ? 0 : 1150);
+  }
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (en) { if (en.isIntersecting) { deliver(); io.disconnect(); } });
+    }, { threshold: 0.4 });
+    io.observe(document.getElementById("dock"));
+  }
+
+  /* resize: rebuild everything once (never in a frame) */
+  var rz = null;
+  addEventListener("resize", function () {
+    clearTimeout(rz);
+    rz = setTimeout(function () { delivered = false; buildAll(); }, 120);
+  });
+})();
+</script>
+</body>
+</html>

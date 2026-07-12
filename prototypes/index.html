@@ -10,8 +10,23 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=Space+Mono:wght@400;700&family=Zeyada&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<noscript><style>#makeready { display: none; }</style></noscript>
 </head>
 <body>
+
+  <!-- make-ready: the press gets your sheet ready (first arrival each
+       session). the counter reads the real load; the mark flies home to
+       the sheet's registration mark on release. any input skips it. -->
+  <div id="makeready" aria-hidden="true">
+    <svg class="mr-mark" viewBox="0 0 40 40">
+      <circle class="mr-ink" cx="20" cy="20" r="11"/>
+      <path class="mr-ink" d="M20 2v11M20 27v11M2 20h11M27 20h11"/>
+    </svg>
+    <p class="mr-label mono">MAKE-READY</p>
+    <p class="mr-state mono" id="mr-state">SETTING THE FORME</p>
+    <p class="mr-count mono"><span id="mr-count">00</span><em>%</em></p>
+    <p class="mr-job mono">SHEET Nº 001 &middot; MARK AXELUS &middot; WORKING PROOF</p>
+  </div>
 
   <!-- grain -->
   <div class="grain" aria-hidden="true"></div>
@@ -255,9 +270,26 @@
       </div>
     </section>
 
-    <!-- project index -->
+    <!-- project index: THE LINE — the shop's drying line. the four
+         plates hang salon-style from drop-cords off one strung wire,
+         fresh off the press; the dock at the end keeps the tally.
+         geometry is computed by buildLine() in main.js. -->
     <section class="index" id="index">
       <p class="index-head mono final">SELECTED WORK / 2024&ndash;2025</p>
+      <p class="index-sub mono final">THE RUN, ON THE LINE &mdash; BRUSH A SHEET &middot; IT HOLDS &middot; CLICK &mdash; PULL ITS PROOF</p>
+
+      <!-- the wire + hardware (cleats, turnbuckle, pulleys, drop-cords) -->
+      <svg class="line-wire" id="line-wire" aria-hidden="true"></svg>
+
+      <!-- the instrument reads the line -->
+      <span class="line-wll mono final" id="line-wll" aria-hidden="true">[W.L.L.] 04 SHEETS &mdash; <em>HOLDS</em></span>
+
+      <!-- the dock: the run so far, delivered -->
+      <div class="line-dock final" id="line-dock" aria-hidden="true">
+        <div class="dock-table"></div>
+        <div class="dock-stack"><i></i><i></i><i></i><i></i></div>
+        <span class="dock-tally mono">DELIVERED SINCE 2019 &middot; ON THE LINE &mdash; 004 &middot; <em>NONE HAVE FALLEN</em></span>
+      </div>
 
       <!-- coffee ring, sorry -->
       <div class="proof-notes" aria-hidden="true">
@@ -289,29 +321,41 @@
       </div>
 
       <a class="row" id="p-01" href="#p-01" data-plate="0">
-        <span class="row-num mono final">01</span>
-        <span class="row-title final">Meridian</span>
-        <span class="row-meta mono final">IDENTITY &middot; 2025<span class="row-ref">REF//MRD-25</span></span>
-        <span class="row-desc final">Identity and site for a climate-data startup &mdash; first sketch to launch in six weeks.</span>
+        <svg class="row-clip" viewBox="0 0 34 22" aria-hidden="true"><rect x="2" y="3" width="30" height="8" rx="2"/><line x1="10" y1="11" x2="10" y2="20"/><line x1="24" y1="11" x2="24" y2="20"/><line x1="10" y1="20" x2="24" y2="20"/><circle cx="17" cy="7" r="1.6"/></svg>
+        <span class="row-etch mono final" aria-hidden="true">REF//MRD-25 &middot; CLIPPED ON DELIVERY</span>
         <span class="row-thumb final" aria-hidden="true"></span>
+        <span class="row-strip final">
+          <span class="row-num mono">01</span>
+          <span class="row-title">Meridian</span>
+          <span class="row-meta mono">IDENTITY &middot; 2025<span class="row-ref">REF//MRD-25</span></span>
+        </span>
+        <span class="row-desc mono final">Identity and site for a climate-data startup &mdash; first sketch to launch in six weeks.</span>
         <span class="note hand-k row-note" style="--d:.18s" aria-hidden="true">client asked for &ldquo;more premium.&rdquo;<br>i made it quieter.</span>
       </a>
 
       <a class="row" id="p-02" href="#p-02" data-plate="1">
-        <span class="row-num mono final">02</span>
-        <span class="row-title final">Low Relief</span>
-        <span class="row-meta mono final">EDITORIAL &middot; 2025<span class="row-ref">REF//LRF-25</span></span>
-        <span class="row-desc final">A 240-page artist monograph &mdash; art direction, typesetting, and the print production.</span>
+        <svg class="row-clip" viewBox="0 0 34 22" aria-hidden="true"><rect x="2" y="3" width="30" height="8" rx="2"/><line x1="10" y1="11" x2="10" y2="20"/><line x1="24" y1="11" x2="24" y2="20"/><line x1="10" y1="20" x2="24" y2="20"/><circle cx="17" cy="7" r="1.6"/></svg>
+        <span class="row-etch mono final" aria-hidden="true">REF//LRF-25 &middot; CLIPPED ON DELIVERY</span>
         <span class="row-thumb final" aria-hidden="true"></span>
+        <span class="row-strip final">
+          <span class="row-num mono">02</span>
+          <span class="row-title">Low Relief</span>
+          <span class="row-meta mono">EDITORIAL &middot; 2025<span class="row-ref">REF//LRF-25</span></span>
+        </span>
+        <span class="row-desc mono final">A 240-page artist monograph &mdash; art direction, typesetting, and the print production.</span>
         <span class="note hand-b row-note" style="--d:.24s" aria-hidden="true">printed on the wrong stock first. kept it.</span>
       </a>
 
       <a class="row" id="p-03" href="#p-03" data-plate="2">
-        <span class="row-num mono final">03</span>
-        <span class="row-title final">Night Office</span>
-        <span class="row-meta mono final">DIGITAL &middot; 2024<span class="row-ref">REF//NOF-24</span></span>
-        <span class="row-desc final">Real-time dashboard for a render farm &mdash; TypeScript, WebGL, dark by default.</span>
+        <svg class="row-clip" viewBox="0 0 34 22" aria-hidden="true"><rect x="2" y="3" width="30" height="8" rx="2"/><line x1="10" y1="11" x2="10" y2="20"/><line x1="24" y1="11" x2="24" y2="20"/><line x1="10" y1="20" x2="24" y2="20"/><circle cx="17" cy="7" r="1.6"/></svg>
+        <span class="row-etch mono final" aria-hidden="true">REF//NOF-24 &middot; CLIPPED ON DELIVERY</span>
         <span class="row-thumb final" aria-hidden="true"></span>
+        <span class="row-strip final">
+          <span class="row-num mono">03</span>
+          <span class="row-title">Night Office</span>
+          <span class="row-meta mono">DIGITAL &middot; 2024<span class="row-ref">REF//NOF-24</span></span>
+        </span>
+        <span class="row-desc mono final">Real-time dashboard for a render farm &mdash; TypeScript, WebGL, dark by default.</span>
         <span class="note hand-k row-note" style="--d:.30s" aria-hidden="true">built after 23:00. always am.</span>
         <svg class="note num-ring scrawl" style="--d:.42s" viewBox="0 0 84 58" aria-hidden="true">
           <path class="draw" pathLength="1" d="M42,6 C66,4 80,14 78,28 C76,44 58,53 38,52 C18,51 5,42 7,27 C9,12 24,7 46,7" fill="none"/>
@@ -320,31 +364,36 @@
       </a>
 
       <a class="row" id="p-04" href="#p-04" data-plate="3">
-        <span class="row-num mono final">04</span>
-        <span class="row-title final">Signal Garden</span>
-        <span class="row-meta mono final">SPATIAL &middot; 2024<span class="row-ref">REF//SGN-24</span></span>
-        <span class="row-desc final">Interactive installation mapping radio noise to a garden of light. Built the lot.</span>
+        <svg class="row-clip" viewBox="0 0 34 22" aria-hidden="true"><rect x="2" y="3" width="30" height="8" rx="2"/><line x1="10" y1="11" x2="10" y2="20"/><line x1="24" y1="11" x2="24" y2="20"/><line x1="10" y1="20" x2="24" y2="20"/><circle cx="17" cy="7" r="1.6"/></svg>
+        <span class="row-etch mono final" aria-hidden="true">REF//SGN-24 &middot; CLIPPED ON DELIVERY</span>
         <span class="row-thumb final" aria-hidden="true"></span>
+        <span class="row-strip final">
+          <span class="row-num mono">04</span>
+          <span class="row-title">Signal Garden</span>
+          <span class="row-meta mono">SPATIAL &middot; 2024<span class="row-ref">REF//SGN-24</span></span>
+        </span>
+        <span class="row-desc mono final">Interactive installation mapping radio noise to a garden of light. Built the lot.</span>
         <span class="note hand-b row-note" style="--d:.36s" aria-hidden="true">still pulling splinters from my palms</span>
-
-        <!-- the cat. she just exists. -->
-        <svg class="note scrawl cat" viewBox="0 0 120 100" aria-hidden="true">
-          <path class="draw" pathLength="1" style="--dd:0s"   d="M45,34 C41,24 44,13 49,9 L55,17 C61,14 68,14 73,17 L80,10 C85,15 86,25 82,33" fill="none"/>
-          <path class="draw" pathLength="1" style="--dd:.1s"  d="M82,33 C87,41 85,50 78,54 C68,59 52,59 46,53 C42,48 43,40 45,34" fill="none"/>
-          <path class="draw" pathLength="1" style="--dd:.22s" d="M80,54 C93,63 99,78 97,98" fill="none"/>
-          <path class="draw" pathLength="1" style="--dd:.34s" d="M50,56 C45,68 45,84 47,98" fill="none"/>
-          <path class="draw" pathLength="1" style="--dd:.46s" d="M56,98 C55,88 57,80 59,76 M66,77 C67,85 67,92 66,98" fill="none"/>
-          <path class="draw cat-tail" pathLength="1" style="--dd:.58s" d="M97,96 C111,92 114,74 100,68" fill="none"/>
-          <path class="draw" pathLength="1" style="--dd:.7s"  d="M36,38 L20,35 M36,44 L21,47 M52,30 C54,28 57,28 59,30 M46,38 L42,42" fill="none"/>
-          <path class="draw" pathLength="1" style="--dd:.82s" d="M68,68 L58,80 M76,72 L64,88 M83,78 L72,93" fill="none" opacity=".6"/>
-        </svg>
-        <span class="note hand-b n-cat" style="--d:.9s" aria-hidden="true">not my cat. she keeps coming back.</span>
-        <svg class="note scrawl dd-zzz" style="--d:1.05s" viewBox="0 0 40 40" aria-hidden="true">
-          <path class="draw" pathLength="1" d="M6,30 L14,30 L6,38 L14,38" fill="none"/>
-          <path class="draw" pathLength="1" d="M17,17 L26,17 L17,26 L26,26" fill="none" opacity=".75"/>
-          <path class="draw" pathLength="1" d="M29,5 L37,5 L29,13 L37,13" fill="none" opacity=".5"/>
-        </svg>
       </a>
+
+      <!-- the cat. she just exists — now she sits on the wire.
+           (positioned by buildLine; mess layer only, as ever.) -->
+      <svg class="note scrawl cat" viewBox="0 0 120 100" aria-hidden="true">
+        <path class="draw" pathLength="1" style="--dd:0s"   d="M45,34 C41,24 44,13 49,9 L55,17 C61,14 68,14 73,17 L80,10 C85,15 86,25 82,33" fill="none"/>
+        <path class="draw" pathLength="1" style="--dd:.1s"  d="M82,33 C87,41 85,50 78,54 C68,59 52,59 46,53 C42,48 43,40 45,34" fill="none"/>
+        <path class="draw" pathLength="1" style="--dd:.22s" d="M80,54 C93,63 99,78 97,98" fill="none"/>
+        <path class="draw" pathLength="1" style="--dd:.34s" d="M50,56 C45,68 45,84 47,98" fill="none"/>
+        <path class="draw" pathLength="1" style="--dd:.46s" d="M56,98 C55,88 57,80 59,76 M66,77 C67,85 67,92 66,98" fill="none"/>
+        <path class="draw cat-tail" pathLength="1" style="--dd:.58s" d="M97,96 C111,92 114,74 100,68" fill="none"/>
+        <path class="draw" pathLength="1" style="--dd:.7s"  d="M36,38 L20,35 M36,44 L21,47 M52,30 C54,28 57,28 59,30 M46,38 L42,42" fill="none"/>
+        <path class="draw" pathLength="1" style="--dd:.82s" d="M68,68 L58,80 M76,72 L64,88 M83,78 L72,93" fill="none" opacity=".6"/>
+      </svg>
+      <span class="note hand-b n-cat" style="--d:.9s" aria-hidden="true">not my cat. she keeps coming back.</span>
+      <svg class="note scrawl dd-zzz" style="--d:1.05s" viewBox="0 0 40 40" aria-hidden="true">
+        <path class="draw" pathLength="1" d="M6,30 L14,30 L6,38 L14,38" fill="none"/>
+        <path class="draw" pathLength="1" d="M17,17 L26,17 L17,26 L26,26" fill="none" opacity=".75"/>
+        <path class="draw" pathLength="1" d="M29,5 L37,5 L29,13 L37,13" fill="none" opacity=".5"/>
+      </svg>
     </section>
 
     <!-- at the desk -->

@@ -756,6 +756,69 @@ signatures (Mark counts these himself):
     400ms ≠ arrived; fixed in the test, site was correct), 162fps/6ms,
     zero console errors throughout.
 
+22. (branch `prototypes-line`, off prototypes-presscheck) **Direction Nº 006 —
+    THE LINE + the MAKE-READY loader.** The long arc to the main-page identity:
+    Mark rejected effect-signatures ("living press feels like a gimmick... the
+    DESK feels like an identity — that's what I'm looking for"), then rejected
+    concept-pitches ("I don't get these concepts — think of a visually striking
+    element that's clearly unique"), then set the real brief: something that says
+    *"despite all this messy work/mind, things get delivered"* — polished, awe-
+    striking, its own identity like the hidden page. Ideation anchored on his own
+    unownable word — NERVE ("interfaces that hold their nerve"); of a nerve batch
+    (still-center / tonnage / taut-line) he picked **the taut line**, then steered
+    it three times: (a) full-page mock `line-mock.html` (the whole page hangs +
+    delivery dock) — "the sort of unique element I'm looking for," but worried it
+    cannibalised the desk; (b) scoped + machined `line-work-mock.html` — right;
+    (c) "too linear / physics too snappy / add a loader / do it on the real site,
+    new branch." THIS build answers all four. Provenance mocks kept in prototypes/.
+    Shipped on the real site:
+    - **MAKE-READY loader** (`#makeready`, styles.css/main.js): first arrival each
+      session (shares the `ma-press-check` gate, hands straight into the press-
+      check strike — one continuous fiction: make-ready → strike → in register).
+      The regmark draws itself (stroke-dashoffset) while a mono counter reads the
+      REAL load (`document.fonts.ready`; min ~1s so it reads, max ~1.8s so it never
+      stalls; states SETTING THE FORME → INKS 3/3 → REGISTER CHECK → OK TO RUN). On
+      release the mark FLIES HOME to the sheet's own `.regmark` (one measured read,
+      event-time). Any input skips it; reduced-motion/`?still`/print never see it.
+      The hero's held entrance resumes via `body:has(#makeready:not(.out))`
+      animation-play-state pause (no JS ordering). press-check failsafe stretched
+      to 4800ms when the loader ran.
+    - **THE LINE** — SELECTED WORK only (the rest of the page unchanged). One strung
+      wire MEANDERS through the section; the four project plates hang salon-style
+      from **drop-cords of different lengths, varied sizes, varied rest-leans, small
+      overlaps** (unstructured on purpose — fixes "too linear"). MACHINED hardware
+      only (cleat, turnbuckle, bearing pulleys, bar clips, etched REF// slugs, the
+      `[W.L.L.] 04 SHEETS — HOLDS` instrument that blips `LOAD +N% — HELD` on a
+      flick) — the desk keeps the ONLY handmade language; the line is the machine
+      of delivery. THE RHYME with the hidden page: the cairn stacks and TOPPLES
+      (mess, relatable); the line sways and HOLDS (nerve, delivered). Physics are
+      **LANGUID** (fixes "too snappy"): idle micro-sway, scroll = a slow-dying
+      draft, hover STEADIES a sheet, drag follows the hand with lag (lerp .055) and
+      drifts home OVERDAMPED with NO bounce (−4.2/−4.4), never a snap. Geometry in
+      `buildLine()` (LINE_GEO_D/_M) — all reads at build/resize/fonts.ready, the one
+      rAF does pure math + writes only a changed `rotate` per sheet; idles off-screen
+      (IntersectionObserver) and under hidden tab. The `.row` was rehung as the
+      sheet (position:absolute, clip = pivot); the manifest semantics stay (data-
+      plate, `#p-01..04` deep links, the viewer opens on a quick click; a drag is
+      not a nav — `lineDragUsed` preventDefault). **Loupe + cursor-trailing reveal
+      RETIRED on the line** (they fought the drag and doubled the plate the sheet
+      already shows — the `!open` guard + explicit `if (lineOn) return`). Plates
+      still print in the site's inks and `rebuildPlates` re-inks them. The impression
+      line strikes each sheet as its clip crosses (unstruck sheets hang still, don't
+      sway — "unprinted paper doesn't perform"). The dock keeps the run
+      (`DELIVERED SINCE 2019 · ON THE LINE — 004 · NONE HAVE FALLEN`). Mess layer:
+      the cat now sits ON the wire (repositioned in buildLine), the pen asides hang
+      off each sheet's corner. `overflow-x: clip` on `.index` holds the pocket-proof
+      rule. Print reflows the hang to a plain manifest. Verified headless: desktop
+      + mobile (390, zero x-overflow), mess, reduced-motion (sheets hung true, no
+      drift, loader skipped), viewer routing, sections stack with no collision,
+      >60fps on drag, zero console errors in every mode.
+    **STILL OPEN (Mark's ask, not yet built):** "unstructuredness on the main page
+    AS WELL" beyond the work section — the line delivers the work-section unstructure;
+    a MOTIVATED asymmetry pass on the rest (not random tilts) is proposed, awaiting
+    his pick (candidates: the operator plate hung with a rest-lean; the desk rows as
+    clipped cards; the parked stray sort). Do NOT scatter arbitrary tilts.
+
 ## 8. Ideas discussed but not built (fair game later)
 
 - Project detail pages, each as its own proof sheet / case study.

@@ -619,69 +619,199 @@ body.proof .op-candid { display: block; }
 .n-outro { left: 1.4vw; bottom: 4.5vw; --tilt: -1.6deg; }
 
 /* ---------- project index ---------- */
+/* ============================================================
+   THE LINE — the shop's drying line (SELECTED WORK).
+   one strung wire meanders through the section; the four plates
+   hang salon-style from drop-cords of different lengths, each
+   with its own rest-lean. machined hardware only — the desk owns
+   the handmade. geometry set by buildLine() in main.js; this file
+   owns the look. sway/drag transforms are written by JS onto the
+   .row (pivot: the clip), so nothing here transitions transform.
+   ============================================================ */
+
 .index {
   position: relative;
   padding: 6vw 1.4vw 8vw;
+  /* height set by buildLine() — the hang needs room. clip-x keeps the
+     meandering wire + leaning sheets from ever widening the ICB (the
+     pocket-proof rule); clip leaves the vertical hang untouched. */
+  overflow-x: clip;
 }
-.index-head { opacity: 0.6; margin-bottom: 2.2rem; }
-.row {
-  position: relative;
-  display: grid;
-  grid-template-columns: 4.5rem minmax(0, 1fr) auto;
-  grid-template-rows: auto auto;
-  align-items: baseline;
-  gap: 0 1.5rem;
-  padding: 2.6vw 0.2vw;
-  border-bottom: 1px solid var(--hairline);
-  transition:
-    opacity 0.55s var(--ease-out),
-    color 0.45s var(--ease-out);
+.index-head { opacity: 0.6; }
+.index-sub {
+  opacity: 0.45;
+  font-size: 0.55rem;
+  letter-spacing: 0.24em;
+  margin-top: 0.5rem;
 }
-.row-desc {
-  grid-column: 2;
-  grid-row: 2;
-  margin-top: 0.7rem;
-  font-size: clamp(0.85rem, 1.05vw, 1.05rem);
-  font-variation-settings: "opsz" 20;
-  opacity: 0.62;
-  max-width: 52ch;
-}
-.row:first-of-type { border-top: 1px solid var(--hairline); }
 
-.row-num { opacity: 0.6; transition: opacity 0.45s var(--ease-out); }
+.line-wire {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  color: var(--ink);
+}
+.line-wire path.w { fill: none; stroke: currentColor; stroke-width: 1.5; }
+.line-wire path.w-hi { fill: none; stroke: rgba(255, 255, 255, 0.42); stroke-width: 0.6; transform: translateY(-1px); }
+.line-wire .cord { fill: none; stroke: currentColor; stroke-width: 1.1; opacity: 0.85; }
+.line-wire .hw path, .line-wire .hw line, .line-wire .hw rect, .line-wire .hw circle {
+  stroke: currentColor; fill: none; stroke-width: 1.3;
+}
+.line-wire .hw .fill { fill: var(--stone-deep); }
+.line-wire .hw .dot { fill: currentColor; stroke: none; }
+.night .line-wire path.w-hi { stroke: rgba(255, 255, 255, 0.14); }
+/* a hard flick runs down the wire */
+.line-wire.hum { animation: line-hum 0.9s var(--ease-out); }
+@keyframes line-hum {
+  0% { transform: translateY(0); } 20% { transform: translateY(1.4px); }
+  45% { transform: translateY(-0.9px); } 72% { transform: translateY(0.4px); }
+  100% { transform: translateY(0); }
+}
+
+/* the instrument: positioned by buildLine into a clear pocket */
+.line-wll {
+  position: absolute;
+  z-index: 4;
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+  background: color-mix(in srgb, var(--stone) 92%, var(--ink));
+  padding: 6px 10px 5px;
+  white-space: nowrap;
+}
+.line-wll em { font-style: normal; color: var(--acid); }
+.line-wll.blip em { color: var(--pencil); }
+
+/* ---- the hanging sheet (the row, rehung) ---- */
+.row {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  padding: 0;
+  transform-origin: 50% 0;    /* the clip is the pivot */
+  will-change: transform;
+  filter: drop-shadow(0 14px 20px rgba(22, 21, 15, 0.16));
+  transition: opacity 0.55s var(--ease-out), color 0.45s var(--ease-out);
+  touch-action: pan-y;        /* a thumb can still scroll past the run */
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;          /* a swing shouldn't select the sheet's text */
+  -webkit-user-select: none;
+}
+.row-clip {
+  position: absolute;
+  left: 50%;
+  top: -19px;
+  width: 32px;
+  height: 21px;
+  margin-left: -16px;
+}
+.row-clip rect { fill: var(--stone-deep); stroke: var(--ink); stroke-width: 1.3; }
+.row-clip line { stroke: var(--ink); stroke-width: 1.3; }
+.row-clip circle { fill: var(--ink); }
+.row-etch {
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.5rem;
+  letter-spacing: 0.22em;
+  color: var(--graphite);
+  opacity: 0.7;
+  white-space: nowrap;
+}
+/* the sheet face: paper margin around the plate */
+.row-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background-size: cover;
+  background-position: center;
+  border: 6px solid var(--sheet-edge, #E6E4DC);
+  outline: 1px solid rgba(22, 21, 15, 0.16);
+  background-color: var(--stone-deep);
+  box-sizing: border-box;
+}
+.row { --sheet-edge: #E6E4DC; background: var(--sheet-edge); }
+.night .row { --sheet-edge: #221F18; }
+.row-strip {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.25em 0.6em;
+  padding: 8px 10px 7px;
+}
+.row-num {
+  grid-column: 1; grid-row: 1;
+  font-size: 0.55rem; letter-spacing: 0.18em; opacity: 0.6;
+  transform: translateY(-0.15em);
+}
 .row-title {
-  font-weight: 440;
-  font-variation-settings: "opsz" 100, "SOFT" 0, "WONK" 0;
-  font-size: clamp(2.2rem, 5.6vw, 6.4rem);
-  line-height: 0.95;
-  letter-spacing: -0.02em;
+  grid-column: 2; grid-row: 1;
+  font-weight: 460;
+  font-variation-settings: "opsz" 60, "SOFT" 0, "WONK" 0;
+  font-size: clamp(1rem, 1.55vw, 1.55rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
   transition:
     letter-spacing 0.6s var(--ease-out),
     font-variation-settings 0.45s var(--ease-out);
 }
-.row-meta { opacity: 0.6; transition: opacity 0.45s var(--ease-out); }
-
-.index.is-hovering .row { opacity: 0.4; }
-.index.is-hovering .row.is-active {
-  opacity: 1;
-  color: var(--accent);
+.row-meta {
+  grid-column: 2; grid-row: 2;
+  font-size: 0.5rem;
+  letter-spacing: 0.14em;
+  opacity: 0.6;
+  transition: opacity 0.45s var(--ease-out);
 }
+.row-ref { text-align: left; }
+/* the working note, printed on the sheet margin under the strip */
+.row-desc {
+  display: block;
+  padding: 0 10px 9px;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  opacity: 0.6;
+  max-width: none;
+}
+
+.index.is-hovering .row { opacity: 0.45; }
+.index.is-hovering .row.is-active { opacity: 1; color: var(--accent); }
 .index.is-hovering .row.is-active .row-title {
   letter-spacing: 0.005em;
-  font-variation-settings: "opsz" 100, "SOFT" 45, "WONK" 1;
+  font-variation-settings: "opsz" 60, "SOFT" 45, "WONK" 1;
 }
 .index.is-hovering .row.is-active .row-num,
 .index.is-hovering .row.is-active .row-meta { opacity: 1; }
 
-.row-thumb {
-  display: none;
-  grid-column: 1 / -1;
-  width: min(46vw, 220px);
-  aspect-ratio: 4 / 5;
-  background-size: cover;
-  background-position: center;
-  margin-top: 1rem;
+/* the dock: the run so far */
+.line-dock { position: absolute; z-index: 1; }
+.dock-table { position: absolute; left: 0; right: 0; bottom: 0; height: 1.5px; background: var(--ink); }
+.dock-table::after {
+  content: ""; position: absolute; left: 8%; right: 8%; top: 2.5px; height: 1px;
+  background: var(--hairline);
 }
+.dock-stack { position: absolute; bottom: 1.5px; left: 10%; width: 54%; }
+.dock-stack i {
+  display: block; position: relative; height: 6px;
+  background: var(--sheet-edge, #E6E4DC);
+  border: 1px solid rgba(22, 21, 15, 0.3); border-bottom: none;
+  margin: 0 auto;
+}
+.dock-stack i:nth-child(1) { width: 94%; transform: translateX(2px); }
+.dock-stack i:nth-child(2) { width: 91%; transform: translateX(-2px); }
+.dock-stack i:nth-child(3) { width: 88%; transform: translateX(1px); }
+.dock-stack i:nth-child(4) { width: 85%; }
+.dock-tally {
+  position: absolute; left: 10%; bottom: -26px;
+  font-size: 0.5rem; letter-spacing: 0.2em;
+  color: var(--graphite); white-space: nowrap;
+}
+.dock-tally em { font-style: normal; color: var(--acid); }
 
 /* ---------- visitors' cairn ---------- */
 .yard { position: relative; padding: 0 1.4vw 6vw; }
@@ -1319,17 +1449,16 @@ body:not(.proof) .note { transition-delay: 0s; }
 .coffee .draw { stroke: rgba(128, 84, 40, 0.5); stroke-width: 3.2; }
 .n-coffee { top: 4.2rem; right: calc(12% - 3.4rem); --tilt: 2deg; }
 
+/* the pen's aside hangs off the sheet's lower corner now */
 .row-note {
   position: absolute;
-  right: 13rem;
-  top: 50%;
-  transform: translateY(-50%) rotate(var(--tilt, -1.5deg));
-  max-width: 17rem;
+  right: -1.2rem;
+  top: calc(100% + 0.55rem);
+  max-width: 15rem;
   text-align: right;
   z-index: 5;
 }
-.proof .row-note { transform: translateY(-56%) rotate(var(--tilt, -1.5deg)); }
-.row:nth-child(odd) .row-note { --tilt: 1.4deg; }
+.row:nth-of-type(odd) .row-note { --tilt: 1.4deg; right: auto; left: -0.8rem; text-align: left; }
 
 /* outro marginalia */
 .n-outro { left: 1.4vw; bottom: 4.5vw; --tilt: -1.6deg; }
@@ -1396,20 +1525,21 @@ body:not(.proof) .note { transition-delay: 0s; }
   z-index: 5;
 }
 
-/* the favorite child gets circled */
+/* the favorite child gets circled — the ring wraps the strip's number */
 .num-ring {
   position: absolute;
-  left: -0.9rem;
-  top: 50%;
-  width: 84px;
-  height: 58px;
-  transform: translateY(-56%);
+  left: -14px;
+  bottom: -10px;
+  top: auto;
+  width: 72px;
+  height: 46px;
   z-index: 5;
 }
 .n-fav {
   position: absolute;
-  left: 4.6rem;
-  top: 16%;
+  left: 3.6rem;
+  bottom: -32px;
+  top: auto;
   --tilt: -3deg;
   z-index: 5;
 }
@@ -1581,11 +1711,10 @@ body.pointer-seen .cursor { opacity: 1; }
   }
   .hero-title { font-size: clamp(3.4rem, 17.5vw, 8rem); }
   .hero-bio { grid-column: 1; grid-row: auto; justify-self: start; margin-bottom: 0; }
-  .row {
-    grid-template-columns: 3rem 1fr;
-    grid-template-rows: auto auto;
-    padding: 6vw 1vw;
-  }
+  /* the line hangs a narrow salon column (geometry from buildLine) */
+  .row-title { font-size: clamp(1rem, 4.4vw, 1.4rem); }
+  .row-desc { font-size: 0.52rem; }
+  .index-sub { max-width: 82vw; line-height: 1.8; }
   /* the figure compacts: stones stay a row on a hairline ground, the
      legend drops to two readable columns */
   .terrain-ground { display: none; }
@@ -1596,8 +1725,6 @@ body.pointer-seen .cursor { opacity: 1; }
   .trail-cap { text-align: left; }
   .desk-row { grid-template-columns: 6.5rem minmax(0, 1fr); gap: 1rem; }
   .colophon { grid-column: 1; text-align: left; }
-  .row-desc { grid-column: 2; }
-  .row-meta { grid-column: 2; }
   .corner { padding: 0.4rem 0.5rem; }
   .corner.tl, .corner.bl { left: calc(var(--frame) + 3vw); }
   .corner.tr, .corner.br { right: calc(var(--frame) + 3vw); }
@@ -1671,6 +1798,88 @@ body.pointer-seen .cursor { opacity: 1; }
   #pile .stone-inner.dropping { animation: none !important; }
   .hl .ch { transition: none !important; }
 }
+
+/* ============================================================
+   MAKE-READY — the press gets your sheet ready (first arrival
+   each session, before the press-check strike). the registration
+   mark draws itself while the counter reads the real load, then
+   flies home to the sheet's own regmark. one continuous fiction:
+   make-ready → strike → in register.
+   ============================================================ */
+
+#makeready {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  background: var(--stone);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s var(--ease-out);
+}
+#makeready.out { opacity: 0; pointer-events: none; }
+.mr-mark {
+  width: 72px;
+  height: 72px;
+  color: var(--ink);
+  overflow: visible;
+  transition: transform 0.6s var(--ease-out), opacity 0.35s var(--ease-out) 0.2s;
+  will-change: transform;
+}
+.mr-ink {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
+  stroke-dasharray: 240;
+  stroke-dashoffset: 240;
+  animation: mr-draw 1s var(--ease-out) 0.12s forwards;
+}
+@keyframes mr-draw { to { stroke-dashoffset: 0; } }
+.mr-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.34em;
+  margin-top: 1.4rem;
+  opacity: 0.85;
+}
+.mr-state {
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  color: var(--graphite);
+  margin-top: 0.5rem;
+  min-height: 1.2em;
+}
+.mr-state.ok { color: var(--accent); }
+.mr-count {
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-top: 0.4rem;
+}
+.mr-count em { font-style: normal; font-size: 0.9rem; opacity: 0.5; }
+.mr-job {
+  position: fixed;
+  left: 0; right: 0; bottom: 14px;
+  text-align: center;
+  font-size: 0.55rem;
+  letter-spacing: 0.26em;
+  color: var(--graphite);
+}
+/* the hero holds its entrance while the press makes ready — the whole
+   opening choreography (line-up, eyebrow, bio, press-register, reg-lock)
+   resumes the moment the overlay releases. :has needs no JS ordering. */
+body:has(#makeready:not(.out)) .hl,
+body:has(#makeready:not(.out)) .eyebrow,
+body:has(#makeready:not(.out)) .hero-bio,
+body:has(#makeready:not(.out)) .hero-title,
+body:has(#makeready:not(.out)) .regmark,
+body:has(#makeready:not(.out)) .frame,
+body:has(#makeready:not(.out)) .corner {
+  animation-play-state: paused !important;
+}
+@media (prefers-reduced-motion: reduce) { #makeready { display: none; } }
+.still #makeready { display: none; }
+@media print { #makeready { display: none; } }
 
 /* ============================================================
    PRESS CHECK — the sheet comes into register (once per session)
@@ -2572,6 +2781,26 @@ body.proof .impline { opacity: 0 !important; }
   /* the figure prints as stones on a plain rule + its legend */
   .terrain-stones { border-bottom: 1px solid #000; height: 60px; }
   .mile-label { break-inside: avoid; }
+
+  /* the line prints as a plain manifest — sheets off the wire, in a row */
+  .line-wire, .line-wll, .line-dock, .row-clip, .row-etch, .index-sub {
+    display: none !important;
+  }
+  .index { height: auto !important; }
+  .row {
+    position: static !important;
+    width: auto !important;
+    transform: none !important;
+    filter: none !important;
+    background: none;
+    display: block;
+    padding: 4mm 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    break-inside: avoid;
+  }
+  .row-strip { padding: 0; }
+  .row-title { font-size: 16pt; }
+  .row-desc { padding: 1mm 0 0; opacity: 0.75; }
 
   /* proof furniture rides every page */
   .sheet { opacity: 1 !important; color: #000; }
