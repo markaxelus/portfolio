@@ -2311,12 +2311,22 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
 .dd-map { left: 2%; bottom: -0.4rem; width: 180px; }
 .n-map { left: 2%; bottom: -2.6rem; --tilt: -1.5deg; }
 
+/* the passers-by, in the 2am hand — left of the cairn, clear of the tower */
+.n-cairn-a { left: 7%; top: 26%; --tilt: -3deg; font-size: 1.2rem; }
+.n-cairn-b { left: 8%; top: 46%; --tilt: 2deg; font-size: 1.1rem; }
+.dd-cairn-arrow { left: 23%; top: 60%; width: 70px; }
+.n-cairn-c { left: 20%; top: 68%; --tilt: -2deg; }
+
 .dd-rip { right: 27%; bottom: 13%; width: 130px; }
 .n-rip { right: 21%; bottom: 5%; --tilt: 2deg; text-align: center; }
 
 @media (max-width: 820px) {
   .dd-ttt, .n-ttt, .argue, .dd-map, .n-map,
   .dd-vinyl, .dd-notes, .n-vinyl, .dd-mood, .n-mood { display: none; }
+  /* the pocket sheet keeps one cairn aside — the thematic one — and drops
+     the rest so nothing crowds the tower or the header */
+  .dd-cairn-arrow, .n-cairn-c, .n-cairn-b { display: none; }
+  .n-cairn-a { left: 7%; top: 34%; --tilt: -2deg; font-size: 1.05rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -819,6 +819,29 @@ signatures (Mark counts these himself):
     his pick (candidates: the operator plate hung with a rest-lean; the desk rows as
     clipped cards; the parked stray sort). Do NOT scatter arbitrary tilts.
 
+    **FOLLOW-UP (same branch, Mark's next asks — "the zoom lens on projects / more
+    interactivity / the hidden page is lacking in parts"):**
+    - **The loupe returns to the line, disambiguated from the drag.** ONE press, three
+      gestures: hold STILL ~200ms → the printer's glass drops onto the plate (magnifies
+      the halftone + the 9px margin notes; the cover-fit math is retargeted to the
+      sheet's cached face rect, refreshed on press); press + MOVE → the swing; quick
+      TAP → the viewer. The line owns its pointerup (`if (lineOn) return` on the old
+      handler); the flat-list loupe path is kept for the non-line fallback. Fixed a
+      real bug: a drag's lingering `lineDragUsed` suppressed the NEXT click — now reset
+      at pointerdown.
+    - **Hover lifts the sheet** (line rAF: `it.lift` lerps in a `scale(1+lift*0.035)`,
+      deeper drop-shadow via `.is-active`, z bumped to 9) — pick it up off the line to
+      look. Composes with the steadying and the glass.
+    - **Hidden-page pass — the yard was the thin spot** (surveyed all sections in
+      `?proof&still`; hero/trail/desk/outro were already full, the cairn sat in an
+      empty void). Added three margin notes tying the cairn to the site's soul: 2am pen
+      "it topples sometimes. / i stack it again." (the topple-and-restack = the nerve
+      theme, in the hand), day pen "strangers, all of them. / i've read every timestamp."
+      (tender-obsessive, echoes "of course i counted"), + an arrow & "go on. leave one."
+      Mobile keeps only the topple note (the others would crowd the tower/header).
+    All verified headless (loupe hold/drag/tap, hover lift, yard desktop+mobile, zero
+    x-overflow, zero console errors).
+
 ## 8. Ideas discussed but not built (fair game later)
 
 - Project detail pages, each as its own proof sheet / case study.
