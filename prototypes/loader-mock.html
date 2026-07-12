@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MAKE-READY — the loader (mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,100..900,0..100;1,9..144,100..900,0..100&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     MAKE-READY — the load animation (a PLAYABLE mock).
+     the press makes ready to print YOUR copy: it pulls test
+     sheets that come further into register with each pull, the
+     operator's marks tick down the error, and the good pull —
+     dead in register — floods to stone and becomes the page.
+     make-ready is the real pre-run ritual; nobody loads with it.
+     autoplays; REPLAY bottom-right. reduced motion skips it.
+     ============================================================ */
+  :root {
+    --booth: #0C0B08;
+    --stone: #DDDBD4;
+    --sheet: #E6E4DC;
+    --ink: #16150F;
+    --pencil: #C7361F;      /* the red pass */
+    --accent: #2A2AF0;      /* the blue pass */
+    --accent-lum: #7C7CFF;
+    --acid: #B4C400;
+    --mono: "Space Mono", monospace;
+    --frame: 2.2vw;
+    --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+    --ease-thunk: cubic-bezier(0.34, 1.5, 0.64, 1);
+    --bg: var(--booth);
+    --fg: var(--stone);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Fraunces", Georgia, serif;
+    font-optical-sizing: auto;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.55s var(--ease-out), color 0.55s var(--ease-out);
+  }
+  .mono { font-family: var(--mono); }
+
+  /* the work light in the booth */
+  .glow {
+    position: fixed; inset: -25vh -25vw; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse 58vw 60vh at 50% 47%,
+      rgba(228,221,201,0.12), rgba(228,221,201,0.035) 52%, transparent 74%);
+    opacity: 0; transition: opacity 0.7s var(--ease-out);
+  }
+  body.lit .glow { opacity: 1; }
+  body.page .glow { opacity: 0; }
+
+  /* ---------- the make-ready readout ---------- */
+  .readout {
+    position: fixed; z-index: 8; right: var(--frame); top: 50%;
+    transform: translateY(-50%); text-align: right; font-family: var(--mono);
+    opacity: 0; transition: opacity 0.45s var(--ease-out), transform 0.5s var(--ease-out);
+  }
+  body.lit .readout { opacity: 1; }
+  body.page .readout { opacity: 0; transform: translateY(calc(-50% - 34px)); }
+  .readout .lbl { display: block; font-size: 9px; letter-spacing: 0.34em; opacity: 0.5; }
+  .readout .num { display: block; font-size: 42px; font-weight: 700; line-height: 1.15; letter-spacing: 0.02em; }
+  .readout .num em { font-style: normal; font-size: 20px; opacity: 0.5; }
+  .readout .err { display: block; font-size: 11px; letter-spacing: 0.14em; color: var(--pencil); min-height: 1.3em; }
+  .readout .err.ok { color: var(--acid); }
+
+  /* the pull-count ledger on the left — the sheets already pulled */
+  .ledger {
+    position: fixed; z-index: 8; left: var(--frame); top: 50%;
+    transform: translateY(-50%); font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.16em; line-height: 2.1;
+    opacity: 0; transition: opacity 0.45s var(--ease-out);
+  }
+  body.lit .ledger { opacity: 0.6; }
+  body.page .ledger { opacity: 0; }
+  .ledger .l { display: block; color: currentColor; opacity: 0.35; white-space: nowrap; }
+  .ledger .l.done { opacity: 0.7; }
+  .ledger .l b { font-weight: 400; color: var(--pencil); margin-left: 0.6em; }
+  .ledger .l.good b { color: var(--acid); }
+
+  /* ---------- the gate: crop-brackets that become the page frame ---------- */
+  .bk {
+    position: fixed; z-index: 7; width: 74px; height: 74px;
+    border: 0 solid currentColor; pointer-events: none; opacity: 0;
+    transition: transform 0.8s var(--ease-out), opacity 0.5s var(--ease-out);
+    will-change: transform;
+  }
+  body.lit .bk { opacity: 0.72; }
+  body.page .bk { opacity: 0.6; }
+  .bk.tl { top: var(--frame); left: var(--frame); border-top-width: 1.4px; border-left-width: 1.4px; }
+  .bk.tr { top: var(--frame); right: var(--frame); border-top-width: 1.4px; border-right-width: 1.4px; }
+  .bk.bl { bottom: var(--frame); left: var(--frame); border-bottom-width: 1.4px; border-left-width: 1.4px; }
+  .bk.br { bottom: var(--frame); right: var(--frame); border-bottom-width: 1.4px; border-right-width: 1.4px; }
+
+  /* ---------- the sheet on the press ---------- */
+  .stage {
+    position: fixed; z-index: 5; left: 50%; top: 50%;
+    width: min(78vw, 640px);
+    transform: translate(-50%, -50%);
+  }
+  .sheet {
+    position: relative; width: 100%;
+    opacity: 0;
+  }
+  body.lit .sheet { opacity: 1; }
+  /* a fresh test sheet drops onto the press each pull */
+  .sheet.pull { animation: drop-in 0.42s var(--ease-out); }
+  @keyframes drop-in {
+    0% { transform: translateY(-9px); }
+    60% { transform: translateY(1.5px); }
+    100% { transform: translateY(0); }
+  }
+
+  /* the registration target: three ink passes that converge */
+  .target { position: relative; width: 100%; aspect-ratio: 3 / 2; }
+  .target svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;
+    transition: opacity 0.55s var(--ease-out); }
+  /* the flood: the make-ready target recedes; the wordmark is the page */
+  body.page .sheet { opacity: 1; }
+  body.page .target svg { opacity: 0; }
+  .pass { fill: none; stroke-width: 2; }
+  .pass.ink { stroke: var(--stone); }               /* the key pass (lit on booth) */
+  .pass.red { stroke: var(--pencil); }
+  .pass.blu { stroke: var(--accent-lum); }
+  body.page .pass.ink { stroke: var(--ink); }         /* on paper the key is ink */
+  /* red & blu are offset inline by JS (the registration error) */
+
+  /* the wordmark, latent under the target — inked on the good pull */
+  .word {
+    position: absolute; left: 0; right: 0; top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+    font-weight: 480; font-variation-settings: "opsz" 144;
+    font-size: clamp(2.4rem, 7vw, 5rem); line-height: 0.9; letter-spacing: -0.03em;
+    color: var(--fg);
+    opacity: 0; transition: opacity 0.5s var(--ease-out);
+    pointer-events: none;
+  }
+  .word .amp { font-style: italic; font-weight: 340; color: var(--accent-lum); }
+  body.registered .word, body.page .word { opacity: 1; }
+  body.page .word .amp { color: var(--accent); }
+
+  /* the make-ready color/tone bar on the sheet margin */
+  .tonebar {
+    display: flex; gap: 4px; margin-top: 14px; align-items: center;
+    opacity: 0; transition: opacity 0.4s var(--ease-out);
+  }
+  body.lit .tonebar { opacity: 0.9; }
+  body.page .tonebar { opacity: 0; }
+  .tonebar i { width: 16px; height: 14px; display: block; }
+  .tonebar .cap { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.2em; color: currentColor; opacity: 0.5; margin-left: auto; }
+
+  /* sheet corner make-ready marks */
+  .mk { position: absolute; width: 12px; height: 12px; opacity: 0.45; }
+  .mk.a { top: -5px; left: -5px; } .mk.b { top: -5px; right: -5px; }
+
+  /* the instrument: draws itself, then flies home on the flood */
+  .regwrap {
+    position: fixed; z-index: 6; left: 50%; top: 20vh;
+    width: 84px; height: 84px; margin: -42px 0 0 -42px;
+    transition: transform 0.9s var(--ease-out), top 0.9s var(--ease-out),
+                width 0.9s var(--ease-out), height 0.9s var(--ease-out);
+  }
+  body.page .regwrap { top: calc(var(--frame) + 34px); width: 24px; height: 24px; margin: -12px 0 0 -12px; }
+  .regwrap svg { width: 100%; height: 100%; overflow: visible; display: block; }
+  .reg-ink { stroke: currentColor; stroke-width: 1.1; fill: none; stroke-dasharray: 210; stroke-dashoffset: 210; }
+  body.drawn .reg-ink { transition: stroke-dashoffset 0.9s var(--ease-out); stroke-dashoffset: 0; }
+  .reg-red { stroke: var(--pencil); stroke-width: 1.1; fill: none; opacity: 0; transition: transform 0.5s var(--ease-thunk), opacity 0.4s; }
+  .reg-blu { stroke: var(--accent-lum); stroke-width: 1.1; fill: none; opacity: 0; transition: transform 0.5s var(--ease-thunk), opacity 0.4s; }
+  body.lit .reg-red, body.lit .reg-blu { opacity: 0.85; }
+  body.registered .reg-red, body.registered .reg-blu { opacity: 0.85; transform: translate(0,0) !important; }
+  body.page .reg-red, body.page .reg-blu { opacity: 0; }
+  body.registered .regwrap { animation: reg-lock 0.8s var(--ease-out) both; }
+  body.page .regwrap { animation: reg-drift 90s linear infinite; }
+  @keyframes reg-lock { 0% { transform: rotate(-58deg); } 100% { transform: rotate(0); } }
+  @keyframes reg-drift { to { transform: rotate(360deg); } }
+
+  /* PASSED FOR PRESS stamp on the good pull */
+  .passed {
+    position: fixed; z-index: 9; left: 50%; top: 50%;
+    transform: translate(-50%, -50%) rotate(-6deg) scale(1.6);
+    font-family: var(--mono); font-size: 13px; letter-spacing: 0.24em;
+    color: var(--acid); border: 1.6px solid var(--acid); padding: 8px 12px 7px;
+    opacity: 0; pointer-events: none;
+  }
+  body.registered .passed { animation: stamp 0.5s var(--ease-out) 0.12s both; }
+  body.page .passed { opacity: 0; transition: opacity 0.4s; }
+  @keyframes stamp {
+    0% { opacity: 0; transform: translate(-50%,-50%) rotate(-6deg) scale(1.6); }
+    60% { opacity: 0.95; transform: translate(-50%,-50%) rotate(-6deg) scale(0.96); }
+    100% { opacity: 0.95; transform: translate(-50%,-50%) rotate(-6deg) scale(1); }
+  }
+
+  /* the hero furniture that arrives with the flood */
+  .furniture { opacity: 0; transition: opacity 0.7s var(--ease-out) 0.2s; }
+  body.page .furniture { opacity: 1; }
+  .eyebrow {
+    position: fixed; z-index: 6; left: 50%; top: calc(50% - clamp(4rem, 10vw, 7rem));
+    transform: translateX(-50%);
+    font-family: var(--mono); font-size: clamp(0.55rem, 0.82vw, 0.7rem);
+    letter-spacing: 0.28em; color: var(--ink); text-align: center; white-space: nowrap;
+  }
+  .eyebrow em { font-style: normal; color: var(--accent); }
+  .corner {
+    position: fixed; z-index: 6; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.24em; color: var(--ink); opacity: 0.66;
+  }
+  .corner.tl { top: calc(var(--frame) + 2px); left: calc(var(--frame) + 22px); }
+  .corner.br { bottom: calc(var(--frame) + 2px); right: calc(var(--frame) + 22px); }
+  .jobline {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+    background: color-mix(in srgb, var(--stone) 88%, var(--ink));
+    border-top: 1px solid rgba(22,21,15,0.16);
+    display: flex; justify-content: space-between; gap: 16px;
+    padding: 8px 18px; font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.2em; color: rgba(22,21,15,0.66); white-space: nowrap;
+  }
+  .jobline b { font-weight: 400; color: var(--pencil); }
+  .jobline em { font-style: normal; color: var(--accent); }
+
+  .cap {
+    position: fixed; z-index: 20; left: calc(var(--frame) + 18px); bottom: calc(var(--frame) + 12px);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--fg); opacity: 0.5;
+  }
+  body.page .cap { color: var(--ink); }
+  .cap b { font-weight: 700; }
+  .replay {
+    position: fixed; z-index: 20; right: var(--frame); top: calc(var(--frame) + 2px);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--ink);
+    background: none; border: 1px solid rgba(22,21,15,0.4); padding: 7px 12px 6px;
+    cursor: pointer; opacity: 0; transition: opacity 0.5s, background-color 0.2s, color 0.2s;
+  }
+  body.page .replay { opacity: 0.8; }
+  .replay:hover { background: var(--ink); color: var(--stone); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  @media (max-width: 640px) {
+    .readout { top: auto; bottom: 20vh; transform: none; }
+    .ledger { display: none; }
+    .cap { display: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="glow" aria-hidden="true"></div>
+
+  <!-- the make-ready readouts -->
+  <div class="readout" aria-hidden="true">
+    <span class="lbl">MAKE-READY</span>
+    <span class="num"><span id="num">00</span><em>%</em></span>
+    <span class="err" id="err">SETTING THE FORME</span>
+  </div>
+  <div class="ledger" id="ledger" aria-hidden="true"></div>
+
+  <!-- the gate -->
+  <i class="bk tl" id="bk-tl"></i><i class="bk tr" id="bk-tr"></i>
+  <i class="bk bl" id="bk-bl"></i><i class="bk br" id="bk-br"></i>
+
+  <!-- the instrument -->
+  <div class="regwrap" aria-hidden="true">
+    <svg viewBox="0 0 40 40">
+      <circle class="reg-red" cx="20" cy="20" r="11"/><path class="reg-red" d="M20 3v10M20 27v10M3 20h10M27 20h10"/>
+      <circle class="reg-blu" cx="20" cy="20" r="11"/><path class="reg-blu" d="M20 3v10M20 27v10M3 20h10M27 20h10"/>
+      <circle class="reg-ink" cx="20" cy="20" r="11"/><path class="reg-ink" d="M20 2v11M20 27v11M2 20h11M27 20h11"/>
+    </svg>
+  </div>
+
+  <!-- the sheet on the press -->
+  <div class="stage" aria-hidden="true">
+    <div class="sheet" id="sheet">
+      <svg class="mk a" viewBox="0 0 12 12"><path d="M6 0v12M0 6h12" stroke="currentColor" stroke-width="1"/></svg>
+      <svg class="mk b" viewBox="0 0 12 12"><path d="M6 0v12M0 6h12" stroke="currentColor" stroke-width="1"/></svg>
+      <div class="target">
+        <svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet">
+          <!-- red pass -->
+          <g id="p-red"><circle class="pass red" cx="150" cy="100" r="46"/><circle class="pass red" cx="150" cy="100" r="26"/><path class="pass red" d="M150 34v40M150 126v40M64 100h40M196 100h40"/></g>
+          <!-- blue pass -->
+          <g id="p-blu"><circle class="pass blu" cx="150" cy="100" r="46"/><circle class="pass blu" cx="150" cy="100" r="26"/><path class="pass blu" d="M150 34v40M150 126v40M64 100h40M196 100h40"/></g>
+          <!-- ink (key) pass -->
+          <g id="p-ink"><circle class="pass ink" cx="150" cy="100" r="46"/><circle class="pass ink" cx="150" cy="100" r="26"/><path class="pass ink" d="M150 30v44M150 126v44M60 100h44M196 100h44"/></g>
+        </svg>
+        <p class="word" id="word">Code, design<br><span class="amp">&amp;</span>&nbsp;nerve</p>
+      </div>
+      <div class="tonebar" aria-hidden="true">
+        <i style="background:#16150F"></i><i style="background:rgba(22,21,15,.6)"></i>
+        <i style="background:rgba(22,21,15,.3)"></i><i style="background:#C7361F"></i>
+        <i style="background:#7C7CFF"></i><i style="background:#B4C400"></i>
+        <i style="background:#E6E4DC; outline:1px solid rgba(221,219,212,.35); outline-offset:-1px"></i>
+        <span class="cap mono">MAKE-READY · D50</span>
+      </div>
+    </div>
+  </div>
+
+  <span class="passed" id="passed" aria-hidden="true">PASSED FOR PRESS</span>
+
+  <!-- the page furniture (arrives with the flood) -->
+  <div class="furniture" aria-hidden="true">
+    <p class="eyebrow">( ONE-PERSON PRACTICE — <em>EST. 2019</em> )</p>
+    <span class="corner tl">MARK AXELUS</span>
+    <span class="corner br">SEE THE MESS</span>
+    <div class="jobline">
+      <span>SHEET Nº 001 · MARK AXELUS · WORKING PROOF</span>
+      <span><b>PASSED FOR PRESS</b> · <em>IN REGISTER</em> · D50 5000K</span>
+    </div>
+  </div>
+
+  <span class="cap">LOAD — <b>MAKE-READY</b> · the press pulls into register</span>
+  <button class="replay" id="replay" type="button">&#8630; REPLAY</button>
+
+<script>
+  var body = document.body;
+  var numEl = document.getElementById("num");
+  var errEl = document.getElementById("err");
+  var ledgerEl = document.getElementById("ledger");
+  var pRed = document.getElementById("p-red");
+  var pBlu = document.getElementById("p-blu");
+  var sheet = document.getElementById("sheet");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* each test pull comes further into register (the error shrinks) */
+  var PULLS = [
+    { off: 15, tag: "REG +1.6 mm — OFF",   pct: 26 },
+    { off: 9,  tag: "REG +0.9 mm",         pct: 48 },
+    { off: 5,  tag: "REG +0.4 mm",         pct: 68 },
+    { off: 2.4, tag: "REG +0.2 mm — CLOSE", pct: 86 }
+  ];
+  var GOOD = { off: 0, tag: "IN REGISTER — OK TO RUN", pct: 100 };
+
+  var timers = [], rafId = null;
+  function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
+  function clearAll() { timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(rafId); }
+
+  /* the red pass drifts up-left, the blue down-right, by the error */
+  function setPasses(off) {
+    pRed.style.transform = "translate(" + (-off * 0.9) + "px," + (-off * 0.5) + "px)";
+    pBlu.style.transform = "translate(" + (off * 0.9) + "px," + (off * 0.5) + "px)";
+  }
+
+  var countTo = 0, countCur = 0;
+  function counter() {
+    countCur += (countTo - countCur) * 0.16;
+    if (Math.abs(countTo - countCur) < 0.4) countCur = countTo;
+    var v = Math.round(countCur);
+    numEl.textContent = (v < 10 ? "0" : "") + v;
+    rafId = requestAnimationFrame(counter);
+  }
+
+  function pull(i) {
+    var p = PULLS[i];
+    setPasses(p.off);
+    countTo = p.pct;
+    errEl.textContent = p.tag;
+    errEl.classList.remove("ok");
+    /* a fresh sheet drops onto the press */
+    sheet.classList.remove("pull"); void sheet.offsetWidth; sheet.classList.add("pull");
+    /* the reg instrument carries the same error */
+    var rw = document.querySelector(".regwrap");
+    document.querySelector(".reg-red").style.transform = "translate(" + (-p.off * 0.32) + "px," + (-p.off * 0.2) + "px)";
+    document.querySelector(".reg-blu").style.transform = "translate(" + (p.off * 0.32) + "px," + (p.off * 0.2) + "px)";
+    /* ledger line */
+    var line = ledgerEl.children[i];
+    if (line) line.classList.add("done");
+  }
+
+  function buildLedger() {
+    ledgerEl.innerHTML = "";
+    PULLS.forEach(function (p, i) {
+      var s = document.createElement("span");
+      s.className = "l";
+      s.innerHTML = "PULL 0" + (i + 1) + " <b>+" + p.off.toFixed(1) + "</b>";
+      ledgerEl.appendChild(s);
+    });
+    var g = document.createElement("span");
+    g.className = "l good";
+    g.innerHTML = "PULL 05 <b>OK</b>";
+    ledgerEl.appendChild(g);
+  }
+
+  function toPage() {
+    body.classList.add("page");
+    body.style.setProperty("--bg", "var(--stone)");
+    body.style.setProperty("--fg", "var(--ink)");
+    ["bk-tl","bk-tr","bk-bl","bk-br"].forEach(function (id) {
+      document.getElementById(id).style.transform = "translate(0,0)";
+    });
+  }
+
+  /* pull the brackets in to hug the sheet; released on the flood they
+     travel out to the viewport corners (loader frame → page frame) */
+  function seatBrackets() {
+    var g = document.querySelector(".stage").getBoundingClientRect();
+    var pad = 24, bk = 74, vw = innerWidth, vh = innerHeight, fr = 0.022 * vw;
+    var pts = {
+      "bk-tl": [g.left - pad, g.top - pad], "bk-tr": [g.right + pad - bk, g.top - pad],
+      "bk-bl": [g.left - pad, g.bottom + pad - bk], "bk-br": [g.right + pad - bk, g.bottom + pad - bk]
+    };
+    var hm = { "bk-tl": [fr, fr], "bk-tr": [vw - fr - bk, fr], "bk-bl": [fr, vh - fr - bk], "bk-br": [vw - fr - bk, vh - fr - bk] };
+    Object.keys(pts).forEach(function (id) {
+      document.getElementById(id).style.transform =
+        "translate(" + (pts[id][0] - hm[id][0]) + "px," + (pts[id][1] - hm[id][1]) + "px)";
+    });
+  }
+
+  function play() {
+    clearAll();
+    ["lit","drawn","registered","page"].forEach(function (c) { body.classList.remove(c); });
+    body.style.setProperty("--bg", "var(--booth)");
+    body.style.setProperty("--fg", "var(--stone)");
+    numEl.textContent = "00"; countTo = 0; countCur = 0;
+    errEl.textContent = "SETTING THE FORME"; errEl.classList.remove("ok");
+    setPasses(15);
+    buildLedger();
+    void body.offsetWidth;
+    seatBrackets();
+
+    if (reduce) {
+      body.classList.add("lit","drawn","registered");
+      setPasses(0); numEl.textContent = "100"; errEl.textContent = GOOD.tag; errEl.classList.add("ok");
+      toPage();
+      return;
+    }
+
+    rafId = requestAnimationFrame(counter);
+    at(60,  function () { body.classList.add("lit"); });
+    at(240, function () { body.classList.add("drawn"); });
+
+    /* the test pulls — each further into register */
+    var t = 620, STEP = 470;
+    PULLS.forEach(function (p, i) { at(t + i * STEP, function () { pull(i); }); });
+
+    /* the good pull: dead in register, the mark locks, the sheet inks */
+    var tGood = t + PULLS.length * STEP;
+    at(tGood, function () {
+      setPasses(GOOD.off);
+      countTo = 100;
+      errEl.textContent = GOOD.tag; errEl.classList.add("ok");
+      document.querySelector(".reg-red").style.transform = "";
+      document.querySelector(".reg-blu").style.transform = "";
+      ledgerEl.lastChild.classList.add("done");
+      body.classList.add("registered");
+      sheet.classList.remove("pull"); void sheet.offsetWidth; sheet.classList.add("pull");
+    });
+
+    /* the flood: booth → stone, the good sheet becomes the page */
+    at(tGood + 720, toPage);
+  }
+
+  document.getElementById("replay").addEventListener("click", play);
+  addEventListener("resize", function () { if (!body.classList.contains("page")) seatBrackets(); });
+  play();
+</script>
+</body>
+</html>
