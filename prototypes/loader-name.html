@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE NAME PRINTS — the loader (mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,100..900,0..100;1,9..144,100..900,0..100&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THE NAME PRINTS — a website preloader (a PLAYABLE mock).
+     the hero of the load is Mark's NAME. it lands BLIND-EMBOSSED
+     into the dark press-room paper (uninked, just pressed), the
+     press INKS it letter by letter across the sheet as the make-
+     ready counter climbs, a misregistered red/blue proof seats
+     into register — OK TO RUN — then the booth floods to stone
+     and the giant MARK AXELUS shrinks + flies to the top-left,
+     BECOMING the page's corner tab while the hero rises.
+     the thing you were reading becomes the page's furniture.
+     autoplays; REPLAY top-right. reduced motion skips to the hero.
+     ============================================================ */
+  :root {
+    --booth:  #0C0B08;
+    --stone:  #DDDBD4;
+    --sheet:  #E6E4DC;
+    --ink:    #16150F;
+    --pencil: #C7361F;      /* the red pass */
+    --accent: #2A2AF0;      /* the blue pass (page) */
+    --accent-lum: #7C7CFF;  /* the blue pass (booth, lit) */
+    --acid:   #B4C400;
+    --mono: "Space Mono", monospace;
+    --frame: 2vw;
+    /* the deboss rim: light top-left highlight, dark bottom-right shadow.
+       boosted from the base spec so a BLIND emboss still reads on near-black */
+    --emb-hi: rgba(221,219,212,0.30);
+    --emb-lo: rgba(0,0,0,0.85);
+    --ease-out:   cubic-bezier(0.19, 1, 0.22, 1);   /* easeOutExpo — premium glide */
+    --ease-thunk: cubic-bezier(0.34, 1.45, 0.64, 1);/* seats with a tiny thunk */
+    --bg: var(--booth);
+    --fg: var(--stone);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Fraunces", Georgia, serif;
+    font-optical-sizing: auto;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background-color 0.75s var(--ease-out), color 0.75s var(--ease-out);
+  }
+  .mono { font-family: var(--mono); }
+
+  /* the work light raking across the press bed */
+  .glow {
+    position: fixed; inset: -25vh -25vw; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 62vw 58vh at 50% 46%,
+        rgba(228,221,201,0.13), rgba(228,221,201,0.04) 52%, transparent 74%);
+    opacity: 0; transition: opacity 0.9s var(--ease-out);
+  }
+  body.lit .glow  { opacity: 1; }
+  body.page .glow { opacity: 0; }
+
+  /* ---------- the gate: crop-brackets (booth frame → page frame) ---------- */
+  .bk {
+    position: fixed; z-index: 4; width: 64px; height: 64px;
+    border: 0 solid var(--fg); pointer-events: none; opacity: 0;
+    transition: transform 0.85s var(--ease-out), opacity 0.6s var(--ease-out),
+                border-color 0.75s var(--ease-out);
+    will-change: transform;
+  }
+  body.lit .bk  { opacity: 0.6; }
+  body.page .bk { opacity: 0.72; border-color: var(--ink); }
+  .bk.tl { top: var(--frame);    left: var(--frame);  border-top-width:1.4px; border-left-width:1.4px;  transform: translate(9px,9px); }
+  .bk.tr { top: var(--frame);    right: var(--frame); border-top-width:1.4px; border-right-width:1.4px; transform: translate(-9px,9px); }
+  .bk.bl { bottom: var(--frame); left: var(--frame);  border-bottom-width:1.4px; border-left-width:1.4px;  transform: translate(9px,-9px); }
+  .bk.br { bottom: var(--frame); right: var(--frame); border-bottom-width:1.4px; border-right-width:1.4px; transform: translate(-9px,-9px); }
+  /* they settle out to the exact viewport corners on the flood */
+  body.page .bk.tl { transform: translate(0,0); }
+  body.page .bk.tr { transform: translate(0,0); }
+  body.page .bk.bl { transform: translate(0,0); }
+  body.page .bk.br { transform: translate(0,0); }
+
+  /* ---------- the make-ready readout (mono, right edge) ---------- */
+  .readout {
+    position: fixed; z-index: 8; right: var(--frame); top: 50%;
+    transform: translateY(-50%); text-align: right; font-family: var(--mono);
+    opacity: 0; transition: opacity 0.5s var(--ease-out), transform 0.6s var(--ease-out);
+  }
+  body.lit .readout  { opacity: 1; }
+  body.page .readout { opacity: 0; transform: translateY(calc(-50% - 30px)); pointer-events: none; }
+  .readout .lbl { display:block; font-size: 9px;  letter-spacing: 0.34em; opacity: 0.5; }
+  .readout .num { display:block; font-size: 44px; font-weight: 700; line-height: 1.1; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+  .readout .num em { font-style: normal; font-size: 20px; opacity: 0.45; }
+  .readout .err { display:block; font-size: 11px; letter-spacing: 0.14em; color: var(--pencil); min-height: 1.4em; }
+  .readout .err.ok { color: var(--acid); }
+
+  /* ---------- the rotated job slug (left edge) ---------- */
+  .slug {
+    position: fixed; z-index: 5; left: calc(var(--frame) - 4px); top: 50%;
+    transform-origin: left center; transform: translateY(-50%) rotate(-90deg) translateY(-100%);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.32em;
+    color: var(--fg); opacity: 0; white-space: nowrap;
+    transition: opacity 0.6s var(--ease-out);
+  }
+  body.lit .slug  { opacity: 0.42; }
+  body.page .slug { opacity: 0; }
+  .slug b { color: var(--acid); font-weight: 400; }
+
+  /* ---------- the registration instrument (top-centre, ticking) ---------- */
+  .regwrap {
+    position: fixed; z-index: 6; left: 50%; top: 15vh;
+    width: 60px; height: 60px; margin: -30px 0 0 -30px; opacity: 0;
+    transition: opacity 0.6s var(--ease-out), transform 0.8s var(--ease-out);
+  }
+  body.lit .regwrap  { opacity: 0.9; }
+  body.page .regwrap { opacity: 0; transform: scale(0.5); }
+  .regwrap svg { width: 100%; height: 100%; overflow: visible; display: block; }
+  .reg-ink { stroke: var(--fg); stroke-width: 1.1; fill: none; stroke-dasharray: 190; stroke-dashoffset: 190; }
+  body.drawn .reg-ink { transition: stroke-dashoffset 0.9s var(--ease-out); stroke-dashoffset: 0; }
+  .reg-red { stroke: var(--pencil);     stroke-width: 1.1; fill: none; opacity: 0; transform: translate(-3px,-2px);
+             transition: transform 0.6s var(--ease-thunk), opacity 0.5s; }
+  .reg-blu { stroke: var(--accent-lum); stroke-width: 1.1; fill: none; opacity: 0; transform: translate(3px,2px);
+             transition: transform 0.6s var(--ease-thunk), opacity 0.5s; }
+  body.lit .reg-red, body.lit .reg-blu { opacity: 0.85; }
+  body.reg .reg-red, body.reg .reg-blu { transform: translate(0,0); }
+  body.drawn .regwrap { animation: reg-drift 24s linear infinite; }
+  @keyframes reg-drift { to { transform: rotate(360deg); } }
+
+  /* ============================================================
+     THE NAME — the star of the load
+     three layers overlaid pixel-for-pixel:
+       .pass.red / .pass.blu  — the misregistered colour proof
+       .key                   — the key layer, embossed → inked
+     ============================================================ */
+  .namewrap {
+    position: fixed; inset: 0; z-index: 8;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  .bigname {
+    position: relative; display: inline-block; white-space: nowrap;
+    font-weight: 500; font-variation-settings: "opsz" 144;
+    font-size: clamp(1.9rem, 11.2vw, 7.7rem);
+    line-height: 1; letter-spacing: 0.004em;
+    opacity: 0;
+    transform-origin: left top;
+    transition: opacity 0.7s var(--ease-out),
+                transform 0.92s var(--ease-out),
+                color 0.7s var(--ease-out);
+    will-change: transform, opacity;
+  }
+  body.lit .bigname { opacity: 1; }
+
+  /* the two colour plates, offset (out of register). hidden at first so the
+     name reads as a pure BLIND EMBOSS, then laid as the wet proof on inking */
+  .pass {
+    position: absolute; left: 0; top: 0; z-index: 1;
+    white-space: nowrap; pointer-events: none; opacity: 0;
+    transition: transform 0.55s var(--ease-thunk), opacity 0.55s var(--ease-out);
+  }
+  .pass.red { color: var(--pencil);     transform: translate(-5px,-3px); }
+  .pass.blu { color: var(--accent-lum); transform: translate(5px,3px); }
+  body.inking .pass { opacity: 0.9; }                   /* the wet proof is laid */
+  body.reg    .pass { transform: translate(0,0); }      /* it seats into register */
+  body.page   .pass { opacity: 0; }
+
+  /* the key layer sits on top */
+  .key { position: relative; z-index: 2; }
+
+  /* each key letter: BLIND EMBOSS by default (near-transparent fill + two-tone
+     rim) — pressed into the dark paper, uninked. you can just see it debossed */
+  .k {
+    color: rgba(221,219,212,0.05);
+    text-shadow:
+      -1px -1px 0 var(--emb-hi),
+      -0.4px -0.4px 0 rgba(221,219,212,0.14),
+       1.6px 1.6px 1px var(--emb-lo);
+    transition: color 0.12s ease-out, text-shadow 0.18s ease-out;
+  }
+  /* the ink floods in — embossed → full cream/stone ink */
+  .k.inked {
+    color: var(--stone);
+    text-shadow: 0 0 0.6px rgba(0,0,0,0.28);
+  }
+  .sp { display: inline-block; width: 0.34em; }
+
+  /* on the flood the whole (now-inked) name turns to page ink */
+  body.page .key .k { color: var(--ink); text-shadow: none; transition: color 0.7s var(--ease-out); }
+
+  /* a 1px press-thunk when the proof seats in register */
+  body.reg .bigname { animation: thunk 0.34s var(--ease-out); }
+  @keyframes thunk { 0%{transform:translateY(0)} 40%{transform:translateY(1.1px)} 100%{transform:translateY(0)} }
+
+  /* the make-ready tone/colour bar under the name */
+  .tonebar {
+    display: flex; gap: 4px; align-items: center; margin-top: clamp(1rem, 3.2vh, 2.1rem);
+    opacity: 0; transition: opacity 0.5s var(--ease-out);
+  }
+  body.lit .tonebar  { opacity: 0.92; }
+  body.page .tonebar { opacity: 0; }
+  .tonebar i { width: 17px; height: 13px; display: block; }
+  .tonebar .tcap { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.22em; color: var(--fg); opacity: 0.5; margin-left: 12px; }
+
+  /* ============================================================
+     THE HERO (the reveal target — hidden until the flood)
+     ============================================================ */
+  .hero {
+    position: fixed; inset: 0; z-index: 7;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none; padding: 0 4vw;
+  }
+  .eyebrow {
+    font-family: var(--mono); font-size: clamp(0.56rem, 0.82vw, 0.7rem);
+    letter-spacing: 0.28em; color: var(--ink); text-align: center; text-transform: uppercase;
+    margin-bottom: clamp(0.9rem, 2.4vh, 1.8rem);
+    opacity: 0; transform: translateY(10px);
+    transition: opacity 0.6s var(--ease-out) 0.35s, transform 0.6s var(--ease-out) 0.35s;
+  }
+  .eyebrow em { font-style: normal; color: var(--accent); }
+  body.page .eyebrow { opacity: 0.78; transform: translateY(0); }
+
+  .hero-title {
+    text-align: center; user-select: none; color: var(--ink);
+    font-weight: 480; font-variation-settings: "opsz" 144;
+    font-size: clamp(3rem, 13vw, 15rem);
+    line-height: 0.84; letter-spacing: -0.035em;
+  }
+  .hl-mask { display: block; overflow: hidden; }
+  .hl {
+    display: block; transform: translateY(108%);
+    transition: transform 0.85s var(--ease-out);
+  }
+  .hl-mask:nth-child(1) .hl { transition-delay: 0.16s; }
+  .hl-mask:nth-child(2) .hl { transition-delay: 0.26s; }
+  .hl-mask:nth-child(3) .hl { transition-delay: 0.36s; }
+  body.page .hl { transform: translateY(0); }
+  .amp { font-style: italic; font-weight: 360; color: var(--accent); }
+
+  /* the corner tab the name BECOMES (mono, top-left) */
+  .corner {
+    position: fixed; z-index: 9; top: calc(var(--frame) + 1.4vw); left: calc(var(--frame) + 1.4vw);
+    font-family: var(--mono); font-size: 0.625rem; letter-spacing: 0.14em;
+    text-transform: uppercase; line-height: 1.7; color: var(--ink);
+    background: var(--stone); border: 1px solid rgba(22,21,15,0.28);
+    padding: 0.5rem 0.65rem; opacity: 0;
+    transition: opacity 0.28s var(--ease-out);
+  }
+  body.named .corner { opacity: 1; }
+
+  /* the bottom jobline */
+  .jobline {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 9;
+    background: color-mix(in srgb, var(--stone) 90%, var(--ink));
+    border-top: 1px solid rgba(22,21,15,0.16);
+    display: flex; justify-content: space-between; gap: 16px;
+    padding: 8px 18px; font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.2em; color: rgba(22,21,15,0.66); white-space: nowrap;
+    opacity: 0; transform: translateY(100%);
+    transition: opacity 0.6s var(--ease-out) 0.4s, transform 0.6s var(--ease-out) 0.4s;
+  }
+  body.page .jobline { opacity: 1; transform: translateY(0); }
+  .jobline em { font-style: normal; color: var(--accent); }
+  .jobline b  { font-weight: 400; color: var(--pencil); }
+
+  /* ---------- persistent controls ---------- */
+  .cap {
+    position: fixed; z-index: 20; left: calc(var(--frame) + 6px); bottom: calc(var(--frame) + 4px);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--fg); opacity: 0.5;
+    transition: color 0.75s var(--ease-out);
+  }
+  body.page .cap { color: var(--ink); }
+  .cap b { font-weight: 700; }
+  .replay {
+    position: fixed; z-index: 20; right: var(--frame); top: calc(var(--frame) - 2px);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+    color: var(--fg); background: none; border: 1px solid currentColor; opacity: 0.4;
+    padding: 7px 11px 6px; cursor: pointer; text-transform: uppercase;
+    transition: opacity 0.4s, background-color 0.2s, color 0.2s, border-color 0.75s;
+  }
+  body.page .replay { color: var(--ink); opacity: 0.8; }
+  .replay:hover { opacity: 1; background: var(--fg); color: var(--bg); }
+  body.page .replay:hover { background: var(--ink); color: var(--stone); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+  @media (max-width: 680px) {
+    .readout { top: auto; bottom: 16vh; transform: none; }
+    body.page .readout { transform: none; }
+    .slug { display: none; }
+    .regwrap { top: 11vh; }
+    .cap { display: none; }
+    /* the jobline's status half would clip on a narrow sheet — keep the slug */
+    .jobline span:last-child { display: none; }
+    .jobline { justify-content: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="glow" aria-hidden="true"></div>
+
+  <!-- the gate -->
+  <i class="bk tl" id="bk-tl"></i><i class="bk tr" id="bk-tr"></i>
+  <i class="bk bl" id="bk-bl"></i><i class="bk br" id="bk-br"></i>
+
+  <!-- make-ready readout -->
+  <div class="readout" aria-hidden="true">
+    <span class="lbl">MAKE-READY</span>
+    <span class="num"><span id="num">00</span><em>%</em></span>
+    <span class="err" id="err">SETTING THE FORME</span>
+  </div>
+
+  <!-- job slug -->
+  <div class="slug" aria-hidden="true">MRTHM // MAKE-READY &nbsp;·&nbsp; SHEET N&ordm; 001 &nbsp;·&nbsp; <b>THE NAME PRINTS</b></div>
+
+  <!-- registration instrument -->
+  <div class="regwrap" aria-hidden="true">
+    <svg viewBox="0 0 40 40">
+      <circle class="reg-red" cx="20" cy="20" r="11"/><path class="reg-red" d="M20 3v10M20 27v10M3 20h10M27 20h10"/>
+      <circle class="reg-blu" cx="20" cy="20" r="11"/><path class="reg-blu" d="M20 3v10M20 27v10M3 20h10M27 20h10"/>
+      <circle class="reg-ink" cx="20" cy="20" r="11"/><path class="reg-ink" d="M20 2v11M20 27v11M2 20h11M27 20h11"/>
+    </svg>
+  </div>
+
+  <!-- THE NAME -->
+  <div class="namewrap" aria-hidden="true">
+    <div class="bigname" id="bigname">
+      <span class="pass red" id="passRed"></span>
+      <span class="pass blu" id="passBlu"></span>
+      <span class="key" id="key"></span>
+    </div>
+    <div class="tonebar" aria-hidden="true">
+      <i style="background:#16150F"></i><i style="background:rgba(22,21,15,.55)"></i>
+      <i style="background:rgba(22,21,15,.28)"></i><i style="background:#C7361F"></i>
+      <i style="background:#7C7CFF"></i><i style="background:#B4C400"></i>
+      <i style="background:#E6E4DC; outline:1px solid rgba(221,219,212,.35); outline-offset:-1px"></i>
+      <span class="tcap mono">MAKE-READY · D50 5000K</span>
+    </div>
+  </div>
+
+  <!-- THE HERO (reveal target) -->
+  <div class="hero" aria-hidden="true">
+    <p class="eyebrow">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</p>
+    <h1 class="hero-title">
+      <span class="hl-mask"><span class="hl">Code,</span></span>
+      <span class="hl-mask"><span class="hl">design</span></span>
+      <span class="hl-mask"><span class="hl"><span class="amp">&amp;</span>&nbsp;nerve</span></span>
+    </h1>
+  </div>
+  <span class="corner mono" id="cornerTab">MARK AXELUS</span>
+  <div class="jobline mono" aria-hidden="true">
+    <span>SHEET N&ordm; 001 &middot; MARK AXELUS &middot; WORKING PROOF</span>
+    <span><em>IN REGISTER</em> &middot; <b>OK TO RUN</b> &middot; D50 5000K</span>
+  </div>
+
+  <span class="cap">LOAD &mdash; <b>THE NAME PRINTS</b></span>
+  <button class="replay mono" id="replay" type="button">&#8635; REPLAY</button>
+
+<script>
+  "use strict";
+  var body    = document.body;
+  var numEl   = document.getElementById("num");
+  var errEl   = document.getElementById("err");
+  var keyEl   = document.getElementById("key");
+  var passRed = document.getElementById("passRed");
+  var passBlu = document.getElementById("passBlu");
+  var bigname = document.getElementById("bigname");
+  var cornerTab = document.getElementById("cornerTab");
+  var reduce  = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var NAME = "MARK AXELUS";
+
+  /* build one layer of the name as per-letter spans (identical layout in
+     all three passes, so red/blue overlay the key pixel-for-pixel) */
+  function buildLayer(el, cls) {
+    el.textContent = "";
+    for (var i = 0; i < NAME.length; i++) {
+      var ch = NAME.charAt(i);
+      if (ch === " ") {
+        var g = document.createElement("span");
+        g.className = "sp";
+        el.appendChild(g);
+        continue;
+      }
+      var s = document.createElement("span");
+      s.className = cls;
+      s.textContent = ch;
+      el.appendChild(s);
+    }
+  }
+  buildLayer(keyEl, "k");
+  buildLayer(passRed, "");   /* passes inherit colour from .pass.red / .blu */
+  buildLayer(passBlu, "");
+  var letters = keyEl.querySelectorAll(".k");   /* the inkable letters (10) */
+
+  /* ---------- the make-ready counter (the only rAF write) ---------- */
+  var countTo = 0, countCur = 0, lastNum = -1, lastErr = "", rafId = null;
+  function errText(v) {
+    if (v >= 100) return "IN REGISTER — OK TO RUN";
+    var mm = (1 - v / 100) * 1.62;              /* 1.62mm off at 0 → 0 at register */
+    return "REG +" + mm.toFixed(2) + " mm";
+  }
+  function counter() {
+    countCur += (countTo - countCur) * 0.16;
+    if (Math.abs(countTo - countCur) < 0.4) countCur = countTo;
+    var v = Math.round(countCur);
+    if (v !== lastNum) {                         /* skip identical writes */
+      lastNum = v;
+      numEl.textContent = (v < 10 ? "0" : "") + v;
+      var e = errText(v);
+      if (e !== lastErr) {
+        lastErr = e; errEl.textContent = e;
+        errEl.classList.toggle("ok", v >= 100);
+      }
+    }
+    rafId = requestAnimationFrame(counter);
+  }
+
+  /* ---------- scheduling ---------- */
+  var timers = [];
+  function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
+  function clearAll() {
+    timers.forEach(clearTimeout); timers = [];
+    if (rafId) cancelAnimationFrame(rafId); rafId = null;
+  }
+
+  /* fly the giant name to the corner-tab slot (measured once, on reveal) */
+  function flyNameToCorner() {
+    var n = bigname.getBoundingClientRect();
+    var t = cornerTab.getBoundingClientRect();
+    var scale = t.height / n.height;             /* shrink by height */
+    var dx = t.left - n.left;
+    var dy = t.top  - n.top;
+    bigname.style.transform = "translate(" + dx + "px," + dy + "px) scale(" + scale + ")";
+  }
+
+  function toPage() {
+    body.classList.add("page");
+    body.style.setProperty("--bg", "var(--stone)");
+    body.style.setProperty("--fg", "var(--ink)");
+    flyNameToCorner();                            /* the name flies + shrinks to the tab */
+    /* halfway through the flight, hand off: name fades, real tab appears */
+    at(640, function () {
+      bigname.style.transition = "opacity 0.3s var(--ease-out)";
+      bigname.style.opacity = "0";
+      body.classList.add("named");
+    });
+  }
+
+  function reset() {
+    clearAll();
+    ["lit","drawn","inking","reg","page","named"].forEach(function (c) { body.classList.remove(c); });
+    body.style.setProperty("--bg", "var(--booth)");
+    body.style.setProperty("--fg", "var(--stone)");
+    bigname.style.transition = "";
+    bigname.style.transform = "";
+    bigname.style.opacity = "";
+    for (var i = 0; i < letters.length; i++) letters[i].classList.remove("inked");
+    numEl.textContent = "00"; countTo = 0; countCur = 0; lastNum = -1; lastErr = "";
+    errEl.textContent = "SETTING THE FORME"; errEl.classList.remove("ok");
+  }
+
+  function play() {
+    reset();
+    void body.offsetWidth;                        /* commit the reset frame */
+
+    /* reduced motion / print: skip straight to the revealed hero */
+    if (reduce) {
+      body.classList.add("lit","drawn","inking","reg","page","named");
+      for (var i = 0; i < letters.length; i++) letters[i].classList.add("inked");
+      bigname.style.opacity = "0";
+      body.style.setProperty("--bg", "var(--stone)");
+      body.style.setProperty("--fg", "var(--ink)");
+      numEl.textContent = "100"; errEl.textContent = "IN REGISTER — OK TO RUN"; errEl.classList.add("ok");
+      return;
+    }
+
+    rafId = requestAnimationFrame(counter);
+
+    /* 1 — the booth lights; the name lands BLIND-EMBOSSED (uninked), and holds
+       long enough to read as pressed-into-the-paper; furniture arrives */
+    at(80,  function () { body.classList.add("lit"); countTo = 9; });
+    at(260, function () { body.classList.add("drawn"); });
+
+    /* 1½ — the wet misregistered proof is laid under the embossed name */
+    at(560, function () { body.classList.add("inking"); });
+
+    /* 2 — the INK FLOODS letter by letter, left → right (the press inking the name) */
+    var FLOOD = 740, STEP = 92, N = letters.length;
+    for (var j = 0; j < N; j++) {
+      (function (idx) {
+        at(FLOOD + idx * STEP, function () {
+          letters[idx].classList.add("inked");
+          countTo = 14 + Math.round((idx + 1) / N * 78);   /* the counter climbs with the ink */
+        });
+      })(j);
+    }
+
+    /* 3 — the misregistered proof SEATS into register; OK TO RUN */
+    var tReg = FLOOD + N * STEP + 120;            /* ~1820ms */
+    at(tReg, function () {
+      body.classList.add("reg");
+      countTo = 100;
+    });
+
+    /* 4 — hold on the finished name, then FLOOD to the hero */
+    at(tReg + 560, toPage);                       /* ~2380ms */
+  }
+
+  document.getElementById("replay").addEventListener("click", play);
+  addEventListener("resize", function () {
+    /* keep the tab landing accurate if the window changes after the flood */
+    if (body.classList.contains("page") && !body.classList.contains("named")) flyNameToCorner();
+  });
+
+  /* autoplay — wait for Fraunces so the name is in the serif from the first frame */
+  var started = false;
+  function boot() { if (started) return; started = true; play(); }
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(boot);
+    setTimeout(boot, 1500);                        /* failsafe if fonts stall */
+  } else {
+    boot();
+  }
+</script>
+</body>
+</html>

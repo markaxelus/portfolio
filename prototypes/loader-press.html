@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE PRESS RUNS — the loader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,100..900,0..100;1,9..144,100..900,0..100&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THE PRESS RUNS — the load animation (a PLAYABLE mock).
+     you walk into the booth mid-run. a blank sheet feeds onto the
+     bed; a heavy machined PLATEN falls and STRIKES it — the paper
+     flexes, a shockwave rips out, grain-dust jumps, the whole booth
+     shudders (thunk), then a beat of stillness. the press runs three
+     passes — RED, BLUE, KEY — each strike laying a colour pass, the
+     last one seating dead IN REGISTER. then the struck sheet is
+     DELIVERED: it rises, the booth floods to stone, and the freshly
+     printed proof IS the page. autoplays; REPLAY top-right.
+     reduced motion skips straight to the revealed hero.
+     everything is struck — you were here for the striking.
+     ============================================================ */
+  :root {
+    --booth: #0C0B08;
+    --stone: #DDDBD4;
+    --sheet: #E6E4DC;
+    --ink: #16150F;
+    --pencil: #C7361F;      /* the red pass */
+    --accent: #2A2AF0;      /* the blue pass (key on paper) */
+    --accent-lum: #7C7CFF;  /* the blue pass, lit in the booth */
+    --acid: #B4C400;
+    --dim: #4A4842;         /* the sheet, dim under the worklight */
+    --mono: "Space Mono", monospace;
+    --frame: 2.4vw;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);   /* premium settle */
+    --ease-in:  cubic-bezier(0.5, 0, 0.9, 0.35); /* gravity — accelerate into the strike */
+    --ease-flood: cubic-bezier(0.2, 0.85, 0.2, 1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--booth);
+    color: var(--stone);
+    font-family: "Fraunces", Georgia, serif;
+    font-optical-sizing: auto;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: var(--mono); }
+
+  /* ---------- the booth: near-black room, floods to stone ---------- */
+  .booth {
+    position: fixed; inset: 0; z-index: -3; background: var(--booth);
+    transition: background-color 0.75s var(--ease-out);
+  }
+  body.delivered .booth { background: var(--stone); }
+  /* the work light — a pool over the press bed; dies on delivery */
+  .worklight {
+    position: fixed; inset: -20vh -20vw; z-index: -2; pointer-events: none;
+    background: radial-gradient(ellipse 52vw 46vh at 50% 50%,
+      rgba(230,224,205,0.16), rgba(230,224,205,0.045) 50%, transparent 72%);
+    opacity: 0; transition: opacity 0.7s var(--ease-out);
+  }
+  body.running .worklight { opacity: 1; }
+  body.delivered .worklight { opacity: 0; }
+  /* booth vignette — dark corners for depth; lifts on delivery */
+  .vignette {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    box-shadow: inset 0 0 26vh 6vh rgba(0,0,0,0.72);
+    opacity: 0.9; transition: opacity 0.7s var(--ease-out);
+  }
+  body.delivered .vignette { opacity: 0; }
+
+  /* ---------- the scene (everything that can shake) ---------- */
+  .scene { position: fixed; inset: 0; z-index: 1; will-change: transform; }
+  .scene.shake { animation: shake 0.13s linear; }
+  .scene.shake-hard { animation: shake 0.18s linear; }
+  @keyframes shake {
+    0%, 100% { transform: translate(0, 0); }
+    18% { transform: translate(-1.5px, 1px); }
+    36% { transform: translate(2px, -1.5px); }
+    54% { transform: translate(-1.5px, 1.5px); }
+    72% { transform: translate(1.5px, -1px); }
+    88% { transform: translate(-0.5px, 0.5px); }
+  }
+
+  /* the machined rails the platen rides in */
+  .rail {
+    position: absolute; top: 0; bottom: 0; width: 12px; z-index: 2;
+    background: linear-gradient(90deg, #14161a, #3a3e44 30%, #5a5f66 50%, #2f3237 72%, #0e0f12);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+    opacity: 0.85; transition: opacity 0.5s var(--ease-out);
+  }
+  .rail.l { left: calc(var(--frame) + 1.6vw); }
+  .rail.r { right: calc(var(--frame) + 1.6vw); }
+  .rail::before {
+    content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
+    transform: translateX(-50%);
+    background: repeating-linear-gradient(180deg, transparent 0 46px, rgba(0,0,0,0.5) 46px 50px, rgba(255,255,255,0.05) 50px 52px);
+  }
+  body.delivered .rail { opacity: 0; }
+
+  /* ---------- the bed (flexes on strike) ---------- */
+  .bed { position: absolute; inset: 0; z-index: 2; transform-origin: 50% 52%; }
+  .bed.flex { animation: flex 0.24s var(--ease-out); }
+  @keyframes flex {
+    0% { transform: scaleY(1); }
+    24% { transform: scaleY(0.978); }   /* the paper compresses under the platen */
+    56% { transform: scaleY(1.008); }   /* rebound */
+    100% { transform: scaleY(1); }
+  }
+
+  /* the sheet on the press bed */
+  .sheet {
+    position: absolute; inset: 8vh 9vw; z-index: 1;
+    background: var(--dim); border-radius: 1px;
+    box-shadow: 0 34px 66px -22px rgba(0,0,0,0.85),
+                0 4px 12px rgba(0,0,0,0.5),
+                inset 0 0 0 1px rgba(255,255,255,0.025);
+    transform: translateY(-46vh);
+    opacity: 0;
+    transition: background-color 0.75s var(--ease-out),
+                transform 0.85s var(--ease-out),
+                box-shadow 0.75s var(--ease-out),
+                opacity 0.5s var(--ease-out);
+  }
+  .sheet.fed { transform: translateY(0); opacity: 1; }
+  body.delivered .sheet {
+    background: var(--stone);
+    transform: scale(1.16) translateY(-1.4vh);
+    box-shadow: 0 40px 90px -30px rgba(0,0,0,0.2);
+  }
+  /* margin furniture printed on the proof — fades as the page takes over */
+  .sheet .slug {
+    position: absolute; left: 14px; top: 9px; font-family: var(--mono);
+    font-size: 9px; letter-spacing: 0.22em; color: rgba(232,230,222,0.34);
+  }
+  .sheet .tone {
+    position: absolute; left: 14px; bottom: 11px; display: flex; gap: 3px;
+  }
+  .sheet .tone i { width: 15px; height: 8px; display: block; opacity: 0.85; }
+  .sheet .rc { position: absolute; width: 20px; height: 20px; opacity: 0.4; }
+  .sheet .rc.tr { top: 8px; right: 10px; }
+  .sheet .rc.bl { bottom: 8px; left: 10px; }
+  .sheet .slug, .sheet .tone, .sheet .rc { transition: opacity 0.4s var(--ease-out); }
+  body.delivered .sheet .slug,
+  body.delivered .sheet .tone,
+  body.delivered .sheet .rc { opacity: 0; }
+
+  /* ---------- the impression: the hero, blind → struck ---------- */
+  .impression {
+    position: absolute; inset: 0; z-index: 3;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: clamp(1rem, 2.6vh, 2.1rem);
+    text-align: center; pointer-events: none;
+  }
+  .eyebrow {
+    font-size: clamp(0.55rem, 0.82vw, 0.72rem); letter-spacing: 0.3em;
+    color: var(--ink); opacity: 0;
+    transition: opacity 0.6s var(--ease-out) 0.18s;
+  }
+  .eyebrow em { font-style: normal; color: var(--accent); }
+  body.delivered .eyebrow { opacity: 1; }
+
+  .hero {
+    font-weight: 480; font-variation-settings: "opsz" 144;
+    font-size: clamp(3rem, 13vw, 15rem); line-height: 0.84; letter-spacing: -0.035em;
+    color: transparent;
+    /* four constant shadow layers so the passes flood + register smoothly:
+       [emboss-hi, emboss-lo, RED pass, BLUE pass] */
+    text-shadow:
+      -1px -1px 0 rgba(232,230,222,0.05),
+       2px  2px 1px rgba(0,0,0,0.5),
+      -7px -4px 0 rgba(199,54,31,0),
+       7px  4px 0 rgba(124,124,255,0);
+    transition: color 0.16s var(--ease-flood), text-shadow 0.16s var(--ease-flood);
+  }
+  .hero .ln { display: block; }
+  .hero .amp { font-style: italic; font-weight: 400; color: transparent; }
+
+  /* PASS 1 — the RED strike floods in, off register */
+  body.p1 .hero { text-shadow:
+      -1px -1px 0 rgba(232,230,222,0.05),
+       2px  2px 1px rgba(0,0,0,0.5),
+      -7px -4px 0 rgba(199,54,31,0.95),
+       7px  4px 0 rgba(124,124,255,0); }
+  /* PASS 2 — the BLUE strike, the other way — chromatic, unkeyed */
+  body.p2 .hero { text-shadow:
+      -1px -1px 0 rgba(232,230,222,0.05),
+       2px  2px 1px rgba(0,0,0,0.5),
+      -7px -4px 0 rgba(199,54,31,0.95),
+       7px  4px 0 rgba(124,124,255,0.95); }
+  /* PASS 3 — the KEY strike: ink lands, the passes SNAP toward register */
+  body.p3 .hero {
+    color: var(--ink);
+    text-shadow:
+      -1px -1px 0 rgba(232,230,222,0.05),
+       1.5px 1.5px 1px rgba(0,0,0,0.22),
+      -1.6px -1px 0 rgba(199,54,31,0.9),
+       1.7px  1px 0 rgba(124,124,255,0.9);
+  }
+  body.p3 .hero .amp { color: var(--accent-lum); }
+  /* DELIVERED — seated dead in register on stone; a whisper of deboss */
+  body.delivered .hero {
+    color: var(--ink);
+    text-shadow:
+      -1px -1px 0 rgba(255,255,255,0.4),
+       1px  2px 1px rgba(0,0,0,0.1),
+       0 0 0 rgba(199,54,31,0),
+       0 0 0 rgba(124,124,255,0);
+    transition: color 0.5s var(--ease-out), text-shadow 0.5s var(--ease-out);
+  }
+  body.delivered .hero .amp { color: var(--accent); transition: color 0.5s var(--ease-out); }
+
+  /* ---------- the platen: a heavy machined steel bar ---------- */
+  .platen {
+    position: absolute; left: 0; right: 0; top: 0; height: 21vh; z-index: 5;
+    transform: translateY(-30vh);
+    will-change: transform;
+    filter: drop-shadow(0 22px 26px rgba(0,0,0,0.6));
+  }
+  .platen-body {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      #0c0d0f 0%,
+      #2c2f34 5%,
+      #71777e 8.5%,    /* top bevel highlight */
+      #474b51 13%,
+      #3d4146 30%,     /* broad brushed face */
+      #34383d 62%,
+      #24272b 82%,
+      #14171a 88%,
+      #808690 93.5%,   /* machined striking bevel — catches the light */
+      #c2c7ce 96%,     /* the bright contact edge */
+      #6a6f76 97.4%,
+      #0a0b0d 100%     /* the dark contact lip / shadow */
+    );
+    box-shadow: inset 0 2px 0 rgba(255,255,255,0.09),
+                inset 0 -1px 0 rgba(255,255,255,0.15),
+                0 26px 44px -12px rgba(0,0,0,0.75);
+  }
+  /* brushed-metal streaks */
+  .platen-body::before {
+    content: ""; position: absolute; inset: 0; opacity: 0.5;
+    background: repeating-linear-gradient(90deg,
+      rgba(255,255,255,0.015) 0 3px, rgba(0,0,0,0.03) 3px 6px);
+  }
+  /* a slow diagonal sheen across the steel */
+  .platen-body::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(104deg, transparent 34%, rgba(255,255,255,0.09) 47%, rgba(255,255,255,0.03) 52%, transparent 62%);
+  }
+  /* the rivet course across the face */
+  .rivets {
+    position: absolute; left: 6vw; right: 6vw; top: 40%;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .rivet {
+    width: 15px; height: 15px; border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, #9aa0a8 0%, #5a5f66 42%, #23262a 78%, #0d0e10 100%);
+    box-shadow: 0 1px 1px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.22);
+  }
+  .rivet::after {
+    content: ""; position: absolute; inset: 4px; border-radius: 50%;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.5);
+  }
+  /* the mounting flanges that ride the rails */
+  .flange {
+    position: absolute; top: -1.4vh; height: calc(100% + 2.8vh); width: 4.2vw;
+    background: linear-gradient(180deg, #2b2e33, #4a4e54 12%, #3a3d42 50%, #202225 90%, #101113);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05), 0 8px 18px rgba(0,0,0,0.5);
+  }
+  .flange.l { left: calc(var(--frame) + 0.4vw); }
+  .flange.r { right: calc(var(--frame) + 0.4vw); }
+  .flange i {
+    position: absolute; left: 50%; width: 11px; height: 11px; margin-left: -5.5px; border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, #8f959d, #4f545b 46%, #1a1c1f 82%);
+    box-shadow: 0 1px 1px rgba(0,0,0,0.6);
+  }
+  .flange i.a { top: 24%; } .flange i.b { top: 62%; }
+
+  /* ---------- the crop brackets: hug the sheet, then travel to the corners ---------- */
+  .bk {
+    position: absolute; z-index: 6; width: 66px; height: 66px;
+    border: 0 solid var(--ink); pointer-events: none;
+    opacity: 0; color: var(--ink);
+    transition: transform 0.85s var(--ease-out), opacity 0.5s var(--ease-out), border-color 0.6s;
+    will-change: transform;
+  }
+  body.running .bk { opacity: 0.5; border-color: var(--stone); }
+  body.delivered .bk { opacity: 0.62; border-color: var(--ink); }
+  .bk.tl { top: var(--frame); left: var(--frame); border-top-width: 1.4px; border-left-width: 1.4px; }
+  .bk.tr { top: var(--frame); right: var(--frame); border-top-width: 1.4px; border-right-width: 1.4px; }
+  .bk.bl { bottom: var(--frame); left: var(--frame); border-bottom-width: 1.4px; border-left-width: 1.4px; }
+  .bk.br { bottom: var(--frame); right: var(--frame); border-bottom-width: 1.4px; border-right-width: 1.4px; }
+
+  /* ---------- impact FX (in front of the bar, off the surface) ---------- */
+  .fx { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
+  .shock { position: absolute; left: 50%; top: 52vh; pointer-events: none; will-change: transform, opacity; }
+  .flash {
+    width: 78%; height: 3px; margin-left: -39%;
+    background: linear-gradient(90deg, transparent, rgba(238,233,214,0.95) 20%, rgba(238,233,214,0.95) 80%, transparent);
+    transform: translateY(-50%); animation: flash 0.16s ease-out forwards;
+  }
+  @keyframes flash {
+    0% { opacity: 0; transform: translateY(-50%) scaleY(2.4); }
+    24% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-50%) scaleY(0.3); }
+  }
+  .ring {
+    width: 42vmin; height: 15vmin; margin: -7.5vmin 0 0 -21vmin;
+    border: 1.5px solid rgba(232,228,210,0.5); border-radius: 50%;
+    transform: scale(0.2); animation: ring calc(0.46s + var(--pw, 1) * 0.05s) var(--ease-out) forwards;
+  }
+  @keyframes ring {
+    0% { opacity: 0.62; transform: scale(0.2); }
+    100% { opacity: 0; transform: scale(2.5); }
+  }
+  .ripple {
+    width: 66%; height: 1px; margin-left: -33%;
+    background: rgba(232,228,210,0.32); transform: translateY(0);
+    animation: rip 0.5s var(--ease-out) forwards;
+  }
+  @keyframes rip {
+    0% { opacity: 0.5; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(var(--ry)); }
+  }
+  .dust {
+    position: absolute; top: 52vh; border-radius: 50%;
+    background: rgba(216,212,199,0.92); will-change: transform, opacity;
+    animation: dust var(--t) cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
+  }
+  @keyframes dust {
+    0% { opacity: 0; transform: translate(0, 0) scale(1); }
+    14% { opacity: 1; }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.35); }
+  }
+
+  /* ---------- the press gauge (counter) ---------- */
+  .gauge {
+    position: fixed; z-index: 20; right: var(--frame); top: 50%;
+    transform: translateY(-50%); text-align: right; font-family: var(--mono);
+    opacity: 0; transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+  }
+  body.running .gauge { opacity: 1; }
+  body.delivered .gauge { opacity: 0; transform: translateY(calc(-50% - 26px)); }
+  .gauge .lbl { display: block; font-size: 9px; letter-spacing: 0.34em; opacity: 0.5; }
+  .gauge .num { display: block; font-size: clamp(34px, 4vw, 48px); font-weight: 700; line-height: 1.1; letter-spacing: 0.01em; }
+  .gauge .num em { font-style: normal; font-size: 0.44em; opacity: 0.5; }
+  .gauge .st { display: block; font-size: 10.5px; letter-spacing: 0.14em; color: var(--pencil); min-height: 1.4em; margin-top: 2px; }
+  .gauge .st.ok { color: var(--acid); }
+
+  /* the pass ledger — the passes checked off as they strike */
+  .ledger {
+    position: fixed; z-index: 20; left: var(--frame); top: 50%;
+    transform: translateY(-50%); font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.16em; line-height: 2.2;
+    opacity: 0; transition: opacity 0.5s var(--ease-out);
+  }
+  body.running .ledger { opacity: 0.62; }
+  body.delivered .ledger { opacity: 0; }
+  .ledger .l { display: block; color: var(--stone); opacity: 0.34; white-space: nowrap; }
+  .ledger .l.done { opacity: 0.82; }
+  .ledger .l b { font-weight: 400; margin-left: 0.5em; color: var(--pencil); }
+  .ledger .l.blu b { color: var(--accent-lum); }
+  .ledger .l.key b { color: var(--acid); }
+  .ledger .l .box { display: inline-block; width: 8px; height: 8px; border: 1px solid currentColor; margin-right: 0.6em; vertical-align: 0; position: relative; }
+  .ledger .l.done .box::after { content: "\00D7"; position: absolute; left: 1px; top: -4px; font-size: 11px; line-height: 1; }
+
+  /* ---------- the page furniture (arrives on delivery) ---------- */
+  .jobline {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 18;
+    background: color-mix(in srgb, var(--stone) 88%, var(--ink));
+    border-top: 1px solid rgba(22,21,15,0.16);
+    display: flex; justify-content: center; gap: 0.6em;
+    padding: 8px 18px; font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.2em; color: rgba(22,21,15,0.66); white-space: nowrap;
+    transform: translateY(110%); transition: transform 0.6s var(--ease-out) 0.12s;
+  }
+  body.delivered .jobline { transform: translateY(0); }
+  .jobline b { font-weight: 400; color: var(--pencil); }
+  .jobline em { font-style: normal; color: var(--accent); }
+
+  .corner {
+    position: fixed; z-index: 18; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.24em; color: var(--ink);
+    opacity: 0; transition: opacity 0.6s var(--ease-out) 0.24s;
+  }
+  body.delivered .corner { opacity: 0.7; }
+  .corner.tl { top: calc(var(--frame) + 1px); left: calc(var(--frame) + 24px); }
+
+  /* the load caption, bottom-left */
+  .cap {
+    position: fixed; z-index: 20; left: calc(var(--frame) + 20px); bottom: calc(var(--frame) + 10px);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--stone); opacity: 0.55;
+    transition: color 0.7s var(--ease-out), opacity 0.7s var(--ease-out);
+  }
+  .cap b { font-weight: 700; }
+  body.delivered .cap { color: rgba(22,21,15,0.45); }
+
+  /* the replay button, top-right */
+  .replay {
+    position: fixed; z-index: 21; right: var(--frame); top: calc(var(--frame) - 2px);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+    color: var(--stone); background: none; border: 1px solid rgba(221,219,212,0.4);
+    padding: 7px 12px 6px; cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.6s;
+  }
+  body.delivered .replay { color: var(--ink); border-color: rgba(22,21,15,0.4); }
+  .replay:hover { background: var(--stone); color: var(--ink); border-color: var(--stone); }
+  body.delivered .replay:hover { background: var(--ink); color: var(--stone); border-color: var(--ink); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+  @media (max-width: 680px) {
+    :root { --frame: 5vw; }
+    .gauge { top: auto; bottom: 15vh; transform: none; }
+    body.delivered .gauge { transform: translateY(-20px); }
+    .ledger { display: none; }
+    .cap { display: none; }
+    .jobline { font-size: 7px; letter-spacing: 0.08em; padding: 7px 8px; }
+    .rivets { left: 10vw; right: 10vw; }
+    .flange { width: 8vw; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="booth" aria-hidden="true"></div>
+  <div class="worklight" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <div class="scene" id="scene" aria-hidden="true">
+    <div class="rail l"></div><div class="rail r"></div>
+
+    <div class="bed" id="bed">
+      <!-- the sheet on the press bed -->
+      <div class="sheet" id="sheet">
+        <span class="slug mono">MAKE-READY &middot; SHEET N&ordm; 001</span>
+        <svg class="rc tr" viewBox="0 0 20 20"><circle cx="10" cy="10" r="6" fill="none" stroke="#C7361F" stroke-width="1"/><path d="M10 0v20M0 10h20" stroke="#7C7CFF" stroke-width="1"/></svg>
+        <svg class="rc bl" viewBox="0 0 20 20"><circle cx="10" cy="10" r="6" fill="none" stroke="#C7361F" stroke-width="1"/><path d="M10 0v20M0 10h20" stroke="#7C7CFF" stroke-width="1"/></svg>
+        <div class="tone">
+          <i style="background:#C7361F"></i><i style="background:#7C7CFF"></i>
+          <i style="background:#16150F"></i><i style="background:#B4C400"></i>
+          <i style="background:#E6E4DC;outline:1px solid rgba(20,20,20,.25);outline-offset:-1px"></i>
+        </div>
+      </div>
+
+      <!-- the impression: the hero, blind-embossed then struck -->
+      <div class="impression">
+        <p class="eyebrow mono">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</p>
+        <h1 class="hero" id="hero" aria-label="Code, design & nerve">
+          <span class="ln">Code,</span>
+          <span class="ln">design</span>
+          <span class="ln"><i class="amp">&amp;</i>&nbsp;nerve</span>
+        </h1>
+      </div>
+    </div>
+
+    <!-- the platen -->
+    <div class="platen" id="platen">
+      <div class="platen-body"></div>
+      <div class="flange l"><i class="a"></i><i class="b"></i></div>
+      <div class="flange r"><i class="a"></i><i class="b"></i></div>
+      <div class="rivets" id="rivets"></div>
+    </div>
+
+    <!-- the crop brackets -->
+    <i class="bk tl" id="bk-tl"></i><i class="bk tr" id="bk-tr"></i>
+    <i class="bk bl" id="bk-bl"></i><i class="bk br" id="bk-br"></i>
+
+    <!-- impact fx -->
+    <div class="fx" id="fx"></div>
+  </div>
+
+  <!-- the press gauge -->
+  <div class="gauge" aria-hidden="true">
+    <span class="lbl">IMPRESSION</span>
+    <span class="num"><span id="num">00</span><em>%</em></span>
+    <span class="st" id="st">FEEDING THE SHEET</span>
+  </div>
+  <div class="ledger" id="ledger" aria-hidden="true"></div>
+
+  <!-- the page furniture -->
+  <span class="corner tl mono">MARK AXELUS</span>
+  <div class="jobline mono">
+    <span>SHEET N&ordm; 001 &middot; MARK AXELUS &middot; WORKING PROOF &middot; <em>IN REGISTER</em></span>
+  </div>
+
+  <span class="cap mono">LOAD &mdash; <b>THE PRESS RUNS</b></span>
+  <button class="replay mono" id="replay" type="button">&#8630; REPLAY</button>
+
+<script>
+  var body = document.body;
+  var scene = document.getElementById("scene");
+  var bed = document.getElementById("bed");
+  var sheet = document.getElementById("sheet");
+  var platen = document.getElementById("platen");
+  var fx = document.getElementById("fx");
+  var numEl = document.getElementById("num");
+  var stEl = document.getElementById("st");
+  var ledgerEl = document.getElementById("ledger");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches
+            || /[?&]still\b/.test(location.search);
+
+  /* ---- platen positions (transform strings) ---- */
+  var P_OFF = "translateY(-30vh)";       /* above the frame, off screen */
+  var P_RAISE = "translateY(-12vh)";     /* poised over the sheet's top */
+  var P_HIT = "translateY(31vh)";        /* striking face onto the sheet */
+  var P_RECOIL = "translateY(calc(31vh - 7px))"; /* the metal rebound */
+
+  /* ---- easings (literals, for inline transitions) ---- */
+  var EIN = "cubic-bezier(.5,0,.9,.35)";
+  var EOUT = "cubic-bezier(.16,1,.3,1)";
+  var ETH = "cubic-bezier(.2,1.5,.4,1)";
+
+  /* ---- the three passes ---- */
+  var PASSES = [
+    { cls: "p1", pct: 40, charge: 20, box: "",    tag: "PASS 1 — RED · STRUCK",  ch: "PASS 1 — RED · CHARGING",  power: 3 },
+    { cls: "p2", pct: 72, charge: 58, box: "blu", tag: "PASS 2 — BLUE · STRUCK", ch: "PASS 2 — BLUE · CHARGING", power: 2 },
+    { cls: "p3", pct: 100, charge: 88, box: "key", tag: "IN REGISTER — OK TO RUN", ch: "PASS 3 — KEY · CHARGING", power: 4 }
+  ];
+
+  var timers = [], rafId = null;
+  function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
+  function clearAll() { timers.forEach(clearTimeout); timers = []; if (rafId) cancelAnimationFrame(rafId); rafId = null; }
+
+  function platenTo(pos, dur, ease) {
+    platen.style.transition = "transform " + dur + "ms " + ease;
+    platen.style.transform = pos;
+  }
+
+  /* the counter climbs toward a target (the gauge builds tonnage) */
+  var countTo = 0, countCur = 0;
+  function counter() {
+    countCur += (countTo - countCur) * 0.16;
+    if (Math.abs(countTo - countCur) < 0.4) countCur = countTo;
+    var v = Math.round(countCur);
+    numEl.textContent = (v < 10 ? "0" : "") + v;
+    rafId = requestAnimationFrame(counter);
+  }
+
+  /* build the pass ledger on the left rail */
+  function buildLedger() {
+    ledgerEl.innerHTML = "";
+    var rows = [["RED", ""], ["BLUE", "blu"], ["KEY", "key"]];
+    rows.forEach(function (r, i) {
+      var s = document.createElement("span");
+      s.className = "l " + r[1];
+      s.innerHTML = '<span class="box"></span>PASS 0' + (i + 1) + ' <b>' + r[0] + '</b>';
+      ledgerEl.appendChild(s);
+    });
+  }
+
+  /* the shockwave, dust and flash off the surface on a strike */
+  function boom(power) {
+    function add(cls, life, styler) {
+      var e = document.createElement("div");
+      e.className = cls;
+      if (styler) styler(e);
+      fx.appendChild(e);
+      setTimeout(function () { if (e.parentNode) e.parentNode.removeChild(e); }, life);
+    }
+    add("shock flash", 220);
+    add("shock ring", 640, function (e) { e.style.setProperty("--pw", power); });
+    add("shock ripple", 560, function (e) { e.style.setProperty("--ry", "-9vh"); });
+    add("shock ripple", 560, function (e) { e.style.setProperty("--ry", "9vh"); });
+    var n = 8 + power * 4;
+    for (var i = 0; i < n; i++) {
+      add("dust", 780, (function () {
+        var dx = (Math.random() * 2 - 1) * (54 + power * 26);
+        var dy = -(28 + Math.random() * (46 + power * 26));
+        var left = 14 + Math.random() * 72;
+        var sz = (2 + Math.random() * 2.4);
+        var t = (430 + Math.random() * 260);
+        return function (e) {
+          e.style.left = left + "%";
+          e.style.width = sz.toFixed(1) + "px";
+          e.style.height = sz.toFixed(1) + "px";
+          e.style.setProperty("--dx", dx.toFixed(1) + "px");
+          e.style.setProperty("--dy", dy.toFixed(1) + "px");
+          e.style.setProperty("--t", t.toFixed(0) + "ms");
+        };
+      })());
+    }
+  }
+
+  /* one strike: the impact — flex, shockwave, dust, shake, thunk */
+  function strike(i) {
+    var p = PASSES[i];
+    /* the recoil: the bar jolts up a hair, then settles onto the sheet */
+    platenTo(P_RECOIL, 70, "cubic-bezier(.2,.9,.3,1)");
+    at(70, function () { platenTo(P_HIT, 130, EOUT); });
+    /* the paper compresses + rebounds */
+    bed.classList.remove("flex"); void bed.offsetWidth; bed.classList.add("flex");
+    /* the booth shudders — the KEY strike hits hardest */
+    var sc = p.power >= 4 ? "shake-hard" : "shake";
+    scene.classList.remove("shake", "shake-hard"); void scene.offsetWidth; scene.classList.add(sc);
+    /* the shockwave off the surface */
+    boom(p.power);
+    /* the ink pass floods into the impression */
+    body.classList.add(p.cls);
+    /* the gauge seats + the ledger checks off */
+    countTo = p.pct;
+    stEl.textContent = p.tag;
+    if (i === 2) stEl.classList.add("ok");
+    var line = ledgerEl.children[i];
+    if (line) line.classList.add("done");
+  }
+
+  /* seat the crop brackets to hug the sheet (one layout read, not in a loop) */
+  function seatBrackets() {
+    var g = sheet.getBoundingClientRect();
+    var pad = 18, bk = 66, vw = innerWidth, vh = innerHeight;
+    var fr = 0.024 * vw;
+    var want = {
+      "bk-tl": [g.left - pad, g.top - pad],
+      "bk-tr": [g.right + pad - bk, g.top - pad],
+      "bk-bl": [g.left - pad, g.bottom + pad - bk],
+      "bk-br": [g.right + pad - bk, g.bottom + pad - bk]
+    };
+    var home = {
+      "bk-tl": [fr, fr], "bk-tr": [vw - fr - bk, fr],
+      "bk-bl": [fr, vh - fr - bk], "bk-br": [vw - fr - bk, vh - fr - bk]
+    };
+    Object.keys(want).forEach(function (id) {
+      document.getElementById(id).style.transform =
+        "translate(" + (want[id][0] - home[id][0]) + "px," + (want[id][1] - home[id][1]) + "px)";
+    });
+  }
+  function releaseBrackets() {
+    ["bk-tl", "bk-tr", "bk-bl", "bk-br"].forEach(function (id) {
+      document.getElementById(id).style.transform = "translate(0,0)";
+    });
+  }
+
+  function reset() {
+    clearAll();
+    ["running", "delivered", "p1", "p2", "p3"].forEach(function (c) { body.classList.remove(c); });
+    scene.classList.remove("shake", "shake-hard");
+    bed.classList.remove("flex");
+    sheet.classList.remove("fed");
+    while (fx.firstChild) fx.removeChild(fx.firstChild);
+    platen.style.transition = "none";
+    platen.style.transform = P_OFF;
+    numEl.textContent = "00"; countTo = 0; countCur = 0;
+    stEl.textContent = "FEEDING THE SHEET"; stEl.classList.remove("ok");
+    buildLedger();
+    void body.offsetWidth;
+  }
+
+  function deliver() {
+    body.classList.add("delivered");
+    releaseBrackets();
+  }
+
+  function play() {
+    reset();
+
+    if (reduce) {
+      /* skip straight to the revealed hero */
+      body.classList.add("running");
+      sheet.classList.add("fed");
+      body.classList.add("p1", "p2", "p3");
+      numEl.textContent = "100"; countTo = 100; countCur = 100;
+      stEl.textContent = "IN REGISTER — OK TO RUN"; stEl.classList.add("ok");
+      for (var i = 0; i < 3; i++) ledgerEl.children[i].classList.add("done");
+      platen.style.transform = P_OFF;
+      seatBrackets();
+      deliver();
+      return;
+    }
+
+    /* the booth lights, the sheet feeds in */
+    body.classList.add("running");
+    seatBrackets();
+    rafId = requestAnimationFrame(counter);
+    at(40, function () { sheet.classList.add("fed"); countTo = 6; });
+
+    /* the schedule — three passes; the press runs up to speed */
+    var S = {
+      desc1: 540, strike1: 900, lift1: 1170,
+      desc2: 1360, strike2: 1620, lift2: 1840,
+      desc3: 2000, strike3: 2240,
+      lift3: 2560, deliver: 2820
+    };
+
+    /* PASS 1 — RED — a heavy, deliberate first strike */
+    at(S.desc1, function () { stEl.textContent = PASSES[0].ch; countTo = PASSES[0].charge; platenTo(P_HIT, 360, EIN); });
+    at(S.strike1, function () { strike(0); });
+    at(S.lift1, function () { platenTo(P_RAISE, 340, EOUT); });
+
+    /* PASS 2 — BLUE — the press quickens */
+    at(S.desc2, function () { stEl.textContent = PASSES[1].ch; countTo = PASSES[1].charge; platenTo(P_HIT, 260, EIN); });
+    at(S.strike2, function () { strike(1); });
+    at(S.lift2, function () { platenTo(P_RAISE, 300, EOUT); });
+
+    /* PASS 3 — KEY — the hardest seat; the passes snap into register */
+    at(S.desc3, function () { stEl.textContent = PASSES[2].ch; countTo = PASSES[2].charge; platenTo(P_HIT, 240, EIN); });
+    at(S.strike3, function () { strike(2); });
+
+    /* the platen lifts away — the struck proof revealed — then delivery */
+    at(S.lift3, function () { platenTo(P_OFF, 560, EOUT); });
+    at(S.deliver, deliver);
+  }
+
+  /* build the rivet course */
+  (function () {
+    var r = document.getElementById("rivets");
+    for (var i = 0; i < 11; i++) { var d = document.createElement("i"); d.className = "rivet"; r.appendChild(d); }
+  })();
+
+  document.getElementById("replay").addEventListener("click", play);
+  addEventListener("resize", function () {
+    if (!body.classList.contains("delivered")) seatBrackets();
+  });
+  play();
+</script>
+</body>
+</html>
