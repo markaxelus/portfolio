@@ -528,6 +528,7 @@
   var lineDraft = 0;
   var lineVisible = true;
   var lineDragUsed = false;
+  var lineLoupeItem = null;   /* the sheet under the glass (frame() reads it) */
 
   /* geometry as fractions of the section's padding box (W × BH) */
   var LINE_GEO_D = {
@@ -650,11 +651,11 @@
       row.style.zIndex = def.z;
       row.style.transform = "rotate(" + def.lean + "deg)";
       lineItems.push({
-        el: row, i: i,
+        el: row, i: i, z: def.z,
         cx: idxLeft + wp.x, cyPage: idxTop + clipY,
         faceEl: row.querySelector(".row-thumb"),
-        face: null,
-        lean: def.lean, th: def.lean,
+        face: null, lift: 0,
+        lean: def.lean, th: def.lean, sc: 1,
         A: 0.22 + (i * 7919 % 97) / 97 * 0.28,          /* deterministic variety */
         w1: 0.05 + (i * 104729 % 89) / 89 * 0.05,
         p1: (i * 31 % 7) * 0.9,
@@ -716,11 +717,12 @@
       lineDraft *= 0.955;                                /* the draft dies slowly */
       for (var i = 0; i < lineItems.length; i++) {
         var it = lineItems[i];
-        /* unstruck paper doesn't perform; the loupe holds its sheet still */
+        /* unstruck paper doesn't perform; the glass freezes its sheet */
         if (it.el.classList.contains("unstruck")) continue;
-        if (loupeOn && curPlate === it.i) continue;
+        if (lineLoupeItem === it) continue;
         var steadyTarget = it.hovered ? 1 : 0;
         it.steady += (steadyTarget - it.steady) * 0.045;
+        it.lift += ((it.hovered ? 1 : 0) - it.lift) * 0.09;   /* pick it up to look */
         var calm = 1 - it.steady;
         var rest =
           it.A * calm * Math.sin(it.w1 * t * 6.283 + it.p1) +
@@ -735,9 +737,10 @@
           if (Math.abs(it.u) < 0.02 && Math.abs(it.du) < 0.01) { it.u = 0; it.du = 0; }
         }
         var th = it.lean + rest + it.u;
-        if (Math.abs(th - it.th) > 0.03) {
-          it.th = th;
-          it.el.style.transform = "rotate(" + th.toFixed(2) + "deg)";
+        var sc = 1 + it.lift * 0.035;
+        if (Math.abs(th - it.th) > 0.03 || Math.abs(sc - it.sc) > 0.002) {
+          it.th = th; it.sc = sc;
+          it.el.style.transform = "rotate(" + th.toFixed(2) + "deg) scale(" + sc.toFixed(3) + ")";
         }
       }
     }
@@ -761,57 +764,107 @@
       lineLastY = y;
     }, { passive: true });
 
-    /* ---- the hand on the sheet: lag in, drift back, never drop ---- */
+    /* ---- one press, three gestures ----
+       hold STILL → the glass comes down (inspect the proof);
+       press + MOVE → swing the sheet (heavy, lagged, no snap);
+       quick TAP → open the project sheet.
+       drag/loupe both suppress the click (lineDragUsed). */
+    var linePress = null;       /* { it, sx, sy, moved } */
     var lineDragging = null;
-    var lineDragMoved = 0;
+    var lineLoupeT = null;
+
+    function dropLoupe() {
+      if (!lineLoupeItem) return;
+      lineLoupeItem = null;
+      loupeOn = false;
+      loupeEl.classList.remove("on");
+      cursorEl.classList.remove("is-loupe");
+    }
+
     indexEl.addEventListener("pointerdown", function (e) {
+      if (e.button !== 0) return;
       var row = e.target.closest(".row");
       if (!row || reduced()) return;
       var it = lineItems[+row.dataset.plate];
       if (!it || it.el.classList.contains("unstruck")) return;
-      lineDragging = it;
-      lineDragMoved = 0;
-      it.drag = true;
-      it.dragTarget = it.u;
-    });
-    addEventListener("pointermove", function (e) {
-      if (!lineDragging) return;
-      lineDragMoved++;
-      var dx = e.pageX - lineDragging.cx;
-      var dy = Math.max(40, e.pageY - lineDragging.cyPage);
-      lineDragging.dragTarget =
-        Math.max(-22, Math.min(22, Math.atan2(dx, dy) * 57.3 - lineDragging.lean));
-    });
-    function lineDrop() {
-      if (!lineDragging) return;
-      var it = lineDragging;
-      lineDragging = null;
-      it.drag = false;
-      it.du = 0;
-      if (lineDragMoved > 3) lineDragUsed = true;
-      /* a hard pull runs down the wire; the instrument reads it */
-      if (Math.abs(it.u) > 9) {
-        lineWireEl.classList.remove("hum");
-        void lineWireEl.offsetWidth;
-        lineWireEl.classList.add("hum");
-        var nb = lineItems[it.i - 1], na = lineItems[it.i + 1];
-        if (nb && !nb.drag) nb.du += it.u * 0.045;
-        if (na && !na.drag) na.du += it.u * 0.045;
-        if (lineWllEl) {
-          lineWllEl.innerHTML = "[W.L.L.] LOAD +" + Math.round(Math.abs(it.u) * 1.3) + "% — <em>HELD</em>";
-          lineWllEl.classList.add("blip");
-          clearTimeout(lineWllEl._t);
-          lineWllEl._t = setTimeout(function () {
-            lineWllEl.innerHTML = "[W.L.L.] 04 SHEETS — <em>HOLDS</em>";
-            lineWllEl.classList.remove("blip");
-          }, 1700);
+      lineDragUsed = false;   /* fresh press — clear any stale suppress flag */
+      linePress = { it: it, sx: e.pageX, sy: e.pageY, moved: false };
+      curPlate = it.i;
+      /* held still on a sheet: the printer's glass drops onto the plate */
+      clearTimeout(lineLoupeT);
+      lineLoupeT = setTimeout(function () {
+        if (!linePress || linePress.moved) return;
+        var r = it.faceEl.getBoundingClientRect();  /* fresh, near-steady */
+        it.face = { x: r.left + scrollX, y: r.top + scrollY, w: r.width, h: r.height };
+        lineLoupeItem = it;
+        loupeOn = true;
+        lineDragUsed = true;   /* the glass press is not a navigation */
+        loupeEl.style.backgroundImage = plates[it.i];
+        loupeEl.classList.add("on");
+        cursorEl.classList.add("is-loupe");
+        if (!loupedPlates[it.i]) {
+          loupedPlates[it.i] = 1;
+          logAct("loupe down on plate 0" + (it.i + 1) + ". the dots check out.");
         }
-        logAct("pulled at sheet 0" + (it.i + 1) + ". the line held.");
+      }, 200);
+    });
+
+    addEventListener("pointermove", function (e) {
+      if (!linePress) return;
+      if (lineLoupeItem) return;   /* glass down — frame() feeds it from the cursor */
+      if (!linePress.moved) {
+        var mx = e.pageX - linePress.sx, my = e.pageY - linePress.sy;
+        if (mx * mx + my * my > 36) {           /* past 6px → it's a swing */
+          linePress.moved = true;
+          clearTimeout(lineLoupeT);
+          lineDragging = linePress.it;
+          lineDragging.drag = true;
+          lineDragging.dragTarget = lineDragging.u;
+          lineDragUsed = true;
+        }
       }
+      if (lineDragging) {
+        var dx = e.pageX - lineDragging.cx;
+        var dy = Math.max(40, e.pageY - lineDragging.cyPage);
+        lineDragging.dragTarget =
+          Math.max(-22, Math.min(22, Math.atan2(dx, dy) * 57.3 - lineDragging.lean));
+      }
+    });
+
+    function lineUp() {
+      clearTimeout(lineLoupeT);
+      if (lineLoupeItem) {
+        dropLoupe();
+      } else if (lineDragging) {
+        var it = lineDragging;
+        lineDragging = null;
+        it.drag = false;
+        it.du = 0;
+        /* a hard pull runs down the wire; the instrument reads it */
+        if (Math.abs(it.u) > 9) {
+          lineWireEl.classList.remove("hum");
+          void lineWireEl.offsetWidth;
+          lineWireEl.classList.add("hum");
+          var nb = lineItems[it.i - 1], na = lineItems[it.i + 1];
+          if (nb && !nb.drag) nb.du += it.u * 0.045;
+          if (na && !na.drag) na.du += it.u * 0.045;
+          if (lineWllEl) {
+            lineWllEl.innerHTML = "[W.L.L.] LOAD +" + Math.round(Math.abs(it.u) * 1.3) + "% — <em>HELD</em>";
+            lineWllEl.classList.add("blip");
+            clearTimeout(lineWllEl._t);
+            lineWllEl._t = setTimeout(function () {
+              lineWllEl.innerHTML = "[W.L.L.] 04 SHEETS — <em>HOLDS</em>";
+              lineWllEl.classList.remove("blip");
+            }, 1700);
+          }
+          logAct("pulled at sheet 0" + (it.i + 1) + ". the line held.");
+        }
+      }
+      linePress = null;
     }
-    addEventListener("pointerup", lineDrop);
-    addEventListener("pointercancel", lineDrop);
-    /* a drag is not a navigation (same pattern as the loupe press) */
+    addEventListener("pointerup", lineUp);
+    addEventListener("pointercancel", lineUp);
+    /* a drag or a glass-press is not a navigation */
     rows.forEach(function (row) {
       row.addEventListener("click", function (e) {
         if (lineDragUsed) { e.preventDefault(); lineDragUsed = false; }
@@ -896,14 +949,25 @@
 
       /* the loupe rides the pointer over the plate — viewport math only.
          the plate is background-size: cover (plate art is 800×1000), so
-         magnify the cover-fit rendering, crop offset included */
+         magnify the cover-fit rendering, crop offset included. */
       if (loupeOn) {
-        var wR = innerWidth * 0.30, hR = innerHeight * 0.38;
-        var coverW, coverH;
-        if (wR / hR > 0.8) { coverW = wR; coverH = wR / 0.8; }
-        else { coverH = hR; coverW = hR * 0.8; }
-        var ix = mouse.x - (plate.x - wR / 2) + (coverW - wR) / 2;
-        var iy = mouse.y - (plate.y - hR / 2) + (coverH - hR) / 2;
+        var coverW, coverH, ix, iy;
+        if (lineLoupeItem) {
+          /* on the line the plate is the hanging sheet's face (cached page
+             coords). cover-fit the 800×1000 plate into that box; the cursor
+             maps to a point inside the rendered plate. */
+          var f = lineLoupeItem.face;
+          var scv = Math.max(f.w / 800, f.h / 1000);
+          coverW = 800 * scv; coverH = 1000 * scv;
+          ix = (mouse.x + scrollX) - (f.x - (coverW - f.w) / 2);
+          iy = (mouse.y + scrollY) - (f.y - (coverH - f.h) / 2);
+        } else {
+          var wR = innerWidth * 0.30, hR = innerHeight * 0.38;
+          if (wR / hR > 0.8) { coverW = wR; coverH = wR / 0.8; }
+          else { coverH = hR; coverW = hR * 0.8; }
+          ix = mouse.x - (plate.x - wR / 2) + (coverW - wR) / 2;
+          iy = mouse.y - (plate.y - hR / 2) + (coverH - hR) / 2;
+        }
         var loupeTf =
           "translate3d(" + mouse.x + "px," + mouse.y + "px,0) translate(-50%,-50%)";
         if (loupeTf !== lastLoupeTf) {
@@ -938,9 +1002,13 @@
       curPlate = +row.dataset.plate;
 
       /* THE LINE: the sheet already IS the proof — no floating reveal.
-         hovering STEADIES it (the shop holds it still for you). */
+         hovering STEADIES it, lifts it toward you, and floats it over
+         its neighbours (the shop holds it still so you can look). */
       if (lineOn) {
-        if (lineItems[curPlate]) lineItems[curPlate].hovered = true;
+        if (lineItems[curPlate]) {
+          lineItems[curPlate].hovered = true;
+          row.style.zIndex = 9;
+        }
         return;
       }
       /* flat-list fallback: the cursor-trailing plate reveal */
@@ -963,7 +1031,8 @@
       row.classList.remove("is-active");
       cursorEl.classList.remove("is-view");
       if (lineOn) {
-        if (lineItems[+row.dataset.plate]) lineItems[+row.dataset.plate].hovered = false;
+        var lit = lineItems[+row.dataset.plate];
+        if (lit) { lit.hovered = false; row.style.zIndex = lit.z; }
         return;
       }
       scalerEl.style.transform = "scale(0)";
@@ -2686,6 +2755,7 @@
     mouse.y = e.clientY;
   });
   document.addEventListener("pointerup", function () {
+    if (lineOn) return; /* the line's own pointerup owns its glass */
     clearTimeout(loupeDelayT);
     if (!loupeOn) return;
     loupeOn = false;
