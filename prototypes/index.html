@@ -14,17 +14,23 @@
 </head>
 <body>
 
-  <!-- make-ready: the press gets your sheet ready (first arrival each
-       session). the counter reads the real load; the mark flies home to
-       the sheet's registration mark on release. any input skips it. -->
+  <!-- make-ready: the press dials your sheet into register (first arrival
+       each session). the three ink passes glide together as the counter
+       reads the real load; at register the booth floods to the hero.
+       one continuous convergence — any input skips it. -->
   <div id="makeready" aria-hidden="true">
-    <svg class="mr-mark" viewBox="0 0 40 40">
-      <circle class="mr-ink" cx="20" cy="20" r="11"/>
-      <path class="mr-ink" d="M20 2v11M20 27v11M2 20h11M27 20h11"/>
-    </svg>
-    <p class="mr-label mono">MAKE-READY</p>
-    <p class="mr-state mono" id="mr-state">SETTING THE FORME</p>
-    <p class="mr-count mono"><span id="mr-count">00</span><em>%</em></p>
+    <div class="mr-target" id="mr-target">
+      <svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet">
+        <g class="mr-pass mr-red" id="mr-red"><circle cx="150" cy="100" r="46"/><circle cx="150" cy="100" r="26"/><path d="M150 34v40M150 126v40M64 100h40M196 100h40"/></g>
+        <g class="mr-pass mr-blu" id="mr-blu"><circle cx="150" cy="100" r="46"/><circle cx="150" cy="100" r="26"/><path d="M150 34v40M150 126v40M64 100h40M196 100h40"/></g>
+        <g class="mr-pass mr-ink"><circle cx="150" cy="100" r="46"/><circle cx="150" cy="100" r="26"/><path d="M150 30v44M150 126v44M60 100h44M196 100h44"/></g>
+      </svg>
+    </div>
+    <div class="mr-readout">
+      <span class="mr-label mono">MAKE-READY</span>
+      <span class="mr-count mono"><span id="mr-count">00</span><em>%</em></span>
+      <span class="mr-state mono" id="mr-state">SETTING THE FORME</span>
+    </div>
     <p class="mr-job mono">SHEET Nº 001 &middot; MARK AXELUS &middot; WORKING PROOF</p>
   </div>
 

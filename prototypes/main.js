@@ -2039,6 +2039,10 @@
   var mrRan = false;
   (function makeReady() {
     if (!mrEl) return;
+    /* ?loader forces a fresh play (dev) by clearing the session flag, so
+       the whole first-visit sequence — make-ready → press-check — replays */
+    var force = /[?&]loader(\b|=)/.test(location.search);
+    if (force) { try { sessionStorage.removeItem("ma-press-check"); } catch (e) {} }
     var seen = false;
     try { seen = !!sessionStorage.getItem("ma-press-check"); } catch (e) {}
     if (seen || reduced() || stillMode) {
@@ -2046,68 +2050,62 @@
       return;
     }
     mrRan = true;
-    var stateEl = document.getElementById("mr-state");
     var countEl = document.getElementById("mr-count");
+    var stateEl = document.getElementById("mr-state");
+    var redEl = document.getElementById("mr-red");
+    var bluEl = document.getElementById("mr-blu");
+    var START = 14, DUR = 2200, MIN = 1600, MAX = 3000;
     var t0 = performance.now();
-    var MIN = 1000, MAX = 1800;
-    var pct = 0, doneAt = 0, released = false;
-    var STATES = [
-      [0,   "SETTING THE FORME"],
-      [34,  "INKS 3/3 — LOADED"],
-      [68,  "REGISTER — CHECK"],
-      [100, "OK TO RUN"]
-    ];
-    var lastState = "";
+    var pct = 0, released = false, doneAt = 0;
     var fontsIn = false;
     try { document.fonts.ready.then(function () { fontsIn = true; }); }
     catch (e) { fontsIn = true; }
 
+    /* the red pass drifts up-left, the blue down-right, by the error —
+       written every frame so the convergence is one continuous glide */
+    function setErr(v) {
+      redEl.style.transform = "translate(" + (-v * 0.95).toFixed(2) + "px," + (-v * 0.55).toFixed(2) + "px)";
+      bluEl.style.transform = "translate(" + (v * 0.95).toFixed(2) + "px," + (v * 0.55).toFixed(2) + "px)";
+    }
+    setErr(START);
+    function easeInOut(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+
     function release() {
       if (released || !mrEl) return;
       released = true;
-      /* the mark flies home to the sheet's real instrument (one measured
-         read, event-time — never in the loop) */
-      var real = document.querySelector(".sheet .regmark");
-      var mk = mrEl.querySelector(".mr-mark");
-      if (real && mk) {
-        var r = real.getBoundingClientRect();
-        var m = mk.getBoundingClientRect();
-        if (r.width > 2) {
-          mk.style.transform =
-            "translate(" + Math.round(r.left + r.width / 2 - (m.left + m.width / 2)) + "px," +
-            Math.round(r.top + r.height / 2 - (m.top + m.height / 2)) + "px)" +
-            " scale(" + (r.width / m.width).toFixed(3) + ")";
-          mk.style.opacity = "0";
-        }
-      }
-      mrEl.classList.add("out");
-      setTimeout(function () {
-        if (mrEl) { mrEl.remove(); mrEl = null; }
-      }, 720);
+      mrEl.classList.add("out");   /* the booth floods to the hero underneath */
+      setTimeout(function () { if (mrEl) { mrEl.remove(); mrEl = null; } }, 780);
     }
 
     function tick(now) {
       if (!mrEl || released) return;
       var el = now - t0;
-      /* the target tracks real readiness; the number eases toward it */
-      var target = fontsIn ? 100 : Math.min(86, el / 14);
-      pct += (target - pct) * 0.085;
+      /* the error closes on a slow-fast-slow curve: the passes hang wide
+         at first (you see the split), glide together, then ease gently
+         into register — one continuous motion, never a step */
+      var pt = Math.min(1, el / DUR);
+      var e = START * (1 - easeInOut(pt));
+      setErr(e);
+      /* the counter IS the make-ready progress (how close to register),
+         held below 100 until the real load is in so it never lies */
+      var conv = (1 - e / START) * 100;
+      var target = Math.min(conv, fontsIn ? 100 : 88);
+      pct += (target - pct) * 0.08;
       if (el >= MAX) pct = 100;
       var p = Math.min(100, Math.round(pct));
       countEl.textContent = (p < 10 ? "0" : "") + p;
-      for (var i = STATES.length - 1; i >= 0; i--) {
-        if (p >= STATES[i][0]) {
-          if (lastState !== STATES[i][1]) {
-            lastState = STATES[i][1];
-            stateEl.textContent = lastState;
-            stateEl.classList.toggle("ok", STATES[i][0] === 100);
-          }
-          break;
+      if (e < 0.35 && p >= 100) {
+        if (!stateEl.classList.contains("ok")) {
+          stateEl.textContent = "IN REGISTER — OK TO RUN"; stateEl.classList.add("ok");
         }
+      } else {
+        stateEl.classList.remove("ok");
+        stateEl.textContent = "REG +" + (e * 0.11).toFixed(2) + " mm";
       }
-      if (p >= 100 && el >= MIN) {
+      /* converged + loaded + past the minimum → flood into the hero */
+      if (p >= 100 && el >= MIN && e < 0.4) {
         if (!doneAt) doneAt = now;
-        if (now - doneAt > 240) { release(); return; }
+        if (now - doneAt > 260) { release(); return; }
       }
       requestAnimationFrame(tick);
     }

@@ -775,14 +775,24 @@ signatures (Mark counts these himself):
     - **MAKE-READY loader** (`#makeready`, styles.css/main.js): first arrival each
       session (shares the `ma-press-check` gate, hands straight into the press-
       check strike — one continuous fiction: make-ready → strike → in register).
-      The regmark draws itself (stroke-dashoffset) while a mono counter reads the
-      REAL load (`document.fonts.ready`; min ~1s so it reads, max ~1.8s so it never
-      stalls; states SETTING THE FORME → INKS 3/3 → REGISTER CHECK → OK TO RUN). On
-      release the mark FLIES HOME to the sheet's own `.regmark` (one measured read,
-      event-time). Any input skips it; reduced-motion/`?still`/print never see it.
-      The hero's held entrance resumes via `body:has(#makeready:not(.out))`
-      animation-play-state pause (no JS ordering). press-check failsafe stretched
-      to 4800ms when the loader ran.
+      **v2 (Mark: "put it on the main page / it should be smooth / we can do way
+      better"):** the loader is now the make-ready CONVERGENCE — a registration
+      TARGET whose three ink passes (red `#C7361F` / blue `#7C7CFF` / key `#DDDBD4`)
+      start ~14px off-register and GLIDE together into one crisp mark, on a
+      slow-fast-slow `easeInOut` over ~2.2s (continuous, NEVER stepped — the earlier
+      discrete "test pulls" read snappy and were cut). The counter IS the make-ready
+      progress `(1 - e/START)*100`, held below 100 until `document.fonts.ready` so
+      it never lies; the readout t"REG +N.NN mm" ticks down to "IN REGISTER — OK TO
+      RUN". At register the booth (`#0C0B08`) FLOODS to the real hero underneath
+      (overlay opacity → 0, target scales/fades) and the hero's own entrance +
+      press-check resume via `body:has(#makeready:not(.out))` animation-play-state
+      pause. `?loader` URL param clears the session flag to replay the whole
+      first-visit sequence (dev). Any input skips; reduced-motion/`?still`/print
+      never see it; press-check failsafe stretched to 4800ms when the loader ran.
+      Provenance/richer-alt mock: `prototypes/loader-mock.html` (the stepped-pull
+      version — kept for reference, but the SMOOTH convergence is what shipped).
+      The mock's iterative-test-pull idea (each pull closer to register, spoilage
+      ghosts) is parked if we ever want a longer, richer make-ready.
     - **THE LINE** — SELECTED WORK only (the rest of the page unchanged). One strung
       wire MEANDERS through the section; the four project plates hang salon-style
       from **drop-cords of different lengths, varied sizes, varied rest-leans, small

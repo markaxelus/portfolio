@@ -1808,70 +1808,64 @@ body.pointer-seen .cursor { opacity: 1; }
 }
 
 /* ============================================================
-   MAKE-READY — the press gets your sheet ready (first arrival
-   each session, before the press-check strike). the registration
-   mark draws itself while the counter reads the real load, then
-   flies home to the sheet's own regmark. one continuous fiction:
-   make-ready → strike → in register.
+   MAKE-READY — the press dials your sheet into register (first
+   arrival each session, before the press-check strike). the three
+   ink passes glide together — one continuous convergence, smooth,
+   never stepped — as the counter reads the real load. at register
+   the booth floods to the hero and its own passes slide home.
+   one fiction: make-ready → strike → in register.
    ============================================================ */
 
 #makeready {
   position: fixed;
   inset: 0;
   z-index: 220;
-  background: var(--stone);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.5s var(--ease-out);
+  background: #0C0B08;              /* the booth, lights low */
+  overflow: hidden;
+  transition: opacity 0.7s var(--ease-out);
+}
+#makeready::before {                 /* one warm work-light pool */
+  content: "";
+  position: absolute; inset: -20vh -20vw;
+  background: radial-gradient(ellipse 56vw 58vh at 50% 48%,
+    rgba(228,221,201,0.11), rgba(228,221,201,0.03) 52%, transparent 74%);
+  pointer-events: none;
 }
 #makeready.out { opacity: 0; pointer-events: none; }
-.mr-mark {
-  width: 72px;
-  height: 72px;
-  color: var(--ink);
-  overflow: visible;
-  transition: transform 0.6s var(--ease-out), opacity 0.35s var(--ease-out) 0.2s;
-  will-change: transform;
+
+.mr-target {
+  position: absolute; left: 50%; top: 50%;
+  width: min(48vw, 440px); aspect-ratio: 3 / 2;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.4s var(--ease-out), transform 0.7s var(--ease-out);
 }
-.mr-ink {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.3;
-  stroke-dasharray: 240;
-  stroke-dashoffset: 240;
-  animation: mr-draw 1s var(--ease-out) 0.12s forwards;
+#makeready.out .mr-target { opacity: 0; transform: translate(-50%, -50%) scale(0.94); }
+.mr-target svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.mr-pass { fill: none; stroke-width: 2; }
+.mr-pass.mr-ink { stroke: #DDDBD4; }
+.mr-pass.mr-red { stroke: #C7361F; }
+.mr-pass.mr-blu { stroke: #7C7CFF; }
+/* red & blu are offset inline by JS each frame (the shrinking error) —
+   the convergence is one smooth glide, so no CSS transition here */
+
+.mr-readout {
+  position: absolute; right: var(--frame); top: 50%;
+  transform: translateY(-50%); text-align: right;
+  color: #DDDBD4; font-family: "Space Mono", monospace;
 }
-@keyframes mr-draw { to { stroke-dashoffset: 0; } }
-.mr-label {
-  font-size: 0.62rem;
-  letter-spacing: 0.34em;
-  margin-top: 1.4rem;
-  opacity: 0.85;
-}
-.mr-state {
-  font-size: 0.55rem;
-  letter-spacing: 0.3em;
-  color: var(--graphite);
-  margin-top: 0.5rem;
-  min-height: 1.2em;
-}
-.mr-state.ok { color: var(--accent); }
-.mr-count {
-  font-size: 1.7rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  margin-top: 0.4rem;
-}
-.mr-count em { font-style: normal; font-size: 0.9rem; opacity: 0.5; }
+.mr-label { display: block; font-size: 0.56rem; letter-spacing: 0.34em; opacity: 0.5; }
+.mr-count { display: block; font-size: 2.4rem; font-weight: 700; letter-spacing: 0.04em; line-height: 1.1; }
+.mr-count em { font-style: normal; font-size: 1.1rem; opacity: 0.5; }
+.mr-state { display: block; font-size: 0.6rem; letter-spacing: 0.16em; color: #F0603F; min-height: 1.4em; }
+.mr-state.ok { color: #C6D600; }
 .mr-job {
-  position: fixed;
-  left: 0; right: 0; bottom: 14px;
-  text-align: center;
-  font-size: 0.55rem;
-  letter-spacing: 0.26em;
-  color: var(--graphite);
+  position: absolute; left: 0; right: 0; bottom: 16px;
+  text-align: center; color: rgba(221,219,212,0.4);
+  font-size: 0.55rem; letter-spacing: 0.26em;
+}
+@media (max-width: 640px) {
+  .mr-readout { top: auto; bottom: 20vh; right: 50%; transform: translateX(50%); text-align: center; }
+  .mr-target { width: 74vw; }
 }
 /* the hero holds its entrance while the press makes ready — the whole
    opening choreography (line-up, eyebrow, bio, press-register, reg-lock)
