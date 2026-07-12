@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE STRIKE — loader (synthesis mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,100..900,0..100;1,9..144,100..900,0..100&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THE STRIKE — the loader synthesis (playable mock).
+     the proof's own language (struck furniture, teletype, ink)
+     delivered with the press's FORCE — but via the invisible
+     impression, not a machine, so it blends AND hits. the proof
+     assembles, one heavy strike lands (flex + shockwave + dust +
+     thunk, ink floods in register), then MARK AXELUS flies to the
+     corner tab as the hero rises. autoplays; REPLAY top-right.
+     ============================================================ */
+  :root {
+    --booth: #0C0B08; --stone: #DDDBD4; --sheet: #E6E4DC; --ink: #16150F;
+    --pencil: #C7361F; --accent: #2A2AF0; --accent-lum: #7C7CFF; --acid: #B4C400;
+    --mono: "Space Mono", monospace; --frame: 2.2vw;
+    --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+    --ease-thunk: cubic-bezier(0.3, 1.5, 0.6, 1);
+    --bg: var(--booth); --fg: var(--stone);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--fg);
+    font-family: "Fraunces", Georgia, serif; font-optical-sizing: auto;
+    overflow: hidden; -webkit-font-smoothing: antialiased;
+    transition: background-color 0.6s var(--ease-out), color 0.6s var(--ease-out);
+  }
+  .mono { font-family: var(--mono); }
+
+  .glow {
+    position: fixed; inset: -25vh -25vw; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse 56vw 58vh at 50% 48%,
+      rgba(228,221,201,0.11), rgba(228,221,201,0.03) 52%, transparent 74%);
+    opacity: 0; transition: opacity 0.7s var(--ease-out);
+  }
+  body.lit .glow { opacity: 1; }
+  body.page .glow { opacity: 0; }
+
+  /* the shake wrapper (the whole comp flexes + thunks on impact) */
+  #shake { position: fixed; inset: 0; z-index: 4; transform-origin: 50% 50%; }
+  #shake.flex { animation: flex 0.5s var(--ease-out); }
+  @keyframes flex {
+    0% { transform: scale(1,1); }
+    12% { transform: scale(1.008, 0.972) translateY(3px); }  /* the sheet takes the blow */
+    30% { transform: scale(0.997, 1.006) translateY(-1px); }
+    55% { transform: scale(1,1) translateY(0); }
+    100% { transform: scale(1,1); }
+  }
+
+  /* ---- make-ready readout ---- */
+  .readout {
+    position: fixed; z-index: 8; right: var(--frame); top: 50%; transform: translateY(-50%);
+    text-align: right; font-family: var(--mono);
+    opacity: 0; transition: opacity 0.45s var(--ease-out), transform 0.5s var(--ease-out);
+  }
+  body.lit .readout { opacity: 1; }
+  body.page .readout { opacity: 0; transform: translateY(calc(-50% - 30px)); }
+  .readout .lbl { display: block; font-size: 9px; letter-spacing: 0.34em; opacity: 0.5; }
+  .readout .num { display: block; font-size: 40px; font-weight: 700; line-height: 1.15; }
+  .readout .num em { font-style: normal; font-size: 19px; opacity: 0.5; }
+  .readout .st { display: block; font-size: 10px; letter-spacing: 0.16em; color: var(--pencil); min-height: 1.3em; }
+  .readout .st.ok { color: var(--acid); }
+
+  /* ---- the gate: crop-brackets → page frame ---- */
+  .bk {
+    position: fixed; z-index: 7; width: 72px; height: 72px; border: 0 solid currentColor;
+    pointer-events: none; opacity: 0;
+    transition: transform 0.8s var(--ease-out), opacity 0.5s var(--ease-out);
+  }
+  body.lit .bk { opacity: 0.7; }
+  body.page .bk { opacity: 0.6; }
+  .bk.tl { top: var(--frame); left: var(--frame); border-top-width: 1.4px; border-left-width: 1.4px; }
+  .bk.tr { top: var(--frame); right: var(--frame); border-top-width: 1.4px; border-right-width: 1.4px; }
+  .bk.bl { bottom: var(--frame); left: var(--frame); border-bottom-width: 1.4px; border-left-width: 1.4px; }
+  .bk.br { bottom: var(--frame); right: var(--frame); border-bottom-width: 1.4px; border-right-width: 1.4px; }
+
+  /* registration mark (drawn during assembly) */
+  .regwrap { position: fixed; z-index: 6; left: 50%; top: 26vh; width: 44px; height: 44px; margin: -22px 0 0 -22px; opacity: 0; transition: opacity 0.4s; }
+  body.lit .regwrap { opacity: 0.8; }
+  body.page .regwrap { opacity: 0; }
+  .regwrap svg { width: 100%; height: 100%; overflow: visible; }
+  .reg-ink { stroke: currentColor; stroke-width: 1.1; fill: none; stroke-dasharray: 120; stroke-dashoffset: 120; }
+  body.drawn .reg-ink { transition: stroke-dashoffset 0.7s var(--ease-out); stroke-dashoffset: 0; }
+
+  /* tone bar (lays down during assembly) */
+  .tonebar { position: fixed; z-index: 6; left: 50%; top: calc(26vh + 40px); transform: translateX(-50%); display: flex; gap: 4px; }
+  .tonebar i { width: 16px; height: 13px; display: block; opacity: 0; transform: translateY(-4px); transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out); }
+  body.page .tonebar { opacity: 0; transition: opacity 0.3s; }
+
+  /* the struck name */
+  .stage { position: fixed; z-index: 5; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; }
+  .name {
+    font-weight: 480; font-variation-settings: "opsz" 144;
+    font-size: clamp(2.6rem, 10vw, 9rem); line-height: 0.9; letter-spacing: -0.02em; white-space: nowrap;
+    color: transparent;
+    /* blind emboss on the dark booth (uninked, pressed in) */
+    text-shadow: -1px -1px 0 rgba(221,219,212,0.30), 1.5px 1.5px 1px rgba(0,0,0,0.8);
+    opacity: 0; transition: opacity 0.4s var(--ease-out);
+    position: relative;
+  }
+  body.lit .name { opacity: 1; }
+  /* THE STRIKE: the impression inks it, in register, with a chromatic seat */
+  body.struck .name {
+    color: var(--stone);
+    text-shadow: 0 0 0 var(--pencil), 0 0 0 var(--accent-lum);
+    transition: color 0.14s var(--ease-out), text-shadow 0.36s var(--ease-thunk);
+  }
+  /* the instant of impact: passes flung off register, then seat (js toggles .hit) */
+  .name.hit { text-shadow: -0.05em 0.02em 0 var(--pencil), 0.045em -0.016em 0 var(--accent-lum); }
+
+  /* the shockwave ring — expands from the strike point */
+  .shock {
+    position: fixed; z-index: 5; left: 50%; top: 50%; width: 40px; height: 40px; margin: -20px 0 0 -20px;
+    border: 2px solid rgba(221,219,212,0.5); border-radius: 50%;
+    opacity: 0; pointer-events: none;
+  }
+  .shock.go { animation: shock 0.6s var(--ease-out); }
+  @keyframes shock {
+    0% { opacity: 0.9; transform: scale(0.2); border-width: 4px; }
+    100% { opacity: 0; transform: scale(28); border-width: 0.3px; }
+  }
+  /* the flash of the impression landing */
+  .flash {
+    position: fixed; inset: 0; z-index: 6; pointer-events: none; opacity: 0;
+    background: radial-gradient(circle 60vw at 50% 50%, rgba(228,221,201,0.55), rgba(228,221,201,0.08) 45%, transparent 66%);
+  }
+  .flash.go { animation: flash 0.36s var(--ease-out); }
+  @keyframes flash { 0% { opacity: 0; } 12% { opacity: 0.7; } 100% { opacity: 0; } }
+  /* dust flung on impact */
+  .dust { position: fixed; z-index: 5; left: 50%; top: 50%; width: 3px; height: 3px; background: rgba(221,219,212,0.7); border-radius: 50%; opacity: 0; pointer-events: none; }
+  .dust.go { animation: dust 0.7s var(--ease-out); }
+  @keyframes dust {
+    0% { opacity: 0.9; transform: translate(0,0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2); }
+  }
+
+  /* the hero (revealed on the flood) */
+  .hero {
+    position: fixed; z-index: 6; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    text-align: center; width: min(92vw, 1100px);
+    opacity: 0; transition: opacity 0.5s var(--ease-out) 0.15s;
+    pointer-events: none;
+  }
+  body.page .hero { opacity: 1; }
+  .hero .eyebrow { font-family: var(--mono); font-size: clamp(0.55rem, 0.82vw, 0.7rem); letter-spacing: 0.28em; color: var(--ink); margin-bottom: 1.4rem; opacity: 0.72; }
+  .hero .eyebrow em { font-style: normal; color: var(--accent); }
+  .hero h1 {
+    font-weight: 480; font-variation-settings: "opsz" 144;
+    font-size: clamp(3rem, 13vw, 15rem); line-height: 0.84; letter-spacing: -0.035em; color: var(--ink);
+  }
+  .hero .amp { font-style: italic; font-weight: 340; color: var(--accent); }
+
+  /* corner tab (the name flies here) + furniture on the flood */
+  .furniture { opacity: 0; transition: opacity 0.6s var(--ease-out) 0.25s; }
+  body.page .furniture { opacity: 1; }
+  .tab {
+    position: fixed; z-index: 8; top: calc(var(--frame) + 2px); left: calc(var(--frame) + 22px);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.24em; color: var(--ink); opacity: 0.66;
+  }
+  .jobline {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 8;
+    background: color-mix(in srgb, var(--stone) 88%, var(--ink)); border-top: 1px solid rgba(22,21,15,0.16);
+    display: flex; justify-content: space-between; gap: 16px; padding: 8px 18px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: rgba(22,21,15,0.66); white-space: nowrap;
+  }
+  .jobline b { font-weight: 400; color: var(--pencil); } .jobline em { font-style: normal; color: var(--accent); }
+  /* the flying name overlay (clone that morphs to the tab) */
+  #fly {
+    position: fixed; z-index: 9; left: 50%; top: 50%;
+    font-weight: 480; font-variation-settings: "opsz" 144; white-space: nowrap;
+    color: var(--ink); pointer-events: none; opacity: 0;
+    transform-origin: left top;
+  }
+
+  .cap { position: fixed; z-index: 20; left: calc(var(--frame) + 18px); bottom: calc(var(--frame) + 12px); font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--fg); opacity: 0.5; }
+  body.page .cap { color: var(--ink); }
+  .cap b { font-weight: 700; }
+  .replay { position: fixed; z-index: 20; right: var(--frame); top: calc(var(--frame) + 2px); font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--ink); background: none; border: 1px solid rgba(22,21,15,0.4); padding: 7px 12px 6px; cursor: pointer; opacity: 0; transition: opacity 0.5s, background-color 0.2s, color 0.2s; }
+  body.page .replay { opacity: 0.8; }
+  .replay:hover { background: var(--ink); color: var(--stone); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  @media (max-width: 640px) {
+    .readout { top: auto; bottom: 20vh; right: 50%; transform: translateX(50%); text-align: center; }
+    .cap { display: none; }
+    .name { font-size: clamp(2rem, 13vw, 4rem); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="glow" aria-hidden="true"></div>
+
+  <div class="readout" aria-hidden="true">
+    <span class="lbl">MAKE-READY</span>
+    <span class="num"><span id="num">00</span><em>%</em></span>
+    <span class="st" id="st">SETTING THE FORME</span>
+  </div>
+
+  <i class="bk tl" id="bk-tl"></i><i class="bk tr" id="bk-tr"></i>
+  <i class="bk bl" id="bk-bl"></i><i class="bk br" id="bk-br"></i>
+
+  <div class="regwrap" aria-hidden="true"><svg viewBox="0 0 40 40"><circle class="reg-ink" cx="20" cy="20" r="11"/><path class="reg-ink" d="M20 2v11M20 27v11M2 20h11M27 20h11"/></svg></div>
+  <div class="tonebar" id="tonebar" aria-hidden="true">
+    <i style="background:#16150F"></i><i style="background:rgba(22,21,15,.55)"></i>
+    <i style="background:#C7361F"></i><i style="background:#7C7CFF"></i>
+    <i style="background:#B4C400"></i><i style="background:#E6E4DC"></i>
+  </div>
+
+  <div id="shake">
+    <div class="stage" aria-hidden="true"><span class="name" id="name">MARK AXELUS</span></div>
+  </div>
+  <span class="shock" id="shock" aria-hidden="true"></span>
+  <div class="flash" id="flash" aria-hidden="true"></div>
+
+  <div class="hero" aria-hidden="true">
+    <p class="eyebrow mono">( ONE-PERSON PRACTICE — <em>EST. 2019</em> )</p>
+    <h1>Code, design<br><span class="amp">&amp;</span>&nbsp;nerve</h1>
+  </div>
+  <span id="fly" aria-hidden="true">MARK AXELUS</span>
+
+  <div class="furniture" aria-hidden="true">
+    <span class="tab">MARK AXELUS</span>
+    <div class="jobline">
+      <span>SHEET Nº 001 · MARK AXELUS · WORKING PROOF</span>
+      <span><b>STRUCK</b> · <em>IN REGISTER</em> · D50 5000K</span>
+    </div>
+  </div>
+
+  <span class="cap">LOAD — <b>THE STRIKE</b> · struck, in register</span>
+  <button class="replay" id="replay" type="button">&#8630; REPLAY</button>
+
+<script>
+  var body = document.body;
+  var numEl = document.getElementById("num");
+  var stEl = document.getElementById("st");
+  var nameEl = document.getElementById("name");
+  var shakeEl = document.getElementById("shake");
+  var shockEl = document.getElementById("shock");
+  var flashEl = document.getElementById("flash");
+  var toneEls = document.querySelectorAll("#tonebar i");
+  var flyEl = document.getElementById("fly");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var timers = [], rafId = null;
+  function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
+  function clearAll() { timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(rafId); }
+
+  var countTo = 0, countCur = 0;
+  function counter() {
+    countCur += (countTo - countCur) * 0.14;
+    if (Math.abs(countTo - countCur) < 0.4) countCur = countTo;
+    var v = Math.round(countCur);
+    numEl.textContent = (v < 10 ? "0" : "") + v;
+    rafId = requestAnimationFrame(counter);
+  }
+
+  function seatBrackets() {
+    var g = document.querySelector(".stage").getBoundingClientRect();
+    var pad = 30, bk = 72, vw = innerWidth, vh = innerHeight, fr = 0.022 * vw;
+    var pts = { "bk-tl":[g.left-pad,g.top-pad], "bk-tr":[g.right+pad-bk,g.top-pad],
+                "bk-bl":[g.left-pad,g.bottom+pad-bk], "bk-br":[g.right+pad-bk,g.bottom+pad-bk] };
+    var hm = { "bk-tl":[fr,fr], "bk-tr":[vw-fr-bk,fr], "bk-bl":[fr,vh-fr-bk], "bk-br":[vw-fr-bk,vh-fr-bk] };
+    Object.keys(pts).forEach(function (id) {
+      document.getElementById(id).style.transform = "translate(" + (pts[id][0]-hm[id][0]) + "px," + (pts[id][1]-hm[id][1]) + "px)";
+    });
+  }
+  function releaseBrackets() { ["bk-tl","bk-tr","bk-bl","bk-br"].forEach(function (id){ document.getElementById(id).style.transform = "translate(0,0)"; }); }
+
+  function dust() {
+    for (var i = 0; i < 14; i++) {
+      var d = document.createElement("span");
+      d.className = "dust";
+      var a = Math.random() * Math.PI - Math.PI, r = 60 + Math.random() * 180;
+      d.style.setProperty("--dx", Math.cos(a) * r + "px");
+      d.style.setProperty("--dy", (-Math.abs(Math.sin(a)) * r - 20) + "px");
+      document.body.appendChild(d);
+      void d.offsetWidth; d.classList.add("go");
+      (function (el) { setTimeout(function () { el.remove(); }, 800); })(d);
+    }
+  }
+
+  /* the name flies to the corner tab (FLIP: measure both, animate transform) */
+  function flyToTab() {
+    var from = nameEl.getBoundingClientRect();
+    var tab = document.querySelector(".tab");
+    var to = tab.getBoundingClientRect();
+    flyEl.style.fontSize = getComputedStyle(nameEl).fontSize;
+    flyEl.style.left = from.left + "px"; flyEl.style.top = from.top + "px";
+    flyEl.style.color = "var(--ink)";
+    flyEl.style.opacity = "1";
+    nameEl.style.opacity = "0";   /* the struck name hands off to the flying clone */
+    var f2 = flyEl.getBoundingClientRect();
+    var sc = to.height / f2.height * 1.0;
+    // let the browser paint the start, then transition to the tab
+    void flyEl.offsetWidth;
+    flyEl.style.transition = "transform 0.7s var(--ease-out), opacity 0.3s var(--ease-out) 0.5s";
+    flyEl.style.transform = "translate(" + (to.left - from.left) + "px," + (to.top - from.top) + "px) scale(" + sc.toFixed(3) + ")";
+    flyEl.style.opacity = "0";
+  }
+
+  function toPage() {
+    body.classList.add("page");
+    body.style.setProperty("--bg", "var(--stone)");
+    body.style.setProperty("--fg", "var(--ink)");
+    releaseBrackets();
+    flyToTab();
+  }
+
+  function strike() {
+    /* the impression lands: flex + shockwave + dust + thunk, ink floods */
+    shakeEl.classList.remove("flex"); void shakeEl.offsetWidth; shakeEl.classList.add("flex");
+    shockEl.classList.remove("go"); void shockEl.offsetWidth; shockEl.classList.add("go");
+    flashEl.classList.remove("go"); void flashEl.offsetWidth; flashEl.classList.add("go");
+    dust();
+    /* the impression inks the name (body.struck), passes flung off register
+       on the blow (.hit on the name), then they seat true */
+    body.classList.add("struck");
+    nameEl.classList.add("hit");
+    at(30, function () { nameEl.classList.remove("hit"); });
+    countTo = 100;
+    stEl.textContent = "STRUCK — IN REGISTER"; stEl.classList.add("ok");
+  }
+
+  function play() {
+    clearAll();
+    ["lit","drawn","struck","page"].forEach(function (c) { body.classList.remove(c); });
+    body.style.setProperty("--bg", "var(--booth)");
+    body.style.setProperty("--fg", "var(--stone)");
+    numEl.textContent = "00"; countTo = 0; countCur = 0;
+    stEl.textContent = "SETTING THE FORME"; stEl.classList.remove("ok");
+    nameEl.classList.remove("struck", "hit"); nameEl.style.opacity = "";
+    flyEl.style.transition = "none"; flyEl.style.transform = "none"; flyEl.style.opacity = "0";
+    toneEls.forEach(function (t) { t.style.opacity = ""; t.style.transform = ""; });
+    void body.offsetWidth;
+    seatBrackets();
+
+    if (reduce) {
+      body.classList.add("lit","drawn","struck");
+      countTo = 100; countCur = 100; numEl.textContent = "100";
+      stEl.textContent = "STRUCK — IN REGISTER"; stEl.classList.add("ok");
+      toPage();
+      return;
+    }
+
+    rafId = requestAnimationFrame(counter);
+    /* the proof assembles (quick): light, brackets, reg mark, tone bar */
+    at(60,  function () { body.classList.add("lit"); });
+    at(240, function () { body.classList.add("drawn"); countTo = 30; });
+    toneEls.forEach(function (t, i) {
+      at(420 + i * 70, function () { t.style.opacity = "0.9"; t.style.transform = "translateY(0)"; if (i > 1) countTo = 40 + i * 6; });
+    });
+    /* the name is set blind, a beat of tension, then THE STRIKE */
+    at(1050, function () { countTo = 66; stEl.textContent = "MAKE-READY — SET"; });
+    at(1500, strike);
+    /* a beat of stillness so the blow lands, then the flood/reveal */
+    at(2050, toPage);
+  }
+
+  document.getElementById("replay").addEventListener("click", play);
+  addEventListener("resize", function () { if (!body.classList.contains("page")) seatBrackets(); });
+  play();
+</script>
+</body>
+</html>
