@@ -300,6 +300,22 @@ signatures (Mark counts these himself):
      real visit counter. Fine print: THIS LOG PRINTS ON YOUR COPY ONLY.
      SHOP POLICY. (It does print — that's where the joke lands hardest.)
      `ma-presslog-v1`; renders only on acts, never in a loop.
+     **REFINED (July 11, Mark's note — "it drags the page down... should be
+     scrollable and cap at a height... if it gets approved it writes it out
+     so the system looks alive"):** `#jl-lines` is now a capped 7.5rem
+     window (`overflow-y:auto`, thin hairline scrollbar, `overscroll-behavior:
+     contain`) that auto-scrolls to the newest line, so a long shift never
+     grows the outro. New entries TELETYPE out char-by-char with a blinking
+     block caret (`.jl-typing::after`, `typeOutLast()` — renders all but the
+     newest instantly, then chatters the last line like the shop's ticket
+     printer); the stamp/approval line rides the same path, so getting passed
+     for press visibly prints itself. `logAct(line, instant)` — load, print,
+     reduced-motion and hidden-tab pass `instant`/take the instant `renderLog()`
+     path (so a Ctrl+P proof captures whole lines and the full log still prints
+     UNCAPPED — `@media print` lifts the cap). `renderLog`/`typeOutLast` build
+     via `textContent` now (was innerHTML string-concat). Verified headless:
+     10 seeded lines clip to 120px over 265px scroll, pinned to newest;
+     new act types 3→23 chars live; caps at 11; zero console errors.
 
 ### Fixed furniture (all pages)
 - Poster frame + crop marks, spinning registration mark, color bar → **paint chips**

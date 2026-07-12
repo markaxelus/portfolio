@@ -2019,20 +2019,61 @@
   try { logEntries = JSON.parse(localStorage.getItem(LOG_STORE) || "[]") || []; } catch (e) { logEntries = []; }
   try { logSessionMarked = !!sessionStorage.getItem("ma-log-sess"); } catch (e) {}
 
+  function liText(en) { return en.d ? en.s : (en.t + " — " + en.s); }
+  function scrollLogEnd() { if (logLinesEl) logLinesEl.scrollTop = logLinesEl.scrollHeight; }
+  var typeTimer = null;
+
+  /* rebuild the whole log instantly — load, print, reduced motion */
   function renderLog() {
     if (!logLinesEl || !logBlockEl) return;
+    clearTimeout(typeTimer);
     if (!logEntries.length) { logBlockEl.hidden = true; return; }
-    var html = "";
-    for (var i = 0; i < logEntries.length; i++) {
-      var en = logEntries[i];
-      html += en.d
-        ? '<li class="jl-div">' + en.s + "</li>"
-        : "<li>" + en.t + " — " + en.s + "</li>";
-    }
-    logLinesEl.innerHTML = html;
     logBlockEl.hidden = false;
+    logLinesEl.innerHTML = "";
+    for (var i = 0; i < logEntries.length; i++) {
+      var li = document.createElement("li");
+      if (logEntries[i].d) li.className = "jl-div";
+      li.textContent = liText(logEntries[i]);
+      logLinesEl.appendChild(li);
+    }
+    scrollLogEnd();
   }
-  function logAct(line) {
+
+  /* the shop's ticket printer: render all but the newest instantly, then
+     chatter the newest line out one character at a time — the system is
+     writing, not just appearing. a caret blinks while it types. the stamp
+     line rides this path too, so an approval visibly prints itself. */
+  function typeOutLast() {
+    if (!logLinesEl || !logBlockEl) return;
+    clearTimeout(typeTimer);
+    logBlockEl.hidden = false;
+    logLinesEl.innerHTML = "";
+    for (var i = 0; i < logEntries.length - 1; i++) {
+      var li = document.createElement("li");
+      if (logEntries[i].d) li.className = "jl-div";
+      li.textContent = liText(logEntries[i]);
+      logLinesEl.appendChild(li);
+    }
+    var en = logEntries[logEntries.length - 1];
+    var full = liText(en), line = document.createElement("li");
+    if (en.d) line.className = "jl-div";
+    line.classList.add("jl-typing");
+    logLinesEl.appendChild(line);
+    scrollLogEnd();
+    var k = 0;
+    (function step() {
+      line.textContent = full.slice(0, k);
+      if (k < full.length) {
+        var ch = full.charAt(k); k++;
+        scrollLogEnd();
+        typeTimer = setTimeout(step, ch === " " ? 30 : 19);
+      } else {
+        line.classList.remove("jl-typing");
+      }
+    })();
+  }
+
+  function logAct(line, instant) {
     if (!logLinesEl) return;
     /* the first act of a return session re-opens the ticket */
     if (!logSessionMarked) {
@@ -2045,18 +2086,26 @@
       }
     }
     var last = logEntries[logEntries.length - 1];
+    var fresh;
     if (last && !last.d && last.s === line) {
       last.t = deskTime(); /* same act again — the clock updates, the line doesn't */
+      fresh = false;
     } else {
       logEntries.push({ t: deskTime(), s: line });
+      fresh = true;
     }
     if (logEntries.length > 11) logEntries = logEntries.slice(-11);
     try { localStorage.setItem(LOG_STORE, JSON.stringify(logEntries)); } catch (e) {}
-    renderLog();
+    if (fresh && !instant && !reduced() && !stillMode && document.visibilityState !== "hidden") {
+      typeOutLast();
+    } else {
+      renderLog();
+    }
   }
   renderLog();
-  /* pulling a paper copy is an act too — it shows on the next look */
-  addEventListener("beforeprint", function () { logAct("a clean proof pulled to paper."); });
+  /* pulling a paper copy is an act too — render it instantly so the print
+     captures the whole line, not a half-typed one */
+  addEventListener("beforeprint", function () { logAct("a clean proof pulled to paper.", true); });
 
   /* ============ the tab misses you ============ */
   var baseTitle = document.title;
