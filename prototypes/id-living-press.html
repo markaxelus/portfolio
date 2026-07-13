@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE LIVING PRESS — true at rest, off register in motion (mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,100..900,0..100;1,9..144,100..900,0..100&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     IDENTITY — THE LIVING PRESS. A single-effect comparison mock.
+     The hero is a live print that is TRUE (crisp, in register)
+     only when the visitor is still. Move — cursor velocity or a
+     scroll gesture — and the red pass (--pencil) and blue pass
+     (--accent) of the DISPLAY TYPE shear off register. Stop, and
+     everything THUNKS home. The registration mark is the site's
+     instrument: its red crosshair drifts by the live error and
+     centres when the sheet is true. An unprompted auto-pulse
+     every ~3.5s keeps the identity legible with no input.
+     Crisp-at-rest is essential — it must never read as broken.
+     Perf: no layout reads in any handler (the effect needs none);
+     transform / text-shadow writes only; quantized to 0.5px so
+     identical frames write nothing; reduced motion ships a clean,
+     perfectly-registered static sheet.
+     ============================================================ */
+  :root {
+    --stone:#DDDBD4; --stone-deep:#CFCDC5; --ink:#16150F; --accent:#2A2AF0;
+    --acid:#B4C400; --pencil:#C7361F; --graphite:rgba(22,21,15,0.55);
+    --hairline:rgba(22,21,15,0.28); --booth:#0C0B08;
+    --mono:"Space Mono", monospace;
+    --frame: 2.2vw;
+    --ease-out: cubic-bezier(0.19,1,0.22,1);
+    /* the thunk: overshoots past register, then seats */
+    --ease-thunk: cubic-bezier(0.34,1.4,0.64,1);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    background: var(--stone);
+    color: var(--ink);
+    font-family:"Fraunces", Georgia, serif;
+    font-optical-sizing:auto;
+    overflow:hidden;
+    position:relative;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    cursor:default;
+  }
+  /* a faint, even ink haze — the sheet has a little tooth, not a flat fill */
+  body::before {
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(120vw 90vh at 50% 42%, transparent 58%, rgba(22,21,15,0.05) 100%);
+  }
+
+  /* ---------- crop brackets: the proof-sheet frame ---------- */
+  .bk {
+    position:fixed; z-index:7; width:78px; height:78px;
+    border:0 solid currentColor; pointer-events:none; opacity:0.7;
+  }
+  .bk.tl { top:var(--frame); left:var(--frame);  border-top-width:1.4px; border-left-width:1.4px; }
+  .bk.tr { top:var(--frame); right:var(--frame); border-top-width:1.4px; border-right-width:1.4px; }
+  .bk.bl { bottom:var(--frame); left:var(--frame);  border-bottom-width:1.4px; border-left-width:1.4px; }
+  .bk.br { bottom:var(--frame); right:var(--frame); border-bottom-width:1.4px; border-right-width:1.4px; }
+
+  /* ---------- the instrument: the registration mark ----------
+     ink cross = the true reference (centred, on top). The red and
+     blue crosses ride behind it, translated by the LIVE error —
+     they drift when the sheet is off register, seat when it's true. */
+  .regwrap {
+    position:fixed; z-index:8; left:50%; top:calc(var(--frame) + 16px);
+    width:40px; height:40px; margin-left:-20px; pointer-events:none;
+  }
+  .regwrap svg { width:100%; height:100%; overflow:visible; display:block; }
+  .reg-ink  { stroke:var(--ink);    stroke-width:1.15; fill:none; }
+  .reg-red  { stroke:var(--pencil); stroke-width:1.15; fill:none; will-change:transform; }
+  .reg-blue { stroke:var(--accent); stroke-width:1.15; fill:none; will-change:transform; }
+  .reglabel {
+    position:fixed; z-index:8; left:50%; top:calc(var(--frame) + 60px);
+    transform:translateX(-50%);
+    font-family:var(--mono); font-size:8.5px; letter-spacing:0.28em;
+    color:var(--graphite); white-space:nowrap;
+  }
+
+  /* ---------- the sheet: eyebrow + headline + bio ---------- */
+  .hero {
+    position:fixed; z-index:5; left:50%; top:51%;
+    transform:translate(-50%,-50%);
+    width:min(92vw,1200px); text-align:center;
+  }
+  .eyebrow {
+    font-family:var(--mono); font-size:clamp(0.58rem,0.86vw,0.72rem);
+    letter-spacing:0.28em; opacity:0.74; margin-bottom:1.7rem;
+  }
+  .eyebrow em { font-style:normal; color:var(--accent); }
+  .headline {
+    font-weight:480; font-variation-settings:"opsz" 144;
+    font-size:clamp(3rem,13vw,15rem); line-height:0.84; letter-spacing:-0.035em;
+    /* rest = a single clean impression. inline text-shadow drives the passes. */
+  }
+  .headline .amp { font-style:italic; font-weight:340; color:var(--accent); }
+  .bio {
+    font-family:var(--mono); font-size:clamp(0.78rem,0.98vw,0.98rem);
+    line-height:1.5; max-width:34ch; margin:2.5rem auto 0; opacity:0.66;
+  }
+
+  /* the thunk home: only armed while settling, so live per-frame writes
+     track velocity instantly (no transition fighting them) */
+  body.settling .headline,
+  body.settling .eyebrow  { transition: text-shadow 0.34s var(--ease-thunk); }
+  body.settling .reg-red,
+  body.settling .reg-blue { transition: transform 0.34s var(--ease-thunk); }
+
+  /* ---------- furniture ---------- */
+  .slug {
+    position:fixed; z-index:9; top:calc(var(--frame) + 2px); left:calc(var(--frame) + 96px);
+    font-family:var(--mono); font-size:10px; letter-spacing:0.22em; color:var(--graphite);
+  }
+  .readout {
+    position:fixed; z-index:9; top:calc(var(--frame) + 2px); right:calc(var(--frame) + 96px);
+    font-family:var(--mono); text-align:right;
+  }
+  .readout .rlabel { display:block; font-size:8.5px; letter-spacing:0.3em; color:var(--graphite); }
+  .rstate { display:block; font-size:12px; letter-spacing:0.14em; margin-top:2px; }
+  .rstate.reg { color:var(--ink); }
+  .rstate.reg::before { content:"● "; color:var(--acid); }
+  .rstate.off { color:var(--pencil); }
+
+  .caption {
+    position:fixed; z-index:9; left:calc(var(--frame) + 96px); bottom:calc(var(--frame) + 2px);
+    font-family:var(--mono); font-size:10px; letter-spacing:0.16em;
+    color:var(--graphite); line-height:1.6; max-width:52vw;
+  }
+  .caption b { font-weight:400; color:var(--ink); letter-spacing:0.2em; }
+  .instruct {
+    position:fixed; z-index:9; right:calc(var(--frame) + 96px); bottom:calc(var(--frame) + 2px);
+    font-family:var(--mono); font-size:10px; letter-spacing:0.16em;
+    color:var(--graphite); text-align:right;
+  }
+  .instruct em { font-style:normal; color:var(--accent); }
+
+  @media (max-width: 720px) {
+    .slug, .readout { display:none; }
+    .caption, .instruct { left:50%; right:auto; transform:translateX(-50%); text-align:center;
+      max-width:88vw; bottom:calc(var(--frame) + 2px); }
+    .instruct { bottom:calc(var(--frame) + 34px); }
+  }
+
+  /* reduced motion: a clean, perfectly-registered static sheet. no motion. */
+  @media (prefers-reduced-motion: reduce) {
+    .headline, .eyebrow, .reg-red, .reg-blue { transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- the proof-sheet frame -->
+  <i class="bk tl"></i><i class="bk tr"></i><i class="bk bl"></i><i class="bk br"></i>
+
+  <!-- the instrument: reads the press -->
+  <div class="regwrap" aria-hidden="true">
+    <svg viewBox="0 0 40 40">
+      <g class="reg-blue"><circle cx="20" cy="20" r="9"/><path d="M20 5v8M20 27v8M5 20h8M27 20h8"/></g>
+      <g class="reg-red"><circle cx="20" cy="20" r="9"/><path d="M20 5v8M20 27v8M5 20h8M27 20h8"/></g>
+      <g class="reg-ink"><circle cx="20" cy="20" r="9"/><path d="M20 3v10M20 27v10M3 20h10M27 20h10"/></g>
+    </svg>
+  </div>
+  <span class="reglabel" aria-hidden="true">REGISTRATION MARK</span>
+
+  <span class="slug" aria-hidden="true">SHEET Nº 001 &middot; MARK AXELUS</span>
+  <div class="readout" aria-hidden="true">
+    <span class="rlabel">REGISTER</span>
+    <span class="rstate reg" id="rstate">IN REGISTER</span>
+  </div>
+
+  <!-- the sheet -->
+  <div class="hero">
+    <p class="eyebrow" id="eyebrow">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</p>
+    <h1 class="headline" id="headline">Code, design<br><span class="amp">&amp;</span>&nbsp;nerve</h1>
+    <p class="bio">I&rsquo;m Mark. I design and build interfaces that hold their nerve. I work slowly, ship rarely, and put everything on the page.</p>
+  </div>
+
+  <p class="caption" aria-hidden="true">IDENTITY &mdash; <b>THE LIVING PRESS</b> &middot; true at rest, off register in motion</p>
+  <p class="instruct" aria-hidden="true">&#8597; <em>MOVE THE CURSOR OR SCROLL</em> &middot; STOP TO REGISTER</p>
+
+<script>
+(function () {
+  "use strict";
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var body     = document.body;
+  var headline = document.getElementById("headline");
+  var eyebrow  = document.getElementById("eyebrow");
+  var regRed   = document.querySelector(".reg-red");
+  var regBlue  = document.querySelector(".reg-blue");
+  var rstate   = document.getElementById("rstate");
+
+  // the two ink passes (hardcoded so transition interpolates offsets only,
+  // colours constant, structure identical in every shadow list)
+  var PENCIL = "#C7361F", ACCENT = "#2A2AF0";
+  var REST   = "0px 0px 0 " + PENCIL + ", 0px 0px 0 " + ACCENT;
+
+  // --- feel constants ---
+  var MAX        = 6;     // px, clamp for the separation (~1-6px, "max ~6px")
+  var RISE       = 0.30;  // how fast the rendered error chases the target
+  var IDLE_MS    = 280;   // stillness before the passes thunk home
+  var THUNK_MS   = 380;   // clear inline just after the 0.34s CSS thunk
+  var VEL_K      = 1.8;   // cursor px/ms -> separation px
+  var WHEEL_K    = 0.03;  // wheel deltaY -> separation px
+  // auto-demo
+  var PULSE_EVERY = 3500; // ms between unprompted pulses (when the visitor is idle)
+  var PULSE_RISE  = 260;  // ms the pulse holds the passes sheared before releasing
+  var PULSE_PEAK  = 4.5;  // px the pulse shears to
+
+  // --- live state ---
+  var velTarget = 0;      // input-driven target error (held between events)
+  var err       = 0;      // rendered error (smoothed toward velTarget)
+  var lastErrQ  = 0;      // last quantized value WRITTEN (skip identical frames)
+  var lastActiveT = 0;    // any activity (input OR pulse) — gates the settle
+  var lastUserT   = -1e5; // real user input only — gates the auto-demo
+  var settling  = false;
+  var settleTimer = null;
+
+  var pulsing = false, pulseStart = 0, lastPulseStart = PULSE_EVERY - 2500; // first pulse ~2.5s
+
+  // cursor velocity (clientX/Y + timestamps only — zero layout reads)
+  var mpx = 0, mpy = 0, haveM = false, lastMoveT = 0;
+
+  function nowT() { return performance.now(); }
+
+  // ---- writers (transform / text-shadow only) ----
+  function headShadow(q) {
+    var x = q, y = q * 0.45;                 // pencil up-left, accent down-right
+    return (-x) + "px " + (-y) + "px 0 " + PENCIL + ", " + x + "px " + y + "px 0 " + ACCENT;
+  }
+  function browShadow(q) {                    // gentler on the small mono eyebrow
+    var x = q * 0.38, y = q * 0.16;
+    return (-x) + "px " + (-y) + "px 0 " + PENCIL + ", " + x + "px " + y + "px 0 " + ACCENT;
+  }
+  function setReadout(q) {
+    if (q <= 0) { rstate.textContent = "IN REGISTER"; rstate.className = "rstate reg"; }
+    else {
+      rstate.textContent = "OFF · " + (q % 1 === 0 ? q.toFixed(0) : q.toFixed(1)) + " PX";
+      rstate.className = "rstate off";
+    }
+  }
+  function writeErr(q) {
+    if (q <= 0) {
+      headline.style.textShadow = REST;
+      eyebrow.style.textShadow  = REST;
+      regRed.style.transform  = "translate(0px,0px)";
+      regBlue.style.transform = "translate(0px,0px)";
+    } else {
+      headline.style.textShadow = headShadow(q);
+      eyebrow.style.textShadow  = browShadow(q);
+      regRed.style.transform  = "translate(" + (-q) + "px," + (-q * 0.45) + "px)";
+      regBlue.style.transform = "translate(" + q + "px," + (q * 0.45) + "px)";
+    }
+    setReadout(q);
+  }
+
+  // ---- the thunk home ----
+  function clearInline() {
+    headline.style.textShadow = "";
+    eyebrow.style.textShadow  = "";
+    regRed.style.transform  = "";
+    regBlue.style.transform = "";
+  }
+  function beginSettle() {
+    settling = true; velTarget = 0; err = 0; lastErrQ = 0;
+    body.classList.add("settling");     // arm the CSS thunk transition
+    setReadout(0);
+    // defer the target-set one frame so the transition runs from the live value
+    requestAnimationFrame(function () {
+      if (!settling) return;
+      headline.style.textShadow = REST;
+      eyebrow.style.textShadow  = REST;
+      regRed.style.transform  = "translate(0px,0px)";
+      regBlue.style.transform = "translate(0px,0px)";
+    });
+    settleTimer = setTimeout(function () {
+      settling = false; settleTimer = null;
+      body.classList.remove("settling");
+      clearInline();                    // back to the crisp CSS default
+    }, THUNK_MS);
+  }
+  function cancelSettle() {
+    if (settleTimer) { clearTimeout(settleTimer); settleTimer = null; }
+    settling = false;
+    body.classList.remove("settling");
+    clearInline();
+    lastErrQ = 0;
+  }
+
+  // ---- inputs (no layout reads anywhere) ----
+  function onMove(e) {
+    var t = nowT(), x = e.clientX, y = e.clientY;
+    if (haveM) {
+      var dt = Math.max(6, Math.min(64, t - lastMoveT));
+      var dx = x - mpx, dy = y - mpy;
+      var speed = Math.sqrt(dx * dx + dy * dy) / dt;         // px per ms
+      var sample = Math.min(MAX, speed * VEL_K);
+      velTarget = velTarget * 0.35 + sample * 0.65;          // smooth spikes, hold on stop
+      lastActiveT = t; lastUserT = t; pulsing = false;
+    }
+    mpx = x; mpy = y; haveM = true; lastMoveT = t;
+    if (settling) cancelSettle();
+  }
+  function onWheel(e) {
+    var t = nowT();
+    velTarget = Math.max(velTarget, Math.min(MAX, Math.abs(e.deltaY) * WHEEL_K));
+    lastActiveT = t; lastUserT = t; pulsing = false;
+    if (settling) cancelSettle();
+  }
+  function onScroll() {                                        // if the env ever scrolls
+    var t = nowT();
+    velTarget = Math.max(velTarget, 2.4);
+    lastActiveT = t; lastUserT = t; pulsing = false;
+    if (settling) cancelSettle();
+  }
+
+  // ---- the loop ----
+  function frame() {
+    requestAnimationFrame(frame);
+    var t = nowT();
+
+    // auto-demo: one unprompted pulse every ~3.5s while the visitor is idle
+    if (!pulsing && !settling && (t - lastUserT) > 1600 &&
+        (t - lastPulseStart) > PULSE_EVERY && t > 2500) {
+      pulsing = true; pulseStart = t; lastPulseStart = t;
+    }
+    if (pulsing) {
+      if (t - pulseStart < PULSE_RISE) { velTarget = PULSE_PEAK; lastActiveT = t; }
+      else { pulsing = false; }        // release — the idle->thunk path takes it home
+    }
+
+    // integrate toward the (held) target
+    err += (velTarget - err) * RISE;
+    if (err < 0.02) err = 0;
+
+    if (!settling) {
+      var q = Math.round(err * 2) / 2;                 // quantize to 0.5px
+      if (q !== lastErrQ) { lastErrQ = q; writeErr(q); }
+      if ((t - lastActiveT) > IDLE_MS && lastErrQ > 0) beginSettle();
+    }
+  }
+
+  // reduced motion: leave the crisp CSS default; no listeners, no loop.
+  if (!reduce) {
+    window.addEventListener("mousemove", onMove,  { passive: true });
+    window.addEventListener("wheel",     onWheel, { passive: true });
+    window.addEventListener("scroll",    onScroll,{ passive: true });
+    requestAnimationFrame(frame);
+  }
+})();
+</script>
+</body>
+</html>

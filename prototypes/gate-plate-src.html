@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NIGHT OFFICE — Renderhaus farm console (plate source)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* Fictional client product: Renderhaus GmbH farm console ("Night Office").
+     Rendered at exactly 2000x1250 and screenshotted as the press plate source.
+     Dark-by-default, quiet-by-design: no red anywhere, alarms are typographic. */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 2000px; height: 1250px; overflow: hidden; }
+  body {
+    background: #0B0C10;
+    color: #E8E6DF;
+    font-family: Inter, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    display: flex; flex-direction: column;
+  }
+  .mono { font-family: "Space Mono", monospace; }
+
+  /* ---- top bar ---- */
+  .top {
+    height: 84px; flex: 0 0 84px;
+    display: flex; align-items: center; gap: 28px;
+    padding: 0 44px;
+    border-bottom: 1px solid rgba(232,230,223,0.13);
+  }
+  .wordmark { font-size: 24px; font-weight: 600; letter-spacing: 0.16em; }
+  .wordmark span { opacity: 0.45; font-weight: 400; }
+  .top .div { width: 1px; height: 30px; background: rgba(232,230,223,0.14); }
+  .farm { font-size: 15px; letter-spacing: 0.22em; opacity: 0.6; }
+  .top .grow { flex: 1; }
+  .awake { font-size: 15px; letter-spacing: 0.14em; opacity: 0.75; }
+  .awake b { font-weight: 700; color: #FFC786; }
+  .clock { font-size: 30px; letter-spacing: 0.1em; font-weight: 700; }
+  .clock em { font-style: normal; font-size: 14px; opacity: 0.45; letter-spacing: 0.28em; display: block; text-align: right; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: #9BE08A; box-shadow: 0 0 12px rgba(155,224,138,0.8); }
+
+  /* ---- main ---- */
+  .main { flex: 1; display: flex; min-height: 0; }
+
+  /* queue rail */
+  .queue {
+    flex: 0 0 430px;
+    border-right: 1px solid rgba(232,230,223,0.13);
+    padding: 34px 38px;
+    display: flex; flex-direction: column;
+  }
+  .rail-head { font-size: 13px; letter-spacing: 0.3em; opacity: 0.62; margin-bottom: 26px; }
+  .job { padding: 17px 0 15px; border-bottom: 1px solid rgba(232,230,223,0.07); }
+  .job-line { display: flex; justify-content: space-between; align-items: baseline; }
+  .job-name { font-size: 17px; font-weight: 500; letter-spacing: 0.02em; color: #F6F3EA; }
+  .job-pct { font-size: 14px; opacity: 0.92; }
+  .job-id { font-size: 12px; letter-spacing: 0.12em; opacity: 0.55; margin-top: 4px; }
+  .bar { height: 2px; background: rgba(232,230,223,0.1); margin-top: 12px; position: relative; }
+  .bar i { position: absolute; inset: 0 auto 0 0; background: #FFB35C; }
+  .job.hot .bar i { background: #FFE3B0; box-shadow: 0 0 8px rgba(255,200,120,0.9); }
+  .job.watch .job-name::after {
+    content: "WATCHING"; font-family: "Space Mono", monospace;
+    font-size: 11px; letter-spacing: 0.26em; opacity: 0.85;
+    border: 1px solid rgba(232,230,223,0.35); padding: 3px 8px 2px; margin-left: 14px;
+    vertical-align: 3px;
+  }
+  .job.done { opacity: 0.38; }
+  .job.done .bar i { background: rgba(232,230,223,0.5); }
+  .queue-foot { margin-top: auto; font-size: 12px; letter-spacing: 0.18em; opacity: 0.52; line-height: 2; }
+
+  /* ember field */
+  .fieldwrap { flex: 1; position: relative; padding: 34px 40px; display: flex; flex-direction: column; }
+  .field-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 22px; }
+  .field-title { font-size: 13px; letter-spacing: 0.3em; opacity: 0.62; }
+  .field-sub { font-size: 12px; letter-spacing: 0.2em; opacity: 0.46; }
+  #field { flex: 1; display: grid; grid-template-columns: repeat(48, 1fr); align-content: space-between; position: relative; }
+  #field i {
+    display: block; width: 13px; height: 13px; border-radius: 50%;
+    justify-self: center; align-self: center;
+  }
+  #field .bloom {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    transform: translate(-50%, -50%);
+  }
+  .field-foot { display: flex; justify-content: space-between; margin-top: 20px; font-size: 12px; letter-spacing: 0.2em; opacity: 0.55; }
+
+  /* right rail */
+  .stats {
+    flex: 0 0 330px;
+    border-left: 1px solid rgba(232,230,223,0.13);
+    padding: 34px 38px;
+    display: flex; flex-direction: column; gap: 34px;
+  }
+  .stat .k { font-size: 12px; letter-spacing: 0.28em; opacity: 0.45; }
+  .stat .v { font-size: 44px; font-weight: 600; letter-spacing: 0.01em; margin-top: 8px; }
+  .stat .v small { font-size: 18px; opacity: 0.5; font-weight: 400; letter-spacing: 0.1em; }
+  .spark { margin-top: 12px; }
+  .spark polyline { fill: none; stroke: #FFB35C; stroke-width: 2; }
+  .spark line { stroke: rgba(232,230,223,0.12); }
+  .quiet {
+    border: 1px solid rgba(232,230,223,0.2);
+    padding: 20px 22px; font-size: 15px; line-height: 1.7; letter-spacing: 0.06em;
+  }
+  .quiet b { display: block; font-size: 12px; letter-spacing: 0.3em; opacity: 0.45; margin-bottom: 8px; font-weight: 400; }
+  .log { margin-top: auto; font-size: 12px; line-height: 2.1; letter-spacing: 0.1em; opacity: 0.55; }
+  .log em { font-style: normal; opacity: 0.6; }
+
+  /* bottom bar */
+  .bottom {
+    height: 56px; flex: 0 0 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 44px;
+    border-top: 1px solid rgba(232,230,223,0.13);
+    font-size: 12px; letter-spacing: 0.26em; opacity: 0.55;
+  }
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="wordmark mono">NIGHT<span> OFFICE</span></div>
+    <div class="div"></div>
+    <div class="farm mono">RENDERHAUS &middot; FARM A &middot; POTSDAM</div>
+    <div class="grow"></div>
+    <div class="awake mono"><b>396</b>/412 MACHINES AWAKE</div>
+    <div class="dot"></div>
+    <div class="clock mono">23:41<em>BERLIN</em></div>
+  </div>
+
+  <div class="main">
+    <aside class="queue">
+      <div class="rail-head mono">QUEUE — TONIGHT</div>
+      <div class="job hot watch">
+        <div class="job-line"><span class="job-name">grosstadt_S03_relight</span><span class="job-pct mono">87%</span></div>
+        <div class="job-id mono">JOB 8841 · 4K EXR · 220 FRAMES</div>
+        <div class="bar"><i style="width:87%"></i></div>
+      </div>
+      <div class="job hot">
+        <div class="job-line"><span class="job-name">atlas_hero_fur_v12</span><span class="job-pct mono">64%</span></div>
+        <div class="job-id mono">JOB 8846 · GPU · 96 FRAMES</div>
+        <div class="bar"><i style="width:64%"></i></div>
+      </div>
+      <div class="job">
+        <div class="job-line"><span class="job-name">volkshalle_interior_bounce</span><span class="job-pct mono">41%</span></div>
+        <div class="job-id mono">JOB 8850 · CPU · 480 FRAMES</div>
+        <div class="bar"><i style="width:41%"></i></div>
+      </div>
+      <div class="job">
+        <div class="job-line"><span class="job-name">meerblick_caustics_final</span><span class="job-pct mono">33%</span></div>
+        <div class="job-id mono">JOB 8852 · GPU · 140 FRAMES</div>
+        <div class="bar"><i style="width:33%"></i></div>
+      </div>
+      <div class="job">
+        <div class="job-line"><span class="job-name">u7_station_crowd_pass</span><span class="job-pct mono">18%</span></div>
+        <div class="job-id mono">JOB 8857 · CPU · 900 FRAMES</div>
+        <div class="bar"><i style="width:18%"></i></div>
+      </div>
+      <div class="job done">
+        <div class="job-line"><span class="job-name">grosstadt_S02_smoke</span><span class="job-pct mono">DONE</span></div>
+        <div class="job-id mono">JOB 8833 · DELIVERED 22:58</div>
+        <div class="bar"><i style="width:100%"></i></div>
+      </div>
+      <div class="job done">
+        <div class="job-line"><span class="job-name">atlas_previz_block_c</span><span class="job-pct mono">DONE</span></div>
+        <div class="job-id mono">JOB 8829 · DELIVERED 21:12</div>
+        <div class="bar"><i style="width:100%"></i></div>
+      </div>
+      <div class="queue-foot mono">
+        14 QUEUED BEHIND THESE ·<br>
+        ESTIMATED QUIET BY 04:20
+      </div>
+    </aside>
+
+    <section class="fieldwrap">
+      <div class="field-head">
+        <span class="field-title mono">JOB FIELD — LIVE</span>
+        <span class="field-sub mono">ONE EMBER PER MACHINE · BRIGHTER IS HOTTER</span>
+      </div>
+      <div id="field"></div>
+      <div class="field-foot mono">
+        <span>FARM LOAD 78% · 61&deg;C MEAN</span>
+        <span>NOTHING NEEDS YOU RIGHT NOW</span>
+      </div>
+    </section>
+
+    <aside class="stats">
+      <div class="stat">
+        <div class="k mono">GPU-HOURS TONIGHT</div>
+        <div class="v mono">1,847</div>
+        <svg class="spark" width="284" height="54" viewBox="0 0 284 54">
+          <line x1="0" y1="53" x2="284" y2="53"/>
+          <polyline points="0,44 24,40 48,42 72,34 96,36 120,28 144,30 168,22 192,25 216,14 240,18 264,9 284,12"/>
+        </svg>
+      </div>
+      <div class="stat">
+        <div class="k mono">HOTTEST JOB</div>
+        <div class="v mono">96&deg;<small> · JOB 8841</small></div>
+      </div>
+      <div class="quiet">
+        <b class="mono">ALARMS</b>
+        Frame 8841/183 ran eleven minutes long. Not worried yet. Watching it for you.
+      </div>
+      <div class="log mono">
+        <em>23:38</em> node A-114 back from thermal nap<br>
+        <em>23:31</em> job 8846 checkpointed clean<br>
+        <em>23:24</em> delivery: grosstadt_S02_smoke<br>
+        <em>23:07</em> night shift signed in · hallo, jo
+      </div>
+    </aside>
+  </div>
+
+  <div class="bottom mono">
+    <span>RENDERHAUS PIPELINE v4.2 — "NIGHT OFFICE"</span>
+    <span>QUIET BY DESIGN · ALARMS ARE WORDS, NOT COLOURS</span>
+    <span>UPTIME 312 NIGHTS</span>
+  </div>
+
+<script>
+  /* the ember field: one dot per machine, clustered heat, seeded so the
+     screenshot is deterministic */
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+  var rnd = mulberry32(20241123);
+  var f = document.getElementById("field");
+  var COLS = 48, ROWS = 21;
+  /* four hot clusters + one cool hole — the plate needs tonal mass */
+  var hot = [{x:9,y:5,r:8,w:1},{x:31,y:13,r:10,w:0.95},{x:41,y:4,r:6,w:0.8},{x:17,y:17,r:6,w:0.7}];
+  var cold = {x:24,y:9,r:5};
+  for (var y=0;y<ROWS;y++){
+    for (var x=0;x<COLS;x++){
+      var t = 0.2 + rnd()*0.3;
+      for (var h=0;h<hot.length;h++){
+        var d = Math.hypot(x-hot[h].x, y-hot[h].y);
+        t += Math.max(0, hot[h].w*(1 - d/hot[h].r)) * (0.8+rnd()*0.35);
+      }
+      var dc = Math.hypot(x-cold.x, y-cold.y);
+      t -= Math.max(0, 1 - dc/cold.r)*0.18;
+      t = Math.max(0.05, Math.min(1, t));
+      var i = document.createElement("i");
+      if (rnd() < 0.03) { /* asleep machine: a faint ring */
+        i.style.background = "transparent";
+        i.style.border = "1px solid rgba(232,230,223,0.2)";
+      } else {
+        var L = 16 + t*64;
+        var sat = 90 - t*24;
+        i.style.background = "hsl(" + (26 + t*16) + "," + sat + "%," + L + "%)";
+        if (t > 0.75) i.style.boxShadow = "0 0 18px 4px hsla(34,95%,74%," + (0.5+0.4*t) + ")";
+        else if (t > 0.5) i.style.boxShadow = "0 0 10px 2px hsla(30,90%,62%,0.4)";
+      }
+      f.appendChild(i);
+    }
+  }
+  /* soft heat blooms over the clusters: continuous light for the halftone to bite */
+  hot.forEach(function(h){
+    var b = document.createElement("span");
+    b.className = "bloom";
+    var w = f.clientWidth, ht = f.clientHeight;
+    var sz = h.r * 2.4 * (w / COLS);
+    b.style.left = ((h.x + 0.5) / COLS * 100) + "%";
+    b.style.top = ((h.y + 0.5) / ROWS * 100) + "%";
+    b.style.width = sz + "px"; b.style.height = sz + "px";
+    b.style.background = "radial-gradient(circle, hsla(33,100%,78%,0.22), hsla(30,95%,66%,0.09) 45%, transparent 66%)";
+    f.appendChild(b);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE PULL — the load comes into register (mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,100..900,0..100;1,9..144,100..900,0..100&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THE PULL — Direction Nº 005, a PLAYABLE mock (not a build).
+     The lesson from the five refs, in our own material: the LOAD
+     is a performed event that BECOMES the page. You don't arrive
+     at a finished sheet — you watch YOUR copy get pulled off the
+     press and come into register, then the booth floods to stone
+     and the loader's own crop-brackets fly out to become the page
+     frame. One continuous object, no curtain, no cut.
+     Autoplays on load; REPLAY bottom-right. Reduced motion skips
+     straight to the registered page.
+     ============================================================ */
+  :root {
+    --booth: #0C0B08;      /* shop lights low — the press room before the pull */
+    --stone: #DDDBD4;      /* the sheet / the page */
+    --ink: #16150F;
+    --pencil: #C7361F;     /* the red pass */
+    --accent: #2A2AF0;     /* the blue signal pass */
+    --acid: #B4C400;
+    --mono: "Space Mono", monospace;
+    --frame: 2.2vw;
+    --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+    --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-thunk: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+    /* live theme — flips booth -> page on the flood */
+    --bg: var(--booth);
+    --fg: var(--stone);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Fraunces", Georgia, serif;
+    font-optical-sizing: auto;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    cursor: default;
+    transition: background-color 0.55s var(--ease-out), color 0.55s var(--ease-out);
+  }
+
+  /* the booth light: one warm pool, fades out on the flood (no blend modes) */
+  .glow {
+    position: fixed; inset: -25vh -25vw; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse 60vw 62vh at 50% 48%,
+      rgba(228, 221, 201, 0.13), rgba(228, 221, 201, 0.04) 52%, transparent 74%);
+    opacity: 0; transition: opacity 0.8s var(--ease-out);
+  }
+  body.lit .glow { opacity: 1; }
+  body.page .glow { opacity: 0; }
+
+  /* the ghost numeral — our case-sheet vocabulary, behind everything */
+  .numeral {
+    position: fixed; z-index: 1; right: 1.5vw; bottom: 4vh;
+    font-family: "Fraunces", serif; font-style: italic; font-weight: 330;
+    font-size: 34vh; line-height: 1; letter-spacing: -0.04em;
+    color: currentColor; opacity: 0; pointer-events: none; user-select: none;
+    transition: opacity 0.7s var(--ease-out) 0.15s;
+  }
+  body.page .numeral { opacity: 0.05; }
+
+  /* ---------- the make-ready counter — our load-bearing counter ---------- */
+  .counter {
+    position: fixed; z-index: 8; right: var(--frame); top: 50%;
+    transform: translateY(-50%);
+    text-align: right; font-family: var(--mono);
+    opacity: 0; transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+  }
+  body.lit .counter { opacity: 1; }
+  body.page .counter { opacity: 0; transform: translateY(calc(-50% - 40px)); }
+  .counter .lbl { display: block; font-size: 9.5px; letter-spacing: 0.34em; opacity: 0.5; }
+  .counter .num { display: block; font-size: 46px; font-weight: 700; letter-spacing: 0.02em; line-height: 1.15; }
+  .counter .num em { font-style: normal; font-size: 22px; opacity: 0.5; }
+  .counter .state { display: block; font-size: 9.5px; letter-spacing: 0.3em; opacity: 0.62; min-height: 1.4em; }
+  .counter .state.reg { color: var(--acid); opacity: 1; }
+
+  /* ---------- the registration mark: the instrument ----------
+     center-stage during the pull, then travels up and shrinks to
+     its resting furniture home (continuous object — the obys lesson) */
+  .regwrap {
+    position: fixed; z-index: 6; left: 50%; top: 27vh;
+    width: 120px; height: 120px; margin: -60px 0 0 -60px;
+    transition: transform 0.9s var(--ease-expo), top 0.9s var(--ease-expo),
+                width 0.9s var(--ease-expo), height 0.9s var(--ease-expo);
+    will-change: transform;
+  }
+  body.page .regwrap {
+    top: calc(var(--frame) + 34px); width: 26px; height: 26px; margin: -13px 0 0 -13px;
+  }
+  .regwrap svg { width: 100%; height: 100%; overflow: visible; display: block; }
+  .reg-ink { stroke: currentColor; stroke-width: 1.1; fill: none;
+    stroke-dasharray: 300; stroke-dashoffset: 300; }
+  body.drawn .reg-ink { transition: stroke-dashoffset 1.1s var(--ease-out); stroke-dashoffset: 0; }
+  /* the red pass of the mark sits off-register, then seats */
+  .reg-red { stroke: var(--pencil); stroke-width: 1.1; fill: none; opacity: 0;
+    transform: translate(6px, 4px); transition: transform 0.55s var(--ease-thunk), opacity 0.5s var(--ease-out); }
+  body.loose .reg-red { opacity: 0.85; }
+  body.registered .reg-red { opacity: 0.85; transform: translate(0, 0); }
+  body.page .reg-red { opacity: 0; }
+  /* the crosshair spins to lock on register, then drifts slow forever */
+  .regwrap { transform: rotate(0deg); }
+  body.registered .regwrap { animation: reg-lock 0.85s var(--ease-out) both; }
+  body.page .regwrap { animation: reg-drift 90s linear infinite; }
+  @keyframes reg-lock { 0% { transform: rotate(-64deg); } 100% { transform: rotate(0deg); } }
+  @keyframes reg-drift { to { transform: rotate(360deg); } }
+
+  /* ---------- the sheet: eyebrow + the headline that registers ---------- */
+  .gate {
+    position: fixed; z-index: 5; left: 50%; top: 55%;
+    transform: translate(-50%, -50%);
+    width: min(92vw, 1180px);
+    text-align: center;
+    opacity: 0; transition: opacity 0.5s var(--ease-out);
+  }
+  body.loose .gate, body.registered .gate, body.page .gate { opacity: 1; }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: clamp(0.58rem, 0.86vw, 0.72rem);
+    letter-spacing: 0.28em; opacity: 0; margin-bottom: 1.6rem;
+    transition: opacity 0.6s var(--ease-out) 0.15s;
+  }
+  .eyebrow em { font-style: normal; color: var(--accent); }
+  body.page .eyebrow em { color: var(--accent); }
+  body.registered .eyebrow, body.page .eyebrow { opacity: 0.72; }
+
+  .headline {
+    font-weight: 480; font-variation-settings: "opsz" 144;
+    font-size: clamp(3.1rem, 13vw, 15.5rem);
+    line-height: 0.84; letter-spacing: -0.035em;
+    /* the two ink passes ride as text-shadows, off register, then home */
+    text-shadow:
+      -0.055em 0.02em 0 var(--pencil),
+       0.05em -0.016em 0 var(--accent);
+    transition: text-shadow 0.52s var(--ease-thunk), transform 0.52s var(--ease-thunk), filter 0.5s var(--ease-out);
+    filter: blur(0.6px);
+  }
+  .headline .amp { font-style: italic; font-weight: 340; color: var(--accent); }
+  /* loose = passes wide + soft; registered = slammed home + crisp + a shudder */
+  body.registered .headline, body.page .headline {
+    text-shadow: 0 0 0 var(--pencil), 0 0 0 var(--accent);
+    filter: blur(0);
+  }
+  body.registered .headline { animation: shudder 0.4s var(--ease-out); }
+  @keyframes shudder {
+    0% { transform: translateY(0); } 22% { transform: translate(-1px, 1px); }
+    44% { transform: translate(1px, -1px); } 100% { transform: translate(0, 0); }
+  }
+
+  /* the bio, appears only once the sheet is the page */
+  .bio {
+    font-family: var(--mono); font-size: clamp(0.78rem, 0.98vw, 0.98rem);
+    line-height: 1.5; max-width: 34ch; margin: 2.4rem auto 0;
+    opacity: 0; transition: opacity 0.7s var(--ease-out) 0.25s;
+  }
+  body.page .bio { opacity: 0.66; }
+
+  /* ---------- the crop brackets: loader frame -> page frame ----------
+     fixed at the viewport corners (their resting home). JS pulls them
+     IN to hug the sheet during the pull; on flood they release and
+     travel out. The loader's geometry becomes the page's geometry. */
+  .bk {
+    position: fixed; z-index: 7; width: 78px; height: 78px;
+    border: 0 solid currentColor; pointer-events: none; opacity: 0;
+    transition: transform 0.8s var(--ease-expo), opacity 0.5s var(--ease-out);
+    will-change: transform;
+  }
+  body.drawn .bk, body.loose .bk, body.registered .bk { opacity: 0.72; }
+  body.page .bk { opacity: 0.62; }
+  .bk.tl { top: var(--frame); left: var(--frame); border-top-width: 1.4px; border-left-width: 1.4px; }
+  .bk.tr { top: var(--frame); right: var(--frame); border-top-width: 1.4px; border-right-width: 1.4px; }
+  .bk.bl { bottom: var(--frame); left: var(--frame); border-bottom-width: 1.4px; border-left-width: 1.4px; }
+  .bk.br { bottom: var(--frame); right: var(--frame); border-bottom-width: 1.4px; border-right-width: 1.4px; }
+
+  /* ---------- page furniture, fades in on arrival ---------- */
+  .furniture { opacity: 0; transition: opacity 0.7s var(--ease-out) 0.2s; }
+  body.page .furniture { opacity: 1; }
+
+  .corner {
+    position: fixed; z-index: 6; font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.24em; color: currentColor; opacity: 0.66;
+  }
+  .corner.tl { top: calc(var(--frame) + 2px); left: calc(var(--frame) + 22px); }
+  .corner.bl { bottom: calc(var(--frame) + 2px); left: calc(var(--frame) + 22px); }
+  .corner.br { bottom: calc(var(--frame) + 2px); right: calc(var(--frame) + 22px); text-align: right; }
+
+  .jobline {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+    background: color-mix(in srgb, var(--stone) 88%, var(--ink));
+    border-top: 1px solid rgba(22, 21, 15, 0.16);
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 8px 18px; font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.2em; color: rgba(22, 21, 15, 0.66);
+    white-space: nowrap;
+  }
+  .jobline b { font-weight: 400; color: var(--pencil); }
+  .jobline em { font-style: normal; color: var(--accent); }
+
+  /* the next sheet peeking in — the work gate is one scroll away
+     (ties the image-quality lever / Direction 004 to the entrance) */
+  .nextsheet {
+    position: fixed; z-index: 4; right: 0; top: 50%;
+    transform: translate(72%, -50%); width: min(24vw, 300px);
+    box-shadow: -18px 0 60px rgba(0,0,0,0.28); background: var(--stone);
+    padding: 8px 8px 0; opacity: 0;
+    transition: transform 0.9s var(--ease-expo) 0.35s, opacity 0.7s var(--ease-out) 0.35s;
+  }
+  body.page .nextsheet { transform: translate(58%, -50%); opacity: 1; }
+  .nextsheet:hover { transform: translate(40%, -50%); }
+  .nextsheet img { display: block; width: 100%; height: auto; }
+  .nextsheet .tag {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em;
+    color: rgba(22,21,15,0.6); padding: 8px 4px; display: flex; justify-content: space-between;
+  }
+
+  /* the sheet edge under-shadow, the proof is the top of a stack */
+  .gate::after {
+    content: ""; position: absolute; z-index: -1; left: 50%; bottom: -10px;
+    width: 60%; height: 40px; transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.14), transparent 70%);
+    opacity: 0; transition: opacity 0.6s var(--ease-out);
+  }
+  body.page .gate::after { opacity: 1; }
+
+  /* ---------- replay ---------- */
+  .replay {
+    position: fixed; z-index: 20; right: var(--frame); top: calc(var(--frame) + 2px);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+    color: var(--ink); background: none; border: 1px solid rgba(22,21,15,0.4);
+    padding: 7px 12px 6px; cursor: pointer; opacity: 0;
+    transition: opacity 0.5s var(--ease-out), background-color 0.2s, color 0.2s;
+  }
+  body.page .replay { opacity: 0.8; }
+  .replay:hover { background: var(--ink); color: var(--stone); }
+
+  .hint {
+    position: fixed; z-index: 20; left: 50%; bottom: 40px; transform: translateX(-50%);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.24em;
+    color: currentColor; opacity: 0; transition: opacity 0.5s;
+  }
+  body.lit:not(.page) .hint { opacity: 0.4; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+  @media (max-width: 640px) {
+    .counter { top: auto; bottom: 22vh; transform: none; }
+    body.page .counter { transform: translateY(-30px); }
+    .nextsheet { display: none; }
+    .regwrap { top: 22vh; }
+    /* the jobline carries the info on mobile — drop the colliding corner tabs */
+    .corner.bl, .corner.br { display: none; }
+    .jobline { font-size: 9px; letter-spacing: 0.14em; padding: 7px 12px; gap: 10px; }
+    .jobline span:first-child { overflow: hidden; text-overflow: ellipsis; }
+    /* replay clears the top bracket, sits just inboard */
+    .replay { top: auto; bottom: 42px; right: 50%; transform: translateX(50%); }
+    body.page .replay { opacity: 0.8; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="glow" aria-hidden="true"></div>
+  <span class="numeral" aria-hidden="true">01</span>
+
+  <!-- the make-ready counter -->
+  <div class="counter" aria-hidden="true">
+    <span class="lbl">MAKE-READY</span>
+    <span class="num"><span id="cnum">00</span><em>%</em></span>
+    <span class="state" id="cstate">PULLING SHEET Nº 001</span>
+  </div>
+
+  <!-- the instrument -->
+  <div class="regwrap" aria-hidden="true">
+    <svg viewBox="0 0 40 40">
+      <circle class="reg-red" cx="20" cy="20" r="11"/>
+      <path class="reg-red" d="M20 3v10M20 27v10M3 20h10M27 20h10"/>
+      <circle class="reg-ink" cx="20" cy="20" r="11"/>
+      <path class="reg-ink" d="M20 2v11M20 27v11M2 20h11M27 20h11"/>
+    </svg>
+  </div>
+
+  <!-- the sheet -->
+  <div class="gate" id="gate">
+    <p class="eyebrow">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</p>
+    <h1 class="headline" id="headline">Code, design<br><span class="amp">&amp;</span>&nbsp;nerve</h1>
+    <p class="bio">I&rsquo;m Mark. I design and build interfaces that hold their nerve. I work slowly, ship rarely, and put everything on the page.</p>
+  </div>
+
+  <!-- the brackets: loader frame that becomes the page frame -->
+  <i class="bk tl" id="bk-tl"></i>
+  <i class="bk tr" id="bk-tr"></i>
+  <i class="bk bl" id="bk-bl"></i>
+  <i class="bk br" id="bk-br"></i>
+
+  <!-- page furniture (arrives with the flood) -->
+  <div class="furniture" aria-hidden="true">
+    <span class="corner tl">MARK AXELUS</span>
+    <span class="corner bl">&copy;2026 &mdash; ALL MINE</span>
+    <span class="corner br">SEE THE MESS</span>
+    <div class="jobline">
+      <span>SHEET Nº 001 &middot; MARK AXELUS &middot; WORKING PROOF</span>
+      <span><b>PULLED IN ONE VISIT</b> &middot; <em>IN REGISTER</em> &middot; D50 5000K</span>
+    </div>
+  </div>
+
+  <!-- the work gate is one scroll down -->
+  <figure class="nextsheet" aria-hidden="true">
+    <img src="gate-plate-03.png" alt="">
+    <figcaption class="tag"><span>01 &mdash; MERIDIAN</span><span>NEXT SHEET &darr;</span></figcaption>
+  </figure>
+
+  <button class="replay" id="replay" type="button">&#8630; REPLAY THE PULL</button>
+  <span class="hint" aria-hidden="true">the sheet is coming into register&hellip;</span>
+
+<script>
+  var body = document.body;
+  var cnum = document.getElementById("cnum");
+  var cstate = document.getElementById("cstate");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var STAGES = ["lit", "drawn", "loose", "registered", "page"];
+  var timers = [];
+  function clearAll() { timers.forEach(clearTimeout); timers = []; }
+  function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
+
+  /* pull the four brackets in to hug the sheet; on release they travel
+     back out to their fixed corner homes (the page frame) */
+  function seatBrackets() {
+    var g = document.getElementById("gate").getBoundingClientRect();
+    var pad = 26, bkSize = 78;
+    var vw = innerWidth, vh = innerHeight;
+    var frame = 0.022 * vw;
+    var pts = {
+      "bk-tl": [g.left - pad, g.top - pad],
+      "bk-tr": [g.right + pad - bkSize, g.top - pad],
+      "bk-bl": [g.left - pad, g.bottom + pad - bkSize],
+      "bk-br": [g.right + pad - bkSize, g.bottom + pad - bkSize]
+    };
+    var homes = {
+      "bk-tl": [frame, frame],
+      "bk-tr": [vw - frame - bkSize, frame],
+      "bk-bl": [frame, vh - frame - bkSize],
+      "bk-br": [vw - frame - bkSize, vh - frame - bkSize]
+    };
+    Object.keys(pts).forEach(function (id) {
+      var el = document.getElementById(id);
+      var dx = pts[id][0] - homes[id][0], dy = pts[id][1] - homes[id][1];
+      el.style.transform = "translate(" + dx + "px," + dy + "px)";
+    });
+  }
+  function releaseBrackets() {
+    ["bk-tl", "bk-tr", "bk-bl", "bk-br"].forEach(function (id) {
+      document.getElementById(id).style.transform = "translate(0,0)";
+    });
+  }
+
+  /* the counter climbs on its own clock, eased, and holds at 100 */
+  var rafId = null;
+  function runCounter(from, to, dur, done) {
+    var t0 = null;
+    cancelAnimationFrame(rafId);
+    function tick(t) {
+      if (t0 === null) t0 = t;
+      var p = Math.min(1, (t - t0) / dur);
+      var e = 1 - Math.pow(1 - p, 3);       /* ease-out cubic */
+      var v = Math.round(from + (to - from) * e);
+      cnum.textContent = (v < 10 ? "0" : "") + v;
+      if (p < 1) rafId = requestAnimationFrame(tick); else if (done) done();
+    }
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function toPage() {
+    body.classList.add("page");
+    body.style.setProperty("--bg", "var(--stone)");
+    body.style.setProperty("--fg", "var(--ink)");
+    releaseBrackets();
+  }
+
+  function play() {
+    clearAll();
+    cancelAnimationFrame(rafId);
+    STAGES.forEach(function (s) { body.classList.remove(s); });
+    body.style.setProperty("--bg", "var(--booth)");
+    body.style.setProperty("--fg", "var(--stone)");
+    cnum.textContent = "00";
+    cstate.textContent = "PULLING SHEET Nº 001";
+    cstate.classList.remove("reg");
+    // force reflow so the reset sticks before we re-seat
+    void body.offsetWidth;
+    seatBrackets();
+
+    if (reduce) { runCounterStatic(); toPage(); cstate.textContent = "IN REGISTER"; cstate.classList.add("reg"); return; }
+
+    // Phase 0 — booth: the room, the counter, the light
+    at(60,  function () { body.classList.add("lit"); runCounter(0, 58, 1250); });
+    // Phase 1 — the mark draws itself
+    at(300, function () { body.classList.add("drawn"); });
+    // Phase 2 — the sheet rises as loose, misregistered passes
+    at(1280, function () {
+      body.classList.add("loose");
+      cstate.textContent = "SEATING THE PASSES";
+      runCounter(58, 94, 950);
+    });
+    // Phase 3 — THE PULL: the passes slam into register
+    at(2280, function () {
+      body.classList.add("registered");
+      cstate.textContent = "IN REGISTER";
+      cstate.classList.add("reg");
+      runCounter(94, 100, 300);
+    });
+    // Phase 4 — the flood: booth -> stone, brackets fly out to frame
+    at(2980, toPage);
+  }
+  function runCounterStatic() { cnum.textContent = "100"; }
+
+  document.getElementById("replay").addEventListener("click", play);
+  addEventListener("resize", function () { if (!body.classList.contains("page")) seatBrackets(); });
+
+  // go
+  play();
+</script>
+</body>
+</html>

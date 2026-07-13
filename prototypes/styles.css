@@ -1816,72 +1816,61 @@ body.pointer-seen .cursor { opacity: 1; }
    one fiction: make-ready → strike → in register.
    ============================================================ */
 
-#makeready {
-  position: fixed;
-  inset: 0;
-  z-index: 220;
-  background: #0C0B08;              /* the booth, lights low */
-  overflow: hidden;
-  transition: opacity 0.7s var(--ease-out);
-}
-#makeready::before {                 /* one warm work-light pool */
-  content: "";
-  position: absolute; inset: -20vh -20vw;
-  background: radial-gradient(ellipse 56vw 58vh at 50% 48%,
-    rgba(228,221,201,0.11), rgba(228,221,201,0.03) 52%, transparent 74%);
-  pointer-events: none;
-}
+/* ============================================================
+   LOADER — the approved lockup make-ready (loader-lockup-mock.html)
+   runs ISOLATED in an iframe so its classes can't touch the page.
+   The frame is opaque and covers the page while the real page
+   settles behind it. At register the loader reads the live hero's
+   own word positions across the (full-viewport, same-origin) frame
+   and the four words FLIP from the lockup INTO them — the headline
+   MOVES into the page, it isn't replaced — then the booth floods to
+   the page's colours and the frame fades away to reveal the identical
+   hero behind it. src is set by JS, so return visits never load it.
+   ============================================================ */
+#makeready { position: fixed; inset: 0; z-index: 220; background: #0C0B08;
+  transition: opacity 0.7s var(--ease-out); }
 #makeready.out { opacity: 0; pointer-events: none; }
-
-.mr-target {
-  position: absolute; left: 50%; top: 50%;
-  width: min(48vw, 440px); aspect-ratio: 3 / 2;
-  transform: translate(-50%, -50%);
-  transition: opacity 0.4s var(--ease-out), transform 0.7s var(--ease-out);
-}
-#makeready.out .mr-target { opacity: 0; transform: translate(-50%, -50%) scale(0.94); }
-.mr-target svg { width: 100%; height: 100%; overflow: visible; display: block; }
-.mr-pass { fill: none; stroke-width: 2; }
-.mr-pass.mr-ink { stroke: #DDDBD4; }
-.mr-pass.mr-red { stroke: #C7361F; }
-.mr-pass.mr-blu { stroke: #7C7CFF; }
-/* red & blu are offset inline by JS each frame (the shrinking error) —
-   the convergence is one smooth glide, so no CSS transition here */
-
-.mr-readout {
-  position: absolute; right: var(--frame); top: 50%;
-  transform: translateY(-50%); text-align: right;
-  color: #DDDBD4; font-family: "Space Mono", monospace;
-}
-.mr-label { display: block; font-size: 0.56rem; letter-spacing: 0.34em; opacity: 0.5; }
-.mr-count { display: block; font-size: 2.4rem; font-weight: 700; letter-spacing: 0.04em; line-height: 1.1; }
-.mr-count em { font-style: normal; font-size: 1.1rem; opacity: 0.5; }
-.mr-state { display: block; font-size: 0.6rem; letter-spacing: 0.16em; color: #F0603F; min-height: 1.4em; }
-.mr-state.ok { color: #C6D600; }
-.mr-job {
-  position: absolute; left: 0; right: 0; bottom: 16px;
-  text-align: center; color: rgba(221,219,212,0.4);
-  font-size: 0.55rem; letter-spacing: 0.26em;
-}
-@media (max-width: 640px) {
-  .mr-readout { top: auto; bottom: 20vh; right: 50%; transform: translateX(50%); text-align: center; }
-  .mr-target { width: 74vw; }
-}
-/* the hero holds its entrance while the press makes ready — the whole
-   opening choreography (line-up, eyebrow, bio, press-register, reg-lock)
-   resumes the moment the overlay releases. :has needs no JS ordering. */
-body:has(#makeready:not(.out)) .hl,
-body:has(#makeready:not(.out)) .eyebrow,
-body:has(#makeready:not(.out)) .hero-bio,
-body:has(#makeready:not(.out)) .hero-title,
-body:has(#makeready:not(.out)) .regmark,
-body:has(#makeready:not(.out)) .frame,
-body:has(#makeready:not(.out)) .corner {
-  animation-play-state: paused !important;
-}
+#mr-frame { display: block; width: 100%; height: 100%; border: 0; background: #0C0B08; }
 @media (prefers-reduced-motion: reduce) { #makeready { display: none; } }
 .still #makeready { display: none; }
 @media print { #makeready { display: none; } }
+
+/* ============================================================
+   THE LAST SLUG — the accent "&" is the finale. On first visit the
+   loader CEDES the & at the relax: ONE fixed native-size type-reel
+   takes the lockup amp's exact spot (already showing &), starts
+   rolling as it flies the same path as the words, cruises through
+   the reveal, then BRAKES back into the crisp italic "&" as the
+   last wisp of the frame fade clears. The landing is the IMPRESSION:
+   the glyph presses 2px into the paper and settles (transform-only,
+   in main.js) — the near-miss/snap/shudder/bloom theater was all cut
+   as janky/forced. The same E from first roll to seat, never two
+   elements. First-visit only; every fallback simply leaves the "&"
+   in place. Reel built + sized by main.js.
+   ============================================================ */
+#amp { position: relative; }
+body.amp-armed #amp .ch { opacity: 0; }   /* the empty slot — advance reserved, no reflow of 'nerve' */
+.amp-reel {
+  position: absolute; overflow: hidden;
+  clip-path: inset(0 -0.2em);              /* clips top/bottom (the window); horizontal room for the swash */
+  pointer-events: none; z-index: 2;        /* left/top/width/height set inline from the measured amp box */
+}
+/* the FLIGHT reel — rides ABOVE the loader frame (z 221 > #makeready's 220) so
+   the spin is visible on the booth mid-flight; colour is set inline (the lockup's
+   lavender), then flooded to the live accent by __ampFlood at the loader's flood */
+.amp-reel--flight { position: fixed; z-index: 221; }
+.amp-reel--flight .rc { color: inherit; }
+.amp-reel.spinning {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+}
+.amp-reel-strip { position: relative; will-change: transform; }
+.amp-cell { display: flex; align-items: center; justify-content: center; }
+.rc {
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "wght" 340, "SOFT" 0, "WONK" 0;
+  color: var(--accent); line-height: 1;    /* font-size + letter-spacing set inline (the amp's own) */
+}
 
 /* ============================================================
    PRESS CHECK — the sheet comes into register (once per session)

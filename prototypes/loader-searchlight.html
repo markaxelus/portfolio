@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE RIG — spotlight fixture, spark & break (mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,100..900,0..100;1,9..144,100..900,0..100&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THE RIG — a little stage light hangs on the RIGHT and casts a
+     beam onto the dim page. It pans, finds the keystone word, and
+     as the load finishes the fixture SHORTS OUT: sparks fly, the
+     lamp strobes and dies IN PLACE (the machine breaks, it doesn't
+     fall) — and the letters, with nothing holding them, DROP to the
+     floor. Then the house lights come up and the page is set.
+     REPLAY top-right.
+     ============================================================ */
+  :root {
+    --booth:#0C0B08; --stone:#DDDBD4; --ink:#16150F;
+    --pencil:#C7361F; --accent:#2A2AF0; --accent-lum:#7C7CFF; --acid:#B4C400;
+    --mono:"Space Mono",monospace; --frame:2.4vw;
+    --ease-out:cubic-bezier(0.19,1,0.22,1); --warm:255,240,210;
+    --bg:var(--booth); --fg:var(--stone);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body { background:var(--bg); color:var(--fg); font-family:"Fraunces",Georgia,serif; font-optical-sizing:auto;
+    overflow:hidden; -webkit-font-smoothing:antialiased;
+    transition:background-color 0.8s var(--ease-out), color 0.8s var(--ease-out); }
+  body.page { --bg:var(--stone); --fg:var(--ink); }
+  .mono { font-family:var(--mono); }
+
+  /* ---------------- THE PAGE (present, dim under the light) ---------------- */
+  .hero { position:fixed; left:clamp(1.4rem,8vw,9rem); top:47%; transform:translateY(-50%); z-index:1; }
+  .eyebrow { display:block; font-family:var(--mono); font-size:clamp(.55rem,.8vw,.7rem); letter-spacing:.28em;
+    color:var(--fg); margin-bottom:1.1rem; }
+  .eyebrow em { font-style:normal; color:var(--accent-lum); } body.page .eyebrow em { color:var(--accent); }
+  h1 { font-weight:460; line-height:.92; letter-spacing:-.03em; color:var(--fg); }
+  h1 .ln { display:block; }
+  .l1,.l2 { font-size:clamp(2rem,5vw,3.6rem); } .l2 { margin-left:1.2vw; }
+  .l3 { font-size:clamp(3.4rem,9vw,7rem); font-weight:300; font-variation-settings:"SOFT" 30; }
+  .l3 .amp { font-style:italic; font-weight:340; color:var(--accent-lum); } body.page .l3 .amp { color:var(--accent); }
+  .slot { display:inline-block; } .slot .tl { display:inline-block; opacity:0; }
+  body.set .slot .tl { opacity:1; transition:opacity .25s var(--ease-out); }
+
+  .decals { position:fixed; z-index:1; right:clamp(1.4rem,8vw,8rem); bottom:26vh; font-family:var(--mono);
+    font-size:10px; letter-spacing:.2em; line-height:2.2; text-align:right; color:var(--fg); opacity:.6; }
+  .decals span { display:block; white-space:nowrap; } .decals em { font-style:normal; color:var(--accent-lum); }
+  body.page .decals em { color:var(--accent); }
+  .spec { position:fixed; z-index:1; left:clamp(1.4rem,8vw,9rem); top:19%; font-family:var(--mono);
+    font-size:9.5px; letter-spacing:.2em; line-height:2; color:var(--fg); opacity:.5; }
+  .spec span { display:block; }
+  .corner { position:fixed; z-index:1; font-family:var(--mono); font-size:10px; letter-spacing:.24em; color:var(--fg); opacity:.7; }
+  .corner.tl { top:calc(var(--frame) + 2px); left:calc(var(--frame) + 22px); }
+  .corner.br { bottom:calc(var(--frame) + 40px); right:calc(var(--frame) + 22px); }
+  .jobline { position:fixed; left:0; right:0; bottom:0; z-index:1;
+    background:color-mix(in srgb, var(--bg) 82%, var(--fg)); border-top:1px solid color-mix(in srgb, var(--fg) 22%, transparent);
+    display:flex; justify-content:space-between; gap:16px; padding:8px 18px; font-family:var(--mono);
+    font-size:10px; letter-spacing:.2em; color:color-mix(in srgb, var(--fg) 66%, transparent); white-space:nowrap; }
+  .jobline b { font-weight:400; color:var(--pencil); } .jobline em { font-style:normal; color:var(--accent-lum); }
+  body.page .jobline em { color:var(--accent); }
+  .grip { position:fixed; z-index:1; left:0; top:0; bottom:0; width:22px; display:flex; align-items:center;
+    justify-content:center; writing-mode:vertical-rl; font-family:var(--mono); font-size:9px; letter-spacing:.34em;
+    color:var(--fg); opacity:.3; background:repeating-linear-gradient(180deg,transparent 0 5px,rgba(128,128,128,.05) 5px 6px); }
+  .ground { position:fixed; left:0; right:0; bottom:15vh; height:1px; z-index:1; background:rgba(var(--warm),0.2);
+    opacity:0; transition:opacity .5s var(--ease-out); } body.lit .ground { opacity:1; } body.page .ground { opacity:0; }
+
+  /* ---------------- the dangling keystone ---------------- */
+  .hang { position:fixed; left:50%; top:14vh; z-index:2; transform:translateX(-50%); transform-origin:50% -12vh;
+    display:flex; gap:.01em; font-size:clamp(3.4rem,9vw,7rem); font-weight:300; font-variation-settings:"SOFT" 40,"WONK" 1;
+    line-height:1; letter-spacing:-.02em; color:var(--fg); }
+  body.lit .hang { animation:swing 3.6s ease-in-out infinite; }
+  body.dropping .hang, body.page .hang { animation:none; transform:none; }
+  @keyframes swing { 0%,100%{transform:translateX(-50%) rotate(1.2deg)} 50%{transform:translateX(-50%) rotate(-1.2deg)} }
+  .gl { position:relative; display:inline-block; }
+  .gl::before { content:""; position:absolute; left:50%; top:-14vh; width:1px; height:14vh;
+    background:linear-gradient(to bottom,transparent,rgba(var(--warm),0.35)); opacity:0; transition:opacity .4s; }
+  body.lit .gl::before { opacity:.5; } body.dropping .gl::before, body.page .gl::before { opacity:0; }
+  body.buzzing .gl { animation:buzz .09s steps(2) infinite, flick 2.1s linear infinite;
+    text-shadow:0 0 9px rgba(124,124,255,0.6), 0 0 2px rgba(255,255,255,0.4); }
+  body.broken .gl { animation:buzz .05s steps(2) infinite, flick .4s linear infinite; }
+  @keyframes buzz { 0%{transform:translate(.5px,-.4px)} 50%{transform:translate(-.5px,.4px)} 100%{transform:translate(.3px,.5px)} }
+  @keyframes flick { 0%,100%{opacity:1} 43%{opacity:.8} 45%{opacity:1} 68%{opacity:.55} 70%{opacity:1} 88%{opacity:.88} }
+  .gl.falling { position:fixed; margin:0; z-index:2; animation:none !important; text-shadow:0 0 7px rgba(var(--warm),0.3); will-change:transform; }
+
+  /* ---------------- the dim surround + the beam pool ---------------- */
+  .dark { position:fixed; inset:0; z-index:10; pointer-events:none; background:var(--booth);
+    -webkit-mask-image:radial-gradient(circle 165px at var(--sx,50%) var(--sy,40%), transparent 0%, transparent 60%, #000 100%);
+            mask-image:radial-gradient(circle 165px at var(--sx,50%) var(--sy,40%), transparent 0%, transparent 60%, #000 100%);
+    opacity:0; transition:opacity 0.8s var(--ease-out); }
+  body.lit .dark { opacity:0.66; } body.page .dark { opacity:0; }
+  body.broken .dark { animation:poolflick .5s steps(1) both; }
+  @keyframes poolflick { 0%{opacity:.66} 12%{opacity:.9} 22%{opacity:.5} 38%{opacity:.92} 55%{opacity:.62} 100%{opacity:.66} }
+
+  /* the visible beam, cast from the fixture (JS rotates it to the target) */
+  .beam { position:fixed; z-index:11; left:0; top:0; width:135vw; height:36vh; transform-origin:0 50%;
+    pointer-events:none; opacity:0;
+    background:linear-gradient(90deg, rgba(var(--warm),0.16), rgba(var(--warm),0.05) 46%, transparent 78%);
+    clip-path:polygon(0 47%, 0 53%, 100% 96%, 100% 4%);
+    -webkit-mask-image:linear-gradient(90deg,#000 4%,#000 52%,transparent 88%);
+            mask-image:linear-gradient(90deg,#000 4%,#000 52%,transparent 88%);
+    transition:opacity .6s var(--ease-out); }
+  body.lit .beam { opacity:1; }
+  body.broken .beam { animation:strobe .5s steps(1) forwards; }
+  body.page .beam { opacity:0; }
+  @keyframes strobe { 0%{opacity:1} 10%{opacity:0} 18%{opacity:1} 30%{opacity:0} 42%{opacity:.8} 56%{opacity:0} 100%{opacity:0} }
+
+  /* the soft bloom riding the pool */
+  .warm { position:fixed; z-index:11; pointer-events:none; width:480px; height:480px; left:0; top:0; margin:-240px 0 0 -240px;
+    will-change:transform; opacity:0; transition:opacity .6s var(--ease-out);
+    background:radial-gradient(circle, rgba(var(--warm),0.14) 0%, rgba(var(--warm),0.05) 44%, transparent 66%); }
+  body.lit .warm { opacity:1; } body.broken .warm { animation:strobe .5s steps(1) forwards; } body.page .warm { opacity:0; }
+
+  /* ---------------- THE FIXTURE (the little stage light, right side) ---------------- */
+  .fixture { position:fixed; z-index:12; right:2.5vw; top:8vh; width:clamp(96px,12vw,150px); opacity:0;
+    transform-origin:80% 30%; transition:opacity .5s var(--ease-out); }
+  body.lit .fixture { opacity:1; }
+  body.broken .fixture { animation:shudder .5s ease-in-out; }
+  @keyframes shudder { 0%,100%{transform:rotate(0)} 20%{transform:rotate(1.5deg) translate(-2px,1px)} 45%{transform:rotate(-1.2deg) translate(2px,-1px)} 70%{transform:rotate(.8deg)} }
+  .fixture svg { width:100%; display:block; overflow:visible; filter:drop-shadow(0 6px 12px rgba(0,0,0,.5)); }
+  .lens { fill:rgba(var(--warm),0.95); }
+  body.lit .lens { animation:lamp 6s ease-in-out .8s infinite; }
+  body.broken .lens { animation:strobe .5s steps(1) forwards; }
+  @keyframes lamp { 0%,100%{opacity:1} 30%{opacity:.9} 32%{opacity:1} 62%{opacity:.86} 64%{opacity:1} }
+
+  /* sparks (spawned by JS) */
+  .spark { position:fixed; z-index:13; width:3px; height:3px; border-radius:50%; pointer-events:none;
+    background:rgba(255,244,214,1); box-shadow:0 0 5px 1px rgba(255,220,150,.9); }
+  .spark.blue { background:rgba(160,180,255,1); box-shadow:0 0 6px 1px rgba(124,124,255,.9); }
+
+  /* ---------------- chrome ---------------- */
+  .cap { position:fixed; z-index:20; left:50%; bottom:calc(var(--frame) + 8px); transform:translateX(-50%);
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em; color:var(--stone); opacity:.55; max-width:80vw; text-align:center; }
+  body.page .cap { color:var(--ink); } .cap b { font-weight:700; color:var(--acid); }
+  .replay { position:fixed; z-index:20; right:var(--frame); top:calc(var(--frame) + 2px); font-family:var(--mono);
+    font-size:10px; letter-spacing:.2em; color:var(--stone); background:none; border:1px solid currentColor;
+    padding:7px 12px 6px; cursor:pointer; opacity:.7; } body.page .replay { color:var(--ink); }
+  .replay:hover { background:currentColor; } .replay:hover span { color:var(--booth); } body.page .replay:hover span { color:var(--stone); }
+
+  @media (prefers-reduced-motion:reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+
+  <!-- THE PAGE -->
+  <div class="hero">
+    <span class="eyebrow">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</span>
+    <h1>
+      <span class="ln l1">Code,</span>
+      <span class="ln l2">design</span>
+      <span class="ln l3"><span class="amp">&amp;</span>&nbsp;<span class="slot" id="slot"><span class="tl">n</span><span class="tl">e</span><span class="tl">r</span><span class="tl">v</span><span class="tl">e</span></span></span>
+    </h1>
+  </div>
+  <div class="spec" aria-hidden="true"><span>MA//TC-IV</span><span>00.MA2093 &middot; 00 01</span></div>
+  <div class="decals" aria-hidden="true"><span>[RUN.M] <em>MESS LAYER ARMED</em></span><span>VISIT Nº 007</span><span>SCROLL 000%</span></div>
+  <span class="corner tl mono">MARK AXELUS</span>
+  <span class="corner br mono">SEE THE MESS</span>
+  <div class="jobline"><span>SHEET Nº 001 &middot; MARK AXELUS &middot; WORKING PROOF</span><span><b>IN REGISTER</b> &middot; <em>OK TO RUN</em> &middot; D50 5000K</span></div>
+  <div class="grip" aria-hidden="true">AXELUS &bull; AXELUS</div>
+  <div class="ground" aria-hidden="true"></div>
+
+  <!-- the dangling keystone -->
+  <div class="hang" id="hang" aria-hidden="true"><span class="gl">n</span><span class="gl">e</span><span class="gl">r</span><span class="gl">v</span><span class="gl">e</span></div>
+
+  <!-- the searchlight cast BY the fixture -->
+  <div class="dark" id="dark" aria-hidden="true"></div>
+  <div class="beam" id="beam" aria-hidden="true"></div>
+  <div class="warm" id="warm" aria-hidden="true"></div>
+
+  <!-- the fixture on the right -->
+  <div class="fixture" aria-hidden="true">
+    <svg viewBox="0 0 130 96">
+      <rect x="108" y="20" width="22" height="5" rx="2" fill="#2f2d27"/>            <!-- arm to the truss -->
+      <path d="M104 14 L104 62" stroke="#45433b" stroke-width="4" stroke-linecap="round"/>  <!-- yoke -->
+      <g transform="rotate(-20 62 44)">
+        <rect x="30" y="30" width="62" height="28" rx="5" fill="#3a382f"/>          <!-- barrel -->
+        <rect x="30" y="30" width="62" height="8" rx="4" fill="#4d4a40"/>           <!-- barrel top highlight -->
+        <ellipse cx="30" cy="44" rx="6" ry="14" fill="#17160f"/>                     <!-- back -->
+        <rect x="86" y="22" width="12" height="6" rx="2" fill="#2b2924"/>            <!-- barn door top -->
+        <rect x="86" y="60" width="12" height="6" rx="2" fill="#2b2924"/>            <!-- barn door bottom -->
+        <ellipse cx="92" cy="44" rx="7" ry="15" fill="#0e0d0a"/>                     <!-- front rim -->
+        <ellipse class="lens" cx="92" cy="44" rx="5" ry="12"/>                       <!-- the lens (glows) -->
+      </g>
+    </svg>
+  </div>
+
+  <p class="cap" id="cap">LOAD — <b>THE RIG</b> &middot; the fixture finds the word</p>
+  <button class="replay" id="replay" type="button"><span>&#8630; REPLAY</span></button>
+
+<script>
+  var body=document.body, hang=document.getElementById("hang"), dark=document.getElementById("dark"),
+      beam=document.getElementById("beam"), warm=document.getElementById("warm"), cap=document.getElementById("cap");
+  var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var W=innerWidth, H=innerHeight;
+
+  var rafId=null, timers=[];
+  function at(ms,fn){ timers.push(setTimeout(fn,ms)); }
+  function clearAll(){ timers.forEach(clearTimeout); timers=[]; if(rafId) cancelAnimationFrame(rafId); rafId=null;
+    [].slice.call(document.querySelectorAll(".spark")).forEach(function(s){ s.remove(); }); }
+  function lerp(a,b,t){ return a+(b-a)*t; }
+
+  var sx, sy, lensX, lensY;
+  function write(){
+    dark.style.setProperty("--sx", sx.toFixed(1)+"px");
+    dark.style.setProperty("--sy", sy.toFixed(1)+"px");
+    warm.style.transform="translate("+sx.toFixed(1)+"px,"+sy.toFixed(1)+"px)";
+    /* aim the beam from the fixture's lens at the pool */
+    var ang=Math.atan2(sy-lensY, sx-lensX)*180/Math.PI;
+    beam.style.left=lensX+"px"; beam.style.top=lensY+"px"; beam.style.transform="rotate("+ang.toFixed(2)+"deg)";
+  }
+
+  var glyphs=[].slice.call(hang.querySelectorAll(".gl"));
+  var targets=[].slice.call(document.querySelectorAll("#slot .tl"));
+  var parts=[], groundY;
+
+  function armDrop(){
+    groundY=H*0.85;
+    parts=glyphs.map(function(el,i){
+      var r=el.getBoundingClientRect();
+      el.classList.add("falling");
+      el.style.left=r.left+"px"; el.style.top=r.top+"px"; el.style.width=r.width+"px"; el.style.height=r.height+"px";
+      return { el:el, x0:r.left, y0:r.top, h:r.height, dx:0, dy:0, vx:(Math.random()*2-1)*50, vy:-20-Math.random()*40,
+        rot:0, vrot:(Math.random()*2-1)*160, rest:(groundY-r.height*0.86)+(Math.random()*8-4), landed:false, delay:i*45 };
+    });
+  }
+  function centroid(){ var x=0,y=0; for(var i=0;i<parts.length;i++){ x+=parts[i].x0+parts[i].dx+parts[i].h*0.3; y+=parts[i].y0+parts[i].dy; } return {x:x/parts.length,y:y/parts.length}; }
+
+  /* the spark burst from the fixture */
+  function sparkBurst(n){
+    for(var i=0;i<n;i++){
+      var s=document.createElement("span"); s.className="spark"+(Math.random()<0.35?" blue":"");
+      s.style.left=lensX+"px"; s.style.top=lensY+"px"; body.appendChild(s);
+      var ang=(-0.4 + Math.random()*1.8)*Math.PI;          /* mostly down/left/out */
+      var sp=90+Math.random()*300, dur=380+Math.random()*520;
+      var ex=Math.cos(ang)*sp*(dur/1000), ey=Math.sin(ang)*sp*(dur/1000)+0.5*1500*Math.pow(dur/1000,2);
+      s.animate([{transform:"translate(0,0) scale(1)",opacity:1},
+                 {transform:"translate("+(ex*0.5).toFixed(0)+"px,"+(ey*0.4).toFixed(0)+"px) scale(1)",opacity:1,offset:0.35},
+                 {transform:"translate("+ex.toFixed(0)+"px,"+ey.toFixed(0)+"px) scale(.3)",opacity:0}],
+                {duration:dur, easing:"cubic-bezier(.2,.5,.4,1)"});
+      (function(sp){ at(dur+40,function(){ sp.remove(); }); })(s);
+    }
+  }
+
+  var t0, tPrev, phase="search", findAt=2650, dropStart=0;
+  var waypoints;
+
+  function frame(now){
+    var t=now-t0, dt=Math.min((now-tPrev)/1000,0.05); tPrev=now;
+
+    if(phase==="search"){
+      var hr=hang.getBoundingClientRect(), hx=hr.left+hr.width/2, hy=hr.top+hr.height*0.55;
+      var seg=t/(findAt-350), target;
+      if(seg<0.3) target=waypoints[0]; else if(seg<0.56) target=waypoints[1]; else if(seg<0.8) target=waypoints[2]; else target=[hx,hy];
+      sx=lerp(sx,target[0],0.075); sy=lerp(sy,target[1],0.075); write();
+      if(t>findAt-600 && !body.classList.contains("buzzing")) body.classList.add("buzzing");
+      if(t>=findAt) breakNow();
+    }
+    else if(phase==="drop"){
+      var all=true;
+      for(var i=0;i<parts.length;i++){
+        var p=parts[i];
+        if(t-dropStart<p.delay){ all=false; }
+        else if(!p.landed){
+          p.vy+=2700*dt; p.dy+=p.vy*dt; p.dx+=p.vx*dt; p.rot+=p.vrot*dt; p.vrot*=0.99;
+          if(p.y0+p.dy>=p.rest){ p.dy=p.rest-p.y0;
+            if(Math.abs(p.vy)>85){ p.vy*=-0.42; p.vx*=0.6; p.vrot*=-0.35; }
+            else { p.vy=0; p.vx=0; p.vrot=0; p.landed=true; p.rot=(Math.random()*12-6); } }
+          all=false;
+        }
+        p.el.style.transform="translate("+p.dx.toFixed(1)+"px,"+p.dy.toFixed(1)+"px) rotate("+p.rot.toFixed(1)+"deg)";
+      }
+      var c=centroid(); sx=lerp(sx,c.x,0.1); sy=lerp(sy,c.y+8,0.1); write();
+      if(all){ phase="hold"; cap.innerHTML="LOAD — <b>DEAD</b> &middot; the type holds the floor"; at(620,reveal); }
+    }
+    rafId=requestAnimationFrame(frame);
+  }
+
+  /* the short-circuit: sparks, the lamp dies in place, the letters drop */
+  function breakNow(){
+    phase="drop"; dropStart=performance.now()-t0;
+    body.classList.remove("buzzing"); body.classList.add("dropping","broken");
+    sparkBurst(18); at(120, function(){ sparkBurst(10); });
+    armDrop();
+    cap.innerHTML="LOAD — <b>SHORT-CIRCUIT</b> &middot; the rig blows; the letters fall";
+  }
+
+  function reveal(){
+    if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+    body.classList.add("page");                             /* the house lights come up */
+    parts.forEach(function(p,i){
+      var tg=targets[i]?targets[i].getBoundingClientRect():null;
+      p.el.style.transition="transform .7s var(--ease-out) "+(i*0.03)+"s";
+      if(tg) p.el.style.transform="translate("+(tg.left-p.x0).toFixed(1)+"px,"+(tg.top-p.y0).toFixed(1)+"px) rotate(0deg)";
+    });
+    cap.innerHTML="LOAD — <b>SET</b> &middot; the keystone resets into the headline";
+    at(760, function(){ body.classList.add("set"); parts.forEach(function(p){ p.el.style.opacity="0"; }); });
+  }
+
+  function play(){
+    clearAll();
+    ["lit","buzzing","dropping","broken","page","set"].forEach(function(c){ body.classList.remove(c); });
+    phase="search";
+    glyphs.forEach(function(el){ el.className="gl"; el.style.cssText=""; });
+    hang.style.display=""; W=innerWidth; H=innerHeight;
+    lensX=W*0.85; lensY=H*0.17;                             /* the fixture's lens, upper-right */
+    waypoints=[ [0.32*W,0.7*H], [0.16*W,0.28*H], [0.62*W,0.44*H] ];
+    sx=lensX; sy=lensY; write();
+    cap.innerHTML="LOAD — <b>THE RIG</b> &middot; the fixture finds the word";
+
+    if(reduce){ body.classList.add("lit","page","set"); hang.style.display="none"; return; }
+
+    body.classList.add("lit");
+    t0=performance.now(); tPrev=t0;
+    rafId=requestAnimationFrame(frame);
+  }
+
+  addEventListener("resize", function(){ W=innerWidth; H=innerHeight; lensX=W*0.85; lensY=H*0.17; });
+  document.getElementById("replay").addEventListener("click", play);
+  play();
+</script>
+</body>
+</html>

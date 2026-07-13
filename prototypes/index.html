@@ -14,25 +14,16 @@
 </head>
 <body>
 
-  <!-- make-ready: the press dials your sheet into register (first arrival
-       each session). the three ink passes glide together as the counter
-       reads the real load; at register the booth floods to the hero.
-       one continuous convergence — any input skips it. -->
-  <div id="makeready" aria-hidden="true">
-    <div class="mr-target" id="mr-target">
-      <svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid meet">
-        <g class="mr-pass mr-red" id="mr-red"><circle cx="150" cy="100" r="46"/><circle cx="150" cy="100" r="26"/><path d="M150 34v40M150 126v40M64 100h40M196 100h40"/></g>
-        <g class="mr-pass mr-blu" id="mr-blu"><circle cx="150" cy="100" r="46"/><circle cx="150" cy="100" r="26"/><path d="M150 34v40M150 126v40M64 100h40M196 100h40"/></g>
-        <g class="mr-pass mr-ink"><circle cx="150" cy="100" r="46"/><circle cx="150" cy="100" r="26"/><path d="M150 30v44M150 126v44M60 100h44M196 100h44"/></g>
-      </svg>
-    </div>
-    <div class="mr-readout">
-      <span class="mr-label mono">MAKE-READY</span>
-      <span class="mr-count mono"><span id="mr-count">00</span><em>%</em></span>
-      <span class="mr-state mono" id="mr-state">SETTING THE FORME</span>
-    </div>
-    <p class="mr-job mono">SHEET Nº 001 &middot; MARK AXELUS &middot; WORKING PROOF</p>
-  </div>
+  <!-- LOADER: the approved lockup make-ready (loader-lockup-mock.html) runs
+       ISOLATED in a frame so its ~40 classes can't collide with the page.
+       First arrival each session; any input skips it. The frame is full-viewport
+       and same-origin, so at register the loader reads the LIVE hero's own word
+       positions across the boundary and the four words FLIP from the lockup into
+       them — the headline MOVES into the page rather than being replaced — then
+       the booth floods to the page's colours and the frame fades to reveal the
+       identical hero settled behind it. src is set by JS, so return visits never
+       load it. -->
+  <div id="makeready"><iframe id="mr-frame" title="Loading" tabindex="-1" scrolling="no" aria-hidden="true"></iframe></div>
 
   <!-- grain -->
   <div class="grain" aria-hidden="true"></div>

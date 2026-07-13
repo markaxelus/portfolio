@@ -852,6 +852,297 @@ signatures (Mark counts these himself):
     All verified headless (loupe hold/drag/tap, hover lift, yard desktop+mobile, zero
     x-overflow, zero console errors).
 
+23. (branch `prototypes-searchlight`) **The loader HANDS OFF as a shared-element
+    morph — the words MOVE into the page instead of being replaced.** The shipping
+    loader is now the asymmetric LOCKUP make-ready (`loader-lockup-mock.html?embed`,
+    which superseded the v2 convergence; a travelling followspot lights the word as
+    it registers). Mark: *"I want the words to actually transition to the main page
+    like it just moves from loader to the main page… instead of being replaced."*
+    The old handoff cross-faded the whole iframe out over the settled hero — two
+    separate "Code, design & nerve" swapped by opacity = "replaced." Fix: a
+    cross-boundary FLIP. The iframe is full-viewport + same-origin, so its coords ==
+    the page's and its script already reads `parent.document`. At register the loader
+    (`relaxToHero`) reads the LIVE hero's four word rects and FLIPs `.l-code/.l-design/
+    .l-amp/.l-nerve` from the lockup INTO them (translate+scale, ~0.92s), on the still-
+    dark booth; then `toPage()` floods booth→page colours + words→ink, and the frame
+    fades to reveal the identical hero settled behind — the reveal is a takeover, not a
+    cut. The asymmetric lockup literally RELAXES into the headline. Gotchas solved
+    (all measured to ~0.1px landing, day+mobile):
+    - **opacity**: `.line` base CSS is `opacity:0`, held at 1 only by the lockdrop
+      `forwards` fill — `animation:none` for the FLIP drops it, so pin `opacity:1`.
+    - **transform-origin** at the GLYPH box (Range), not the block box, or scale adds a
+      `(borderTop−glyphTop)(sc−1)` vertical error.
+    - **opsz 144** forced on every loader word (`.l-code/.l-design/.l-amp` + nerve's VF):
+      the words are scaled UP in the flight, and small-opsz letterforms (wide) ghost
+      against the hero's display-opsz (narrow) shapes. This was the biggest visible win.
+    - **hero #nerve is "&nbsp;nerve"** — its raw Range includes the leading space and
+      shoved the loader's spaceless "nerve" a space-width left, jammed on the amp.
+      `glyphRect()` measures the hero's VISUAL box across the `.ch` spans (skips the space).
+    - **nerve resolves** soft/light (SOFT 40, wght 300) → the hero's crisp/heavy (SOFT 0,
+      wght 480) during the flight; measure its FINAL width for the scale, and fade the
+      misregister ghost passes so the soft (wider) ghosts don't fringe it.
+    - **the live page owns the furniture**: `body.relaxing` fades the make-ready furniture
+      AND the loader's own eyebrow/bio/corners/jobline (embed only) so they don't double
+      against the real page's through the reveal.
+    - **no `will-change`** on the words/`.lockup`: a promoted layer holds a soft, scaled
+      mid-flight texture — the amp (which also shifts lavender→blue) left a stale coloured
+      ghost in HEADLESS screenshots only (the §5 dev quirk: transitions stall / captures go
+      stale). Alignment is pixel-exact; confirm the reveal in a real browser, don't chase it.
+    Parent side unchanged but the release wait is 470ms (let the flood settle before the
+    fade). Skips intact: reduced-motion / `?still` / return-visit never load the frame;
+    the STANDALONE mock (no parent) falls back to flood-in-place (no morph, REPLAY works).
+    `?loader` still replays. Verified headless: 4/4 words land ~0.1px (pos/size/colour),
+    mobile adapts to the mobile hero + 390/390 no x-overflow, return visit skips, zero
+    console errors.
+
+    **FOLLOW-UP (same branch, Mark: "the loader letters and the main page aren't 1
+    to 1 — a shift when it finishes... and make the & like a roulette that rolls up
+    or down"):**
+    - **The 1:1 hand-off (`bakeToNative`).** Mark saw a shift the HEADLESS captures
+      couldn't (headless has no classic scrollbar and hides sub-pixel scaled-text
+      rendering). Two real causes: (1) **the loader loaded a different Fraunces file**
+      — its font URL omitted the `WONK` axis, so Google served a different variable
+      subset with subtly different metrics (the & rendered **22px narrower** at the
+      same size). Fixed by making the loader's font link the EXACT same axes/URL as
+      index.html. (2) The flown words were **transform-scaled** (code ~4×), and scaled
+      text never renders pixel-identical to the same glyph SET natively. Fixed:
+      `bakeToNative()` at `toPage()` re-sets each flown word in the hero's OWN native
+      font (its `font-size` + variation + weight + `letter-spacing`, scale dropped) at
+      the identical box, so the reveal is native→native. It's **two-pass** — resize
+      ALL words first, one reflow, THEN measure+translate — because changing font-size
+      reflows the lockup flow (measuring mid-resize put code 262px off). After: every
+      word dt=0/dl=0, code+amp dw=0, nerve within ~4px (a text-run vs per-`.ch`-span
+      letter-spacing-gap nuance; left/top exact, negligible). Can't repro the shift
+      headless, so confirm in a real browser with `?loader`.
+    - **The & roulette (`spinAmp`).** Mark's ask, from a reel/tumble/spin choice he
+      picked **character spin**: as the amp flies in, `spinAmp()` flickers `.l-amp`
+      through a run of glyphs (`e 8 & 3 % & s 2 & e &` — always ends on &) with an
+      easing `blur()` (1.4px→0, smears fast then sharpens), decelerating (×1.18/tick)
+      and LOCKING onto & right as it lands — like a type slug being set.
+      `finishAmpSpin()` force-lands the & before the native bake so measurement/hand-
+      off always see a settled glyph; it's also cleared on REPLAY. Single-glyph (never
+      a reel/window) so it doesn't disturb the FLIP/bake geometry — landing stays 1:1.
+      **(SUPERSEDED — the character-spin was reconceived into THE LAST SLUG below;
+      spinAmp/finishAmpSpin were removed from the loader.)**
+
+24. (branch `prototypes-searchlight`) **THE LAST SLUG — the & is the finale.**
+    Mark on the character-spin: *"why does the resolution drop for the & when it's
+    spinning... make it like a roulette like in casino. Before it lands the page
+    should load — all the letters, the main page — and soon after it slots in the &
+    with impact like a slot machine."* Two faults: (1) the spin looked low-res because
+    it was a transform-SCALED (~3.4×) small glyph + a CSS blur — a resolution drop,
+    not motion; (2) the choreography was wrong — the & should arrive LAST, after the
+    whole page is up, as a jackpot. Designed via a **Workflow motion-design panel**
+    (4 philosophies — mechanical / print-slug / drama / restraint — + an xhigh
+    synthesis; all four independently converged on the same concept, a strong signal).
+    Result, built:
+    - **Choreography:** the approved make-ready reveals the page ALREADY SET with an
+      EMPTY slot ("Code, design ▯ nerve"); the loader stops flying the amp — `.l-amp`
+      is dropped from `relaxToHero`'s map[] and `bakeToNative`'s specs[] and simply
+      **fades via `body.relaxing .l-amp`**; the page holds `#amp .ch` at `opacity:0`
+      (`body.amp-armed`, added right after `mrRan=true`) so the advance is reserved and
+      'nerve' never reflows. After the iframe is removed (release()'s 760ms timeout →
+      `scheduleAmpFinale()`), a **280ms BEAT** of stillness, then `dropAmp()`.
+    - **The reel (runs on the REAL page — crisp by construction):** `dropAmp()` measures
+      `#amp`+`.ch` ONCE, builds an overlay that is a **CHILD of `#amp`** (tracks layout,
+      survives scroll, zero doc-coord math): `.amp-reel` (the slot window, `overflow:hidden;
+      clip-path:inset(0 -0.2em)`) › `.amp-reel-strip` › 16 `.amp-cell`/`.rc`, every `.rc`
+      set to the amp's OWN native face (Fraunces italic, opsz 144 wght 340, `font-size`=A
+      measured ~208px, its letter-spacing) — so **every symbol is full-resolution vector
+      type, moved by `translateY` only, NEVER scaled/blurred**. Bank: idx0=`$` (near-miss
+      decoy above the &), idx1=`&` (target, seats at translateY 0), idx2..15 = printer's
+      sorts braided with casino money (`8 % 7 ¶ @ § 3 $ ẞ 9 % 8 7 §`) so it reads jackpot
+      yet stays a proof. Pitch P=round(A·1.32)≈275; window WIN=round(P·1.15)≈316; a
+      `.spinning` compositor **mask-image edge-gradient** sells the streak (no glyph
+      filter). One **WAAPI** transform anim (compositor, no rAF, no per-frame reads),
+      1000ms: −14P accel → −12.6P cruise → −3P weighted decel → **+1P NEAR-MISS on `$`**
+      → hold ~95ms → snap back over-travelling the seat by −6px → 0 (& seated).
+    - **Impact (`seatAmp`→`ampImpact`, all local, transform/opacity/paint only):** the
+      overlay is destroyed and native `#amp .ch` un-hidden the SAME frame (a dead-crisp
+      italic accent &, full swash whole via `.hero-title.landed .hl-mask{overflow:visible}`);
+      then the 3rd `.hl` **shudders** 1px (discrete inline steps 2/-1/1/0 at 0/30/60/90/120ms,
+      cleared to '' — a keyframe would restart the entrance transform), an `.amp-bloom`
+      accent flash (scale 0.6→1.3, opacity 0→.5→0 / 260ms), `regKick(1.8)` shears+thunks
+      the ink passes true over 300ms, and **`sndSlam()`** (new, next to sndClack, opt-in
+      on `noiseOn`: sub 130→42Hz + triangle body-knock + bandpass click + 1800Hz detent).
+    - **Fallbacks (all → the & simply present, crisp):** return-visit/reduced/`?still`
+      never add `amp-armed`; `dropAmp` bails to `revealAmpStatic()` if the hero isn't
+      `.landed` or WAAPI is absent; a **failsafe** (release+3500ms) and a **watchdog**
+      (reel-start+1400ms) never leave the slot empty; input during the reel `skipFinale()`s
+      (seat now + a quick 120ms bloom). Verified headless: slot held empty (nerve left=366
+      constant — no reflow), reel builds (16 cells) + spins + seats (armed off, .ch op 1,
+      reel gone, bloom fires), near-miss `$` visible, zero console errors; return/reduced/
+      skip all show a normal &. CRISPNESS + the reel FEEL need a real browser (`?loader`)
+      per the §5 headless quirk — headless renders WAAPI/mask stale.
+    OPEN/TUNABLE: total load ≈7–8s (make-ready is the bulk, approved/untouched; finale adds
+    a short beat + reel after the reveal); near-miss over-travel is a full pitch (bold — can
+    drop to 0.5P); check the seated swash at min/max clamp widths and night-mode accent.
+    **REVISIONS (two rounds — the choreography above is SUPERSEDED):**
+    (i) Mark: *"it shouldn't just disappear — on screen at all times, spinning as it MOVES to
+    the location, eventually stops."* First tried: no empty beat + the reel SLIDES in from the
+    left while spinning. But that still hid the loader amp, so — (ii) Mark: *"the E [the italic
+    &] from the loader literally disappeared, it's not travelling with the other letters."*
+    THE FIX (superseded): **the & flies in WITH the other three letters again** — restored to
+    `relaxToHero`'s map[] and `bakeToNative`'s specs[] in the loader. The reel then spun **IN
+    PLACE** after a beat. The flagged trade-off — spin AT the landing, not DURING the flight —
+    went to Mark, and (iii) he called it: *"as it moves… that E starts spinning… right now it
+    disappears quickly and then the roulette comes — these are 2 different E when I want it to
+    be the same so it feels fluid."* So —
+
+25. (branch `prototypes-searchlight`) **THE CEDE — one E from first roll to seat.**
+    The spin now happens DURING the flight without the old resolution drop, by
+    inverting who flies: at the first frame of `relaxToHero` the loader calls
+    `parent.__ampFly(glyphRect, MORPH_MS, color)` **synchronously** and, on true,
+    adds `body.ceded` (`.l-amp { visibility: hidden }` — an atomic same-frame swap,
+    never a fade) and drops the amp from map[]/specs[]. The parent builds ONE
+    `position:fixed` reel on `document.body` at **z 221** (above `#makeready`'s 220,
+    so it rides the dark booth mid-flight), cells at the hero's NATIVE size, the
+    carriage transform-scaled DOWN to the lockup glyph box (s≈0.31 — downscaled text
+    stays crisp; scaling UP was what looked low-res) and flown to identity with the
+    words' own clock (920ms, `cubic-bezier(0.19,1,0.22,1)`, centre-to-centre map).
+    The strip is ONE WAAPI timeline across the whole hand-off — bank = the in-place
+    16 + another lap of sorts + a trailing `&` (31 cells): **the reel's first frame
+    IS the & it replaced** (starts at −29P exactly), 260ms accel as the words lift,
+    cruise through the flood + frame fade, then the approved tail in absolute ms
+    (weighted decel → near-miss `$` at +1P → ~95ms hold → snap −6px → seat), TOTAL
+    = MORPH+30+470+760+350 ≈ 2530ms, so the & thunks in ~350ms **after the page is
+    fully up** (seat 6923 > mrGone 6572, headless). `__ampFlood` (called inside the
+    loader's `toPage`) flips the reel to the live accent the instant the old
+    `body.page .l-amp` colour flip happened — lavender→accent, computed from
+    `#amp .ch` so day/night/chips all read true. amp-armed spans flight→seat;
+    seat = existing `seatAmp` (native & same frame, shudder, bloom, regKick,
+    sndSlam). SKIP_EVS gained `"scroll"`: the flight reel is fixed, so ANY input
+    (incl. scroll) seats the native & instantly (skipFinale) — the fixed reel can
+    never shear off the hero. Fallback intact: no `__ampFly` (old loader,
+    degenerate measure, throw → cleanup+false) ⇒ the amp flies as a word and
+    `dropAmp` spins in place — its bank's idx15 is now `&` too, so even the
+    fallback opens on the glyph it hides. Verified headless (Playwright, real rAF;
+    36/36 + 5/5 mobile): cede centre/width d=0.0 with `.l-amp` hidden the same
+    frame and parked (0px drift); lands on native ch d=0.0/dw=0.0; strip from
+    −29P, 62 distinct Y, near-miss +1P; colour floods once; seat relax+2562 with
+    bloom + & restored; fallback/return/standalone unaffected; 390px: lands
+    d=0.0, no x-overflow; zero console errors everywhere. NOTE: the embedded
+    Claude pane cannot play this at all now (rAF fully stalled in the nested
+    loader iframe — measured raf:0 for 7s; the parent 9s failsafe releases it),
+    so FEEL tuning (cruise speed via bank length, the beat, the 260ms accel)
+    needs a real browser with `?loader`, per the §5 quirk.
+    **REVISION (same day, Mark: "cut the roulette time a little — it's going a
+    bit too long after the screen loads" + "I don't like the arrival effect —
+    it feels janky and a little too forced"):** the ending is now a WEIGHTED
+    ARRIVAL, not theater. Near-miss `$` / hold / snap-back / over-travel all
+    CUT from BOTH reels — the strip just brakes into the & and stops
+    (−2.5P → 0, `cubic-bezier(0.18,0.82,0.22,1)`, ~380ms; fallback offset
+    0.62→1; no overshoot — maxY=0 verified). Impact softened: the 3rd-line
+    shudder and the `regKick` shear are cut (the janky bits), the bloom is
+    smaller/quieter/faster (0.78→1.22, 0.32 peak, 220ms), `sndSlam` stays
+    (opt-in). TOTAL's post-frame-out pad 350→80ms — seat ≈ relax+2260
+    (measured 2315, ~110ms after the frame is gone), ~270ms sooner. Bank
+    unchanged (idx0's `$` simply never enters the window). Re-verified
+    headless 36/36 + 5/5 mobile — this pass ran after 23:00 LA, so it also
+    covered NIGHT mode, which exposed a harness-only nuance worth recording:
+    in night the hero amp's live accent IS the lockup lavender (`#7C7CFF`),
+    so `__ampFlood` is correctly a visual no-op — the flood invariant is
+    "reel ends on the live `#amp .ch` colour", NOT "colour changes once."
+    **REVISION 2 (Mark: "make it land faster"):** the seat moved INTO the
+    frame fade instead of after the frame's removal — the fade is an extreme
+    ease-out (0.7s, ~95% dissolved by half-time), so the & thunks in as the
+    last wisp clears with zero wash (measured loader opacity 0.01 at the
+    seat frame). `TOTAL = MORPH + 30 + 470 + 380` (the 760 frame-out no
+    longer gates it); brake shortened 380→280ms from −2P with a slightly
+    harder curve (`cubic-bezier(0.18,0.84,0.26,1)`); fallback brake matched
+    (offset 0.72, −2P). Seat measured relax+1874 (was 2315, originally
+    2562) — ~0.7s faster than the first build. 36/36 + 5/5 re-verified;
+    landing still d=0.0/dw=0.0, maxY −0.2 (no overshoot).
+    **REVISION 3 (Mark: "the landing, like that pulse thing — I'm not a fan,
+    can we make that better"):** the bloom died too. The landing is now THE
+    IMPRESSION — the glyph itself lands pressed into the paper (`#amp .ch`,
+    `translateY(2px) scale(1.045)` → none, 300ms, WAAPI on the inline-block
+    span, transform-only so it can't reflow or fight the ink pooling) and
+    settles. No radial light, no overlay — the slug is the effect. `sndSlam`
+    stays (opt-in). skipFinale is now a quiet instant & (no pulse).
+    `ampBloom`/`ampGeo`/`.amp-bloom` deleted. ARRIVAL LESSON (three cuts in
+    one day — shudder/regKick, then near-miss/snap, then the bloom): Mark
+    strips arrival theater down to ONE physical, print-true gesture on the
+    object itself; light-shows and overlays read as "effects" and die.
+    Verified 36/36 (impression fires, chAnim 1 across the seat window).
+    **LOUPE STATUS (same session):** Mark asked "where is the magnifying
+    glass for the project cards" — it is ALIVE and untouched on this branch
+    (verified 9/9 headless: tap opens the sheet + no glass, Esc closes,
+    press-and-HOLD ~200ms still drops the glass with the plate under it,
+    release lifts, zero errors). It is hold-only and unlabeled BY DESIGN
+    (sharpen M4 kept it as the quiet delight) — but Mark himself couldn't
+    find it, which re-opens the keyboard-rule question ("nothing is ever
+    key-only" — is hold-only any different?). RESOLVED in #27: it is not —
+    Mark asked a third time ("literally ur cursor turns to glass") and the
+    glass now rides the hover. No decal needed; the gesture advertises
+    itself.
+
+26. (branch `prototypes-searchlight`) **THE INSPECTION TOUR — the light earns
+    its keep.** Mark: *"I want more light movement I think, or idk — should we
+    keep the light or nah? And the camera box is arriving a tad too late
+    compared to the light."* Call made (and argued to Mark): KEEP the light —
+    it is the loader's identity and pure print-world (an operator's work-lamp
+    inspecting the forme before the pull); the flaw was that it had TWO stops
+    and parked on the word for ~2.3s of its 4s. Built, in `frame()`/
+    `writeSpot()` of the loader:
+    - **The tour:** plate (the work, e<0.10) → counter (the gauge, e<0.26) →
+      forme (`.l-design`, the upper lockup, e<0.46) → down onto the keystone
+      WORD. Brisk lerp between stations (0.085 — it arcs through them, never
+      parking), heavy on the final settle (0.058). One clean right-to-left
+      sweep — the stations are nearly collinear by layout, which reads as one
+      deliberate pass (a path-length assertion is the WRONG check; station
+      proximity is the honest one).
+    - **The held lamp:** `writeSpot(now)` adds a faint two-sine hand drift
+      (±8px) + a breathing iris (±18px on --sr) while the shop works;
+      REGISTER STILLS IT (drift gated by `registered` — stillness =
+      registration, the site's own law; measured xRange 0.10px post-register
+      vs ~45px in the hold). Callers without a clock get the lamp at rest.
+    - **The box sync:** `.bk` transition 0.85→0.7s and the launch moved from
+      light-arrival to the FORME turn (`leg >= 2`) — the crop brackets frame
+      the lockup while the light sweeps down it; measured box-land 2193 vs
+      light-arrival 2008 (185ms, inside the settling drift — reads together).
+      Fired on arrival (original) it trailed ~0.85s; on the final leg, ~0.5s.
+    - **Mobile zero-rect guard:** `centreOf()` returns null for hidden
+      stations (the plate is display:none ≤breakpoint — it used to measure
+      [0,0] and aim the lamp at the corner; latent since the followspot was
+      built). Fallbacks now take over; play()'s start position guarded too.
+    Register/relax timing untouched — the cede/flight handoff is unaffected.
+    Verified: 11/11 light (stations visited: d(make)=19, d(forme)=86, starts
+    on plate d=3; drift/breathe/still/iris all measured), 36/36 flight, 5/5
+    mobile, zero console errors.
+
+27. (branch `prototypes-searchlight`) **THE GLASS IS THE CURSOR.** Mark asked
+    for the loupe a THIRD time ("wheres the picture zoom thing… literally ur
+    cursor turns to glass and through that glass it zooms") — hold-only was
+    dead on arrival, twice explained and twice unfound. New gesture model on
+    the line rows (main.js, "the glass is the cursor" block):
+    - **HOVER a plate face (`.row-thumb`) → the glass drops instantly**; the
+      cursor dot hides (`.cursor.is-loupe`), the glass pans the 2.2× zoom as
+      the pointer moves (frame() already fed it from mouse.x/y — page-coord
+      face math, scroll-proof); **leaving the photo lifts it** — cursor back
+      to normal. Confirmed spec with Mark: instant, no delay, normal outside
+      the picture.
+    - **Press + MOVE → the glass YIELDS to the hand** (dropLoupe at the 6px
+      swing threshold) — the swing is unchanged; on release, if the pointer
+      still rests on the face, the glass re-seats (`lineHoverItem` in
+      lineUp; a settling swung plate needs the next 1px hand move to
+      re-hit-test — real hands always move).
+    - **Quick TAP → wasNav in lineUp drops the glass so the case sheet opens
+      clean** (hover no longer suppresses clicks — only drags/held presses
+      set lineDragUsed); **press-held-STILL keeps working** (the 200ms timer
+      now just summons if hover hasn't, and still marks the press
+      non-navigating).
+    - Delegated `pointerover/pointerout` on `#index` (mouse-type pointers
+      only, guards: reduced / trailEnabled / unstruck / mid-gesture; DOM
+      identity stable across buildLine re-runs). pointercancel never
+      navigates (lineUp takes the event). Flat-fallback (non-line) loupe
+      path untouched (coarse pointers have no hover).
+    Verified 10/10 headless: instant on-hover (on+cursor swap), zoom pans
+    (backgroundPosition moves with the pointer), lifts off-photo, tap opens
+    sheet + Esc, glass yields mid-swing + returns after settle, zero
+    console errors; plus 36/36 flight + 5/5 mobile + 11/11 light re-run
+    green (62 total).
+
 ## 8. Ideas discussed but not built (fair game later)
 
 - Project detail pages, each as its own proof sheet / case study.

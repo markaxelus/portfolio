@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IDENTITY — THE INSPECTION (mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,100..900,0..100;1,9..144,100..900,0..100&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     IDENTITY — THE INSPECTION — a PLAYABLE mock (not a build).
+     The site is a proof you INSPECT under a raking light. At rest
+     the hero is BLIND-EMBOSSED: real type, printed with no ink,
+     just a two-tone deboss pressed into the stone. The sheet reads
+     calm, nearly blank. A soft raking light follows the cursor;
+     where it rakes the paper it DEVELOPS the impression —
+       1. the emboss catches the light and pops into 3D relief,
+       2. the letters flood to real ink (+ a hint of the red/blue
+          registration passes), as if the light is inking them,
+       3. hidden margin marks, a halftone screen and a whispered
+          slug bleed through — visible only inside the light.
+     Two identical hero copies are stacked in perfect register: a
+     blind-emboss BASE (always on) and an inked REVEAL masked to a
+     soft light-pool at --mx/--my. A directional hot-spot, offset
+     from the cursor, sells the raking angle. Autoplays one slow
+     sweep on load, then hands control to the pointer.
+     PERF: the reveal is driven purely by the --mx/--my CSS vars
+     set in pointermove — no layout reads, no viewport filters.
+     Reduced motion shows the developed hero statically, no light.
+     ============================================================ */
+
+  :root {
+    --stone:#DDDBD4; --stone-deep:#CFCDC5; --ink:#16150F;
+    --accent:#2A2AF0; --acid:#B4C400; --pencil:#C7361F;
+    --graphite:rgba(22,21,15,0.55); --hairline:rgba(22,21,15,0.28);
+    --booth:#0C0B08;
+
+    /* blind-emboss rim (deboss pressed into the stone, uninked) */
+    --emb-hi:rgba(255,255,255,0.5);
+    --emb-lo:rgba(22,21,15,0.16);
+
+    --mono:"Space Mono", monospace;
+    --frame:2.6vw;
+
+    /* the light source, in px, driven by pointermove. Parked centre. */
+    --mx:50vw;
+    --my:46vh;
+
+    --ease-out:cubic-bezier(0.19,1,0.22,1);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    /* the sheet: stone, a whisper darker at the far edges so the
+       raking pool reads as LIGHT falling on paper, not a fill */
+    background:
+      radial-gradient(ellipse 120vw 120vh at 50% 42%,
+        var(--stone) 40%, var(--stone-deep) 118%);
+    color:var(--ink);
+    font-family:"Fraunces", Georgia, serif;
+    font-optical-sizing:auto;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+    cursor:crosshair;
+  }
+
+  /* ---------- the two stacked hero copies ---------- */
+  .layer {
+    position:fixed; inset:0; z-index:2;
+    display:flex; align-items:center; justify-content:center;
+    pointer-events:none;
+  }
+  .hero { width:min(92vw, 1180px); text-align:center; }
+
+  .eyebrow {
+    font-family:var(--mono); font-weight:400;
+    font-size:clamp(0.6rem, 0.86vw, 0.72rem);
+    letter-spacing:0.28em; margin-bottom:1.7rem;
+  }
+  .eyebrow em { font-style:normal; }
+
+  .headline {
+    font-weight:480; font-variation-settings:"opsz" 144;
+    font-size:clamp(3rem, 13vw, 15rem);
+    line-height:0.84; letter-spacing:-0.035em;
+  }
+  .amp { font-style:italic; font-weight:340; }
+
+  .bio {
+    font-family:var(--mono); font-weight:400;
+    font-size:clamp(0.8rem, 0.98vw, 0.98rem);
+    line-height:1.5; max-width:34ch; margin:2.5rem auto 0;
+  }
+
+  /* ===== BASE — the blind emboss. Always on, nearly blank. ===== */
+  .base { z-index:2; }
+  .base .headline {
+    color:transparent;
+    /* transparent fill + a light top-left highlight and a dark
+       bottom-right shadow = the deboss, pressed into the stone */
+    text-shadow:
+      -0.012em -0.013em 0.004em var(--emb-hi),
+       0.014em  0.016em 0.006em var(--emb-lo);
+  }
+  /* the small type is a faint, barely-inked whisper at rest */
+  .base .eyebrow { color:rgba(22,21,15,0.17); }
+  .base .eyebrow em { color:rgba(42,42,240,0.24); }
+  .base .bio { color:rgba(22,21,15,0.14); }
+
+  /* ===== REVEAL — inked + 3D relief + hidden marks. Masked to the
+          light pool at --mx/--my; hidden until the light is on. ===== */
+  .reveal { z-index:5; opacity:0; transition:opacity 0.55s var(--ease-out); }
+  body.lit .reveal { opacity:1; }
+  body.static-reveal .reveal { opacity:1; }
+
+  .reveal, body.lit .reveal {
+    /* elongated along the rake — the light develops a band, not a dot */
+    -webkit-mask-image:radial-gradient(ellipse 30vmax 20vmax at var(--mx) var(--my),
+      #000 0%, #000 32%, rgba(0,0,0,0.5) 57%, transparent 77%);
+    mask-image:radial-gradient(ellipse 30vmax 20vmax at var(--mx) var(--my),
+      #000 0%, #000 32%, rgba(0,0,0,0.5) 57%, transparent 77%);
+    -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  }
+
+  .reveal .headline {
+    color:var(--ink);
+    /* stronger raking highlight/shadow = the deboss pops to relief,
+       under a hint of the misregistered red + blue ink passes */
+    text-shadow:
+      -0.017em -0.019em 0.004em rgba(255,255,255,0.66),
+       0.021em  0.026em 0.013em rgba(22,21,15,0.44),
+      -0.03em   0.012em 0        rgba(199,54,31,0.42),
+       0.028em -0.010em 0        rgba(42,42,240,0.34);
+  }
+  .reveal .amp {
+    color:var(--accent);
+    text-shadow:
+      -0.017em -0.019em 0.004em rgba(255,255,255,0.6),
+       0.021em  0.026em 0.013em rgba(22,21,15,0.42);
+  }
+  .reveal .eyebrow { color:var(--graphite); }
+  .reveal .eyebrow em { color:var(--accent); }
+  .reveal .bio { color:rgba(22,21,15,0.72); }
+
+  /* --- hidden marks: only bleed through inside the light --- */
+  .halftone {
+    position:absolute; inset:0; z-index:1;
+    background-image:radial-gradient(rgba(22,21,15,0.55) 0.9px, transparent 1.3px);
+    background-size:8px 8px;
+    opacity:0.30;
+  }
+  .rm { position:absolute; width:22px; height:22px; z-index:2; opacity:0.6; }
+  .rm.tl { top:var(--frame); left:var(--frame); }
+  .rm.tr { top:var(--frame); right:var(--frame); }
+  .rm.bl { bottom:calc(var(--frame) + 10px); left:var(--frame); }
+  .rm.br { bottom:calc(var(--frame) + 10px); right:var(--frame); }
+  .slug {
+    position:absolute; left:50%; bottom:8vh; transform:translateX(-50%);
+    z-index:2; font-family:var(--mono); font-size:10px;
+    letter-spacing:0.34em; color:rgba(22,21,15,0.5); white-space:nowrap;
+  }
+  .slug em { font-style:normal; color:var(--accent); }
+  .slug-v {
+    position:absolute; right:calc(var(--frame) + 4px); top:50%;
+    transform:translateY(-50%) rotate(90deg); transform-origin:right center;
+    z-index:2; font-family:var(--mono); font-size:9.5px;
+    letter-spacing:0.3em; color:rgba(22,21,15,0.42); white-space:nowrap;
+  }
+
+  /* ---------- the raking light itself (the sheen) ----------
+     A warm pool at the cursor + a small hot-spot offset up-left,
+     so it reads as a lamp raking the sheet at an angle, not a
+     flat torch circle. Plain alpha over stone (no blend modes). */
+  .light {
+    position:fixed; inset:0; z-index:4; pointer-events:none;
+    opacity:0; transition:opacity 0.55s var(--ease-out);
+    background:
+      /* the grazing glint — an elongated bright edge offset toward the
+         light source (up-left), where the rake first catches the paper */
+      radial-gradient(ellipse 12vmax 6vmax at calc(var(--mx) - 4.4vmax) calc(var(--my) - 5vmax),
+        rgba(255,254,247,0.62), rgba(255,254,247,0.14) 52%, transparent 74%),
+      /* the warm pool, elongated across the sheet = the rake, not a torch */
+      radial-gradient(ellipse 38vmax 24vmax at var(--mx) var(--my),
+        rgba(251,246,227,0.42), rgba(251,246,227,0.11) 44%, transparent 70%);
+  }
+  body.lit .light { opacity:1; }
+  body.static-reveal .light {
+    opacity:1;
+    background:radial-gradient(ellipse 40vmax 30vmax at 50% 46%,
+      rgba(251,246,227,0.34), transparent 72%);
+  }
+
+  /* ---------- crop-brackets frame the hero ---------- */
+  .bk {
+    position:fixed; z-index:6; width:64px; height:64px;
+    border:0 solid var(--hairline); pointer-events:none;
+  }
+  .bk.tl { top:var(--frame); left:var(--frame); border-top-width:1.3px; border-left-width:1.3px; }
+  .bk.tr { top:var(--frame); right:var(--frame); border-top-width:1.3px; border-right-width:1.3px; }
+  .bk.bl { bottom:var(--frame); left:var(--frame); border-bottom-width:1.3px; border-left-width:1.3px; }
+  .bk.br { bottom:var(--frame); right:var(--frame); border-bottom-width:1.3px; border-right-width:1.3px; }
+
+  /* ---------- furniture: caption + instruction ---------- */
+  .caption {
+    position:fixed; z-index:12; left:calc(var(--frame) + 20px); bottom:calc(var(--frame) + 2px);
+    font-family:var(--mono); font-size:10px; letter-spacing:0.22em;
+    color:var(--graphite); max-width:60vw;
+  }
+  .caption em { font-style:normal; color:var(--accent); }
+  .instruct {
+    position:fixed; z-index:12; right:calc(var(--frame) + 20px); bottom:calc(var(--frame) + 2px);
+    font-family:var(--mono); font-size:10px; letter-spacing:0.22em;
+    color:rgba(22,21,15,0.42); text-align:right;
+    transition:opacity 0.6s var(--ease-out);
+  }
+  body.touched .instruct { opacity:0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition:none !important; animation:none !important; }
+  }
+  @media (max-width: 640px) {
+    :root { --frame:4.5vw; }
+    .bio { max-width:30ch; }
+    .instruct { display:none; }
+    .caption { max-width:82vw; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- BASE: the blind-embossed sheet, always on, nearly blank -->
+  <section class="layer base">
+    <div class="hero">
+      <p class="eyebrow">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</p>
+      <h1 class="headline">Code, design<br><span class="amp">&amp;</span>&nbsp;nerve</h1>
+      <p class="bio">I&rsquo;m Mark. I design and build interfaces that hold their nerve. I work slowly, ship rarely, and put everything on the page.</p>
+    </div>
+  </section>
+
+  <!-- the raking light (sheen), follows the cursor -->
+  <div class="light" aria-hidden="true"></div>
+
+  <!-- REVEAL: inked + 3D relief + hidden marks, masked to the light -->
+  <section class="layer reveal" aria-hidden="true">
+    <div class="halftone"></div>
+
+    <svg class="rm tl" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="none" stroke="#16150F" stroke-width="1"/><path d="M12 1v9M12 14v9M1 12h9M14 12h9" stroke="#16150F" stroke-width="1"/></svg>
+    <svg class="rm tr" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="none" stroke="#16150F" stroke-width="1"/><path d="M12 1v9M12 14v9M1 12h9M14 12h9" stroke="#16150F" stroke-width="1"/></svg>
+    <svg class="rm bl" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="none" stroke="#16150F" stroke-width="1"/><path d="M12 1v9M12 14v9M1 12h9M14 12h9" stroke="#16150F" stroke-width="1"/></svg>
+    <svg class="rm br" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="none" stroke="#16150F" stroke-width="1"/><path d="M12 1v9M12 14v9M1 12h9M14 12h9" stroke="#16150F" stroke-width="1"/></svg>
+
+    <span class="slug">PROOF 00/01 &middot; <em>INSPECT UNDER RAKING LIGHT</em></span>
+    <span class="slug-v">D50 &middot; 5000K &middot; BLIND EMBOSS &mdash; NO INK</span>
+
+    <div class="hero">
+      <p class="eyebrow">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</p>
+      <h1 class="headline">Code, design<br><span class="amp">&amp;</span>&nbsp;nerve</h1>
+      <p class="bio">I&rsquo;m Mark. I design and build interfaces that hold their nerve. I work slowly, ship rarely, and put everything on the page.</p>
+    </div>
+  </section>
+
+  <!-- crop-brackets -->
+  <i class="bk tl"></i><i class="bk tr"></i><i class="bk bl"></i><i class="bk br"></i>
+
+  <!-- furniture -->
+  <div class="caption">IDENTITY &mdash; THE INSPECTION &middot; <em>light reveals what&rsquo;s pressed in</em></div>
+  <div class="instruct">sweep the light across the sheet.</div>
+
+<script>
+  var body = document.body;
+  var root = document.documentElement;
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var still = /[?&]still\b/.test(location.search);
+
+  var vw = innerWidth, vh = innerHeight;
+  addEventListener("resize", function () { vw = innerWidth; vh = innerHeight; });
+
+  // Drive the light purely by CSS vars — no layout reads anywhere.
+  function setLight(x, y) {
+    root.style.setProperty("--mx", x + "px");
+    root.style.setProperty("--my", y + "px");
+  }
+
+  // Static developed hero for reduced motion / ?still — no moving light.
+  if (reduce || still) {
+    body.classList.add("static-reveal", "touched");
+  } else {
+    var demoRAF = null, demoTimer = null, touched = false;
+
+    function goLit() { body.classList.add("lit"); }
+
+    // gentle auto-demo: one slow sweep across the headline, then
+    // control passes to the cursor. Delayed so the resting emboss
+    // is the sheet's first, calm impression.
+    function runDemo() {
+      goLit();
+      var t0 = null, dur = 2900;
+      var y0 = vh * 0.455;
+      function tick(t) {
+        if (touched) return;                 // cursor took over
+        if (t0 === null) t0 = t;
+        var p = Math.min(1, (t - t0) / dur);
+        var e = 0.5 - 0.5 * Math.cos(Math.PI * p);        // easeInOutSine
+        var x = vw * 0.14 + (vw * 0.72) * e;
+        var y = y0 + Math.sin(p * Math.PI) * (vh * 0.06);  // gentle bob
+        setLight(x, y);
+        if (p < 1) demoRAF = requestAnimationFrame(tick);
+      }
+      setLight(vw * 0.14, y0);
+      demoRAF = requestAnimationFrame(tick);
+    }
+
+    function takeOver(x, y) {
+      touched = true;
+      body.classList.add("touched");
+      clearTimeout(demoTimer);
+      if (demoRAF) cancelAnimationFrame(demoRAF);
+      goLit();
+      setLight(x, y);
+    }
+
+    addEventListener("pointermove", function (e) {
+      if (!touched) takeOver(e.clientX, e.clientY);
+      else setLight(e.clientX, e.clientY);
+    }, { passive: true });
+
+    // leaving the sheet lets it fall quiet again (blank until inspected)
+    addEventListener("pointerout", function (e) {
+      if (touched && !e.relatedTarget && !e.toElement) body.classList.remove("lit");
+    });
+    addEventListener("pointerover", function () {
+      if (touched) body.classList.add("lit");
+    });
+
+    demoTimer = setTimeout(runDemo, 2400);
+  }
+</script>
+</body>
+</html>

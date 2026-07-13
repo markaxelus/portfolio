@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loader directions — MARK / PRINT / TYPE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,100..900,0..100;1,9..144,100..900,0..100&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THREE LOADER DIRECTIONS — each ONE performed idea that
+     BECOMES the page (the award-loader pattern). No decorated
+     screen; one thing performs, then hands off into the hero.
+       A · THE MARK  — the registration mark draws, the passes
+                       converge, its brackets fly out = the page frame.
+       B · THE PRINT — the page is blind-embossed; an ink bar
+                       prints it top-to-bottom, then it's live.
+       C · THE TYPE  — the headline arrives out of register and
+                       LOCKS into the hero (last frame == the page).
+     Switch A/B/C top-left · REPLAY top-right.
+     ============================================================ */
+  :root {
+    --booth: #0C0B08; --stone: #DDDBD4; --ink: #16150F;
+    --pencil: #C7361F; --accent: #2A2AF0; --accent-lum: #7C7CFF; --acid: #B4C400;
+    --mono: "Space Mono", monospace; --frame: 2.4vw;
+    --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+    --ease-thunk: cubic-bezier(0.34, 1.42, 0.5, 1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--stone); color: var(--ink);
+    font-family: "Fraunces", Georgia, serif; font-optical-sizing: auto;
+    overflow: hidden; -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: var(--mono); }
+
+  /* ---------------- THE HERO (the page all three become) ---------------- */
+  .page { position: fixed; inset: 0; z-index: 1; }
+  .hero { position: absolute; left: clamp(1.4rem, 8vw, 9rem); top: 50%; transform: translateY(-50%); }
+  .eyebrow { display: block; font-family: var(--mono); font-size: clamp(.55rem,.8vw,.7rem);
+    letter-spacing: .28em; margin-bottom: 1.1rem; }
+  .eyebrow em { font-style: normal; color: var(--accent); }
+  .hl { font-weight: 460; line-height: .92; letter-spacing: -.03em; }
+  .hl .line { display: block; }
+  .hl .l2 { margin-left: 1.2vw; }
+  .hl .l3 { margin-left: .4vw; }
+  .hl .amp { font-style: italic; font-weight: 340; color: var(--accent); }
+  .l1 { font-size: clamp(2rem, 5vw, 3.6rem); }
+  .l2 { font-size: clamp(2rem, 5vw, 3.6rem); }
+  .l3 { font-size: clamp(3.4rem, 9vw, 7rem); font-weight: 300; font-variation-settings: "SOFT" 30; }
+  .bio { display: block; margin-top: 1.6rem; max-width: 20rem; font-family: var(--mono);
+    font-size: 12px; line-height: 1.7; color: color-mix(in srgb, var(--ink) 78%, var(--stone)); }
+
+  /* page furniture */
+  .corner { position: fixed; z-index: 3; font-family: var(--mono); font-size: 10px;
+    letter-spacing: .24em; opacity: .66; }
+  .corner.tl { top: calc(var(--frame) + 2px); left: calc(var(--frame) + 22px); }
+  .corner.br { bottom: calc(var(--frame) + 34px); right: calc(var(--frame) + 22px); }
+  .jobline { position: fixed; left: 0; right: 0; bottom: 0; z-index: 3;
+    background: color-mix(in srgb, var(--stone) 88%, var(--ink)); border-top: 1px solid rgba(22,21,15,.16);
+    display: flex; justify-content: space-between; gap: 16px; padding: 8px 18px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: .2em; color: rgba(22,21,15,.66); white-space: nowrap; }
+  .jobline b { font-weight: 400; color: var(--pencil); } .jobline em { font-style: normal; color: var(--accent); }
+  /* the small registration mark, home top-right */
+  .regmark { position: fixed; z-index: 3; top: calc(var(--frame) + 30px); right: calc(var(--frame) + 6px);
+    width: 22px; height: 22px; opacity: 0; }
+  .regmark svg { width: 100%; height: 100%; display: block; }
+  .regmark path, .regmark circle { stroke: var(--ink); stroke-width: 1.1; fill: none; }
+
+  /* the page-frame crop brackets (all three snap these in) */
+  .fbk { position: fixed; z-index: 4; width: 60px; height: 60px; border: 0 solid var(--ink);
+    opacity: 0; pointer-events: none; }
+  .fbk.tl { top: var(--frame); left: var(--frame); border-top-width: 1.4px; border-left-width: 1.4px; }
+  .fbk.tr { top: var(--frame); right: var(--frame); border-top-width: 1.4px; border-right-width: 1.4px; }
+  .fbk.bl { bottom: var(--frame); left: var(--frame); border-bottom-width: 1.4px; border-left-width: 1.4px; }
+  .fbk.br { bottom: var(--frame); right: var(--frame); border-bottom-width: 1.4px; border-right-width: 1.4px; }
+  .done .fbk { opacity: .55; transition: opacity .6s var(--ease-out) .1s, transform .8s var(--ease-out) .1s; }
+
+  /* ---------------- THE BOOTH (dark cover for A & C) ---------------- */
+  .booth { position: fixed; inset: 0; z-index: 2; background: var(--booth); opacity: 0;
+    transition: opacity .7s var(--ease-out); pointer-events: none; }
+  .m-a .booth, .m-c .booth { opacity: 1; }
+  .m-a.done .booth, .m-c.done .booth { opacity: 0; }
+  /* the raking work-light */
+  .booth::before { content: ""; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 56vw 60vh at 42% 50%, rgba(228,221,201,.10), transparent 66%); }
+
+  /* the hero's colour + reveal differ per direction */
+  .m-a .hero, .m-a .bio { opacity: 0; }              /* A: mark performs; hero arrives on flood */
+  .m-a.done .hero { opacity: 1; transition: opacity .7s var(--ease-out) .25s; }
+  .m-c .hero { z-index: 3; }                          /* C: headline performs ABOVE the booth */
+  .m-c .hl, .m-c .eyebrow { color: var(--stone); }
+  .m-c .bio { opacity: 0; }
+  .m-c.done .hl { color: var(--ink); transition: color .6s var(--ease-out); }
+  .m-c.done .eyebrow { color: var(--stone); }
+  .m-c.done .bio { opacity: 1; transition: opacity .7s var(--ease-out) .3s; }
+  .m-a.done .eyebrow, .m-a.done .bio { opacity: 1; }
+  .m-a .eyebrow { opacity: 0; }
+
+  /* =========== A · THE MARK — a big registration mark, centre =========== */
+  .bigmark { position: fixed; z-index: 3; left: 50%; top: 50%; width: 190px; height: 190px;
+    margin: -95px 0 0 -95px; opacity: 0; }
+  .m-a .bigmark { opacity: 1; }
+  .m-a.done .bigmark { opacity: 0; transform: scale(.12) translate(0,-6px); transition: opacity .5s, transform .9s var(--ease-out); }
+  .bigmark svg { width: 100%; height: 100%; overflow: visible; display: block; }
+  .bm-key { stroke: var(--stone); stroke-width: 1.3; fill: none;
+    stroke-dasharray: 300; stroke-dashoffset: 300; }
+  .m-a.draw .bm-key { stroke-dashoffset: 0; transition: stroke-dashoffset 1s var(--ease-out); }
+  .bm-red { stroke: var(--pencil); stroke-width: 1.3; fill: none; transform: translate(-15px,-9px); opacity: .9; }
+  .bm-blu { stroke: var(--accent-lum); stroke-width: 1.3; fill: none; transform: translate(15px,9px); opacity: .9; }
+  .m-a.converge .bm-red, .m-a.converge .bm-blu { transform: translate(0,0); transition: transform 1.1s var(--ease-out); }
+  .m-a.lock .bigmark { animation: lock .7s var(--ease-thunk); }
+  @keyframes lock { 0%{ transform: rotate(-14deg) } 100%{ transform: rotate(0) } }
+  /* A's brackets hug the mark, then fly to the frame corners */
+  .m-a .fbk.tl { transform: translate(44vw, 40vh) scale(.5); }
+  .m-a .fbk.tr { transform: translate(-44vw, 40vh) scale(.5); }
+  .m-a .fbk.bl { transform: translate(44vw, -40vh) scale(.5); }
+  .m-a .fbk.br { transform: translate(-44vw, -40vh) scale(.5); }
+  .m-a.done .fbk { transform: none; }
+
+  /* =========== B · THE PRINT — blind emboss, an ink bar prints it =========== */
+  .m-b .strike { color: transparent;
+    text-shadow: -1px -1px 0 rgba(22,21,15,.22), 1px 1px 0 rgba(255,255,255,.55); }
+  .m-b .strike.struck { color: var(--ink); text-shadow: none; transition: color .18s var(--ease-out), text-shadow .18s; }
+  .m-b .strike.ink-accent.struck { color: var(--accent); }         /* the ampersand inks blue */
+  .m-b .eyebrow.struck { color: var(--ink); } .m-b .eyebrow.struck em { color: var(--accent); }
+  .printbar { position: fixed; z-index: 6; left: 0; right: 0; top: 0; height: 3px; opacity: 0;
+    background: linear-gradient(90deg, transparent, var(--ink) 12%, var(--ink) 88%, transparent);
+    box-shadow: 0 6px 16px rgba(22,21,15,.28), 0 0 0 rgba(0,0,0,0); pointer-events: none; }
+  .printbar::after { content: "INK"; position: absolute; right: 12%; top: 5px;
+    font-family: var(--mono); font-size: 8px; letter-spacing: .3em; color: var(--pencil); }
+  .m-b .printbar { opacity: 1; }
+  .m-b .bio { opacity: 1; }
+
+  /* ---------------- chrome (mock controls) ---------------- */
+  .switch { position: fixed; z-index: 20; top: calc(var(--frame) + 2px); left: calc(var(--frame) + 2px);
+    display: flex; gap: 6px; font-family: var(--mono); font-size: 9px; letter-spacing: .18em; }
+  .switch button { background: none; border: 1px solid currentColor; color: var(--ink); opacity: .5;
+    padding: 5px 8px 4px; cursor: pointer; transition: opacity .2s; }
+  .m-a .switch button, .m-c .switch button { color: var(--stone); }
+  .switch button.on { opacity: 1; background: var(--acid); color: #16150F; border-color: var(--acid); }
+  .replay { position: fixed; z-index: 20; top: calc(var(--frame) + 2px); right: var(--frame);
+    font-family: var(--mono); font-size: 10px; letter-spacing: .2em; color: var(--ink);
+    background: none; border: 1px solid currentColor; padding: 7px 12px 6px; cursor: pointer; opacity: .8; }
+  .m-a .replay, .m-c .replay { color: var(--stone); }
+  .replay:hover { background: currentColor; } .replay:hover span { color: var(--stone); }
+  .m-a .replay:hover span, .m-c .replay:hover span { color: var(--booth); }
+  .count { position: fixed; z-index: 20; left: var(--frame); bottom: calc(var(--frame) + 30px);
+    font-family: var(--mono); font-weight: 700; font-size: 34px; letter-spacing: .01em; color: var(--ink); opacity: .85; }
+  .m-a .count, .m-c .count { color: var(--stone); }
+  .count em { font-style: normal; font-size: .4em; opacity: .5; }
+  .done .count { opacity: 0; transition: opacity .4s; }
+  .cap { position: fixed; z-index: 20; left: 50%; bottom: calc(var(--frame) + 8px); transform: translateX(-50%);
+    max-width: 74vw; text-align: center; font-family: var(--mono); font-size: 10px; letter-spacing: .14em;
+    color: var(--ink); opacity: .6; }
+  .m-a .cap, .m-c .cap { color: var(--stone); }
+  .cap b { font-weight: 700; color: var(--acid); }
+
+  /* hide page furniture behind the booth (A & C); reveal it on the flood */
+  .m-a .corner, .m-a .jobline, .m-a .regmark,
+  .m-c .corner, .m-c .jobline, .m-c .regmark { opacity: 0; }
+  .m-a.done .corner, .m-c.done .corner { opacity: .66; transition: opacity .6s var(--ease-out) .3s; }
+  .m-a.done .jobline, .m-c.done .jobline { opacity: 1; transition: opacity .6s var(--ease-out) .3s; }
+  .done .regmark { opacity: .5; transition: opacity .6s var(--ease-out) .4s; }
+  /* chrome flips dark once the sheet floods to stone */
+  .m-a.done .switch button, .m-c.done .switch button,
+  .m-a.done .replay, .m-c.done .replay,
+  .m-a.done .cap, .m-c.done .cap { color: var(--ink); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  @media (max-width: 720px) { .bio { display: none; } .l3 { font-size: 3.4rem; } .cap { max-width: 88vw; } }
+</style>
+</head>
+<body class="m-a">
+
+  <!-- THE HERO -->
+  <main class="page">
+    <div class="hero">
+      <span class="eyebrow strike">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</span>
+      <h1 class="hl">
+        <span class="line l1 strike">Code,</span>
+        <span class="line l2 strike">design</span>
+        <span class="line l3 strike"><span class="amp ink-accent strike">&amp;</span>&nbsp;nerve</span>
+      </h1>
+      <span class="bio strike">I&rsquo;m Mark. I design and build interfaces that hold their nerve. I work slowly, ship rarely, and put everything on the page.</span>
+    </div>
+  </main>
+
+  <span class="corner tl mono">MARK AXELUS</span>
+  <span class="corner br mono">SEE THE MESS</span>
+  <div class="jobline">
+    <span>SHEET Nº 001 &middot; MARK AXELUS &middot; WORKING PROOF</span>
+    <span><b>IN REGISTER</b> &middot; <em>OK TO RUN</em> &middot; D50 5000K</span>
+  </div>
+  <div class="regmark" aria-hidden="true">
+    <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="11"/><path d="M20 2v11M20 27v11M2 20h11M27 20h11"/></svg>
+  </div>
+
+  <!-- page-frame brackets -->
+  <i class="fbk tl"></i><i class="fbk tr"></i><i class="fbk bl"></i><i class="fbk br"></i>
+
+  <!-- THE BOOTH (A & C) -->
+  <div class="booth" aria-hidden="true"></div>
+
+  <!-- A · the big registration mark -->
+  <div class="bigmark" aria-hidden="true">
+    <svg viewBox="0 0 40 40">
+      <g class="bm-red"><circle cx="20" cy="20" r="12"/><path d="M20 1v11M20 28v11M1 20h11M28 20h11"/></g>
+      <g class="bm-blu"><circle cx="20" cy="20" r="12"/><path d="M20 1v11M20 28v11M1 20h11M28 20h11"/></g>
+      <g><circle class="bm-key" cx="20" cy="20" r="12"/><path class="bm-key" d="M20 0v12M28 20h12M20 28v12M0 20h12"/></g>
+    </svg>
+  </div>
+
+  <!-- B · the ink bar -->
+  <div class="printbar" aria-hidden="true"></div>
+
+  <!-- chrome -->
+  <div class="switch">
+    <button type="button" data-m="a" class="on">MARK</button>
+    <button type="button" data-m="b">PRINT</button>
+    <button type="button" data-m="c">TYPE</button>
+  </div>
+  <button class="replay" id="replay" type="button"><span>&#8630; REPLAY</span></button>
+  <span class="count"><span id="num">00</span><em>%</em></span>
+  <p class="cap" id="cap"></p>
+
+<script>
+  var body = document.body, numEl = document.getElementById("num"), capEl = document.getElementById("cap");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var strikes = [].slice.call(document.querySelectorAll(".strike"));
+  var printbar = document.querySelector(".printbar");
+  var PHASES = ["draw","converge","lock","done"];
+  var CAPS = {
+    a: 'A &middot; <b>THE MARK</b> — the registration mark draws, the passes converge, its brackets fly out to become the page frame.',
+    b: 'B &middot; <b>THE PRINT</b> — the page is blind-embossed; the ink bar prints it, top to bottom.',
+    c: 'C &middot; <b>THE TYPE</b> — the headline arrives out of register and locks into the page.'
+  };
+  var mode = "a", timers = [], rafs = [];
+  function at(ms, fn){ timers.push(setTimeout(fn, ms)); }
+  function clearAll(){ timers.forEach(clearTimeout); timers = []; rafs.forEach(cancelAnimationFrame); rafs = []; }
+
+  function runCount(dur, cb){
+    var t0 = performance.now();
+    function f(now){
+      var p = Math.min((now - t0) / dur, 1), v = Math.round(p * 100);
+      numEl.textContent = (v < 10 ? "0" : "") + v;
+      if (p < 1) rafs.push(requestAnimationFrame(f)); else if (cb) cb();
+    }
+    rafs.push(requestAnimationFrame(f));
+  }
+
+  function reset(m){
+    clearAll();
+    body.className = "m-" + m;
+    numEl.textContent = "00";
+    printbar.style.transform = "translateY(-6px)"; printbar.style.opacity = "";
+    strikes.forEach(function(e){ e.classList.remove("struck"); });
+    capEl.innerHTML = CAPS[m];
+    var btns = document.querySelectorAll(".switch button");
+    for (var i = 0; i < btns.length; i++) btns[i].classList.toggle("on", btns[i].getAttribute("data-m") === m);
+  }
+
+  /* A · THE MARK */
+  function playA(){
+    reset("a");
+    if (reduce){ body.classList.add("draw","converge","lock","done"); strikes.forEach(function(e){e.classList.add("struck");}); numEl.textContent="100"; return; }
+    at(60,   function(){ body.classList.add("draw"); });
+    at(700,  function(){ body.classList.add("converge"); });
+    runCount(1850);
+    at(1750, function(){ body.classList.add("lock"); });
+    at(2250, function(){ numEl.textContent="100"; body.classList.add("done"); });
+  }
+
+  /* B · THE PRINT — the ink bar descends, striking each element it passes */
+  function playB(){
+    reset("b");
+    if (reduce){ strikes.forEach(function(e){e.classList.add("struck");}); numEl.textContent="100"; body.classList.add("done"); return; }
+    var els = strikes.slice(), tops = els.map(function(e){ return e.getBoundingClientRect().top; });
+    var DUR = 2300, t0 = performance.now();
+    function f(now){
+      var p = Math.min((now - t0) / DUR, 1), y = p * innerHeight;
+      printbar.style.transform = "translateY(" + y.toFixed(1) + "px)";
+      numEl.textContent = (Math.round(p*100) < 10 ? "0" : "") + Math.round(p*100);
+      for (var i = 0; i < els.length; i++){
+        if (y >= tops[i] + 6 && !els[i].classList.contains("struck")) els[i].classList.add("struck");
+      }
+      if (p < 1) rafs.push(requestAnimationFrame(f));
+      else { printbar.style.opacity = "0"; els.forEach(function(e){ e.classList.add("struck"); }); body.classList.add("done"); }
+    }
+    rafs.push(requestAnimationFrame(f));
+  }
+
+  /* C · THE TYPE — the headline hunts into register, then IS the hero */
+  function playC(){
+    reset("c");
+    var lines = [].slice.call(document.querySelectorAll(".hl .line"));
+    function setOff(px){
+      lines.forEach(function(l){
+        l.style.textShadow = (-px)+"px "+(-px*0.55)+"px 0 var(--pencil), "+px+"px "+(px*0.55)+"px 0 var(--accent-lum)";
+      });
+    }
+    if (reduce){ setOff(0); body.classList.add("done"); strikes.forEach(function(e){e.classList.add("struck");}); numEl.textContent="100"; return; }
+    var MAX = 26, DUR = 2050, t0 = performance.now();
+    function ease(t){ return 1 - Math.pow(1 - t, 3); }
+    function f(now){
+      var p = Math.min((now - t0) / DUR, 1), e = ease(p);
+      var off = (1 - e) * MAX + (1 - e) * 3 * Math.sin((now - t0) * 0.03);   /* hunt */
+      setOff(off);
+      numEl.textContent = (Math.round(e*100) < 10 ? "0" : "") + Math.round(e*100);
+      if (p < 1) rafs.push(requestAnimationFrame(f));
+      else { setOff(0); lines.forEach(function(l){ l.style.textShadow = "none"; }); numEl.textContent = "100"; body.classList.add("done"); }
+    }
+    rafs.push(requestAnimationFrame(f));
+  }
+
+  function play(){ mode === "a" ? playA() : mode === "b" ? playB() : playC(); }
+
+  var sw = document.querySelectorAll(".switch button");
+  for (var i = 0; i < sw.length; i++) sw[i].addEventListener("click", function(){ mode = this.getAttribute("data-m"); play(); });
+  document.getElementById("replay").addEventListener("click", play);
+  play();
+</script>
+</body>
+</html>

@@ -764,14 +764,19 @@
       lineLastY = y;
     }, { passive: true });
 
-    /* ---- one press, three gestures ----
-       hold STILL → the glass comes down (inspect the proof);
-       press + MOVE → swing the sheet (heavy, lagged, no snap);
-       quick TAP → open the project sheet.
-       drag/loupe both suppress the click (lineDragUsed). */
+    /* ---- the glass is the cursor + one press, two gestures ----
+       HOVER a plate face → the glass comes down, your cursor IS the loupe,
+       moving pans it across the plate (Mark, July 12: "literally ur cursor
+       turns to glass and through that glass it zooms" — it was hold-only
+       before and he couldn't find it twice);
+       press + MOVE → the glass yields to the hand: swing the sheet;
+       quick TAP → open the project sheet (the glass steps aside);
+       press held STILL → the glass stays down (the old summon still works).
+       drag/held-press suppress the click (lineDragUsed); hover does NOT. */
     var linePress = null;       /* { it, sx, sy, moved } */
     var lineDragging = null;
     var lineLoupeT = null;
+    var lineHoverEl = null, lineHoverItem = null;   /* the face under the pointer */
 
     function dropLoupe() {
       if (!lineLoupeItem) return;
@@ -780,6 +785,44 @@
       loupeEl.classList.remove("on");
       cursorEl.classList.remove("is-loupe");
     }
+    function summonLoupe(it) {
+      var r = it.faceEl.getBoundingClientRect();  /* fresh, near-steady */
+      it.face = { x: r.left + scrollX, y: r.top + scrollY, w: r.width, h: r.height };
+      lineLoupeItem = it;
+      loupeOn = true;
+      curPlate = it.i;
+      loupeEl.style.backgroundImage = plates[it.i];
+      loupeEl.classList.add("on");
+      cursorEl.classList.add("is-loupe");
+      if (!loupedPlates[it.i]) {
+        loupedPlates[it.i] = 1;
+        logAct("loupe down on plate 0" + (it.i + 1) + ". the dots check out.");
+      }
+    }
+
+    /* the glass rides the hover — delegated (buildLine re-runs on resize;
+       the .row/.row-thumb DOM persists, so element identity is stable) */
+    indexEl.addEventListener("pointerover", function (e) {
+      if (e.pointerType && e.pointerType !== "mouse") return;
+      var th = e.target.closest(".row-thumb");
+      if (!th || th === lineHoverEl) return;
+      lineHoverEl = th;
+      var row = th.closest(".row");
+      var it = row && lineItems[+row.dataset.plate];
+      lineHoverItem = it || null;
+      if (!it || reduced() || !trailEnabled()) return;
+      if (lineDragging || linePress) return;        /* mid-gesture — the hand owns it */
+      if (it.el.classList.contains("unstruck")) return;  /* unprinted paper doesn't perform */
+      if (!lineLoupeItem) summonLoupe(it);
+    });
+    indexEl.addEventListener("pointerout", function (e) {
+      if (!lineHoverEl) return;
+      if (e.target.closest(".row-thumb") !== lineHoverEl) return;
+      var to = e.relatedTarget;
+      if (to && to.closest && to.closest(".row-thumb") === lineHoverEl) return;  /* still inside */
+      lineHoverEl = null; lineHoverItem = null;
+      if (lineLoupeItem) dropLoupe();
+    });
 
     indexEl.addEventListener("pointerdown", function (e) {
       if (e.button !== 0) return;
@@ -790,37 +833,30 @@
       lineDragUsed = false;   /* fresh press — clear any stale suppress flag */
       linePress = { it: it, sx: e.pageX, sy: e.pageY, moved: false };
       curPlate = it.i;
-      /* held still on a sheet: the printer's glass drops onto the plate */
+      /* held still on a sheet: the glass drops (if the hover hasn't already
+         brought it) — a held glass-press is not a navigation */
       clearTimeout(lineLoupeT);
       lineLoupeT = setTimeout(function () {
         if (!linePress || linePress.moved) return;
-        var r = it.faceEl.getBoundingClientRect();  /* fresh, near-steady */
-        it.face = { x: r.left + scrollX, y: r.top + scrollY, w: r.width, h: r.height };
-        lineLoupeItem = it;
-        loupeOn = true;
-        lineDragUsed = true;   /* the glass press is not a navigation */
-        loupeEl.style.backgroundImage = plates[it.i];
-        loupeEl.classList.add("on");
-        cursorEl.classList.add("is-loupe");
-        if (!loupedPlates[it.i]) {
-          loupedPlates[it.i] = 1;
-          logAct("loupe down on plate 0" + (it.i + 1) + ". the dots check out.");
-        }
+        lineDragUsed = true;
+        if (!lineLoupeItem) summonLoupe(it);
       }, 200);
     });
 
     addEventListener("pointermove", function (e) {
       if (!linePress) return;
-      if (lineLoupeItem) return;   /* glass down — frame() feeds it from the cursor */
       if (!linePress.moved) {
         var mx = e.pageX - linePress.sx, my = e.pageY - linePress.sy;
         if (mx * mx + my * my > 36) {           /* past 6px → it's a swing */
+          if (lineLoupeItem) dropLoupe();        /* the glass yields to the hand */
           linePress.moved = true;
           clearTimeout(lineLoupeT);
           lineDragging = linePress.it;
           lineDragging.drag = true;
           lineDragging.dragTarget = lineDragging.u;
           lineDragUsed = true;
+        } else if (lineLoupeItem) {
+          return;                                /* glass down + hand still → inspecting */
         }
       }
       if (lineDragging) {
@@ -831,11 +867,14 @@
       }
     });
 
-    function lineUp() {
+    function lineUp(ev) {
       clearTimeout(lineLoupeT);
-      if (lineLoupeItem) {
-        dropLoupe();
-      } else if (lineDragging) {
+      /* a clean tap is a navigation — the glass steps aside so the sheet can
+         open. everything else (swing release, held glass, a cancel) leaves
+         the HOVER in charge: pointer still on a face → the glass stays or
+         comes back down. */
+      var wasNav = !!linePress && !lineDragUsed && !(ev && ev.type === "pointercancel");
+      if (lineDragging) {
         var it = lineDragging;
         lineDragging = null;
         it.drag = false;
@@ -861,6 +900,12 @@
         }
       }
       linePress = null;
+      if (wasNav) {
+        if (lineLoupeItem) dropLoupe();
+      } else if (!lineLoupeItem && lineHoverItem && !reduced() && trailEnabled() &&
+                 !lineHoverItem.el.classList.contains("unstruck")) {
+        summonLoupe(lineHoverItem);
+      }
     }
     addEventListener("pointerup", lineUp);
     addEventListener("pointercancel", lineUp);
@@ -2001,6 +2046,53 @@
     osc.connect(g2); g2.connect(ctx.destination);
     osc.start(t); osc.stop(t + 0.1);
   }
+  /* the weighted slot-machine LANDING for the & finale (THE LAST SLUG): a sub
+     tonnage, a metal body-knock, a click transient, and a tiny detent 'ting' as
+     the spring catches. opt-in like every sound — silent unless press-noise is on. */
+  function sndSlam() {
+    if (!noiseOn) return;
+    var ctx = noiseCtx();
+    if (!ctx) return;
+    var t = ctx.currentTime;
+    var sub = ctx.createOscillator();
+    sub.type = "sine";
+    sub.frequency.setValueAtTime(130, t);
+    sub.frequency.exponentialRampToValueAtTime(42, t + 0.12);
+    var gs = ctx.createGain();
+    gs.gain.setValueAtTime(0.6, t);
+    gs.gain.exponentialRampToValueAtTime(0.001, t + 0.13);
+    sub.connect(gs); gs.connect(ctx.destination);
+    sub.start(t); sub.stop(t + 0.14);
+    var knock = ctx.createOscillator();
+    knock.type = "triangle";
+    knock.frequency.setValueAtTime(320, t);
+    knock.frequency.exponentialRampToValueAtTime(90, t + 0.08);
+    var gk = ctx.createGain();
+    gk.gain.setValueAtTime(0.5, t);
+    gk.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    knock.connect(gk); gk.connect(ctx.destination);
+    knock.start(t); knock.stop(t + 0.1);
+    var len = Math.floor(ctx.sampleRate * 0.04);
+    var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    var data = buf.getChannelData(0);
+    for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    var src = ctx.createBufferSource(); src.buffer = buf;
+    var bp = ctx.createBiquadFilter();
+    bp.type = "bandpass"; bp.frequency.value = 3200; bp.Q.value = 2;
+    var gc = ctx.createGain();
+    gc.gain.setValueAtTime(0.4, t);
+    gc.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+    src.connect(bp); bp.connect(gc); gc.connect(ctx.destination);
+    src.start(t);
+    var ting = ctx.createOscillator();
+    ting.type = "sine";
+    ting.frequency.setValueAtTime(1800, t + 0.008);
+    var gt = ctx.createGain();
+    gt.gain.setValueAtTime(0.08, t + 0.008);
+    gt.gain.exponentialRampToValueAtTime(0.001, t + 0.033);
+    ting.connect(gt); gt.connect(ctx.destination);
+    ting.start(t + 0.008); ting.stop(t + 0.035);
+  }
   function sndTok() {
     if (!noiseOn) return;
     var ctx = noiseCtx();
@@ -2039,81 +2131,290 @@
   var mrRan = false;
   (function makeReady() {
     if (!mrEl) return;
-    /* ?loader forces a fresh play (dev) by clearing the session flag, so
-       the whole first-visit sequence — make-ready → press-check — replays */
+    /* ?loader forces a fresh play (dev) by clearing the session flag, so the
+       first-visit sequence — the lockup loader → press-check — replays */
     var force = /[?&]loader(\b|=)/.test(location.search);
     if (force) { try { sessionStorage.removeItem("ma-press-check"); } catch (e) {} }
     var seen = false;
     try { seen = !!sessionStorage.getItem("ma-press-check"); } catch (e) {}
-    if (seen || reduced() || stillMode) {
-      mrEl.remove(); mrEl = null;
-      return;
-    }
+    if (seen || reduced() || stillMode) { mrEl.remove(); mrEl = null; return; }
     mrRan = true;
-    var countEl = document.getElementById("mr-count");
-    var stateEl = document.getElementById("mr-state");
-    var redEl = document.getElementById("mr-red");
-    var bluEl = document.getElementById("mr-blu");
-    var START = 14, DUR = 2200, MIN = 1600, MAX = 3000;
-    var t0 = performance.now();
-    var pct = 0, released = false, doneAt = 0;
-    var fontsIn = false;
-    try { document.fonts.ready.then(function () { fontsIn = true; }); }
-    catch (e) { fontsIn = true; }
+    /* the & is the loader's finale, ONE element the whole way: at the relax the
+       loader cedes it to __ampFly — a fixed native-size reel that takes the lockup
+       amp's exact spot (first frame: the same &), starts rolling as it flies the
+       words' own path, cruises through the reveal, and seats ~a beat after the
+       page is fully up. if the cede never happens, the & flies in as a word and
+       dropAmp spins it in place (fallback, also opening on &). */
 
-    /* the red pass drifts up-left, the blue down-right, by the error —
-       written every frame so the convergence is one continuous glide */
-    function setErr(v) {
-      redEl.style.transform = "translate(" + (-v * 0.95).toFixed(2) + "px," + (-v * 0.55).toFixed(2) + "px)";
-      bluEl.style.transform = "translate(" + (v * 0.95).toFixed(2) + "px," + (v * 0.55).toFixed(2) + "px)";
+    /* the approved lockup make-ready runs isolated in the frame; it floods to
+       the live page's own colours and messages back when the sheet is set, and
+       we cross-fade the frame away to reveal the page settled behind it */
+    var frame = document.getElementById("mr-frame");
+    var released = false;
+
+    /* ---------- THE & FINALE ----------
+       primary: __ampFly (below) — the loader cedes the & at relax and ONE fixed
+       reel flies + spins + seats it. fallback: dropAmp — the in-place reel, a
+       child of #amp (tracks layout / survives scroll). both are native-size
+       (crisp, cells never scaled up), transform-only (60fps, no rAF). every
+       bail-out simply reveals the &. */
+    var ampArmed = false, dropRan = false, seated = false, ampAnim = null, ampReel = null;
+    var failsafeT = null, watchdogT = null, skipArmed = false;
+
+    function ampImpact() {
+      /* the seat IS the impression: the slug lands pressed into the paper —
+         2px down + a hair of squash on the glyph itself — and settles. one
+         motion, no light show. (the radial bloom pulse read as an "effect"
+         and was cut, like the shudder/regKick before it — Mark, July 12.)
+         transform-only on the inline-block .ch: zero reflow, can't fight the
+         ink pooling (which writes font-variation only). */
+      var ch = document.querySelector("#amp .ch");
+      if (ch && typeof ch.animate === "function") {
+        ch.animate([
+          { transform: "translateY(2px) scale(1.045)" },
+          { transform: "none" }
+        ], { duration: 300, easing: "cubic-bezier(0.22,1,0.36,1)" });
+      }
+      sndSlam();
     }
-    setErr(START);
-    function easeInOut(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+
+    function revealAmpStatic() {
+      seated = true; disarmSkip();
+      if (ampAnim) { try { ampAnim.cancel(); } catch (e) {} ampAnim = null; }
+      if (ampReel && ampReel.parentNode) ampReel.parentNode.removeChild(ampReel);
+      ampReel = null;
+      document.body.classList.remove("amp-armed");
+      clearTimeout(failsafeT); clearTimeout(watchdogT);
+    }
+    function failsafeAmpReveal() { if (!seated) revealAmpStatic(); }
+    function seatAmp() {
+      if (seated) return; seated = true; disarmSkip();
+      clearTimeout(watchdogT); clearTimeout(failsafeT);
+      if (ampReel && ampReel.parentNode) ampReel.parentNode.removeChild(ampReel);
+      ampReel = null;
+      document.body.classList.remove("amp-armed");   /* the native crisp & appears the same frame */
+      ampImpact();
+    }
+    function skipFinale() { if (!seated) revealAmpStatic(); }   /* interrupted → quiet instant & */
+    /* "scroll" is here for the flight reel: it is position:fixed, so any scroll
+       would shear it off the hero — any input just seats the & now, natively */
+    var SKIP_EVS = ["keydown", "pointerdown", "wheel", "touchstart", "scroll"];
+    function armSkip() {
+      if (skipArmed) return; skipArmed = true;
+      SKIP_EVS.forEach(function (ev) {
+        addEventListener(ev, skipFinale, { capture: true, passive: true });
+      });
+    }
+    function disarmSkip() {
+      if (!skipArmed) return; skipArmed = false;
+      SKIP_EVS.forEach(function (ev) {
+        removeEventListener(ev, skipFinale, { capture: true });
+      });
+    }
+
+    /* ---------- THE FLIGHT REEL (primary path) ----------
+       called SYNCHRONOUSLY by the loader at the first frame of relaxToHero,
+       before it hides its own .l-amp — so the swap is atomic: the reel's first
+       visible frame is the same & at the same box (native-size cells scaled
+       DOWN to the lockup box, never up — crisp mid-flight, the old spin's
+       resolution drop can't happen). the carriage flies the words' own 920ms
+       ease above the frame; the strip is ONE timeline that starts rolling with
+       the first movement, cruises through the flood + frame fade, then runs
+       the approved tail (weighted decel → near-miss $ → hold → snap → seat)
+       so the & thunks in ~350ms after the page is fully up. */
+    window.__ampFly = function (src, morphMs, srcColor) {
+      if (dropRan || seated || !mrRan || reduced() || stillMode) return false;
+      if (typeof Element.prototype.animate !== "function") return false;
+      if (!src || !(src.width > 0)) return false;
+      var amp = document.getElementById("amp");
+      var ch = amp && amp.querySelector(".ch");
+      if (!ch || !heroTitleEl || !heroTitleEl.classList.contains("landed")) return false;
+      try {
+        var ampR = amp.getBoundingClientRect();
+        var chR = ch.getBoundingClientRect();
+        if (!(chR.width > 0)) return false;
+        var cs = getComputedStyle(ch);
+        var A = parseFloat(cs.fontSize) || chR.height;   /* native amp size (~208 @1440) */
+        var P = Math.round(A * 1.32);                    /* reel pitch */
+        var WIN = Math.round(P * 1.15);                  /* slot window height */
+
+        /* the in-place bank + one more lap of sorts, ENDING on the start cell —
+           an & — so the reel opens on the glyph it just replaced */
+        var BANK = ["$", "&", "8", "%", "7", "¶", "@", "§", "3", "$", "ẞ", "9", "%", "8", "7", "§"];
+        BANK = BANK.concat(BANK.slice(2)); BANK.push("&");
+        var S = BANK.length - 1;                         /* start index (the trailing &) */
+
+        var reel = document.createElement("div");
+        reel.className = "amp-reel amp-reel--flight spinning";
+        reel.setAttribute("aria-hidden", "true");
+        reel.style.left = chR.left + "px";               /* fixed == viewport == the frame's coords */
+        reel.style.top = (chR.top + chR.height / 2 - WIN / 2) + "px";
+        reel.style.width = chR.width + "px";
+        reel.style.height = WIN + "px";
+        reel.style.fontFamily = cs.fontFamily;           /* the hero's own face (reel hangs off body) */
+        if (srcColor) reel.style.color = srcColor;       /* the lockup's ink; flooded live by __ampFlood */
+        var strip = document.createElement("div");
+        strip.className = "amp-reel-strip";
+        strip.style.top = (WIN / 2 - 1.5 * P) + "px";    /* idx1 (&) seats centred at translateY 0 */
+        for (var i = 0; i < BANK.length; i++) {
+          var cell = document.createElement("span");
+          cell.className = "amp-cell"; cell.style.height = P + "px";
+          var rc = document.createElement("span");
+          rc.className = "rc"; rc.style.fontSize = A + "px"; rc.style.letterSpacing = cs.letterSpacing;
+          rc.textContent = BANK[i];
+          cell.appendChild(rc); strip.appendChild(cell);
+        }
+        reel.appendChild(strip);
+        document.body.appendChild(reel);
+        ampReel = reel;
+        dropRan = true;                                  /* the in-place path stands down */
+        document.body.classList.add("amp-armed");        /* the hero slot is the reel's until the seat */
+
+        /* the carriage — flies in formation with the words (same clock, same ease);
+           centre-to-centre + scale about centre, so the glyph maps exactly */
+        var ncx = chR.left + chR.width / 2, ncy = chR.top + chR.height / 2;
+        var scx = src.left + src.width / 2, scy = src.top + src.height / 2;
+        var s0 = src.width / chR.width;
+        var MORPH = morphMs || 920;
+        reel.animate([
+          { transform: "translate(" + (scx - ncx).toFixed(1) + "px," + (scy - ncy).toFixed(1) +
+                       "px) scale(" + s0.toFixed(4) + ")" },
+          { transform: "none" }
+        ], { duration: MORPH, easing: "cubic-bezier(0.19,1,0.22,1)", fill: "forwards" });
+
+        /* the strip — one timeline across the whole hand-off: MORPH flight +
+           30 flood + 470 release wait + ~380 INTO the frame fade. the fade is
+           an extreme ease-out (0.7s, ~95% clear by its half), so the & seats
+           as the last wisp of the loader dissolves — not politely after it.
+           the ending is a WEIGHTED ARRIVAL, not theater: the reel just brakes
+           into the & and stops (the near-miss $ / hold / snap-back read janky
+           + forced — cut, Mark's note July 12; idx0's $ simply never shows) */
+        var TOTAL = MORPH + 30 + 470 + 380;
+        var o = function (ms) { return ms / TOTAL; };
+        ampAnim = strip.animate([
+          { transform: "translateY(" + (-(S - 1) * P) + "px)",   offset: 0,              easing: "cubic-bezier(0.40,0,1,1)" },
+          { transform: "translateY(" + (-(S - 3.5) * P) + "px)", offset: o(260),         easing: "linear" },
+          { transform: "translateY(" + (-2 * P) + "px)",         offset: o(TOTAL - 280), easing: "cubic-bezier(0.18,0.84,0.26,1)" }, /* the brake */
+          { transform: "translateY(0px)",                        offset: 1 }                                                        /* & seated */
+        ], { duration: TOTAL, fill: "forwards" });
+        ampAnim.onfinish = seatAmp;
+        watchdogT = setTimeout(seatAmp, TOTAL + 500);    /* if onfinish is ever lost */
+        armSkip();                                       /* any input seats it now (fixed reel can't scroll) */
+        return true;
+      } catch (err) {
+        /* leave no half-state — the loader will fly the & itself (fallback) */
+        if (ampReel && ampReel.parentNode) ampReel.parentNode.removeChild(ampReel);
+        ampReel = null; ampAnim = null; dropRan = false;
+        document.body.classList.remove("amp-armed");
+        return false;
+      }
+    };
+    /* the loader floods booth→page at toPage(); the reel's ink floods with it
+       (instant, like the old body.page .l-amp colour flip) */
+    window.__ampFlood = function () {
+      if (!ampReel || seated) return;
+      var ch = document.querySelector("#amp .ch");
+      if (ch) ampReel.style.color = getComputedStyle(ch).color;
+    };
+
+    function dropAmp() {
+      if (dropRan) return; dropRan = true;
+      var amp = document.getElementById("amp");
+      var ch = amp && amp.querySelector(".ch");
+      /* any degenerate state → just reveal the & (never leave the slot empty) */
+      if (!mrRan || reduced() || stillMode || !ch ||
+          !heroTitleEl || !heroTitleEl.classList.contains("landed") ||
+          typeof Element.prototype.animate !== "function") {
+        return revealAmpStatic();
+      }
+      /* measure ONCE — the only layout reads, never in a loop */
+      var ampR = amp.getBoundingClientRect();
+      var chR = ch.getBoundingClientRect();
+      var cs = getComputedStyle(ch);
+      var A = parseFloat(cs.fontSize) || chR.height;   /* native amp size (~208 @1440) */
+      var P = Math.round(A * 1.32);                    /* reel pitch */
+      var WIN = Math.round(P * 1.15);                  /* slot window height */
+      var cyc = (chR.top - ampR.top) + chR.height / 2; /* glyph vertical centre in #amp */
+
+      /* now (not during the whole load) hide the landed & — the reel takes over its
+         slot for the spin, then hands back to the native glyph on seat */
+      document.body.classList.add("amp-armed");
+
+      /* idx0 '$' = the near-miss decoy (directly above the &); idx1 '&' = the target;
+         idx15 '&' = the START cell — the reel's first frame shows the same glyph it
+         just hid, so even this fallback reads as the & itself starting to roll;
+         idx2..14 = printer's sorts braided with casino money (jackpot, still a proof) */
+      var BANK = ["$", "&", "8", "%", "7", "¶", "@", "§", "3", "$", "ẞ", "9", "%", "8", "7", "&"];
+      var N = BANK.length;
+
+      var reel = document.createElement("div");
+      reel.className = "amp-reel spinning"; reel.setAttribute("aria-hidden", "true");
+      reel.style.left = (chR.left - ampR.left) + "px";
+      reel.style.top = (cyc - WIN / 2) + "px";
+      reel.style.width = chR.width + "px";
+      reel.style.height = WIN + "px";
+      var strip = document.createElement("div");
+      strip.className = "amp-reel-strip";
+      strip.style.top = (WIN / 2 - 1.5 * P) + "px";    /* so idx1 (&) sits centred at translateY 0 */
+      for (var i = 0; i < N; i++) {
+        var cell = document.createElement("span");
+        cell.className = "amp-cell"; cell.style.height = P + "px";
+        var rc = document.createElement("span");
+        rc.className = "rc"; rc.style.fontSize = A + "px"; rc.style.letterSpacing = cs.letterSpacing;
+        rc.textContent = BANK[i];
+        cell.appendChild(rc); strip.appendChild(cell);
+      }
+      reel.appendChild(strip); amp.appendChild(reel); ampReel = reel;
+
+      /* the strip SPIN — one WAAPI transform, compositor-only, no rAF, no per-frame
+         reads. the FALLBACK path (cede didn't happen): the & flew in as a word and
+         sits right here — the reel opens on it, rolls down fast, then just BRAKES
+         back into the & and stops (same weighted arrival as the flight reel;
+         the near-miss/hold/snap theater was cut, Mark's note July 12). */
+      ampAnim = strip.animate([
+        { transform: "translateY(" + (-14 * P) + "px)",   offset: 0,    easing: "cubic-bezier(0.40,0,1,1)" },
+        { transform: "translateY(" + (-12.6 * P) + "px)", offset: 0.09, easing: "linear" },
+        { transform: "translateY(" + (-2 * P) + "px)",    offset: 0.72, easing: "cubic-bezier(0.18,0.84,0.26,1)" }, /* the brake */
+        { transform: "translateY(0px)",                   offset: 1 }                                              /* & seated */
+      ], { duration: 1000, fill: "forwards" });
+      ampAnim.onfinish = seatAmp;
+      watchdogT = setTimeout(seatAmp, 1400);           /* if onfinish is ever lost */
+      armSkip();                                        /* any input during the reel lands it now */
+    }
+    function scheduleAmpFinale() {
+      /* fallback trigger only — when the flight reel ran, dropRan is already
+         true and dropAmp stands down (the strip timeline owns the seat) */
+      if (ampArmed) return; ampArmed = true;
+      setTimeout(dropAmp, 100);                         /* a short breath, then the in-place reel */
+    }
 
     function release() {
       if (released || !mrEl) return;
       released = true;
-      mrEl.classList.add("out");   /* the booth floods to the hero underneath */
-      setTimeout(function () { if (mrEl) { mrEl.remove(); mrEl = null; } }, 780);
+      mrEl.classList.add("out");
+      failsafeT = setTimeout(failsafeAmpReveal, 3500); /* the slot is never left empty */
+      setTimeout(function () {
+        if (mrEl) { mrEl.remove(); mrEl = null; }
+        scheduleAmpFinale();                           /* iframe gone, page settled → drop the last slug */
+      }, 760);
     }
-
-    function tick(now) {
-      if (!mrEl || released) return;
-      var el = now - t0;
-      /* the error closes on a slow-fast-slow curve: the passes hang wide
-         at first (you see the split), glide together, then ease gently
-         into register — one continuous motion, never a step */
-      var pt = Math.min(1, el / DUR);
-      var e = START * (1 - easeInOut(pt));
-      setErr(e);
-      /* the counter IS the make-ready progress (how close to register),
-         held below 100 until the real load is in so it never lies */
-      var conv = (1 - e / START) * 100;
-      var target = Math.min(conv, fontsIn ? 100 : 88);
-      pct += (target - pct) * 0.08;
-      if (el >= MAX) pct = 100;
-      var p = Math.min(100, Math.round(pct));
-      countEl.textContent = (p < 10 ? "0" : "") + p;
-      if (e < 0.35 && p >= 100) {
-        if (!stateEl.classList.contains("ok")) {
-          stateEl.textContent = "IN REGISTER — OK TO RUN"; stateEl.classList.add("ok");
-        }
-      } else {
-        stateEl.classList.remove("ok");
-        stateEl.textContent = "REG +" + (e * 0.11).toFixed(2) + " mm";
+    function onMsg(e) {
+      if (e && e.data === "mr-lockup-done") {
+        window.removeEventListener("message", onMsg);
+        /* the words have already flown onto the hero and the booth is flooding to
+           the page's colours; let that finish so the reveal is a true takeover */
+        setTimeout(release, 470);
       }
-      /* converged + loaded + past the minimum → flood into the hero */
-      if (p >= 100 && el >= MIN && e < 0.4) {
-        if (!doneAt) doneAt = now;
-        if (now - doneAt > 260) { release(); return; }
-      }
-      requestAnimationFrame(tick);
     }
-    /* any input skips it — same philosophy as the press check */
+    window.addEventListener("message", onMsg);
+    /* any input skips straight to the live page */
     ["keydown", "pointerdown", "wheel", "touchstart"].forEach(function (ev) {
       addEventListener(ev, release, { capture: true, passive: true, once: true });
     });
-    requestAnimationFrame(tick);
+    /* failsafe: never trap the page if the frame stalls */
+    setTimeout(release, 9000);
+    /* load it now — only first visits reach here */
+    if (frame) frame.src = "loader-lockup-mock.html?embed";
   })();
 
   /* ============ press check: the sheet comes into register ============ */

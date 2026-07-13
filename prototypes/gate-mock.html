@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE PROOFING GATE — still frame (mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300..600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THE PROOFING GATE — a STILL, not a build.
+     One frame of Direction Nº 004 for judging as a picture:
+     booth-dark room, one plate lit and mid-register in the gate,
+     ghost sheets above/below, the run down the left, shop
+     furniture hugging the gate. No scroll, no JS. The only
+     motion is the proven operator-plate hover: the red pass
+     seats into register.
+     ============================================================ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --booth: #0C0B08;          /* shop lights off — darker than night stone */
+    --paper: #DDDBD4;
+    --ink: #16150F;
+    --red: #C7361F;            /* baked day red: the sheet is lit, like every plate */
+    --red-n: #F0603F;          /* night pencil, for red labels in the dark room */
+    --accent: #7C7CFF;         /* luminous signal — labels in the dark */
+    --accent-day: #2A2AF0;     /* signal on paper — the colour bar */
+    --mono: "Space Mono", monospace;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--booth);
+    font-family: var(--mono);
+    overflow: hidden;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    cursor: default;
+  }
+
+  /* the booth light: one warm pool, no blend modes */
+  .glow {
+    position: fixed; inset: -20vh -20vw; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse 64vw 60vh at 50% 46%,
+      rgba(228, 221, 201, 0.11), rgba(228, 221, 201, 0.035) 52%, transparent 74%);
+  }
+
+  /* the ghost numeral — the site's case-sheet vocabulary, behind the gate */
+  .numeral {
+    position: fixed; z-index: 1; right: 1vw; bottom: 7vh;
+    font-family: "Fraunces", serif; font-style: italic; font-weight: 340;
+    font-size: 40vh; line-height: 1; letter-spacing: -0.04em;
+    color: rgba(221, 219, 212, 0.05);
+    pointer-events: none; user-select: none;
+  }
+
+  /* ---- the feed column: ghost above, sheet, ghost below ---- */
+  .gatecol {
+    position: fixed; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 26px;
+  }
+  .ghost, .sheetwrap { width: min(71vw, 122vh); }
+
+  /* unproofed sheets: blind-embossed edges, red pass visibly off */
+  .ghost {
+    position: relative; z-index: 1;
+    height: 13vh; flex: 0 0 auto;
+    background: #14120C;
+    border: 1px solid rgba(221, 219, 212, 0.08);
+  }
+  .g-above { border-bottom: 1px solid rgba(221, 219, 212, 0.16); }
+  .g-below { border-top: 1px solid rgba(221, 219, 212, 0.16); }
+  .ghost .gh-in {
+    position: absolute; left: 26px; right: 26px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 11px; letter-spacing: 0.22em;
+    color: rgba(221, 219, 212, 0.17);
+  }
+  .g-above .gh-in { bottom: 15px; justify-content: flex-end; gap: 3em; }
+  .g-below .gh-in { top: 15px; }
+  .ghost .gh-in em { font-style: normal; color: rgba(221, 219, 212, 0.1); }
+  /* the misregistered hairline pair — the red pass hasn't been seated */
+  .gh-rule {
+    position: absolute; height: 1px;
+    background: rgba(221, 219, 212, 0.09);
+  }
+  .gh-rule::after {
+    content: ""; position: absolute; left: -6px; right: 6px; top: -4px; height: 1px;
+    background: rgba(199, 54, 31, 0.32);
+  }
+  .g-above .gh-rule { bottom: 46px; left: 26px; width: 42%; }
+  .g-below .gh-rule { top: 46px; right: 26px; width: 42%; }
+
+  /* ---- the gate ---- */
+  .sheetwrap { position: relative; z-index: 2; flex: 0 0 auto; }
+
+  /* crop-bracket corners — our vocabulary, not parentheses */
+  .bk {
+    position: absolute; width: 80px; height: 80px; z-index: 3;
+    border: 0 solid rgba(221, 219, 212, 0.6);
+    pointer-events: none;
+  }
+  .bk.tl { top: -36px; left: -36px;  border-top-width: 1.5px; border-left-width: 1.5px; }
+  .bk.tr { top: -36px; right: -36px; border-top-width: 1.5px; border-right-width: 1.5px; }
+  .bk.bl { bottom: -36px; left: -36px;  border-bottom-width: 1.5px; border-left-width: 1.5px; }
+  .bk.br { bottom: -36px; right: -36px; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+  /* the one gate label — top-left, whisper-level */
+  .lbl-gate {
+    position: absolute; z-index: 3; left: 96px; top: -40px;
+    font-size: 10px; letter-spacing: 0.26em;
+    color: rgba(221, 219, 212, 0.62); pointer-events: none;
+  }
+  .lbl-gate em { font-style: normal; color: rgba(221, 219, 212, 0.28); letter-spacing: 0.2em; }
+
+  /* ---- rails: they hug the gate, anchored to the sheet ---- */
+  .rail-l {
+    position: absolute; z-index: 3;
+    right: calc(100% + 40px); top: 50%; transform: translateY(-50%);
+    text-align: right;
+    font-size: 10.5px; letter-spacing: 0.16em; line-height: 2.7;
+    white-space: nowrap;
+  }
+  .rail-l .it { color: rgba(221, 219, 212, 0.2); display: block; }
+  .rail-l .it b { font-weight: 400; margin-right: 1em; color: rgba(221, 219, 212, 0.32); }
+  .rail-l .it.on {
+    color: rgba(221, 219, 212, 0.95);
+    border-right: 2px solid var(--accent); padding-right: 12px; margin-right: -14px;
+  }
+  .rail-l .it.on b { color: var(--accent); }
+  .rail-l .foot {
+    margin-top: 16px; padding-top: 12px; font-size: 9.5px; line-height: 2;
+    border-top: 1px solid rgba(221, 219, 212, 0.14);
+    color: rgba(221, 219, 212, 0.34);
+  }
+  .rail-r {
+    position: absolute; z-index: 3;
+    left: calc(100% + 40px); top: 0; bottom: 0;
+    display: flex; flex-direction: column; justify-content: space-between;
+    font-size: 10.5px; letter-spacing: 0.16em; line-height: 2.2;
+    white-space: nowrap;
+  }
+  .rail-r .k { color: rgba(221, 219, 212, 0.8); }
+  .rail-r .ref { color: var(--accent); }
+  .rail-r .dim { color: rgba(221, 219, 212, 0.34); font-size: 10px; }
+  .rail-r .gap { display: block; height: 14px; }
+  /* the instrument: registration state, bottom-aligned with the sheet */
+  .reg-cluster { font-size: 10px; letter-spacing: 0.18em; line-height: 2; }
+  .reg-cluster .row { display: flex; align-items: center; gap: 10px; }
+  .reg-cluster .err { color: rgba(240, 96, 63, 0.7); }
+  .reg-cluster .sub { color: rgba(221, 219, 212, 0.3); }
+  .regmk { width: 22px; height: 22px; flex: 0 0 auto; }
+
+  /* ---- the sheet: one plate, lit, mid-register ---- */
+  .sheet {
+    position: relative;
+    background: var(--paper);
+    padding: 22px 22px 0;
+    box-shadow:
+      0 2px 10px rgba(0, 0, 0, 0.55),
+      0 26px 70px rgba(0, 0, 0, 0.6),
+      0 60px 140px rgba(0, 0, 0, 0.45);
+  }
+  .print { display: block; width: 100%; height: auto; isolation: isolate; }
+  .redpass, .inkpass { mix-blend-mode: multiply; }
+  .redpass {
+    transform: translate(16px, 9px);            /* held off register — mid-seat */
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .sheet:hover .redpass { transform: translate(0, 0); }   /* the verb, on hover */
+
+  /* sheet-margin registration marks */
+  .rm { position: absolute; width: 15px; height: 15px; opacity: 0.5; z-index: 2; }
+  .rm.a { top: 4px; left: 4px; } .rm.b { top: 4px; right: 4px; }
+  .rm.c { bottom: 50px; left: 4px; } .rm.d { bottom: 50px; right: 4px; }
+
+  /* the proof strip: job data + colour bar on the sheet margin */
+  .strip {
+    height: 44px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    font-size: 9.5px; letter-spacing: 0.18em; color: rgba(22, 21, 15, 0.62);
+    white-space: nowrap; overflow: hidden;
+  }
+  .strip b { font-weight: 700; color: rgba(22, 21, 15, 0.8); }
+  .cbar { display: flex; gap: 3px; flex: 0 0 auto; }
+  .cbar i { width: 13px; height: 13px; display: block; }
+
+  /* ---- room corners + jobline ---- */
+  .corner {
+    position: fixed; z-index: 4; font-size: 10px; letter-spacing: 0.26em;
+    color: rgba(221, 219, 212, 0.32);
+  }
+  .corner.tl { top: 16px; left: 18px; }
+  .corner.tr { top: 16px; right: 18px; }
+  .corner.tr em { font-style: normal; color: var(--accent); opacity: 0.85; }
+
+  .jobline {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+    background: #0A0906;
+    border-top: 1px solid rgba(221, 219, 212, 0.09);
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 9px 18px 8px;
+    font-size: 10px; letter-spacing: 0.22em;
+    color: rgba(221, 219, 212, 0.42);
+    white-space: nowrap;
+  }
+  .jobline .mid { color: rgba(221, 219, 212, 0.6); }
+  .jobline .mid em { font-style: normal; color: var(--accent); }
+  .jobline .mid b { font-weight: 400; color: var(--red-n); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .redpass { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="glow" aria-hidden="true"></div>
+  <span class="numeral" aria-hidden="true">03</span>
+
+  <div class="gatecol">
+
+    <!-- sheet 02 — already proofed, feeding out above -->
+    <div class="ghost g-above" aria-hidden="true">
+      <div class="gh-rule"></div>
+      <div class="gh-in">
+        <span>02 — LOW RELIEF &middot; EDITORIAL</span>
+        <span><em>REF//LRF-25 &middot; PASSED 21:58</em></span>
+      </div>
+    </div>
+
+    <!-- the gate -->
+    <div class="sheetwrap">
+      <i class="bk tl"></i><i class="bk tr"></i><i class="bk bl"></i><i class="bk br"></i>
+      <span class="lbl-gate">THE PROOFING GATE&nbsp;&nbsp;<em>D50 &middot; 5000K — BOOTH LIT</em></span>
+
+      <!-- the run — names are navigation, hugging the gate -->
+      <nav class="rail-l" aria-label="The run">
+        <span class="it"><b>01</b>MERIDIAN</span>
+        <span class="it"><b>02</b>LOW RELIEF</span>
+        <span class="it on"><b>03</b>NIGHT OFFICE</span>
+        <span class="it"><b>04</b>SIGNAL GARDEN</span>
+        <span class="foot">SHEET 03/04 IN GATE<br>SCROLL = FEED</span>
+      </nav>
+
+      <div class="rail-r">
+        <div>
+          <span class="k">DIGITAL &middot; 2024</span><br>
+          <span class="ref">REF//NOF-24</span><br>
+          <span class="gap"></span>
+          <span class="dim">RENDERHAUS GMBH</span><br>
+          <span class="dim">FARM CONSOLE</span><br>
+          <span class="dim">DARK-FIRST</span>
+        </div>
+        <div class="reg-cluster">
+          <div class="row">
+            <svg class="regmk" viewBox="0 0 22 22" aria-hidden="true">
+              <circle cx="11" cy="11" r="6.5" fill="none" stroke="rgba(221,219,212,0.55)" stroke-width="1"/>
+              <path d="M11 1v6M11 15v6M1 11h6M15 11h6" stroke="rgba(221,219,212,0.55)" stroke-width="1"/>
+              <path d="M12.6 3.9v5.2M12.6 13.9v5.2M3.6 12.6h5.2M13.6 12.6h5.2" stroke="rgba(240,96,63,0.6)" stroke-width="1"/>
+            </svg>
+            <span class="err">REG &minus;0.2</span>
+          </div>
+          <span class="sub">RED SEATING<br>HOVER THE SHEET<br>PULLS TO REGISTER</span>
+        </div>
+      </div>
+
+      <figure class="sheet" aria-label="Night Office, printed as a press plate, one ink and one red pass, held in the proofing gate">
+        <svg class="print" viewBox="0 0 2000 1250" role="img">
+          <defs>
+            <filter id="g-duo" color-interpolation-filters="sRGB">
+              <feColorMatrix type="saturate" values="0"/>
+              <feComponentTransfer>
+                <feFuncR type="table" tableValues="0.086 1"/>
+                <feFuncG type="table" tableValues="0.082 1"/>
+                <feFuncB type="table" tableValues="0.059 1"/>
+              </feComponentTransfer>
+            </filter>
+            <filter id="g-red" color-interpolation-filters="sRGB">
+              <feColorMatrix type="saturate" values="0"/>
+              <feComponentTransfer>
+                <feFuncR type="table" tableValues="0.780 1"/>
+                <feFuncG type="table" tableValues="0.212 1"/>
+                <feFuncB type="table" tableValues="0.122 1"/>
+              </feComponentTransfer>
+            </filter>
+            <pattern id="g-ht" width="9" height="9" patternUnits="userSpaceOnUse">
+              <circle cx="4.5" cy="4.5" r="1.5" fill="#DDDBD4"/>
+            </pattern>
+            <filter id="g-gr"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+          </defs>
+          <rect width="2000" height="1250" fill="#DDDBD4"/>
+          <g class="redpass" opacity="0.35">
+            <image href="gate-plate-03.png" width="2000" height="1250" preserveAspectRatio="xMidYMid slice" filter="url(#g-red)"/>
+          </g>
+          <g class="inkpass">
+            <image href="gate-plate-03.png" width="2000" height="1250" preserveAspectRatio="xMidYMid slice" filter="url(#g-duo)"/>
+          </g>
+          <rect width="2000" height="1250" fill="url(#g-ht)" opacity="0.14"/>
+          <g transform="rotate(-90 46 625)"><text x="46" y="625" text-anchor="middle"
+              font-family="monospace" font-size="17" letter-spacing="5" fill="#DDDBD4" opacity="0.45">NIGHT OFFICE &#8212; RENDERHAUS &#183; PLATE 03/04 &#183; ONE INK + ONE RED PASS &#183; NOT FOR PRODUCTION</text></g>
+          <rect width="2000" height="1250" filter="url(#g-gr)" opacity="0.12"/>
+        </svg>
+
+        <svg class="rm a" viewBox="0 0 15 15" aria-hidden="true"><circle cx="7.5" cy="7.5" r="4.2" fill="none" stroke="#16150F" stroke-width="1"/><path d="M7.5 0v15M0 7.5h15" stroke="#16150F" stroke-width="1"/></svg>
+        <svg class="rm b" viewBox="0 0 15 15" aria-hidden="true"><circle cx="7.5" cy="7.5" r="4.2" fill="none" stroke="#16150F" stroke-width="1"/><path d="M7.5 0v15M0 7.5h15" stroke="#16150F" stroke-width="1"/></svg>
+        <svg class="rm c" viewBox="0 0 15 15" aria-hidden="true"><circle cx="7.5" cy="7.5" r="4.2" fill="none" stroke="#16150F" stroke-width="1"/><path d="M7.5 0v15M0 7.5h15" stroke="#16150F" stroke-width="1"/></svg>
+        <svg class="rm d" viewBox="0 0 15 15" aria-hidden="true"><circle cx="7.5" cy="7.5" r="4.2" fill="none" stroke="#16150F" stroke-width="1"/><path d="M7.5 0v15M0 7.5h15" stroke="#16150F" stroke-width="1"/></svg>
+
+        <div class="strip">
+          <span><b>NIGHT OFFICE</b> — RENDERHAUS GMBH &middot; REF//NOF-24 &middot; SHEET 03/04 &middot; PASS 2/3 — RED SEATING</span>
+          <span class="cbar" aria-hidden="true">
+            <i style="background:#16150F"></i>
+            <i style="background:rgba(22,21,15,0.7)"></i>
+            <i style="background:rgba(22,21,15,0.4)"></i>
+            <i style="background:#C7361F"></i>
+            <i style="background:rgba(199,54,31,0.5)"></i>
+            <i style="background:#2A2AF0"></i>
+            <i style="background:#DDDBD4; outline:1px solid rgba(22,21,15,0.35); outline-offset:-1px"></i>
+          </span>
+        </div>
+      </figure>
+    </div>
+
+    <!-- sheet 04 — unproofed, waiting below -->
+    <div class="ghost g-below" aria-hidden="true">
+      <div class="gh-in">
+        <span>04 — SIGNAL GARDEN &middot; SPATIAL</span>
+        <span><em>REF//SGN-24 &middot; UNPROOFED — AWAITING FEED</em></span>
+      </div>
+      <div class="gh-rule"></div>
+    </div>
+
+  </div>
+
+  <span class="corner tl">SELECTED WORK / 2024&ndash;2025</span>
+  <span class="corner tr"><em>[GATE]</em> PRESS CHECK — LIVE</span>
+
+  <div class="jobline">
+    <span>MARK AXELUS — WORKING PROOF</span>
+    <span class="mid">SHEET Nº 03/04 &middot; NIGHT OFFICE &middot; <b>FEED HELD — INSPECTING</b> &middot; <em>AWAITING OK</em></span>
+    <span>D50 5000K &middot; 23:41 AT THE DESK</span>
+  </div>
+
+</body>
+</html>
