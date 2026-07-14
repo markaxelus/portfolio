@@ -12,8 +12,8 @@
   --acid: #B4C400;
   --pencil: #C7361F;
   --pencil-soft: rgba(199, 54, 31, 0.55);
-  --graphite: rgba(22, 21, 15, 0.55);
-  --hairline: rgba(22, 21, 15, 0.28);
+  --graphite: rgba(22, 21, 15, 0.70);
+  --hairline: rgba(22, 21, 15, 0.34);
   /* blind-impression rim (the impression line's unstruck state) */
   --emb-hi: rgba(255, 255, 255, 0.5);
   --emb-lo: rgba(22, 21, 15, 0.16);
@@ -30,8 +30,8 @@ body.night {
   --acid: #C6D600;
   --pencil: #F0603F;
   --pencil-soft: rgba(240, 96, 63, 0.55);
-  --graphite: rgba(221, 219, 212, 0.55);
-  --hairline: rgba(221, 219, 212, 0.26);
+  --graphite: rgba(221, 219, 212, 0.70);
+  --hairline: rgba(221, 219, 212, 0.32);
   /* night emboss: on dark paper the rim is mostly its highlight */
   --emb-hi: rgba(221, 219, 212, 0.11);
   --emb-lo: rgba(0, 0, 0, 0.55);
@@ -44,7 +44,16 @@ body { transition: background-color 0.5s var(--ease-out), color 0.5s var(--ease-
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* TYPE-SCALE RULE. The label/furniture tier is fixed-rem, so on large
+     monitors it used to strand at 8–10px while the vw-driven display type
+     kept growing. Scale the root with the viewport instead: phones/laptops
+     hold at 16px, big screens climb to 20px, so every rem-based size (labels,
+     notes, meta) grows in proportion. Display type is vw-capped up there, so
+     this lifts the small text without bloating the headline. */
+  font-size: clamp(16px, 0.667vw + 8px, 20px);
+}
 
 body {
   background: var(--stone);
@@ -835,7 +844,7 @@ body.proof .op-candid { display: block; }
   font-size: 0.62rem;
   letter-spacing: 0.06em;
   line-height: 1.6;
-  opacity: 0.6;
+  opacity: 0.72;
   max-width: none;
 }
 
@@ -1182,7 +1191,10 @@ body.has-cursor .plates-decal:hover { opacity: 1; color: var(--accent); }
   position: absolute;
   right: 3.5vw;
   top: 10vh;
-  z-index: 0;
+  /* above the full-width headline line-box, which otherwise steals the
+     glyphs' hover-swell (the .hl gotcha) — worsened once the root-scale
+     rule enlarged the cascade into the headline's band */
+  z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -1773,7 +1785,7 @@ body.pointer-seen .cursor { opacity: 1; }
   .hero-bio { grid-column: 1; grid-row: auto; justify-self: start; margin-bottom: 0; }
   /* the line hangs a narrow salon column (geometry from buildLine) */
   .row-title { font-size: clamp(1rem, 4.4vw, 1.4rem); }
-  .row-desc { font-size: 0.52rem; }
+  .row-desc { font-size: 0.6rem; }
   .index-sub { max-width: 82vw; line-height: 1.8; }
   /* the figure compacts: stones stay a row on a hairline ground, the
      legend drops to two readable columns */
@@ -2085,7 +2097,7 @@ html.pv-open { overflow: hidden; }
 .pv-meta span {
   display: block;
   color: var(--graphite);
-  font-size: 0.52rem;
+  font-size: 0.6rem;
   margin-bottom: 0.15rem;
 }
 .pv-meta ul { list-style: none; }
