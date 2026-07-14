@@ -116,7 +116,10 @@ signatures (Mark counts these himself):
 
 ## 4. Current page structure (top to bottom)
 
-1. **Hero** — "Code, design & nerve" (Fraunces, per-character spans).
+1. **Hero** — "Mark / & my desk" (Fraunces, per-character spans; two
+   same-size display lines, set ragged left — the short-over-long rag IS the
+   asymmetry; the & opens line 2 as a swash so it JOINS rather than dangles;
+   see §7 #28–#29 for the word-hunt + the amp-fit fix).
    - Ink pooling: letters swell (wght/SOFT axes) near the cursor.
    - **LOOSE TYPE**: grab a letter → letterpress physics (gravity, bounce, spin
      inside the hero). Decal `[!] LOOSE TYPE — GRAB A LETTER` ↔ `[R] RESET THE CASE`
@@ -285,8 +288,9 @@ signatures (Mark counts these himself):
      the screen instructions. Typing initials is guarded from the M/N/S/R
      mode keys (INPUT check in both keydown handlers).
    - **THE JOB LOG** (Direction Nº 003, P4): the shop witnesses you. One
-     dry typeset line per playful act, desk-time stamped, newest last,
-     under the colophon — hidden until your first act opens the ticket.
+     dry typeset line per playful act, desk-time stamped, newest first
+     (top), in the LEFT column beside the OK slip (moved there July 13 —
+     approve + witness together) — hidden until your first act opens it.
      Hooks: chips ("ink changed to acid. bold choice."), throws (+ "that's
      four throws. the type forgives." at exactly four), case reset, plate
      pull (only if a drag actually happened — `lastPullShadow` gate),
@@ -303,9 +307,18 @@ signatures (Mark counts these himself):
      **REFINED (July 11, Mark's note — "it drags the page down... should be
      scrollable and cap at a height... if it gets approved it writes it out
      so the system looks alive"):** `#jl-lines` is now a capped 7.5rem
-     window (`overflow-y:auto`, thin hairline scrollbar, `overscroll-behavior:
-     contain`) that auto-scrolls to the newest line, so a long shift never
-     grows the outro. New entries TELETYPE out char-by-char with a blinking
+     window (`overflow-y:auto`, `overscroll-behavior: contain`) that
+     auto-scrolls to the newest line, so a long shift never grows the outro.
+     **THE SCROLL RAIL is real DOM (July 13), not a native scrollbar:** the
+     ticket printer's tractor feed — a `.jl-rail` (sprocket-hole radial-gradient
+     down a hairline margin) + a js-synced `.jl-thumb` ink carriage (`#jl-rail`/
+     `#jl-thumb` inside a `.jl-scroll` wrapper; `updateJoblogBar()` runs off
+     `scrollLogEnd` + scroll/resize, thumb is draggable and inks up to the
+     accent on hover). Shown only on overflow (`.has-scroll`; ~10+ acts). WHY
+     DOM: native `::-webkit-scrollbar` is ignored by overlay/fluent Chrome
+     (Mark: "I dont see that change") and barely styleable in Firefox — a real
+     element renders identically everywhere. Verified headless day+night, 11
+     seeded lines over a 120px window, zero errors. New entries TELETYPE out char-by-char with a blinking
      block caret (`.jl-typing::after`, `typeOutLast()` — renders all but the
      newest instantly, then chatters the last line like the shop's ticket
      printer); the stamp/approval line rides the same path, so getting passed
@@ -1142,6 +1155,82 @@ signatures (Mark counts these himself):
     sheet + Esc, glass yields mid-swing + returns after settle, zero
     console errors; plus 36/36 flight + 5/5 mobile + 11/11 light re-run
     green (62 total).
+
+28. (branch `prototypes-searchlight`, July 13) **THE HEADLINE IS THE LETTERHEAD —
+    "Mark & / From the desk" replaces "Code, design & nerve."** Mark: the old
+    line "sounds cliche or awkward... idk what I want to convey." The hunt (all
+    in `hero-reset-mock.html`, kept as provenance): thesis lines (DRAFTED &
+    DELIVERED → DOUBTED & DELIVERED), world-word triplets (INK DOUBT & NERVE /
+    SET STRUCK & SHIPPED), name moves (MARK AXELUS & CO. / AXELUS & AXELUS),
+    self-mined mantra (AGAIN & AGAIN — his own most-repeated word, 9×) — ALL
+    rejected. **Research that broke it open:** actual Awwwards portfolio
+    winners set QUIET, FACTUAL hero copy (Pertant: "motion & sound designer
+    based in paris"; Bruno Simon / Snellenberg / Mangham: name + role) — the
+    clever triplet is a mid-tier pattern; the poetry budget goes to the craft.
+    THE LINE IS MARK'S OWN PITCH ("Mark e /n From the desk" — he calls the
+    italic & "the E"): the letterhead convention ("From the desk of —"), name /
+    mark / address. His two rules shaped the setting: (a) asymmetry — both
+    lines SAME SIZE, ragged left, no centring, no small second line; (b) the
+    Fraunces italic & is the historic Et-ligature and doesn't read as "and" —
+    so the line parses as NAME + MAKER'S DEVICE, never an unfinished sentence
+    ("it could be safe" — his call, correct). "From the desk" doubles as the
+    place line and the first breadcrumb to the hidden page.
+    **Wired to the real site + loader (verified 27/27 headless + 4-width
+    specimen-collision sweep):**
+    - index.html: two-line hero (`#markw` "Mark&nbsp;" + `#amp` "&" on line 1;
+      "From the&nbsp;" + `#deskw` "desk" on line 2 — trailing-space-in-word
+      pattern keeps #amp a single pure .ch for the reel). Title/meta updated.
+      Drafts note now strikes "code, design & nerve" and checks "mark & — from
+      the desk ✓ (finally)".
+    - styles.css: .hero-title clamp(3.2rem, 10.6vw, 12.5rem) (13-sort line 2
+      sets the measure), mobile clamp(2.3rem, 13vw, 6rem), print 44pt; dead
+      nth-child(3) rule removed.
+    - main.js: `lastLine` selector nth-child(3) → :last-child (WOULD HAVE
+      KILLED THE ENTRANCE — null lastLine fell into the instant-landed branch);
+      amark-nerve → amark-desk, the pen now underlines "desk" (nerveEl→deskEl).
+      "nerve" survives in the bio ("interfaces that hold their nerve") — the
+      word stayed, the headline stopped shouting it.
+    - loader-lockup-mock.html: lockup = .l-mark / .l-amp / .l-desk (keystone
+      "From the desk" carries the ghosts + KEY_VF resolve); heroTargets → 
+      {mark, amp, desk}; relaxToHero map + bakeToNative specs re-set (amp
+      splices at 1); tour forme station = .l-mark; id keystone.
+    - ALL & finale machinery untouched by design — parent side is keyed to
+      `#amp .ch` and never knew the words. Cede fires, reel opens on &, seats
+      into the frame fade. Landings measured: Mark 0/0/0, From-the-desk
+      0/0/0.1 px. Mobile 390/390 no overflow. Zero console errors everywhere.
+    NOTE: `hero-reset-mock.html` is the word-hunt sandbox, superseded; the
+    &c. nugget (MARK, &c. = "and the rest") died by the no-obscure-refs rule.
+
+29. (branch `prototypes-searchlight`, July 13) **THE & FINALLY FITS —
+    "Mark / & my desk" replaces "From the desk of / Mark &".** Mark's issue
+    with the trailing amp: "the & doesn't fit... but I want it here." He was
+    right — an ampersand is a JOINING mark (wants a thing left AND right);
+    "Mark &" gave it a left and nothing right, so it dangled no matter how
+    §28 justified it as a "device." The fix: MOVE #amp to the HEAD of line 2,
+    where it joins "Mark" (above) to "my desk" (right) and, at the ragged-left
+    margin, opens the line as an italic swash — more prominent, not less.
+    Also cut the stiff "of" and went first-person per his instinct. The
+    specimen cascade still carries the & as a pure object at every size, so
+    the headline & now WORKS while the specimen & still SHOWS OFF (two jobs,
+    two places). Verified 8/8 headless + the real loader flight (Playwright,
+    1440×900): loader flips 1:1 into the live hero, zero console errors.
+    - index.html: hero reordered — line 1 `#markw` "Mark"; line 2 `#amp` "&"
+      (trailing nbsp keeps it a single pure .ch for the reel) + `#deskw`
+      "my desk". `#deskline` dropped (only the loader read it). Title → "My
+      Desk", meta "from my desk", drafts note strikes "from the desk of mark
+      &" and checks "mark & my desk ✓".
+    - loader-lockup-mock.html: keystone `.l-desk` "From the desk of" → "my
+      desk" (all three misregister passes); `heroTargets` desk anchor
+      `#deskline` → `#deskw`. The flight map/cede/bake were already keyed to
+      the three IDs, so no structural change — the whole-line target simply
+      became the word target.
+    - main.js: logic untouched — the amp reel, the mess amp-circle, and the
+      pen (`deskEl`=`#deskw`, now underlines "my desk") all read live rects,
+      so moving #amp to line 2 needed no code. Comment tweaks only.
+    - styles.css: measure comment only. "& my desk" is shorter than "From
+      the desk", so the existing clamp can't overflow — left as-is (more rag
+      = more asymmetry). SUPERSEDES §28's arrangement; short-over-long +
+      name-on-top both HOLD, only the amp's position + the address words moved.
 
 ## 8. Ideas discussed but not built (fair game later)
 

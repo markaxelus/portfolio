@@ -719,7 +719,18 @@
         var it = lineItems[i];
         /* unstruck paper doesn't perform; the glass freezes its sheet */
         if (it.el.classList.contains("unstruck")) continue;
-        if (lineLoupeItem === it) continue;
+        if (lineLoupeItem === it) {
+          /* the glass freezes the swing, but the sheet still ZOOMS toward you —
+             only the lift-scale moves; rotation is pinned so the glass is steady */
+          it.steady = 1; it.u = 0; it.du = 0;
+          it.lift += (1 - it.lift) * 0.09;
+          var scL = 1 + it.lift * 0.16;
+          if (Math.abs(scL - it.sc) > 0.002) {
+            it.sc = scL; it.th = it.lean;
+            it.el.style.transform = "rotate(" + it.lean.toFixed(2) + "deg) scale(" + scL.toFixed(3) + ")";
+          }
+          continue;
+        }
         var steadyTarget = it.hovered ? 1 : 0;
         it.steady += (steadyTarget - it.steady) * 0.045;
         it.lift += ((it.hovered ? 1 : 0) - it.lift) * 0.09;   /* pick it up to look */
@@ -737,7 +748,7 @@
           if (Math.abs(it.u) < 0.02 && Math.abs(it.du) < 0.01) { it.u = 0; it.du = 0; }
         }
         var th = it.lean + rest + it.u;
-        var sc = 1 + it.lift * 0.035;
+        var sc = 1 + it.lift * 0.16;   /* hover zooms the sheet toward you (was masked by the glass) */
         if (Math.abs(th - it.th) > 0.03 || Math.abs(sc - it.sc) > 0.002) {
           it.th = th; it.sc = sc;
           it.el.style.transform = "rotate(" + th.toFixed(2) + "deg) scale(" + sc.toFixed(3) + ")";
@@ -775,19 +786,33 @@
        drag/held-press suppress the click (lineDragUsed); hover does NOT. */
     var linePress = null;       /* { it, sx, sy, moved } */
     var lineDragging = null;
-    var lineLoupeT = null;
+    var lineLoupeT = null, lineHoverLoupeT = null;
     var lineHoverEl = null, lineHoverItem = null;   /* the face under the pointer */
 
     function dropLoupe() {
       if (!lineLoupeItem) return;
+      /* the zoom releases WITH the glass — one lifecycle */
+      lineLoupeItem.hovered = false;
+      lineLoupeItem.el.classList.remove("is-active");
+      lineLoupeItem.el.style.zIndex = lineLoupeItem.z;
+      indexEl.classList.remove("is-hovering");
       lineLoupeItem = null;
       loupeOn = false;
       loupeEl.classList.remove("on");
       cursorEl.classList.remove("is-loupe");
     }
     function summonLoupe(it) {
+      /* hover brings BOTH: the sheet zooms toward you AND the glass drops onto
+         it. one lifecycle (this fn + dropLoupe) so nothing races. */
+      it.hovered = true;                 /* the swing loop scales it to ~1.16 */
+      it.el.classList.add("is-active");  /* lit + accent; .is-hovering dims the rest */
+      indexEl.classList.add("is-hovering");
+      it.el.style.zIndex = 9;
       var r = it.faceEl.getBoundingClientRect();  /* fresh, near-steady */
-      it.face = { x: r.left + scrollX, y: r.top + scrollY, w: r.width, h: r.height };
+      /* pre-scale the captured crop by the zoom (top-centre origin) so the glass
+         magnifies the ZOOMED plate, not the flat one */
+      var Z = 1.16, dw = r.width * (Z - 1);
+      it.face = { x: r.left + scrollX - dw / 2, y: r.top + scrollY, w: r.width * Z, h: r.height * Z };
       lineLoupeItem = it;
       loupeOn = true;
       curPlate = it.i;
@@ -813,7 +838,7 @@
       if (!it || reduced() || !trailEnabled()) return;
       if (lineDragging || linePress) return;        /* mid-gesture — the hand owns it */
       if (it.el.classList.contains("unstruck")) return;  /* unprinted paper doesn't perform */
-      if (!lineLoupeItem) summonLoupe(it);
+      if (!lineLoupeItem) summonLoupe(it);   /* brings the glass AND the zoom together */
     });
     indexEl.addEventListener("pointerout", function (e) {
       if (!lineHoverEl) return;
@@ -821,6 +846,7 @@
       var to = e.relatedTarget;
       if (to && to.closest && to.closest(".row-thumb") === lineHoverEl) return;  /* still inside */
       lineHoverEl = null; lineHoverItem = null;
+      clearTimeout(lineHoverLoupeT);
       if (lineLoupeItem) dropLoupe();
     });
 
@@ -830,6 +856,7 @@
       if (!row || reduced()) return;
       var it = lineItems[+row.dataset.plate];
       if (!it || it.el.classList.contains("unstruck")) return;
+      clearTimeout(lineHoverLoupeT);   /* a press/click cancels the pending hover-glass */
       lineDragUsed = false;   /* fresh press — clear any stale suppress flag */
       linePress = { it: it, sx: e.pageX, sy: e.pageY, moved: false };
       curPlate = it.i;
@@ -1035,27 +1062,19 @@
   rows.forEach(function (row) {
     row.addEventListener("mouseenter", function () {
       if (!trailEnabled()) return;
-      if (loupeOn) return; /* the glass is down — don't re-skin the sheet */
       /* an unstruck row is unprinted paper — no reveal, no choreography,
          until the line (or a click) strikes it */
       if (row.classList.contains("unstruck")) return;
+      /* THE LINE drives hover through the glass lifecycle (summonLoupe/dropLoupe),
+         so the zoom + glass share ONE authority and never race. */
+      if (lineOn) return;
       indexEl.classList.add("is-hovering");
       rows.forEach(function (r) { r.classList.remove("is-active"); });
       row.classList.add("is-active");
       cursorLabel.textContent = "PROOF ↗";
       cursorEl.classList.add("is-view");
       curPlate = +row.dataset.plate;
-
-      /* THE LINE: the sheet already IS the proof — no floating reveal.
-         hovering STEADIES it, lifts it toward you, and floats it over
-         its neighbours (the shop holds it still so you can look). */
-      if (lineOn) {
-        if (lineItems[curPlate]) {
-          lineItems[curPlate].hovered = true;
-          row.style.zIndex = 9;
-        }
-        return;
-      }
+      if (loupeOn) return; /* flat-list only: glass down — don't re-skin the reveal */
       /* flat-list fallback: the cursor-trailing plate reveal */
       if (curPlate !== lastRevealPlate) {
         lastRevealPlate = curPlate;
@@ -1071,6 +1090,7 @@
 
     row.addEventListener("mouseleave", function () {
       if (!trailEnabled()) return;
+      if (lineOn) return;   /* the glass lifecycle (dropLoupe) owns line hover-out */
       if (loupeOn) { loupeLeftRow = true; return; }
       indexEl.classList.remove("is-hovering");
       row.classList.remove("is-active");
@@ -1159,9 +1179,13 @@
     });
   }
   function setInk(c, t) {
+    /* the V3 amp NEVER gets an inline axis write: naming SOFT/WONK in the
+       string swaps the & to a narrow alternate glyph even at 0 (measured —
+       0.720em vs 0.878em). the CSS rule (opsz+wght only) owns it, static. */
+    if (c.amp) return;
     if (t === 0 && c.t === 0) return;
     c.t = t;
-    var w = Math.round(c.amp ? 340 + 220 * t : 480 + 240 * t);
+    var w = Math.round(480 + 240 * t);
     var s = Math.round(70 * t);
     if (w === c.lw && s === c.ls) return; /* same rendered axes — no style churn */
     c.lw = w; c.ls = s;
@@ -1352,22 +1376,23 @@
   var bioEl = document.getElementById("hero-bio");
   var anchorAmp = document.getElementById("anchor-amp");
   var anchorBio = document.getElementById("anchor-bio");
-  var nerveEl = document.getElementById("nerve");
-  var amarkNerve = document.getElementById("amark-nerve");
+  var deskEl = document.getElementById("deskw");
+  var amarkDesk = document.getElementById("amark-desk");
   var writeEl = document.getElementById("write-link");
   var amarkWrite = document.getElementById("amark-write");
   var outroEl = document.querySelector(".outro");
 
   function positionAnchors() {
     measureHeroGate();
-    /* the hand on the finished page: underline + circle */
-    if (amarkNerve && nerveEl) {
+    /* the hand on the finished page: underline + circle — the pen underlines
+       "my desk" (the site's true address; the 2am self would, wouldn't it) */
+    if (amarkDesk && deskEl) {
       var hr0 = heroEl.getBoundingClientRect();
-      var nr = nerveEl.getBoundingClientRect();
-      amarkNerve.style.left = (nr.left - hr0.left + nr.width * 0.06) + "px";
-      amarkNerve.style.top = (nr.bottom - hr0.top - nr.height * 0.02) + "px";
-      amarkNerve.style.width = (nr.width * 0.92) + "px";
-      amarkNerve.style.height = Math.max(10, nr.width * 0.055) + "px";
+      var nr = deskEl.getBoundingClientRect();
+      amarkDesk.style.left = (nr.left - hr0.left + nr.width * 0.06) + "px";
+      amarkDesk.style.top = (nr.bottom - hr0.top - nr.height * 0.02) + "px";
+      amarkDesk.style.width = (nr.width * 0.92) + "px";
+      amarkDesk.style.height = Math.max(10, nr.width * 0.055) + "px";
     }
     if (amarkWrite && writeEl && outroEl) {
       var or = outroEl.getBoundingClientRect();
@@ -1537,7 +1562,7 @@
   buildTerrain();
   buildThread();
   /* re-measure once the hero settles (proof may open mid-entrance) */
-  var lastLine = document.querySelector(".hl-mask:nth-child(3) .hl");
+  var lastLine = document.querySelector(".hl-mask:last-child .hl");
   if (lastLine) lastLine.addEventListener("animationend", positionAnchors, { once: true });
   positionAnchors();
 
@@ -2252,6 +2277,7 @@
         reel.style.width = chR.width + "px";
         reel.style.height = WIN + "px";
         reel.style.fontFamily = cs.fontFamily;           /* the hero's own face (reel hangs off body) */
+        reel.style.fontStyle = cs.fontStyle;             /* italic — the roulette spins + lands on the SAME & as the hero */
         if (srcColor) reel.style.color = srcColor;       /* the lockup's ink; flooded live by __ampFlood */
         var strip = document.createElement("div");
         strip.className = "amp-reel-strip";
@@ -2789,7 +2815,7 @@
 
   /* ============ the job log: the shop witnesses you ============ */
   /* every playful act gets one dry typeset line in the colophon — desk
-     time, trade language, newest last. appears only once you've touched
+     time, trade language, newest first (top). appears only once you've touched
      something; keeps the last ten; adjacent repeats collapse (throwing
      the same letter five times is one line, a different letter is news).
      local-only, and the fine print says so. a returning visitor's first
@@ -2805,7 +2831,8 @@
   try { logSessionMarked = !!sessionStorage.getItem("ma-log-sess"); } catch (e) {}
 
   function liText(en) { return en.d ? en.s : (en.t + " — " + en.s); }
-  function scrollLogEnd() { if (logLinesEl) logLinesEl.scrollTop = logLinesEl.scrollHeight; }
+  /* newest line sits on TOP now — keep it in view by pinning to the start */
+  function scrollLogTop() { if (logLinesEl) { logLinesEl.scrollTop = 0; updateJoblogBar(); } }
   var typeTimer = null;
 
   /* rebuild the whole log instantly — load, print, reduced motion */
@@ -2815,13 +2842,13 @@
     if (!logEntries.length) { logBlockEl.hidden = true; return; }
     logBlockEl.hidden = false;
     logLinesEl.innerHTML = "";
-    for (var i = 0; i < logEntries.length; i++) {
+    for (var i = logEntries.length - 1; i >= 0; i--) {   /* newest first (top) */
       var li = document.createElement("li");
       if (logEntries[i].d) li.className = "jl-div";
       li.textContent = liText(logEntries[i]);
       logLinesEl.appendChild(li);
     }
-    scrollLogEnd();
+    scrollLogTop();
   }
 
   /* the shop's ticket printer: render all but the newest instantly, then
@@ -2833,24 +2860,25 @@
     clearTimeout(typeTimer);
     logBlockEl.hidden = false;
     logLinesEl.innerHTML = "";
-    for (var i = 0; i < logEntries.length - 1; i++) {
-      var li = document.createElement("li");
-      if (logEntries[i].d) li.className = "jl-div";
-      li.textContent = liText(logEntries[i]);
-      logLinesEl.appendChild(li);
-    }
+    /* the newest line prints at the TOP; the rest sit below it, newest→oldest */
     var en = logEntries[logEntries.length - 1];
     var full = liText(en), line = document.createElement("li");
     if (en.d) line.className = "jl-div";
     line.classList.add("jl-typing");
     logLinesEl.appendChild(line);
-    scrollLogEnd();
+    for (var i = logEntries.length - 2; i >= 0; i--) {
+      var li = document.createElement("li");
+      if (logEntries[i].d) li.className = "jl-div";
+      li.textContent = liText(logEntries[i]);
+      logLinesEl.appendChild(li);
+    }
+    scrollLogTop();
     var k = 0;
     (function step() {
       line.textContent = full.slice(0, k);
       if (k < full.length) {
         var ch = full.charAt(k); k++;
-        scrollLogEnd();
+        scrollLogTop();
         typeTimer = setTimeout(step, ch === " " ? 30 : 19);
       } else {
         line.classList.remove("jl-typing");
@@ -2891,6 +2919,50 @@
   /* pulling a paper copy is an act too — render it instantly so the print
      captures the whole line, not a half-typed one */
   addEventListener("beforeprint", function () { logAct("a clean proof pulled to paper.", true); });
+
+  /* ---- the scroll rail, as REAL DOM ----
+     native ::-webkit-scrollbar is an unreliable lottery (overlay/fluent Chrome
+     ignores it; Firefox barely styles it), so the tractor feed is an element:
+     an ink carriage synced to scrollTop, shown only while the log overflows.
+     (function decl: scrollLogEnd above calls it.) */
+  var jlRail = document.getElementById("jl-rail");
+  var jlThumb = document.getElementById("jl-thumb");
+  var jlScroll = logLinesEl ? logLinesEl.parentNode : null;
+  function updateJoblogBar() {
+    if (!logLinesEl || !jlThumb || !jlScroll) return;
+    var ch = logLinesEl.clientHeight, sh = logLinesEl.scrollHeight;
+    if (sh - ch <= 1) { jlScroll.classList.remove("has-scroll"); return; }
+    jlScroll.classList.add("has-scroll");
+    var th = Math.max(16, Math.round(ch * ch / sh));
+    var maxTop = ch - th;
+    jlThumb.style.height = th + "px";
+    jlThumb.style.top = Math.round((logLinesEl.scrollTop / (sh - ch)) * maxTop) + "px";
+  }
+  if (logLinesEl) logLinesEl.addEventListener("scroll", updateJoblogBar, { passive: true });
+  addEventListener("resize", updateJoblogBar);
+  if (jlThumb) {
+    var jlDrag = null;
+    jlThumb.addEventListener("pointerdown", function (e) {
+      var ch = logLinesEl.clientHeight, sh = logLinesEl.scrollHeight;
+      if (sh - ch <= 1) return;
+      jlDrag = { y: e.clientY, top: logLinesEl.scrollTop, span: sh - ch, maxTop: ch - jlThumb.offsetHeight };
+      jlThumb.classList.add("drag");
+      try { jlThumb.setPointerCapture(e.pointerId); } catch (_) {}
+      e.preventDefault();
+    });
+    jlThumb.addEventListener("pointermove", function (e) {
+      if (!jlDrag || jlDrag.maxTop <= 0) return;
+      logLinesEl.scrollTop = jlDrag.top + ((e.clientY - jlDrag.y) / jlDrag.maxTop) * jlDrag.span;
+    });
+    var jlEndDrag = function (e) {
+      if (!jlDrag) return;
+      jlDrag = null; jlThumb.classList.remove("drag");
+      try { jlThumb.releasePointerCapture(e.pointerId); } catch (_) {}
+    };
+    jlThumb.addEventListener("pointerup", jlEndDrag);
+    jlThumb.addEventListener("pointercancel", jlEndDrag);
+  }
+  updateJoblogBar();
 
   /* ============ the tab misses you ============ */
   var baseTitle = document.title;

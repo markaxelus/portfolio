@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=author@400,700&f[]=excon@400,700&f[]=alpino@400,700&f[]=plein@400,600,700&f[]=bespoke-stencil@300,400&display=swap" rel="stylesheet">
+<style>
+  :root { --stone:#DDDBD4; --ink:#16150F; --accent:#2A2AF0; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--stone); color:var(--ink); font-family:"Fraunces",serif; }
+  .panel { position:relative; min-height:58vh; border-bottom:1px solid rgba(22,21,15,.18); padding:9vh 7vw; overflow:hidden; }
+  .tag { position:absolute; top:1.2rem; left:7vw; font-family:"Space Mono",monospace; font-size:.72rem; letter-spacing:.2em; opacity:.62; }
+
+  /* V3 layout: giant Fraunces roman & behind, the words cross over it */
+  .V3 { position:relative; line-height:.82; }
+  .V3 .amp { position:absolute; left:1.5rem; top:-.16em; font-size:clamp(11rem,25vw,27rem); line-height:.7; z-index:0;
+    font-family:"Fraunces",serif; color:var(--accent); font-variation-settings:"opsz" 144,"wght" 470; }
+  .V3 .mark, .V3 .desk { position:relative; z-index:1; display:block; text-transform:uppercase; letter-spacing:.01em;
+    font-size:clamp(2.5rem,6vw,6.6rem); font-weight:700; }
+  .V3 .desk { margin-top:2.4rem; margin-left:5.5rem; }
+
+  .author  .mark, .author  .desk { font-family:"Author",serif; }
+  .excon   .mark, .excon   .desk { font-family:"Excon",sans-serif; }
+  .alpino  .mark, .alpino  .desk { font-family:"Alpino",sans-serif; }
+  .plein   .mark, .plein   .desk { font-family:"Plein",serif; font-weight:600; }
+  .stencil .mark, .stencil .desk { font-family:"Bespoke Stencil",sans-serif; font-weight:400; letter-spacing:.02em; }
+</style>
+</head>
+<body>
+  <section class="panel"><span class="tag">AUTHOR — serif</span>
+    <div class="V3 author"><span class="amp">&amp;</span><span class="mark">Mark</span><span class="desk">My&nbsp;desk</span></div></section>
+  <section class="panel"><span class="tag">EXCON — display sans</span>
+    <div class="V3 excon"><span class="amp">&amp;</span><span class="mark">Mark</span><span class="desk">My&nbsp;desk</span></div></section>
+  <section class="panel"><span class="tag">ALPINO — grotesque</span>
+    <div class="V3 alpino"><span class="amp">&amp;</span><span class="mark">Mark</span><span class="desk">My&nbsp;desk</span></div></section>
+  <section class="panel"><span class="tag">PLEIN — display serif</span>
+    <div class="V3 plein"><span class="amp">&amp;</span><span class="mark">Mark</span><span class="desk">My&nbsp;desk</span></div></section>
+  <section class="panel"><span class="tag">BESPOKE STENCIL — cut / industrial</span>
+    <div class="V3 stencil"><span class="amp">&amp;</span><span class="mark">Mark</span><span class="desk">My&nbsp;desk</span></div></section>
+</body>
+</html>

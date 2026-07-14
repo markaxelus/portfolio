@@ -9,6 +9,7 @@
 <!-- EXACT same Fraunces axes/URL as index.html (incl. WONK) — a different subset
      renders the glyphs with subtly different metrics, which broke the 1:1 hand-off -->
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=excon@400,700&display=swap" rel="stylesheet">
 <style>
   /* ============================================================
      THE LOCKUP — the load as an ASYMMETRIC event.
@@ -240,16 +241,15 @@
     animation-delay: calc(var(--i) * 0.11s + 0.12s); }
   @keyframes lockdrop { to { opacity: 1; transform: translateY(0); } }
   /* the staircase — irregular indents (hand-composed, not a ruler diagonal) */
-  .l-code   { --i: 0; margin-left: 7.5vw;  font-size: clamp(1.4rem, 3.6vw, 2.7rem); }
-  .l-design { --i: 1; margin-left: 2.4vw;  font-size: clamp(2rem, 5vw, 3.7rem); margin-top: -0.06em; }
-  .l-amp    { --i: 2; margin-left: 5.2vw;  font-size: clamp(2.4rem, 6vw, 4.6rem); margin-top: -0.04em;
-              font-style: italic; font-weight: 340; color: var(--accent-lum); }
-  .l-nerve  { --i: 3; margin-left: 0;      font-size: clamp(4rem, 13.5vw, 10.6rem); margin-top: -0.05em;
-              font-weight: 300; font-variation-settings: "opsz" 144, "SOFT" 40, "WONK" 1; }
-  /* display optical size on every word: the flight scales the words UP, and small-
-     opsz letterforms (wide, robust) would ghost against the hero's display-opsz
-     (narrow) shapes at the hand-off. force opsz 144 so the shapes are the hero's. */
-  .l-code, .l-design, .l-amp { font-variation-settings: "opsz" 144; }
+  /* V3 lockup: Excon words + a roman Fraunces & — matches the real hero so the
+     flying letterforms ARE the hero's (the flight scales, the bake lands 1:1). */
+  .l-mark   { --i: 0; margin-left: 6.2vw;  font-size: clamp(2rem, 5vw, 3.7rem);
+              font-family: "Excon", sans-serif; font-weight: 700; text-transform: uppercase; }
+  .l-amp    { --i: 1; margin-left: 3.2vw;  font-size: clamp(2.8rem, 7vw, 5.4rem); margin-top: -0.02em;
+              font-family: "Fraunces", serif; font-style: normal; color: var(--accent-lum);
+              font-variation-settings: "opsz" 144, "wght" 470; }
+  .l-desk   { --i: 2; margin-left: 0;      font-size: clamp(2.2rem, 6.6vw, 5.2rem); margin-top: -0.02em;
+              font-family: "Excon", sans-serif; font-weight: 700; text-transform: uppercase; }
   body.page .l-amp { color: var(--accent); }
   /* the parent's flight reel took the & at the relax — our amp yields the same
      frame (visibility, not opacity: an atomic swap, never a fade-out) */
@@ -446,15 +446,15 @@
   body.page .bio { transform: translateX(0); }
 
   /* ============ THE MISREGISTER — the keystone's passes, loud, then home ============ */
-  .l-nerve { position: relative; }
-  .l-nerve .ghost {
+  .l-desk { position: relative; }
+  .l-desk .ghost {
     position: absolute; left: 0; top: 0; white-space: nowrap; pointer-events: none;
     opacity: 0.9;
   }
-  .l-nerve .ghost.red  { color: var(--pencil); }
-  .l-nerve .ghost.blue { color: var(--accent-lum); }
-  body.page .l-nerve .ghost.blue { color: var(--accent); }
-  .l-nerve .ink-face { position: relative; }   /* the key pass sits on top of its ghosts */
+  .l-desk .ghost.red  { color: var(--pencil); }
+  .l-desk .ghost.blue { color: var(--accent-lum); }
+  body.page .l-desk .ghost.blue { color: var(--accent); }
+  .l-desk .ink-face { position: relative; }   /* the key pass sits on top of its ghosts */
 
   /* engineering-drawing dimension line, clamped under the word */
   .measure {
@@ -524,7 +524,7 @@
   }
   /* the keystone's misregister passes merge away as the ink-face resolves to the
      crisp hero form — otherwise the soft (wider) ghosts fringe past it */
-  body.relaxing .l-nerve .ghost {
+  body.relaxing .l-desk .ghost {
     opacity: 0 !important;
     transition: opacity 0.3s var(--ease-out) !important;
   }
@@ -660,10 +660,9 @@
   <!-- THE LOCKUP: the headline, weighted off-centre -->
   <div class="stage" aria-hidden="true">
     <div class="lockup" id="lockup">
-      <span class="line l-code">Code,</span>
-      <span class="line l-design">design</span>
+      <span class="line l-mark">Mark</span>
       <span class="line l-amp">&amp;</span>
-      <span class="line l-nerve" id="nerve"><span class="ghost red">nerve</span><span class="ghost blue">nerve</span><span class="ink-face">nerve</span></span>
+      <span class="line l-desk" id="keystone"><span class="ghost red">my desk</span><span class="ghost blue">my desk</span><span class="ink-face">my desk</span></span>
     </div>
   </div>
 
@@ -687,13 +686,13 @@
   var body   = document.body;
   var numEl  = document.getElementById("num");
   var errEl  = document.getElementById("err");
-  var nerve  = document.getElementById("nerve");
+  var keystone = document.getElementById("keystone");
   var lockup = document.getElementById("lockup");
   var crossR = document.querySelector(".cross .rd");
   var crossB = document.querySelector(".cross .bl");
   var plateR = document.querySelector(".plate-red");
-  var ghostR = document.querySelector(".l-nerve .ghost.red");
-  var ghostB = document.querySelector(".l-nerve .ghost.blue");
+  var ghostR = document.querySelector(".l-desk .ghost.red");
+  var ghostB = document.querySelector(".l-desk .ghost.blue");
   var sdark  = document.querySelector(".searchdark");
   var swarm  = document.querySelector(".searchwarm");
   var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -731,10 +730,10 @@
     return (r.width > 1 || r.height > 1) ? [r.left + r.width/2, r.top + r.height/2] : null;
   }
   function measureSpots(){
-    wordC  = centreOf(nerve);
+    wordC  = centreOf(keystone);
     countC = centreOf(document.querySelector(".make"));
     plateC = centreOf(document.querySelector(".plate"));
-    formeC = centreOf(document.querySelector(".l-design"));   /* the forme: the upper lockup */
+    formeC = centreOf(document.querySelector(".l-mark"));   /* the forme: the upper lockup */
   }
 
   var BASE_LEAN = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--lean")) || -4.6;
@@ -875,10 +874,10 @@
     } catch (e) { return el.getBoundingClientRect(); }
   }
 
-  /* the VISUAL glyph box, measured across the per-letter .ch spans so a leading
-     space is excluded — hero #nerve is "&nbsp;nerve", and its raw Range would
-     include the space and shove the loader's spaceless "nerve" a space-width
-     left, jammed against the amp. */
+  /* the VISUAL glyph box, measured across the per-letter .ch spans so a leading/
+     trailing space is excluded — hero #amp is "& " (a trailing nbsp) and #deskw is
+     "my desk", so a raw Range would include those spaces and offset the landing.
+     the .ch range excludes them. */
   function glyphRect(el){
     if (!el) return null;
     try {
@@ -900,12 +899,12 @@
     try {
       var pd = parent.document, ht = pd.getElementById("hero-title");
       if (!ht || !ht.classList.contains("landed")) return null;
-      var hls = ht.querySelectorAll(".hl");
-      var amp = pd.getElementById("amp"), nrv = pd.getElementById("nerve");
-      if (hls.length < 2 || !amp || !nrv) return null;
-      var t = { code: glyphRect(hls[0]), design: glyphRect(hls[1]),
-                amp: glyphRect(amp), nerve: glyphRect(nrv) };
-      if (!t.code || !t.design || !t.amp || !t.nerve) return null;
+      var amp = pd.getElementById("amp"), mkw = pd.getElementById("markw");
+      var dsk = pd.getElementById("deskw");
+      if (!amp || !mkw || !dsk) return null;
+      var t = { mark: glyphRect(mkw), amp: glyphRect(amp),
+                desk: glyphRect(dsk) };
+      if (!t.mark || !t.amp || !t.desk) return null;
       return t;
     } catch (e) { return null; }
   }
@@ -913,10 +912,6 @@
   /* THE FLIP: each word travels + scales from its lockup box to the hero's box.
      the booth stays dark through the flight; then toPage() floods and the words
      are already sitting exactly on the real hero, so the reveal is seamless. */
-  /* the keystone's make-ready look vs the hero's final letterform. same axis list
-     in the same order, so the resolve interpolates smoothly (light+soft → crisp). */
-  var NERVE_VF_START = '"opsz" 144, "wght" 300, "SOFT" 40, "WONK" 0';
-  var NERVE_VF_END   = '"opsz" 144, "wght" 480, "SOFT" 0, "WONK" 0';
   function relaxToHero(){
     var T = heroTargets();
     if (!T){ toPage(); return; }          /* no live hero (standalone / not ready) → old flood */
@@ -940,25 +935,16 @@
     }
     if (ampCeded) body.classList.add("ceded");
     body.classList.add("relaxing");       /* clear the make-ready furniture, keep the words */
-    var nf = document.querySelector(".l-nerve .ink-face");
-    /* nerve RESOLVES from the soft/light make-ready form to the hero's crisp,
-       heavier one. measure its FINAL width so the scale lands it exactly, then
-       restore the soft look for the start of the flight. */
-    var nerveFinalW = 0;
-    if (nf){
-      nf.style.fontVariationSettings = NERVE_VF_START; void nf.offsetWidth;
-      nf.style.fontVariationSettings = NERVE_VF_END;   void nf.offsetWidth;
-      nerveFinalW = textRect(nf).width;
-      nf.style.fontVariationSettings = NERVE_VF_START; void nf.offsetWidth;
-    }
+    /* (the old Fraunces soft→crisp keystone resolve died with the face change —
+       Excon has no variable axes; the words fly at their final letterforms) */
+    var nf = document.querySelector(".l-desk .ink-face");
     /* the & flies as a word ONLY when the parent didn't take it — when ceded,
        the parent's reel is already flying that exact path, spinning */
     var map = [
-      [document.querySelector(".l-code"),   T.code,   null, 0],
-      [document.querySelector(".l-design"), T.design, null, 0],
-      [document.querySelector(".l-nerve"),  T.nerve,  nf,   nerveFinalW]
+      [document.querySelector(".l-mark"),   T.mark,   null, 0],
+      [document.querySelector(".l-desk"),   T.desk,   nf,   0]
     ];
-    if (!ampCeded) map.splice(2, 0, [ampEl, T.amp, null, 0]);
+    if (!ampCeded) map.splice(1, 0, [ampEl, T.amp, null, 0]);
     map.forEach(function(m){
       var el = m[0], dest = m[1]; if (!el || !dest) return;
       var eb = el.getBoundingClientRect();
@@ -976,10 +962,6 @@
         el.style.transform = "translate(" + dx.toFixed(1) + "px," + dy.toFixed(1) + "px) scale(" + sc.toFixed(4) + ")";
       });
     });
-    if (nf){
-      nf.style.transition = "font-variation-settings " + MORPH_MS + "ms var(--ease-out)";
-      requestAnimationFrame(function(){ nf.style.fontVariationSettings = NERVE_VF_END; });
-    }
     at(MORPH_MS + 30, toPage);
   }
 
@@ -991,29 +973,36 @@
   function bakeToNative(){
     var T = heroTargets();
     if (!T) return;
-    var htCS;
-    try { htCS = getComputedStyle(parent.document.getElementById("hero-title")); } catch (e) { return; }
-    var htFont = htCS.fontSize, htLS = htCS.letterSpacing;
-    if (!htFont) return;
-    var VF_TEXT = '"opsz" 144, "wght" 480, "SOFT" 0, "WONK" 0';   /* code/design/nerve */
-    var VF_AMP  = '"opsz" 144, "wght" 340, "SOFT" 0, "WONK" 0';   /* the amp (stays italic via CSS) */
+    var pd = parent.document;
+    /* bake to the target's RENDERED face: the amp target is `#amp .ch` (the
+       .ch carries the axis rule), the words are the word spans themselves.
+       copying computed fontVariationSettings — never a hand-built string —
+       is what keeps the SOFT/WONK gotcha out: naming those axes on the amp
+       swaps the & to the narrow alternate even at 0 (measured on the hero). */
+    function targCS(sel){ var e = pd.querySelector(sel); return e ? getComputedStyle(e) : null; }
+    /* [ lockup el, dest rect, target selector, measure-el ] — each word bakes
+       to ITS OWN target's face + size: V3 = Excon words + a giant Fraunces &,
+       so the hand-off is 1:1 per element regardless of mixed fonts/sizes. */
     var specs = [
-      [document.querySelector(".l-code"),   T.code,   VF_TEXT, null],
-      [document.querySelector(".l-design"), T.design, VF_TEXT, null],
-      [document.querySelector(".l-nerve"),  T.nerve,  VF_TEXT, document.querySelector(".l-nerve .ink-face")]
+      [document.querySelector(".l-mark"),   T.mark,   "#markw", null],
+      [document.querySelector(".l-desk"),   T.desk,   "#deskw", document.querySelector(".l-desk .ink-face")]
     ];
     /* a ceded amp is hidden and never flew — leave it out of the bake (its line
        keeps its lockup box, so the flow the other words re-measure in is stable) */
-    if (!ampCeded) specs.splice(2, 0, [document.querySelector(".l-amp"), T.amp, VF_AMP, null]);
-    /* pass 1 — set EVERY word to the hero's native font first (size reflows the
-       lockup flow, so all sizes must be in before we measure any position) */
+    if (!ampCeded) specs.splice(1, 0, [document.querySelector(".l-amp"), T.amp, "#amp .ch", null]);
+    /* pass 1 — set each word to ITS target's native font (size reflows the flow) */
     specs.forEach(function (sp) {
       var el = sp[0]; if (!el) return;
+      var cs = targCS(sp[2]); if (!cs) return;
       el.style.transition = "none";
       el.style.transform  = "none";
-      el.style.fontSize   = htFont;
-      el.style.letterSpacing = htLS;                 /* hero tracking, or widths drift */
-      el.style.fontVariationSettings = sp[2];
+      el.style.fontFamily = cs.fontFamily;            /* Excon or Fraunces — match the target */
+      el.style.fontSize   = cs.fontSize;
+      el.style.fontWeight = cs.fontWeight;
+      el.style.fontStyle  = cs.fontStyle;
+      el.style.letterSpacing = cs.letterSpacing;
+      el.style.textTransform = cs.textTransform;
+      el.style.fontVariationSettings = cs.fontVariationSettings;
     });
     void lockup.offsetWidth;   /* one reflow; the native lockup layout is now settled */
     /* pass 2 — translate each native word onto its exact hero box */
@@ -1038,12 +1027,15 @@
     numEl.textContent = "00"; errEl.textContent = "SETTING THE FORME";
     setReg(MAXOFF);
     /* clear any flight transforms from a prior run, then restart the line drop-in */
-    var nf0 = document.querySelector(".l-nerve .ink-face");
+    var nf0 = document.querySelector(".l-desk .ink-face");
     if (nf0){ nf0.style.transition = "none"; nf0.style.fontVariationSettings = ""; }
     var lines = lockup.querySelectorAll(".line");
     lines.forEach(function(l){ l.style.animation = "none"; l.style.transition = "none";
       l.style.transform = ""; l.style.transformOrigin = ""; l.style.opacity = "";
-      l.style.fontSize = ""; l.style.fontVariationSettings = ""; });
+      l.style.fontSize = ""; l.style.fontVariationSettings = "";
+      /* the bake sets the target's whole face now — clear it all for REPLAY */
+      l.style.fontFamily = ""; l.style.fontWeight = ""; l.style.fontStyle = "";
+      l.style.letterSpacing = ""; l.style.textTransform = ""; });
     void lockup.offsetWidth;
     lines.forEach(function(l){ l.style.animation = ""; l.style.transition = ""; });
 
