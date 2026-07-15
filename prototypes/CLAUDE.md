@@ -116,10 +116,15 @@ signatures (Mark counts these himself):
 
 ## 4. Current page structure (top to bottom)
 
-1. **Hero** — "Mark / & my desk" (Fraunces, per-character spans; two
-   same-size display lines, set ragged left — the short-over-long rag IS the
-   asymmetry; the & opens line 2 as a swash so it JOINS rather than dangles;
-   see §7 #28–#29 for the word-hunt + the amp-fit fix).
+1. **Hero** — the V3 LOCKUP: a giant roman Fraunces & (`#amp`,
+   clamp(13rem, 30vw, 36rem), opsz 144 wght 470 — NEVER name SOFT/WONK in
+   its axis string, that swaps in a narrow alternate &) sits BEHIND the
+   Excon uppercase words MARK (`#markw`, −3° rest splay) and MY DESK
+   (`#deskw`, +1.8°) which cross its body — same grid cell, words z1, & z0.
+   Bio: "I'm Mark, a software engineer. / One person, one desk, a very high
+   bar. / This is the fourth version this year; the first three weren't
+   good enough." (History: §7 #28–#29 word-hunt "Mark / & my desk" →
+   hero-asym V3 mock chosen; per-char .ch spans kept everywhere.)
    - Ink pooling: letters swell (wght/SOFT axes) near the cursor.
    - **LOOSE TYPE**: grab a letter → letterpress physics (gravity, bounce, spin
      inside the hero). Decal `[!] LOOSE TYPE — GRAB A LETTER` ↔ `[R] RESET THE CASE`
@@ -1231,6 +1236,132 @@ signatures (Mark counts these himself):
       the desk", so the existing clamp can't overflow — left as-is (more rag
       = more asymmetry). SUPERSEDES §28's arrangement; short-over-long +
       name-on-top both HOLD, only the amp's position + the address words moved.
+
+30. (branch `prototypes-searchlight`, July 14) **THE SETTING — matter arrives
+    by hand.** Mark on the reveals: *"all too linear and generic, doesn't fit
+    our concept of asymmetry and mess... some elements don't have a reveal on
+    first load like the glyphs, the stones."* He was right three ways: the
+    (uncommitted) scroll pop was a uniform 40px fade-UP on metronome staggers
+    (desk rows at exactly .07/.14/.21s); the load furniture ran one `rise`
+    keyframe on a near-linear delay ladder; and the specimen glyphs, tonebar,
+    foldline, decals, trail stones and the v3 lockup itself had NO entrance
+    (the old entrance still targeted the dead `.hl` lines). Replaced with a
+    second governing law beside the strike: **ink arrives by STRIKE (untouched);
+    MATTER arrives by hand — set DOWN onto the sheet, never floated up.**
+    Fade-up is the one gesture that belongs to no print shop.
+    - **The gesture (`setdown`/`set-in`):** drop from above + a breath of
+      over-press (+1px) + settle — the amp-impression language generalized.
+      Every arrival is jittered by a per-load mulberry32 seed (drop height
+      −10..−24px, duration .42–.62s, delay, occasional ±px lateral or a
+      ≤0.7° arrival-lean that settles true). No two elements move alike, no
+      two loads are identical; DESTINATIONS are always exact — the asymmetry
+      lives in the arrival, never the resting state (the no-arbitrary-tilts
+      rule holds). Groups (desk rows, outro cluster) get seeded SHUFFLED
+      delays — tossed on, not dealt.
+    - **Dialects:** stones DROP (accelerating fall + seat squash — the
+      cairn's own language): the trail stones land L→R jittered, the 2026
+      accent stone LAST, and only then is the measured ground DRAWN through
+      their landed bases (dashoffset on pathLength=1, buildTerrain re-measured
+      once at seat time so a mid-fall resize can't bend the line), ticks +
+      legend following; the yard cairn STACKS bottom-up (`cairn-set`, classes
+      stripped after the land so renderCairn re-runs stay inert). Sheets on
+      the line HANG: fade + a seeded draft impulse straight into the real
+      physics (`it.du += ±0.6–1.3`) so each swings from being just-hung and
+      settles per its own pendulum — the W.L.L. blips "TAKING THE LOAD —
+      HELD" once per visit. The specimen is PULLED size-by-size (s1→s5,
+      seeded, the 144pt italic last + heaviest, axis labels ticking in
+      after each pull); the tonebar inks its ramp step-by-step (machine-
+      LINEAR on purpose — it's a calibration instrument); the foldline is
+      SCORED down the sheet (scaleY).
+    - **The v3 lockup finally has an entrance** (`body.hero-set`, non-loader
+      loads only — the loader's flight IS the entrance when it runs): the
+      giant & seats first with weight (`seat-amp`), MARK then MY DESK set
+      over it on opposite lateral vectors with a touch more lean than their
+      rest splay, landing exactly on it (words carry `--rest` vars; keyframes
+      end on `var(--rest)`). Furniture (eyebrow/bio/decals) chatters in on
+      seeded clocks. `releaseMasks` re-wired: `.landed` on the v3-desk's own
+      animationend (target-checked — animationend BUBBLES from .ch rattles)
+      + 2.4s failsafe; positionAnchors re-measures at land.
+    - **Loader path:** `body.spec-armed` (added at mrRan) pre-hides the
+      specimen plate under the booth; `release()` swaps it to `spec-set` so
+      the pulls run right after the flood — the shop finishes the sheet.
+      hero-set never arms there; the amp reel/cede machinery is untouched
+      (verified: full no-skip flight green, & seats, zero errors).
+    - **Discipline:** all transform/opacity, vars written once at arm time,
+      zero reads in any loop; mess-enter disarms everything (setProof →
+      `disarmSetting`) so `.final` dims; reduced/`?still`/no-js/print ship
+      visible (belt-and-braces force rules in the reduce + print blocks).
+      `rise` renamed `setdown` and re-voiced (down, not up) for all fixed
+      chrome; the ticker's load rise removed (the scroll SETTING owns it).
+    Verified headless (Playwright, real rAF — scratchpad suites
+    `verify-setting.js` + `verify-flight-perf.js`): 46/46 across return-visit
+    entrance (words land ±0.05° of splay), specimen/tonebar/foldline, sheet
+    kick + W.L.L., trail (2026 last, ground drawn, legend), yard inertness,
+    mess disarm, reduced/still/loader/mobile-390 paths; 6/6 full flight +
+    frame health (60fps, worst 17.6ms through the stone-land while
+    scrolling); zero console errors everywhere. FEEL tuning (kick size, pull
+    rhythm) needs a real browser per the §5 pane quirk.
+
+31. (branch `prototypes-searchlight`, July 14) **SIDE B CATCHES UP — the mess
+    reflects the v3 page, and gets messier on purpose.** Mark: *"a lot of the
+    content on main page has changed… make changes to reflect the content…
+    be bold, the point is to show the realistic part of day to day like its
+    a mess nothing goes linearly, add more doodles… fix some of the circles
+    also like the circle on hero on the Amp its a much different Amp."*
+    - **The amp circle fits the monument (`positionAnchors` + `handLoopD`).**
+      The old 180×120 oval floated over the giant &'s waist, circling
+      nothing. Now the journaling loop is REDRAWN AT GLYPH SIZE per measure
+      (box = amp rect ×1.24/×1.06, seeded hand wobble, viewBox rebuilt).
+      GOTCHA RECORDED: stretching the old path with `preserveAspectRatio:
+      none` + `vector-effect: non-scaling-stroke` BREAKS the `pathLength=1`
+      dash draw-in in chromium (dash pattern goes screen-space) — the loop
+      only half-drew. Regenerating the `d` at target size is the fix.
+      Captions ride the loop's corners (`.ac-1/2/3`; new third line: "(it's
+      30vw now. we're past help.)").
+    - **The desk underline hugs the word (`positionAnchors`).** `#deskw` is
+      `display:block` in v3, so its rect spanned the whole lockup column —
+      the pen stroke ran across the page (fat, ~1050px). Now it measures the
+      `.ch` GLYPH RUN (first-left → last-right) and rotates to the run's own
+      measured angle, so the underline rides MY DESK's +1.8° splay and a
+      re-tuned `--rest` can't strand it.
+    - **Stale notes re-inked:** "0.84 line-height" (dead since v3) → "the
+      words sit crooked. −3° and +1.8°. measured. on purpose. leave them.";
+      bio bracket 26ch → "38ch on the long line." (the new bio's longest
+      nowrap line — recounted, of course); "do not scale. final size." gains
+      the 2am confession "(it's four times bigger now.)" + a graphite arrow
+      up at the &. The fav ring re-anchored to the hung sheet's strip
+      (bottom 4.5rem — it was circling the description, not the 03); the
+      moon moved off the new EMAIL tab (top 6% / right 34%).
+    - **New margins (nothing goes linearly):** the VERSION LEDGER under the
+      REJECTED drafts — "THIS SITE, SO FAR — v1 · too safe / v2 · too loud /
+      v3 · died at 90% / v4 · you're on it / (define "done")" — two ledgers
+      of dead attempts in one corner; the out-of-order day log on the index
+      margin ("23:58 — fixed the kerning." ABOVE "09:12 — it wasn't fixed."
+      + a frustration burst); the PEN TEST scribble at the desk ("new pen.
+      testing, testing. it's fine."); the coffee recount "31 + 28 + 35 = 94.
+      recounted. twice." directly under "lost count in march."; "ship v4"
+      struck on the TODAY card; the scribbled-out cairn sketch in the yard
+      ("tried to sketch the cairn. can't. it won't sit still." — it topples;
+      it wouldn't pose), placed LEFT of the tower because the right band
+      belongs to the fixed stamp/knows-note column at most scrolls; the
+      maker's mark fact-check in the outro ("it scans. tested it at 3am. /
+      it just says my name." + graphite arrow).
+    - All new notes are mess-only, two-pen voiced, seeded-tilted, non-ladder
+      delays, draw in per viewport via the existing observer, and are hidden
+      ≤1100px with the other delicate notes (pocket proof holds 390/390).
+    Verified headless (scratchpad `verify-sideb.js`, real rAF): 28/28 —
+    circle sized/centred on the & (d=0.0) + re-fits on resize, underline =
+    glyph run ±4px at the measured lean, all 12 new notes present + draw in,
+    ledger strikes 3, night inked, mobile trims + no x-overflow, zero
+    console errors; plus the existing suites re-run green (46/46 setting,
+    6/6 flight/perf — the loader path, which calls positionAnchors at land,
+    is untouched). Suite gotcha reconfirmed: tests must scroll with
+    `scrollBehavior: auto` — the site's smooth scroll makes "wait then
+    measure" race the travel (§7 #21's flake, hit again).
+    OPEN QUESTION (asked, answer delivered in chat): whether the amp
+    roulette finale survives the v3 monument & — recommendation was to
+    retire the reel and let the & arrive by seat/impression (one motion law),
+    keeping `sndSlam`; Mark decides.
 
 ## 8. Ideas discussed but not built (fair game later)
 

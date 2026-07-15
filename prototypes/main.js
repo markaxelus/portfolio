@@ -540,7 +540,7 @@
     ],
     sheets: [
       { s: 0, t: 0.24, w: 0.215, drop: 0.012, lean: -1.1, z: 3 },
-      { s: 0, t: 0.63, w: 0.150, drop: 0.085, lean:  0.8, z: 4 },
+      { s: 0, t: 0.72, w: 0.150, drop: 0.085, lean:  0.8, z: 4 },
       { s: 1, t: 0.42, w: 0.235, drop: 0.030, lean: -0.5, z: 2 },
       { s: 1, t: 0.80, w: 0.165, drop: 0.060, lean:  1.6, z: 3 }
     ],
@@ -582,10 +582,23 @@
     var mobileLine = vw <= 820;
     var GEO = mobileLine ? LINE_GEO_M : LINE_GEO_D;
 
-    indexEl.style.height = Math.round(GEO.height(vw, vh)) + "px";
+    /* reserve a header band so the topmost sheet's clip never rises into the
+       SELECTED WORK / "THE RUN…" heading. measure the heading, then push the
+       WHOLE hang down by exactly the deficit — headroom is 0 whenever the tuned
+       composition already clears the text (so nothing moves at the sizes it was
+       tuned against), and grows only as the heading wraps on narrower screens.
+       geometry math stays in BHgeo units; headroom is a constant y-offset. */
+    var BHgeo = Math.round(GEO.height(vw, vh));
+    var headEl = indexEl.querySelector(".index-sub") || indexEl.querySelector(".index-head");
+    var headBottom = headEl ? (headEl.offsetTop + headEl.offsetHeight) : 0;
+    var HEAD_GAP = Math.round(Math.min(vw, vh) * 0.02) + 14;
+    var topFrac = 1;
+    GEO.spans.forEach(function (s) { topFrac = Math.min(topFrac, s.a[1], s.b[1]); });
+    var headroom = Math.max(0, (headBottom + HEAD_GAP) - topFrac * BHgeo);
+    var BH = BHgeo + headroom;
+    indexEl.style.height = BH + "px";
     /* reads happen here, in one place, never in the loop */
     var W = indexEl.clientWidth;
-    var BH = indexEl.clientHeight;
     var idxRect = indexEl.getBoundingClientRect();
     var idxTop = idxRect.top + scrollY;
     var idxLeft = idxRect.left + scrollX;
@@ -593,9 +606,9 @@
     /* ---- the wire + hardware ---- */
     lineWireEl.setAttribute("viewBox", "0 0 " + W + " " + BH);
     var spansPx = GEO.spans.map(function (s) {
-      var p0 = { x: s.a[0] * W, y: s.a[1] * BH };
-      var p1 = { x: s.b[0] * W, y: s.b[1] * BH };
-      var c = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 + s.sag * BH };
+      var p0 = { x: s.a[0] * W, y: s.a[1] * BHgeo + headroom };
+      var p1 = { x: s.b[0] * W, y: s.b[1] * BHgeo + headroom };
+      var c = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 + s.sag * BHgeo };
       return { p0: p0, p1: p1, c: c };
     });
     var svg = "";
@@ -640,7 +653,7 @@
       var sp = spansPx[def.s];
       var wp = lineQ(sp.p0, sp.c, sp.p1, def.t);        /* on the wire */
       var w = Math.min(def.w * W, 560);
-      var clipY = wp.y + def.drop * BH;                  /* the clip, below the cord */
+      var clipY = wp.y + def.drop * BHgeo;               /* the clip, below the cord */
       /* the drop-cord + its ring on the wire */
       svg += '<circle class="hw dot" cx="' + wp.x.toFixed(1) + '" cy="' + wp.y.toFixed(1) + '" r="2.2"/>' +
              '<line class="cord" x1="' + wp.x.toFixed(1) + '" y1="' + wp.y.toFixed(1) +
@@ -668,15 +681,20 @@
     lineWireEl.innerHTML = svg;
 
     /* the instrument + the dock */
+    /* the instrument reads the line from a right-aligned readout tucked in the
+       header band — a fixed clear pocket ABOVE the first sheet, so it can't land
+       on a card at any width (it used to sit at a fixed body fraction, GEO.wll,
+       and collided with whichever sheet hung there). GEO.wll is now unused. */
     if (lineWllEl) {
-      lineWllEl.style.left = Math.round(GEO.wll.x * W) + "px";
-      lineWllEl.style.top = Math.round(GEO.wll.y * BH) + "px";
+      lineWllEl.style.left = "auto";
+      lineWllEl.style.right = Math.round(Math.max(12, W * 0.02)) + "px";
+      lineWllEl.style.top = Math.round(headBottom + Math.round(HEAD_GAP * 0.45)) + "px";
     }
     if (lineDockEl) {
       lineDockEl.style.left = Math.round(GEO.dock.x * W) + "px";
-      lineDockEl.style.top = Math.round(GEO.dock.y * BH) + "px";
+      lineDockEl.style.top = Math.round(GEO.dock.y * BHgeo + headroom) + "px";
       lineDockEl.style.width = Math.round(Math.min(GEO.dock.w * W, 420)) + "px";
-      lineDockEl.style.height = Math.round(GEO.dock.h * BH) + "px";
+      lineDockEl.style.height = Math.round(GEO.dock.h * BHgeo) + "px";
     }
 
     /* the cat sits on the wire now (mess layer; she just exists) */
@@ -1382,17 +1400,57 @@
   var amarkWrite = document.getElementById("amark-write");
   var outroEl = document.querySelector(".outro");
 
+  /* a journaling loop drawn by hand: 1.15 turns of a jittered ellipse,
+     smoothed the same way the thought-thread is. seeded — same hand,
+     any glyph size. local coords; pathLength=1 on the element keeps the
+     draw-in working at every scale. */
+  function handLoopD(cx, cy, rx, ry, seed) {
+    var rnd = mulberry32(seed);
+    var pts = [], N = 11, steps = Math.floor(N * 1.15);
+    var a0 = -Math.PI * 0.62 + (rnd() - 0.5) * 0.3;
+    for (var i = 0; i <= steps; i++) {
+      var a = a0 + (i / N) * Math.PI * 2;
+      pts.push([cx + Math.cos(a) * rx * (1 + (rnd() - 0.5) * 0.09),
+                cy + Math.sin(a) * ry * (1 + (rnd() - 0.5) * 0.09)]);
+    }
+    var d = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1);
+    for (var j = 1; j < pts.length - 1; j++) {
+      d += " Q" + pts[j][0].toFixed(1) + " " + pts[j][1].toFixed(1) +
+           " " + ((pts[j][0] + pts[j + 1][0]) / 2).toFixed(1) +
+           " " + ((pts[j][1] + pts[j + 1][1]) / 2).toFixed(1);
+    }
+    return d;
+  }
+
   function positionAnchors() {
     measureHeroGate();
     /* the hand on the finished page: underline + circle — the pen underlines
-       "my desk" (the site's true address; the 2am self would, wouldn't it) */
+       "my desk" (the site's true address; the 2am self would, wouldn't it).
+       GOTCHA: the v3 words are display:block, so the element rect spans the
+       whole lockup column — measure the GLYPH RUN (.ch spans) instead, and
+       let the underline ride the sort's own splay (angle read from the run,
+       not hardcoded, so a re-tuned --rest can't strand the pen). */
     if (amarkDesk && deskEl) {
       var hr0 = heroEl.getBoundingClientRect();
-      var nr = deskEl.getBoundingClientRect();
-      amarkDesk.style.left = (nr.left - hr0.left + nr.width * 0.06) + "px";
+      var dchs = deskEl.querySelectorAll(".ch");
+      var nr, lean = 0;
+      if (dchs.length > 1) {
+        var fr = dchs[0].getBoundingClientRect();
+        var lr = dchs[dchs.length - 1].getBoundingClientRect();
+        nr = { left: fr.left, width: lr.right - fr.left,
+               bottom: (fr.bottom + lr.bottom) / 2,
+               height: Math.max(fr.height, lr.height) };
+        lean = Math.atan2((lr.top + lr.bottom) / 2 - (fr.top + fr.bottom) / 2,
+                          (lr.left + lr.right) / 2 - (fr.left + fr.right) / 2) * 180 / Math.PI;
+      } else {
+        nr = deskEl.getBoundingClientRect();
+      }
+      amarkDesk.style.left = (nr.left - hr0.left + nr.width * 0.03) + "px";
       amarkDesk.style.top = (nr.bottom - hr0.top - nr.height * 0.02) + "px";
-      amarkDesk.style.width = (nr.width * 0.92) + "px";
+      amarkDesk.style.width = (nr.width * 0.96) + "px";
       amarkDesk.style.height = Math.max(10, nr.width * 0.055) + "px";
+      amarkDesk.style.transformOrigin = "left center";
+      amarkDesk.style.transform = "rotate(" + lean.toFixed(2) + "deg)";
     }
     if (amarkWrite && writeEl && outroEl) {
       var or = outroEl.getBoundingClientRect();
@@ -1405,11 +1463,27 @@
     if (!document.body.classList.contains("proof")) return;
     var hr = heroEl.getBoundingClientRect();
     if (anchorAmp && ampEl) {
+      /* the v3 amp is a monument (up to ~36rem) — the journaling circle is
+         REDRAWN AT GLYPH SIZE, not a stretched 180px oval (a scaled path +
+         non-scaling-stroke breaks the pathLength dash draw-in in chromium).
+         hand wobble is seeded, so the loop is the same hand every load. */
       var ar = ampEl.getBoundingClientRect();
+      var aw = ar.width * 1.24, ah = ar.height * 1.08;
       var cx = ar.left + ar.width / 2 - hr.left;
       var cy = ar.top + ar.height / 2 - hr.top;
-      anchorAmp.style.left = Math.max(8, cx - 90) + "px";
-      anchorAmp.style.top = Math.max(8, cy - 64) + "px";
+      anchorAmp.style.width = aw + "px";
+      anchorAmp.style.height = ah + "px";
+      anchorAmp.style.left = Math.max(4, cx - aw / 2) + "px";
+      anchorAmp.style.top = Math.max(4, cy - ah / 2 - ar.height * 0.02) + "px";
+      var svg = anchorAmp.querySelector("svg");
+      if (svg) {
+        svg.setAttribute("viewBox", "0 0 " + Math.round(aw) + " " + Math.round(ah));
+        var paths = svg.querySelectorAll("path");
+        var mainD = handLoopD(aw / 2, ah / 2, aw * 0.46, ah * 0.44, 11);
+        var echoD = handLoopD(aw / 2 + aw * 0.012, ah / 2 + ah * 0.02, aw * 0.44, ah * 0.415, 23);
+        if (paths[0]) paths[0].setAttribute("d", mainD);
+        if (paths[1]) paths[1].setAttribute("d", echoD);
+      }
     }
     if (anchorBio && bioEl) {
       var br = bioEl.getBoundingClientRect();
@@ -1447,11 +1521,13 @@
     });
   }
 
+  var disarmSetting = null; /* assigned by initSetting; strips the reveal in mess */
   function setProof(on) {
     document.body.classList.toggle("proof", on);
     proofBtn.setAttribute("aria-pressed", String(on));
     proofBtn.textContent = on ? "OK, ENOUGH" : "SEE THE MESS";
     if (on) {
+      if (disarmSetting) disarmSetting(); /* the reveal lets go so .final can dim */
       strikeAll(true); /* you can't annotate unprinted paper */
       regHardZero();   /* the desk holds still */
       chars.forEach(function (c) {
@@ -1561,16 +1637,31 @@
   }
   buildTerrain();
   buildThread();
-  /* re-measure once the hero settles (proof may open mid-entrance) */
-  var lastLine = document.querySelector(".hl-mask:last-child .hl");
-  if (lastLine) lastLine.addEventListener("animationend", positionAnchors, { once: true });
   positionAnchors();
 
-  /* the entrance masks release once the lines land, so commas and
-     descenders render whole (they only exist for the rise) */
-  function releaseMasks() { heroTitleEl.classList.add("landed"); }
-  if (lastLine && !stillMode && !reduced()) {
-    lastLine.addEventListener("animationend", releaseMasks, { once: true });
+  /* the hero lands once its entrance settles (the v3 lockup's last word,
+     or the old .hl lines if they ever return). when NO entrance runs on
+     the lockup — the loader owns first visits, reduced/?still ship
+     settled — the failsafe lands it well before the amp reel needs
+     .landed. releaseMasks is idempotent; it also re-measures the anchors
+     so the mess marks aim at the RESTED type, not a mid-flight rect. */
+  var lastSet = document.querySelector(".hero-title.v3 .v3-desk") ||
+                document.querySelector(".hl-mask:last-child .hl");
+  var heroLanded = false;
+  function releaseMasks() {
+    if (heroLanded) return;
+    heroLanded = true;
+    heroTitleEl.classList.add("landed");
+    positionAnchors();
+  }
+  if (lastSet && !stillMode && !reduced()) {
+    /* animationend bubbles (a child .ch rattle would fire it) — only the
+       word's own entrance counts */
+    lastSet.addEventListener("animationend", function onLand(e) {
+      if (e.target !== lastSet) return;
+      lastSet.removeEventListener("animationend", onLand);
+      releaseMasks();
+    });
     setTimeout(releaseMasks, 2400); /* belt and braces */
   } else {
     releaseMasks();
@@ -1632,6 +1723,8 @@
     var path = document.createElementNS(SVG_NS, "path");
     path.setAttribute("class", "ground");
     path.setAttribute("d", d);
+    /* normalized length so the SETTING's draw-in is plain dash math */
+    path.setAttribute("pathLength", "1");
     svg.appendChild(path);
   }
 
@@ -2164,6 +2257,10 @@
     try { seen = !!sessionStorage.getItem("ma-press-check"); } catch (e) {}
     if (seen || reduced() || stillMode) { mrEl.remove(); mrEl = null; return; }
     mrRan = true;
+    /* pre-hide the specimen plate under the booth: the flood reveals a
+       settled sheet, then the shop finishes it — the pulls run at release
+       (spec-armed → spec-set), never a flash of already-there glyphs */
+    document.body.classList.add("spec-armed");
     /* the & is the loader's finale, ONE element the whole way: at the relax the
        loader cedes it to __ampFly — a fixed native-size reel that takes the lockup
        amp's exact spot (first frame: the same &), starts rolling as it flies the
@@ -2418,6 +2515,10 @@
       if (released || !mrEl) return;
       released = true;
       mrEl.classList.add("out");
+      /* the flood is under way — the shop pulls the specimen onto the
+         finished sheet (THE SETTING's first-visit path) */
+      document.body.classList.remove("spec-armed");
+      document.body.classList.add("spec-set");
       failsafeT = setTimeout(failsafeAmpReveal, 3500); /* the slot is never left empty */
       setTimeout(function () {
         if (mrEl) { mrEl.remove(); mrEl = null; }
@@ -2608,6 +2709,255 @@
     }
   })();
   colophonPulled();
+
+  /* ============ THE SETTING (main page reveal) ============
+     the strike is ink; this is MATTER, and matter arrives by hand — set
+     DOWN onto the sheet, dropped (stones), hung (the work sheets get a
+     real draft impulse through the line physics), pulled (the specimen,
+     size by size). nothing floats up: fade-up is the one gesture that
+     belongs to no print shop.
+     asymmetry is the law: every arrival is jittered by a per-load seed —
+     drop height, duration, delay, occasional lateral vector or a lean
+     that settles true — so no two elements move identically and no two
+     loads are identical. destinations are always exact (motivated
+     asymmetry; no resting tilts).
+     NOT persisted — replays every load; fires once per element per load
+     (unobserve on entry). armed only when motion is on; no-js / reduced /
+     ?still / print ship visible. all transform+opacity; zero reads in any
+     loop (vars are written once at arm time). */
+  (function initSetting() {
+    if (stillMode || reduced()) return;                    /* ship visible */
+    var srnd = mulberry32((Date.now() & 0xfffff) >>> 0);   /* this load's hand */
+    function rj(a, b) { return a + srnd() * (b - a); }
+    function pick(arr) { return arr[Math.floor(srnd() * arr.length)]; }
+
+    var armed = [];                                        /* elements holding set classes */
+    var bodyCls = [];                                      /* body-level arms */
+    function arm(el, cls, vars) {
+      if (!el) return null;
+      el.classList.add(cls);
+      if (vars) for (var k in vars) el.style.setProperty(k, vars[k]);
+      armed.push(el);
+      return el;
+    }
+    /* one element's seeded arrival: its own drop, its own clock. every
+       third or so arrives with a whisper of lateral or lean that settles
+       to true — the hand never places two sorts identically. */
+    function setVars(extra) {
+      var v = {
+        "--sy": rj(-24, -10).toFixed(1) + "px",
+        "--sdur": rj(0.42, 0.62).toFixed(2) + "s",
+        "--sd": rj(0, 0.12).toFixed(2) + "s"
+      };
+      if (srnd() < 0.35) v["--sx"] = (pick([-1, 1]) * rj(3, 7)).toFixed(1) + "px";
+      if (srnd() < 0.3) v["--sr"] = (pick([-1, 1]) * rj(0.3, 0.7)).toFixed(2) + "deg";
+      if (extra) for (var k in extra) v[k] = extra[k];
+      return v;
+    }
+
+    /* ---- singles: each sets on its own seeded clock ---- */
+    [".ticker", ".trail-frame", ".index-head", ".index-sub", ".desk-head",
+     ".yard-head", ".outro-title"].forEach(function (sel) {
+      arm(document.querySelector(sel), "set-in", setVars());
+    });
+    /* the operator's plate is the heaviest single on the page */
+    arm(document.querySelector("#op"), "set-in",
+        setVars({ "--sy": "-26px", "--sdur": "0.64s" }));
+
+    /* ---- groups: seeded, NON-monotonic — tossed on, not dealt ---- */
+    function armGroup(sel, spread) {
+      var els = Array.prototype.slice.call(document.querySelectorAll(sel));
+      var order = els.map(function (_, i) { return i; });
+      for (var i = order.length - 1; i > 0; i--) {         /* seeded shuffle */
+        var j = Math.floor(srnd() * (i + 1)), t = order[i];
+        order[i] = order[j]; order[j] = t;
+      }
+      els.forEach(function (el, i) {
+        arm(el, "set-in", setVars({
+          "--sd": (order[i] * (spread / Math.max(1, els.length)) + rj(0, 0.05)).toFixed(2) + "s"
+        }));
+      });
+    }
+    armGroup(".desk-rows .desk-row", 0.3);
+    armGroup(".check-pair, .outro-links, .colophon", 0.34);
+
+    /* ---- the hanging sheets: fade in + a DRAFT KICK through the real
+       physics — each swings from being just-hung and settles per its own
+       pendulum. the instrument reads the load once per visit. ---- */
+    var wllBlipped = false;
+    function kickSheet(row) {
+      var it = (typeof lineItems !== "undefined") && lineItems[+row.dataset.plate];
+      if (!it || it.drag) return;
+      /* a real swing that DIES languid — stronger than a neighbor kick,
+         well under a hand pull */
+      it.du += pick([-1, 1]) * rj(0.6, 1.3);
+      if (!wllBlipped && lineWllEl) {
+        wllBlipped = true;
+        lineWllEl.innerHTML = "[W.L.L.] TAKING THE LOAD — <em>HELD</em>";
+        lineWllEl.classList.add("blip");
+        clearTimeout(lineWllEl._t);
+        lineWllEl._t = setTimeout(function () {
+          lineWllEl.innerHTML = "[W.L.L.] 04 SHEETS — <em>HOLDS</em>";
+          lineWllEl.classList.remove("blip");
+        }, 1700);
+      }
+    }
+    ["#p-01", "#p-02", "#p-03", "#p-04", ".line-dock"].forEach(function (sel) {
+      arm(document.querySelector(sel), "set-fade");
+    });
+    arm(document.querySelector(".yard-ground"), "set-fade");
+
+    /* ---- the trail: stones LAND (L→R, jittered, 2026 last), then the
+       ground line draws through their bases, then the legend sets ---- */
+    var trailEl2 = document.querySelector(".trail");
+    /* the choreo must fire off the STONES themselves, not the section top —
+       the stones sit low in the .trail block, so keying on the section made
+       them land while still below the fold (you scrolled down to a finished
+       pile). observe .terrain-stones so the fall plays as it enters view. */
+    var trailTrig = trailEl2 && trailEl2.querySelector(".terrain-stones");
+    var trailDone = false;
+    if (trailEl2) {
+      arm(trailEl2, "stones-armed");
+      Array.prototype.forEach.call(
+        trailEl2.querySelectorAll(".mile-label"),
+        function (el) { arm(el, "set-in", setVars({ "--sd": rj(0, 0.3).toFixed(2) + "s" })); }
+      );
+    }
+    function trailChoreo() {
+      if (trailDone || !trailEl2) return;
+      trailDone = true;
+      var maxD = 0;
+      var slots = trailEl2.querySelectorAll(".terrain-stones .stone-slot");
+      Array.prototype.forEach.call(slots, function (slot, i) {
+        var st = slot.querySelector(".mile-stone");
+        if (!st) return;
+        var d = slot.classList.contains("is-now")
+          ? 0 /* assigned after the loop — the present lands last */
+          : i * 0.11 + rj(-0.05, 0.05);
+        st.style.setProperty("--sd", Math.max(0, d).toFixed(2) + "s");
+        maxD = Math.max(maxD, d);
+      });
+      var now = trailEl2.querySelector(".stone-slot.is-now .mile-stone");
+      if (now) { maxD += 0.16; now.style.setProperty("--sd", maxD.toFixed(2) + "s"); }
+      trailEl2.classList.add("stones-go");
+      /* the ground is measured only through LANDED stones — re-measure once
+         they're seated (a resize mid-fall would have caught a stone in the
+         air), then draw a frame later so the dash transition has a start */
+      setTimeout(function () {
+        if (!trailEl2.classList.contains("stones-armed")) return; /* disarmed */
+        buildTerrain();
+        requestAnimationFrame(function () {
+          if (!trailEl2.classList.contains("stones-armed")) return;
+          trailEl2.classList.add("ground-drawn");
+          Array.prototype.forEach.call(
+            trailEl2.querySelectorAll(".mile-label.set-in"),
+            function (el) { el.classList.add("set-go"); }
+          );
+        });
+      }, (maxD + 0.55) * 1000 + 150);
+    }
+
+    /* ---- the yard: the cairn is stacked stone by stone (house bottom-up,
+       the ground scatter, then the visitors' tower). the choreography
+       classes are stripped after the land so renderCairn re-runs (a new
+       stone, a topple) stay inert. ---- */
+    var yardEl2 = document.querySelector(".yard");
+    var yardDone = false;
+    if (yardEl2) arm(yardEl2, "stones-armed");
+    function yardChoreo() {
+      if (yardDone || !yardEl2) return;
+      yardDone = true;
+      var inners = yardEl2.querySelectorAll("#pile .stone-inner");
+      var maxD = 0;
+      Array.prototype.forEach.call(inners, function (inner, i) {
+        var d = i * 0.07 + rj(0, 0.06);
+        inner.style.setProperty("--sd", d.toFixed(2) + "s");
+        maxD = Math.max(maxD, d);
+      });
+      yardEl2.classList.add("stones-go");
+      setTimeout(function () {
+        yardEl2.classList.remove("stones-armed", "stones-go");
+        Array.prototype.forEach.call(inners, function (inner) {
+          inner.style.removeProperty("--sd");
+        });
+      }, (maxD + 0.55) * 1000 + 100);
+    }
+
+    /* ---- first-load hero: the lockup is set by hand, the furniture
+       chatters in around it — ONLY when the loader didn't run (the
+       flight is the entrance when it did; see body.spec-armed there) */
+    if (!mrRan) {
+      document.body.classList.add("hero-set", "spec-set");
+      bodyCls.push("hero-set", "spec-set");
+      var eyeEl = document.querySelector(".eyebrow");
+      if (eyeEl) eyeEl.style.setProperty("--sd", rj(0.8, 1.15).toFixed(2) + "s");
+      var bioEl = document.querySelector(".hero-bio");
+      if (bioEl) bioEl.style.setProperty("--sd", rj(0.9, 1.3).toFixed(2) + "s");
+      [".d-cluster .decode", ".d-scatter", ".d-cross", ".d-run",
+       ".loose-decal", ".plates-decal"].forEach(function (sel) {
+        Array.prototype.forEach.call(document.querySelectorAll(sel), function (el) {
+          el.style.setProperty("--sd", rj(1.0, 1.85).toFixed(2) + "s");
+        });
+      });
+    }
+    /* the specimen pulls run on BOTH paths (init here, at release when the
+       loader ran) — the vars are seeded either way. smallest first,
+       accelerating into the 144pt accent one, which lands last and heaviest */
+    var pullBase = [0.32, 0.48, 0.62, 0.76, 0.98];
+    Array.prototype.forEach.call(document.querySelectorAll(".spec-amp"), function (el, i) {
+      el.style.setProperty("--sd", (pullBase[Math.min(i, 4)] + rj(-0.04, 0.04)).toFixed(2) + "s");
+      if (el.classList.contains("s5")) el.style.setProperty("--sdur", "0.62s");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".tonebar i"), function (el, i) {
+      el.style.setProperty("--sd", (0.5 + i * 0.055).toFixed(2) + "s"); /* the ramp: machine-linear on purpose */
+    });
+
+    var io = null;
+    /* disarm = strip the setting entirely so each element reverts to its
+       natural (or .final mess-dimmed) opacity. used on mess-enter and when
+       reduced motion is switched on mid-session. */
+    disarmSetting = function () {
+      if (io) { io.disconnect(); io = null; }
+      armed.forEach(function (el) {
+        el.classList.remove("set-in", "set-fade", "set-go",
+                            "stones-armed", "stones-go", "ground-drawn");
+      });
+      bodyCls.forEach(function (c) { document.body.classList.remove(c); });
+      document.body.classList.remove("spec-set", "spec-armed");
+    };
+    /* arriving straight in the mess (or no observer support): ship settled */
+    if (document.body.classList.contains("proof") || !("IntersectionObserver" in window)) {
+      disarmSetting();
+      return;
+    }
+    io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var el = en.target;
+        io.unobserve(el);
+        if (el === trailTrig) { trailChoreo(); return; }
+        if (el === yardEl2) { yardChoreo(); return; }
+        el.classList.add("set-go");
+        if (el.classList.contains("row") && !reduced()) kickSheet(el);
+      });
+    }, { rootMargin: "0px 0px -12% 0px" });                /* fire as it enters (~12% up from the bottom) */
+    armed.forEach(function (el) {
+      /* legend labels wait for the ground, not the viewport */
+      if (el.classList.contains("mile-label")) return;
+      /* the trail is triggered by its stones (below), not the section top */
+      if (el === trailEl2) return;
+      io.observe(el);
+    });
+    if (trailTrig) io.observe(trailTrig);
+    /* a proof pulls everything at once, and reduced motion drops it */
+    addEventListener("beforeprint", function () {
+      armed.forEach(function (el) { el.classList.add("set-go"); });
+      trailChoreo(); yardChoreo();
+    });
+    if (mqReduce.addEventListener) {
+      mqReduce.addEventListener("change", function () { if (reduced()) disarmSetting(); });
+    }
+  })();
 
   /* ============ hold register: true only when you are still ============ */
   /* one global registration-error scalar, written in the existing scroll
@@ -2963,6 +3313,38 @@
     jlThumb.addEventListener("pointercancel", jlEndDrag);
   }
   updateJoblogBar();
+
+  /* ============ the maker's mark: the job-code device ============ */
+  /* a coarse Data-Matrix-style grid — gapped chunky modules (decorative, not a live
+     code), painted twice: an off-register red pass behind, the ink pass on top. the
+     approved widget look. modules touch the sheet's own inks (var(--ink)/(--pencil)),
+     so day and night both read. */
+  (function buildPressmark() {
+    var ink = document.getElementById("pm-cells");
+    if (!ink) return;
+    var P = ["10101010", "11010011", "10110100", "11001101",
+             "10100110", "11011001", "10010100", "11111111"];
+    var ns = "http://www.w3.org/2000/svg", s = 11, sz = 9;   /* 11px pitch, 9px module → 2px gap */
+    function paint(host) {
+      if (!host) return;
+      var frag = document.createDocumentFragment();
+      for (var r = 0; r < P.length; r++) {
+        for (var c = 0; c < P[r].length; c++) {
+          if (P[r].charAt(c) === "1") {
+            var rect = document.createElementNS(ns, "rect");
+            rect.setAttribute("x", c * s);
+            rect.setAttribute("y", r * s);
+            rect.setAttribute("width", sz);
+            rect.setAttribute("height", sz);
+            frag.appendChild(rect);
+          }
+        }
+      }
+      host.appendChild(frag);
+    }
+    paint(document.getElementById("pm-ghost"));   /* off-register red pass, drawn behind */
+    paint(ink);
+  })();
 
   /* ============ the tab misses you ============ */
   var baseTitle = document.title;

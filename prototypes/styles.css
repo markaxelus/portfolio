@@ -184,7 +184,7 @@ button:focus-visible,
   /* softened via color, not opacity — the jobline needs a solid chip
      so the ticker can't shine through it */
   color: color-mix(in srgb, var(--ink) 55%, var(--stone));
-  animation: rise 0.6s var(--ease-out) 1.2s both;
+  animation: setdown 0.6s var(--ease-out) 1.2s both;
   transition: color 0.5s var(--ease-out);
 }
 .proof .sheet { color: var(--pencil); }
@@ -235,7 +235,7 @@ button:focus-visible,
   background: var(--stone);
   /* a visible tab, not wallpaper — these are controls */
   border: 1px solid var(--hairline);
-  animation: rise 0.6s var(--ease-out) 0.95s both;
+  animation: setdown 0.6s var(--ease-out) 0.95s both;
   transition:
     color 0.25s var(--ease-out),
     background-color 0.25s var(--ease-out),
@@ -269,9 +269,15 @@ button.corner {
   outline-offset: 2px;
 }
 .proof .corner.br { color: var(--pencil); border-color: var(--pencil); }
-@keyframes rise {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* THE SETTING — matter arrives by hand. nothing on this sheet floats UP
+   (that's the web's gesture, not the shop's): furniture is set DOWN onto
+   the paper with a breath of over-press, the way a sort is seated in the
+   chase. ink is a different law (the strike) and stays untouched. */
+@keyframes setdown {
+  0%   { opacity: 0; transform: translateY(-9px); }
+  55%  { opacity: 1; }
+  74%  { transform: translateY(1px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 /* ---------- page shell ---------- */
@@ -295,7 +301,9 @@ button.corner {
   grid-column: 1 / -1;
   color: var(--ink);
   opacity: 0.75;
-  animation: rise 0.6s var(--ease-out) 1s both;
+  /* --sd is seeded per load (js) — the furniture never lands in the same
+     order twice. the fallback keeps no-js/loader loads sane. */
+  animation: setdown 0.6s var(--ease-out) var(--sd, 1s) both;
 }
 .eyebrow em { font-style: normal; color: var(--accent); }
 
@@ -400,19 +408,80 @@ button.corner {
   font-size: clamp(2.8rem, 6.8vw, 7.4rem);
 }
 .hero-title.v3 .v3-word .ch { display: inline-block; }
-.hero-title.v3 .v3-mark { margin-left: clamp(2.5rem, 7vw, 7rem); }
-.hero-title.v3 .v3-desk { margin-left: clamp(6rem, 15vw, 15rem); }
+/* the two sorts sit in the stick like loosely-set type — NOT two flat stacked
+   lines (Mark: "too linear"). a real vertical gap, a wider offset delta, and a
+   slight splay (each sort leans its own way) break the linearity. angles stay
+   small and transform-origin sits at the left so the ragged margin holds and
+   the words never overflow the sheet. */
+.hero-title.v3 .v3-mark {
+  margin-left: clamp(1.5rem, 5vw, 5rem);
+  transform-origin: left center;
+  /* --rest = the sort's splay at rest; the entrance keyframes end on it */
+  --rest: rotate(-3deg);
+  transform: var(--rest);
+}
+.hero-title.v3 .v3-desk {
+  margin-left: clamp(7rem, 18vw, 18rem);
+  margin-top: clamp(0.8rem, 2.4vw, 2.4rem);
+  transform-origin: left center;
+  --rest: rotate(1.8deg);
+  transform: var(--rest);
+}
+
+/* ---- the lockup is set by hand (non-loader loads only — when the loader
+   runs, its flight IS the entrance and body.hero-set is never added).
+   the & is the heaviest sort so it seats first, with real weight; the two
+   words set over it, each arriving on its own vector (opposite laterals,
+   a touch more lean than their rest splay) and landing EXACTLY on their
+   splay — the variance is in the arrival, never the destination. ---- */
+body.hero-set .hero-title.v3 .amp {
+  animation: seat-amp 0.78s var(--ease-out) 0.12s both;
+}
+body.hero-set .hero-title.v3 .v3-mark {
+  --ax: -16px; --ay: -20px; --dl: -1.4deg;
+  animation: set-word 0.62s var(--ease-out) 0.38s both;
+}
+body.hero-set .hero-title.v3 .v3-desk {
+  --ax: 18px; --ay: -15px; --dl: 1.1deg;
+  animation: set-word 0.62s var(--ease-out) 0.55s both;
+}
+/* the &'s rest transform is translateY(3%) — keep these keyframes in sync
+   with .hero-title.v3 .amp above */
+@keyframes seat-amp {
+  0%   { opacity: 0; transform: translateY(calc(3% - 30px)) scale(1.035); }
+  60%  { opacity: 1; }
+  78%  { transform: translateY(calc(3% + 2px)) scale(1.004); }
+  100% { opacity: 1; transform: translateY(3%); }
+}
+@keyframes set-word {
+  0%   { opacity: 0; transform: translate(var(--ax, 0px), var(--ay, -18px)) var(--rest, translate(0, 0)) rotate(var(--dl, 0deg)); }
+  55%  { opacity: 1; }
+  76%  { transform: translate(0px, 1.6px) var(--rest, translate(0, 0)); }
+  100% { opacity: 1; transform: var(--rest, translate(0, 0)); }
+}
+/* the hero furniture chatters in around the lockup — seeded --sd from js,
+   never the same order twice. only on hero-set loads (under the loader the
+   furniture is long settled by the flood, which is correct: the loader
+   reveals a finished sheet). */
+body.hero-set .d-cluster .decode,
+body.hero-set .d-scatter,
+body.hero-set .d-cross,
+body.hero-set .d-run,
+body.hero-set .loose-decal,
+body.hero-set .plates-decal {
+  animation: setdown 0.5s var(--ease-out) var(--sd, 1.3s) both;
+}
 
 .hero-bio {
   grid-column: 2;
   grid-row: 2;
   align-self: end;
   justify-self: end;
-  max-width: 26ch;
+  width: min(28.7em, 90vw);
   margin-bottom: 0.5rem;
   text-align: left;
   opacity: 0.85;
-  animation: rise 0.6s var(--ease-out) 1.05s both;
+  animation: setdown 0.6s var(--ease-out) var(--sd, 1.05s) both;
 }
 .hero-bio .bio-rule {
   display: block;
@@ -431,7 +500,8 @@ button.corner {
   /* the hero is ~one viewport tall, so without this the marquee parks
      exactly at the fold on load, right where the jobline lives */
   margin-top: 10vh;
-  animation: rise 0.6s var(--ease-out) 1.1s both;
+  /* no load-time entrance — the ticker sits below the fold and the scroll
+     SETTING owns it (it used to run an invisible rise under the fold) */
   white-space: nowrap;
 }
 .ticker-track {
@@ -650,12 +720,27 @@ body.proof .op-candid { display: block; }
 .dd-cup { width: 54px; height: 62px; bottom: 8%; right: 22%; --tilt: 4deg; }
 .dd-tally { width: 90px; height: 30px; bottom: 12%; right: 12%; --tilt: -2deg; }
 .n-tally { bottom: 4%; right: 11%; font-size: 1.1rem; --tilt: -3deg; }
+/* he lost count in march. then recounted anyway. twice. */
+.n-cmath { bottom: 0.2%; right: 5.5%; font-size: 1.15rem; --tilt: 2deg; }
+/* the pen test: the corner where the red pen got scribbled back to life */
+.dd-pentest { width: 92px; height: 54px; bottom: 12%; left: 5%; --tilt: -3deg; }
+.n-pentest { bottom: 6%; left: 4.5%; font-size: 1.15rem; --tilt: 2deg; }
 .dd-spiral { width: 44px; height: 44px; top: 38%; left: 3%; --tilt: 0deg; }
 .n-time1 { top: 30%; left: 2.5%; font-size: 1.15rem; --tilt: -4deg; }
 .n-redo { top: 55%; left: 2%; max-width: 11rem; font-size: 1.15rem; --tilt: 3deg; }
+/* the day log runs down the margin OUT OF ORDER — midnight above morning.
+   nothing at this desk happens in a straight line. */
+.n-time2 { top: 67%; left: 2.2%; font-size: 1.05rem; --tilt: 2deg; }
+.n-time3 { top: 72%; left: 3.4%; font-size: 1.12rem; --tilt: -3deg; }
+.dd-burst { width: 30px; height: 30px; top: 71.2%; left: 1.2%; --tilt: 8deg; }
 .dd-zzz { width: 38px; height: 38px; top: -148px; right: calc(9% - 22px); --tilt: 6deg; }
-.dd-moon { width: 44px; height: 40px; top: 12%; right: 26%; --tilt: -6deg; }
+/* the moon cleared out when the EMAIL tab moved in under it */
+.dd-moon { width: 44px; height: 40px; top: 6%; right: 34%; --tilt: -6deg; }
 .dd-plane { width: 74px; height: 50px; bottom: 24%; right: 36%; --tilt: -4deg; }
+/* the maker's mark gets fact-checked (the 2am pen tested it, obviously) */
+.n-pm { right: 26%; bottom: 34%; text-align: right; --tilt: 1.6deg; }
+.dd-pm-arrow { width: 66px; height: 32px; right: 21.5%; bottom: 33%; --tilt: 0deg; }
+.dd-pm-arrow .draw { stroke: var(--graphite); }
 
 /* some doodles in pencil, some in pen */
 .scrawl.dd-zzz .draw, .scrawl.dd-moon .draw, .scrawl.dd-cup .draw {
@@ -927,13 +1012,16 @@ body.proof .op-candid { display: block; }
 /* ---------- outro ---------- */
 .outro {
   position: relative;
-  padding: 0 1.4vw 9vw;
+  padding: 0 1.4vw 80px;        /* clears the fixed SEE THE MESS corner (~62px tall) so the footer isn't on top of it */
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 2rem;
+  grid-template-columns: minmax(0, 1fr) clamp(360px, 26vw, 440px);
+  align-items: start;
+  column-gap: clamp(2rem, 5vw, 5rem);
+  row-gap: 1rem;
 }
 .outro-title {
+  grid-column: 1;
+  grid-row: 1;
   font-weight: 440;
   font-variation-settings: "opsz" 144;
   font-size: clamp(2.6rem, 7vw, 8rem);
@@ -942,8 +1030,7 @@ body.proof .op-candid { display: block; }
 }
 .outro-title a { border-bottom: 2px solid var(--accent); transition: color 0.4s var(--ease-out); }
 .outro-title a:hover { color: var(--accent); }
-.outro-meta { opacity: 0.8; text-align: right; }
-/* the two doors out — same tab language as the corners */
+/* the doors out — same tab language as the corners: email · github · linkedin */
 .outro-links {
   grid-column: 2;
   display: flex;
@@ -974,11 +1061,73 @@ body.proof .op-candid { display: block; }
   outline-offset: 2px;
 }
 .colophon {
-  grid-column: 2;
+  grid-column: 1 / -1;      /* full-width footer — no longer cramped in the rail */
   text-align: right;
   opacity: 0.72;
   font-size: 0.58rem;
 }
+
+/* ---------- the outro right rail: socials · maker's mark · colophon ----------
+   fills the void beside the check. socials stack (email on top), the mark sits
+   below them, the colophon rides the bottom. */
+.outro-rail {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: stretch;            /* fill the height of title + check ... */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;    /* ... contacts + mark ride HIGH in the rail */
+  gap: 1rem;
+  min-width: 0;
+}
+.outro-rail .outro-links {
+  flex-direction: column;      /* EMAIL on top, GITHUB + LINKEDIN paired below it */
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 70px 0 0;            /* nudged down off the very top — middle ground */
+  width: 100%;
+  max-width: 16rem;
+}
+.outro-rail .olink { justify-content: flex-start; }
+.olink-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+/* footer sits under the matrix in the rail, anchored to its right edge. it
+   SHRINKS TO FIT its own longest line so each markup line always holds ONE
+   length — nowrap + the widened rail column keep the fluid root scale from
+   growing the long line past its box and re-wrapping it (the tiny hang left at
+   the very narrowest 2-col widths stays inside the gutter, clear of the check).
+   the extra top margin gives the maker's mark a bit of air above the type. */
+.outro-rail .colophon {
+  width: auto;
+  align-self: flex-end;
+  text-align: right;
+  white-space: nowrap;
+  margin-top: calc(2.6rem + 10px);
+}
+
+/* THE MAKER'S MARK — a real Data Matrix (scan → email), off-square + off-register.
+   the code TILE is fixed dark-on-light so it scans in day AND night; the furniture
+   (brackets, labels, reg cross, acid tick) themes with the sheet. */
+.pressmark {
+  width: 100%;
+  max-width: 210px;
+  opacity: 0.92;
+  align-self: flex-end;             /* drifts to the rail's outer edge, away from the socials */
+  margin-right: 0.6rem;
+  transform: rotate(-3deg);         /* struck onto the sheet, not placed in a grid cell */
+  transform-origin: 60% 45%;
+}
+.pm-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.pm-code rect { fill: var(--ink); }
+.pm-ghost { opacity: 0.4; }                   /* the off-register red pass, behind the ink */
+.pm-ghost rect { fill: var(--pencil); }
+.pm-brk { fill: none; stroke: var(--ink); stroke-width: 1.4; }
+.pm-reg { fill: none; stroke: var(--accent); stroke-width: 1; }
+.pm-acid { fill: var(--acid); }
+.pm-lbl { font-family: "Space Mono", monospace; letter-spacing: 0.1em; }
+.pm-name { font-size: 9.5px; fill: var(--ink); }
+.pm-dim { font-size: 7px; fill: var(--graphite); }
+.pm-r { text-anchor: end; }
 
 /* ---------- cairn scroll indicator ---------- */
 .cairn-ind {
@@ -988,7 +1137,7 @@ body.proof .op-candid { display: block; }
   transform: translateY(-50%);
   z-index: 45;
   pointer-events: none;
-  animation: rise 0.6s var(--ease-out) 1.3s both;
+  animation: setdown 0.6s var(--ease-out) 1.3s both;
 }
 .cairn-ind svg { display: block; width: 34px; height: 94px; }
 .cairn-ind path {
@@ -1070,11 +1219,13 @@ body.has-cursor .plates-decal:hover { opacity: 1; color: var(--accent); }
 
 /* once the type is loose, the line masks let go */
 .type-loose .hl-mask { overflow: visible; clip-path: none; }
-.hl .ch { cursor: none; }
-.hl .ch.grabbed { transition: none; }
-.hl .ch.returning {
-  transition: transform 0.7s var(--ease-thunk);
-}
+/* the sorts are the .ch inside the v3 lockup (.amp / .v3-word) now, NOT the
+   old .hl lines — scope the loose-type + ink-pooling transitions to the hero
+   title itself, or a reset SNAPS home instead of travelling back, and the
+   swell loses its ease (the 0.28s hides the quantised weight steps). */
+.hero-title .ch { cursor: none; transition: font-variation-settings 0.28s var(--ease-out); }
+.hero-title .ch.grabbed { transition: none; }
+.hero-title .ch.returning { transition: transform 0.7s var(--ease-thunk); }
 .cursor.is-grab {
   width: 52px;
   height: 52px;
@@ -1202,6 +1353,15 @@ body.has-cursor .plates-decal:hover { opacity: 1; color: var(--accent); }
   user-select: none;
   -webkit-user-select: none;
   text-align: right;
+  /* the cascade's height is fixed (rem/vw-based, not vh-based) while the
+     bio below it is pinned to the bottom of a ~100vh hero — on a short
+     window (most non-maximized Mac browser windows land well under
+     980px tall) the two collide. Scale the whole plate down from its top
+     edge once the window gets shorter than a comfortable ~980px; at
+     980px+ (the height this was designed against) scale stays at 1, so
+     nothing changes on a normal full-height window. */
+  transform-origin: top right;
+  transform: scale(min(1, calc(100vh / 1060px)));
 }
 .spec-head {
   color: var(--graphite);
@@ -1294,6 +1454,46 @@ body.has-cursor .plates-decal:hover { opacity: 1; color: var(--accent); }
   letter-spacing: 0.2em;
 }
 
+/* ---- the specimen is PULLED, size by size (THE SETTING) ----
+   body.spec-set arms the choreography: the header rule ticks in, then the
+   & is pulled at every size — smallest first, the 144pt italic accent one
+   LAST and heaviest — each glyph's axis label chattering in just after its
+   pull. the tonebar inks its ramp step by step (machine-linear ON PURPOSE:
+   it is a calibration instrument; linearity is its job — the jitter lives
+   in the human elements). the foldline is scored down the sheet.
+   on plain loads spec-set arrives at init; when the loader ran it arrives
+   at release, so the shop finishes the sheet right after the flood
+   (body.spec-armed pre-hides the plate under the booth so nothing flashes
+   mid-reveal). --sd / --sdur are seeded inline by js. */
+body.spec-armed .spec-head, body.spec-armed .spec-amp,
+body.spec-armed .spec-foot, body.spec-armed .tonebar,
+body.spec-armed .foldline { opacity: 0; }
+body.spec-set .spec-head { animation: tickin 0.45s var(--ease-out) 0.15s both; }
+body.spec-set .spec-amp {
+  animation: pull-in var(--sdur, 0.5s) var(--ease-out) var(--sd, 0.4s) both;
+}
+body.spec-set .spec-amp i {
+  animation: tickin 0.4s var(--ease-out) calc(var(--sd, 0.4s) + 0.18s) both;
+}
+body.spec-set .spec-foot { animation: tickin 0.45s var(--ease-out) 1.35s both; }
+body.spec-set .tonebar { animation: tickin 0.25s var(--ease-out) 0.5s both; }
+body.spec-set .tonebar i { animation: ink-up 0.3s linear var(--sd, 0.5s) both; }
+body.spec-set .foldline {
+  transform-origin: top;
+  animation: score 0.7s var(--ease-out) 1.05s both;
+}
+body.spec-set .foldline i { animation: tickin 0.4s var(--ease-out) 1.55s both; }
+@keyframes pull-in {
+  0%   { opacity: 0; transform: translateY(-12px); }
+  55%  { opacity: 1; }
+  76%  { transform: translateY(1.2px); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes tickin { from { opacity: 0; } to { opacity: 1; } }
+/* the steps land on their own tone, not full ink */
+@keyframes ink-up { from { opacity: 0; } to { opacity: var(--t); } }
+@keyframes score { from { opacity: 0; transform: scaleY(0); } to { opacity: 1; transform: scaleY(1); } }
+
 /* grip tape — name running up the left edge */
 .tape {
   position: fixed;
@@ -1361,7 +1561,7 @@ body.has-cursor .plates-decal:hover { opacity: 1; color: var(--accent); }
   display: flex;
   gap: 3px;
   z-index: 55;
-  animation: rise 0.6s var(--ease-out) 1.2s both;
+  animation: setdown 0.6s var(--ease-out) 1.2s both;
 }
 .chips .chip-static {
   display: block;
@@ -1492,7 +1692,31 @@ body:not(.proof) .note { transition-delay: 0s; }
   --tilt: 1.2deg;
 }
 .drafts-head { color: var(--pencil); opacity: 0.85; margin-bottom: 0.3rem; }
-.n-lh { left: 45%; top: 42%; --tilt: -1deg; }
+.n-lh { left: 46%; top: 57%; --tilt: -1deg; }
+
+/* the version ledger — the bio says "fourth version this year"; the margins
+   keep the score, stacked right under the REJECTED drafts (two ledgers of
+   dead attempts, one corner of the sheet). */
+.versions {
+  right: 6.5%;
+  top: 53%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  max-width: 15rem;
+  --tilt: -1.4deg;
+}
+.vers-head { color: var(--pencil); opacity: 0.85; margin-bottom: 0.3rem; }
+
+/* the arrow from "do not scale" up at the & that got scaled anyway */
+.dd-nsarrow {
+  width: 58px;
+  height: 50px;
+  left: calc(var(--frame) + 17vw);
+  bottom: calc(6vh + 2.4rem);
+  --tilt: 0deg;
+}
+.dd-nsarrow .draw { stroke: var(--graphite); }
 
 /* JS-anchored callouts (positioned by main.js) */
 .anchor {
@@ -1503,12 +1727,18 @@ body:not(.proof) .note { transition-delay: 0s; }
 }
 .proof .anchor.seen { opacity: 1; }
 .anchor svg { display: block; overflow: visible; }
-.anchor-amp { width: 180px; }
-.anchor-amp svg { width: 180px; height: 120px; }
-.anchor-amp .hand-k, .anchor-amp .hand-b { display: block; margin-left: 0.4rem; }
-.anchor-amp .hand-b { margin-top: -0.2rem; }
+/* the amp circle: the box is SIZED FROM THE LIVE GLYPH by positionAnchors
+   (the v3 & is a monument — up to ~36rem); the 180×120 loop stretches with
+   preserveAspectRatio="none" while the stroke keeps its pen weight. captions
+   sit on the loop's corners, not stacked under a fixed box. */
+.anchor-amp { width: 180px; height: 120px; }
+.anchor-amp svg { width: 100%; height: 100%; }
+.anchor-amp .hand-k, .anchor-amp .hand-b { position: absolute; white-space: nowrap; }
+.anchor-amp .ac-1 { left: 10%; bottom: -0.7rem; }
+.anchor-amp .ac-2 { left: 14%; bottom: -2.3rem; }
+.anchor-amp .ac-3 { right: 3%; top: 0.2rem; transform: rotate(1.6deg); }
 .anchor-bio svg { width: 24px; height: 100%; position: absolute; left: 0; top: 0; }
-.anchor-bio .hand-b { position: absolute; right: calc(100% + 2rem); top: 30%; width: 9rem; text-align: right; }
+.anchor-bio .hand-b { position: absolute; right: calc(100% + 2rem); top: 30%; width: 11.5rem; text-align: right; }
 
 /* index marginalia */
 .coffee {
@@ -1597,11 +1827,13 @@ body:not(.proof) .note { transition-delay: 0s; }
   z-index: 5;
 }
 
-/* the favorite child gets circled — the ring wraps the strip's number */
+/* the favorite child gets circled — the ring wraps the strip's number.
+   (the strip sits ABOVE the description on the hung sheet now, so the ring
+   anchors up from the sheet's bottom edge, not below it.) */
 .num-ring {
   position: absolute;
   left: -14px;
-  bottom: -10px;
+  bottom: 4.5rem;
   top: auto;
   width: 72px;
   height: 46px;
@@ -1609,8 +1841,8 @@ body:not(.proof) .note { transition-delay: 0s; }
 }
 .n-fav {
   position: absolute;
-  left: 3.6rem;
-  bottom: -32px;
+  left: 3.9rem;
+  bottom: 4.2rem;
   top: auto;
   --tilt: -3deg;
   z-index: 5;
@@ -1767,7 +1999,9 @@ body.pointer-seen .cursor { opacity: 1; }
 @media (max-width: 1100px) {
   .anchor, .row-note, .n-lh, .n-eyebrow, .n-coffee, .coffee,
   .n-2022, .n-2025, .n-desk, .n-cat, .n-time1, .n-redo, .n-tally,
-  .dd-spiral, .dd-cup, .dd-tally, .dd-moon, .dd-plane, .dd-zzz { display: none; }
+  .dd-spiral, .dd-cup, .dd-tally, .dd-moon, .dd-plane, .dd-zzz,
+  .versions, .dd-nsarrow, .n-time2, .n-time3, .dd-burst, .n-cmath,
+  .dd-pentest, .n-pentest, .dd-tries, .n-tries, .n-pm, .dd-pm-arrow { display: none; }
   .drafts { max-width: 12rem; right: 2%; }
   .cat { width: 92px; height: 76px; top: -75px; right: 4%; }
 }
@@ -1801,7 +2035,9 @@ body.pointer-seen .cursor { opacity: 1; }
   .corner.tl, .corner.bl { left: calc(var(--frame) + 3vw); }
   .corner.tr, .corner.br { right: calc(var(--frame) + 3vw); }
   .outro { grid-template-columns: 1fr; }
-  .outro-meta { text-align: left; }
+  .outro-rail { grid-column: 1; grid-row: auto; }
+  .check-pair { margin-left: 0; }
+  .pressmark { max-width: 200px; }
   .outro-links { grid-column: 1; justify-content: flex-start; }
   .cairn-ind, .regmark, .chips, .chip-ring, .n-chips, .n-night { display: none; }
   .tape, .hz-r, .d-cluster, .d-scatter, .d-cross, .d-scroll { display: none; }
@@ -1840,6 +2076,9 @@ body.pointer-seen .cursor { opacity: 1; }
 
 @media (max-width: 540px) {
   .jobline { display: none; }
+  /* on a small phone the long colophon line is allowed to wrap rather than
+     run off the left edge — nowrap keeps it one line everywhere it fits */
+  .outro-rail .colophon { white-space: normal; }
 }
 
 /* ---------- still mode: no motion at all (?still) ---------- */
@@ -1868,7 +2107,7 @@ body.pointer-seen .cursor { opacity: 1; }
   body:not(.proof) .scrawl .draw { stroke-dashoffset: 1; }
   .loose-decal, .plates-decal { display: none; }
   #pile .stone-inner.dropping { animation: none !important; }
-  .hl .ch { transition: none !important; }
+  .hero-title .ch { transition: none !important; }
 }
 
 /* ============================================================
@@ -2364,6 +2603,11 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
 .n-cairn-b { left: 8%; top: 46%; --tilt: 2deg; font-size: 1.1rem; }
 .dd-cairn-arrow { left: 23%; top: 60%; width: 70px; }
 .n-cairn-c { left: 20%; top: 68%; --tilt: -2deg; }
+/* the failed cairn sketch, scribbled out — it wouldn't sit still.
+   lives LEFT of the tower: the right band belongs to the fixed
+   stamp/knows-note column at most scroll positions. */
+.dd-tries { left: 27%; top: 28%; width: 118px; height: 76px; --tilt: 3deg; }
+.n-tries { left: 35%; top: 35%; text-align: left; --tilt: -2deg; }
 
 .dd-rip { right: 27%; bottom: 13%; width: 130px; }
 .n-rip { right: 21%; bottom: 5%; --tilt: 2deg; text-align: center; }
@@ -2469,7 +2713,7 @@ body.odo-live .odo-reel { transition: transform 0.9s var(--ease-out); }
   70%  { transform: translate(0.012em, 0) rotate(0.7deg); }
   100% { transform: none; }
 }
-.hl .ch.rattle { animation: rattle 0.55s ease-in-out; }
+.hero-title .ch.rattle { animation: rattle 0.55s ease-in-out; }
 
 /* the regmark corrects its drift — `rotate` composes with the
    transform-based reg-spin instead of replacing it */
@@ -2508,13 +2752,35 @@ body.odo-live .odo-reel { transition: transform 0.9s var(--ease-out); }
 @media (prefers-reduced-motion: reduce) {
   .press-check .hero-title, .press-check .regmark { animation: none !important; }
   .regmark.fidget { animation: none !important; }
-  .hl .ch.rattle, .regmark.hiccup { animation: none !important; }
+  .hero-title .ch.rattle, .regmark.hiccup { animation: none !important; }
   .ok-stamp.thunk { animation: none !important; }
   .ok-tab::after, .ok-tab.holding::after { transition: none !important; }
   .odo-reel { transition: none !important; }
   .idle-line { transition: none !important; }
   .stone-tip { transition: none !important; }
   .cat.flick .cat-tail { animation: none !important; }
+  /* THE SETTING never arms under reduced motion (js), but a mid-session
+     switch must land everything instantly and whole. animation:none lets
+     each element's own base opacity apply; only the classes that PIN
+     opacity to 0 need explicit visible overrides. */
+  .set-in, .set-fade, .trail .mile-stone, .trail .gap-tick,
+  #pile .stone-inner, .spec-head, .spec-amp, .spec-amp i, .spec-foot,
+  .tonebar, .tonebar i, .foldline, .foldline i,
+  .hero-title.v3 .amp, .hero-title.v3 .v3-word,
+  .d-cluster .decode, .d-scatter, .d-cross, .d-run,
+  .loose-decal, .plates-decal {
+    animation: none !important;
+  }
+  .set-in, .set-fade { opacity: 1 !important; }
+  body.spec-armed .spec-head, body.spec-armed .spec-amp,
+  body.spec-armed .spec-foot, body.spec-armed .tonebar,
+  body.spec-armed .foldline { opacity: 1; }
+  .trail.stones-armed .mile-stone, .trail.stones-armed .gap-tick,
+  .trail.stones-armed #terrain-ground .tick,
+  .yard.stones-armed #pile .stone-inner { opacity: 1; }
+  .trail.stones-armed #terrain-ground .ground {
+    stroke-dasharray: none; stroke-dashoffset: 0;
+  }
 }
 
 /* ============================================================
@@ -2612,6 +2878,101 @@ body.proof .impline { opacity: 0 !important; }
     font-variation-settings 0.3s var(--ease-out);
 }
 
+/* ============ THE SETTING — scroll reveal ============
+   the content arrives per viewport as you reach it, layered OVER the ink
+   strike: the strike is ink, this is MATTER — and matter is set DOWN onto
+   the sheet by hand, never floated up (fade-up is the one gesture that
+   belongs to no print shop). REPLAYS every load — not persisted — that's
+   the alive part; the ink-strike stays one-time.
+   asymmetry is the law here: --sy/--sx/--sr/--sd/--sdur are seeded inline
+   per element per load (js), so no two things move identically and no two
+   loads are identical. arrival varies; the DESTINATION is always exact —
+   no resting tilts (motivated asymmetry only, Mark's rule).
+   armed by JS only (no-js / reduced / ?still / print ship visible). uses
+   ANIMATION, never `transition`, so it can't clobber the strike's
+   .striking transition; the strike's 1px shudder is the `translate`
+   property, which composes with these `transform`s. fires as each unit
+   ENTERS from the bottom (js rootMargin) so every unit reliably triggers. */
+@keyframes set-in {
+  0%   { opacity: 0; transform: translate(var(--sx, 0px), var(--sy, -16px)) rotate(var(--sr, 0deg)); }
+  55%  { opacity: 1; }
+  74%  { transform: translate(0px, 1.4px); }
+  100% { opacity: 1; transform: none; }
+}
+.set-in { opacity: 0; }
+.set-in.set-go { animation: set-in var(--sdur, 0.5s) var(--ease-out) var(--sd, 0s) both; }
+/* fade ONLY where a transform would fight something already animating it:
+   the hanging sheets (.row — the sway loop owns their transform; they get
+   a real draft KICK through the line physics instead, so each one swings
+   from being just-hung and settles per its own pendulum) and the dock. */
+.set-fade { opacity: 0; }
+.set-fade.set-go { opacity: 1; }
+.line-dock.set-fade, .yard-ground.set-fade { transition: opacity 0.72s var(--ease-out); }
+/* a revealed sheet still dims on hover — .index.is-hovering .row (0,3,0)
+   out-specifies .set-fade.set-go (0,2,0), so hover always wins; the fade
+   itself rides the .row's own `transition: opacity` (never replaced here). */
+
+/* ---- the trail: stones LAND, then the ground is measured ----
+   stones drop with real gravity (accelerating fall — the cairn's law) and
+   seat with the stone squash; the measured ground line then DRAWS through
+   their landed bases (the measurement being taken — it can't exist before
+   the stones do), ticks and legend following. left-to-right with seeded
+   jitter; the 2026 accent stone lands LAST. on a first visit they land as
+   blind emboss and the strike inks them at the line — matter, then ink. */
+.trail.stones-armed .mile-stone { opacity: 0; }
+.trail.stones-armed .gap-tick { opacity: 0; }
+.trail.stones-armed #terrain-ground .ground {
+  stroke-dasharray: 1;           /* buildTerrain sets pathLength=1 */
+  stroke-dashoffset: 1;
+}
+.trail.stones-armed #terrain-ground .tick { opacity: 0; }
+.trail.stones-go .mile-stone {
+  transform-origin: 50% 100%;
+  animation: stone-land 0.55s var(--ease-out) var(--sd, 0s) both;
+}
+@keyframes stone-land {
+  0%   { opacity: 0; transform: translateY(calc(var(--lift, 0) * 1px - 46px));
+         animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6); } /* falls, accelerating */
+  14%  { opacity: 1; }
+  72%  { transform: translateY(calc(var(--lift, 0) * 1px)) scaleY(1); }
+  82%  { transform: translateY(calc(var(--lift, 0) * 1px)) scaleY(0.93); } /* the seat */
+  100% { opacity: 1; transform: translateY(calc(var(--lift, 0) * 1px)) scaleY(1); }
+}
+.trail.ground-drawn #terrain-ground .ground {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.7s var(--ease-out);
+}
+.trail.ground-drawn #terrain-ground .tick { opacity: 1; transition: opacity 0.45s var(--ease-out) 0.4s; }
+.trail.ground-drawn .gap-tick { opacity: 0.65; transition: opacity 0.45s var(--ease-out) 0.5s; }
+
+/* ---- the yard: the cairn is STACKED, stone by stone ----
+   same drop the guestbook already speaks (.dropping), pre-hidden through
+   the delay so nothing hovers mid-air. the choreography classes are
+   stripped once it lands (js) so renderCairn re-runs stay inert. */
+.yard.stones-armed #pile .stone-inner { opacity: 0; }
+.yard.stones-go #pile .stone-inner {
+  animation: cairn-set 0.5s var(--ease-thunk) var(--sd, 0s) both;
+}
+@keyframes cairn-set {
+  0%   { opacity: 0; transform: translateY(-105px); }
+  14%  { opacity: 1; }
+  70%  { transform: translateY(0) scaleY(1); }
+  82%  { transform: translateY(0) scaleY(0.85); }
+  100% { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+
+/* the mess is handled in js: setProof() disarms the setting (strips the
+   classes) so .final dims to its 0.34 mess opacity instead of being pinned
+   by the reveal. a proof still prints whole. */
+@media print {
+  .set-in, .set-fade { opacity: 1 !important; animation: none !important; transform: none !important; }
+  .trail .mile-stone, .trail .gap-tick, #pile .stone-inner {
+    opacity: 1 !important; animation: none !important;
+  }
+  .trail #terrain-ground .ground { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
+  .trail #terrain-ground .tick { opacity: 1 !important; }
+}
+
 /* the regmark counts the strikes — one notch (36°) per unit, a full
    turn for a full first read. `rotate` composes with reg-spin, same
    trick as the drift-correct hiccup. */
@@ -2645,13 +3006,14 @@ body.proof .impline { opacity: 0 !important; }
 
 /* the press-check pair — approve (slip) | witness (log), tight side by side */
 .check-pair {
-  grid-column: 1 / -1;
+  grid-column: 1;
   grid-row: 2;
   display: flex;
+  flex-direction: column;      /* the log rides UNDER the check, its ticket tail */
   align-items: flex-start;
-  gap: clamp(1.5rem, 4vw, 3.5rem);
-  flex-wrap: wrap;
-  margin-top: 2.5rem;
+  gap: 1.3rem;
+  margin-top: 0.75rem;
+  margin-left: clamp(0.5rem, 2vw, 2rem);   /* nudged in off the frame edge */
 }
 .okslip {
   position: relative;
@@ -2765,11 +3127,8 @@ body.proof .impline { opacity: 0 !important; }
    ============================================================ */
 
 .joblog {
-  text-align: left;           /* right beside the check, reads left-to-right */
-  flex: 1 1 20ch;
-  min-width: 17ch;
-  max-width: 40ch;
-  margin-top: 0.2rem;
+  text-align: left;           /* under the check now, matched to the slip width */
+  width: min(100%, 30rem);
   opacity: 0.5;
   font-size: 0.55rem;
 }
@@ -2778,7 +3137,9 @@ body.proof .impline { opacity: 0 !important; }
 /* capped + scrollable so a long shift never drags the outro down; the
    newest line sits on TOP and js keeps it scrolled to the start */
 #jl-lines {
-  max-height: 7.5rem;
+  /* the view holds the last ~3 acts; older ones live on the rail (and the
+     whole thing still prints uncapped). keeps the outro from growing down. */
+  max-height: 3.15rem;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: none;            /* native bar hidden — we render our own DOM rail */
