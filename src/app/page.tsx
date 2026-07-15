@@ -1,14 +1,20 @@
-"use client";
+import type { CSSProperties } from "react";
+import Hero from "@/components/site/Hero";
+import Trail from "@/components/site/Trail";
+import WorkIndex from "@/components/site/WorkIndex";
+import Desk from "@/components/site/Desk";
+import Yard from "@/components/site/Yard";
+import Outro from "@/components/site/Outro";
 
 /**
  * Mark Axelus — My Desk (v4)
  *
- * Genuine React/Next rebuild of the searchlight prototype. Built section by
- * section: this file composes the fixed print-shop chrome + the page sections.
- * The seeded-motion engine is ported into hooks under _engine/ (in progress);
- * every id/class here mirrors prototypes/index.html exactly so the ported
- * engine drives the identical DOM. Fidelity is verified headless, never judged
- * in the preview pane (see prototypes/CLAUDE.md §5).
+ * Genuine React/Next rebuild of the searchlight prototype. This composes the
+ * fixed print-shop chrome, the post-<main> singleton overlays, and the page
+ * sections. SSR ships the SETTLED/printed DOM (no `.unstruck`, no `set-*`
+ * arming); the ported motion engine (EngineProvider + hooks, in progress) arms
+ * and drives the identical DOM after mount. Every id/class mirrors
+ * prototypes/index.html exactly. Fidelity is verified headless (CLAUDE.md §5).
  */
 export default function Home() {
   return (
@@ -85,7 +91,7 @@ export default function Home() {
 
       {/* corner navigation */}
       <a className="corner tl mono" href="#top">MARK AXELUS</a>
-      <a className="corner tr mono" href="mailto:mrkaxelus@gmail.com">CONTACT &nearr;</a>
+      <a className="corner tr mono" href="mailto:mrkaxelus@gmail.com">CONTACT ↗</a>
       <a className="corner bl mono" href="#top">&copy;2026 &mdash; ALL MINE<span id="clock" /></a>
       <button className="corner br mono" id="proof-btn" type="button" aria-pressed="false">
         SEE&nbsp;THE&nbsp;MESS
@@ -93,6 +99,22 @@ export default function Home() {
 
       {/* underdrawing: grid + margin guides (mess mode) */}
       <div className="under" aria-hidden="true" />
+
+      {/* underdrawing: fixed callouts (mess mode) */}
+      <div className="proof-fixed" aria-hidden="true">
+        <span className="note hand-k n-margin" style={{ "--d": ".10s" } as CSSProperties}>&larr; 2vw. don&rsquo;t touch it, mark.</span>
+        <span className="note hand-k n-chips" style={{ "--d": ".46s" } as CSSProperties}>the paint. try the chips.</span>
+        <svg className="chip-ring scrawl" viewBox="0 0 118 42" aria-hidden="true">
+          <path className="draw" pathLength="1" d="M58,6 C92,4 112,12 110,22 C108,34 84,39 54,37 C26,35 8,28 10,19 C12,9 34,7 62,7" fill="none" />
+        </svg>
+        <span className="note hand-b n-night" style={{ "--d": ".52s" } as CSSProperties}>for the 2am people ↗</span>
+        <div className="stamp" id="stamp">
+          <span className="stamp-line1">MARK AXELUS &mdash; WORKING PROOF</span>
+          <span className="stamp-line2">STILL NOT DONE</span>
+          <span className="stamp-line3 mono">AT MY DESK &middot; <span id="stamp-date" /></span>
+        </div>
+        <span className="note hand-b n-knows" id="knows-note" style={{ "--d": ".64s" } as CSSProperties} />
+      </div>
 
       <main className="page" id="top">
         {/* the thought-thread (mess only; routed by the engine) */}
@@ -107,23 +129,48 @@ export default function Home() {
           <circle id="th-tip" className="th-red" r="4" />
         </svg>
 
-        {/* hero (shell — full section + engine ported next) */}
-        <section className="hero" id="hero">
-          <p className="eyebrow mono final">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</p>
-          <h1 className="hero-title final v3" id="hero-title">
-            <span className="amp" id="amp" data-ink="">&amp;</span>
-            <span className="v3-words">
-              <span className="v3-word v3-mark" id="markw" data-ink="">Mark</span>
-              <span className="v3-word v3-desk" id="deskw" data-ink="">My&nbsp;desk</span>
-            </span>
-          </h1>
-          <aside className="hero-bio mono final" id="hero-bio">
-            I&rsquo;m Mark, a software engineer.<br />
-            One person, one desk, a very high bar.<br />
-            This is the fourth version this year; the first three weren&rsquo;t good enough.
-          </aside>
-        </section>
+        <Hero />
+
+        {/* kinetic seam */}
+        <div className="ticker mono final" aria-hidden="true">
+          <div className="ticker-track" id="ticker-track" />
+        </div>
+
+        <Trail />
+        <WorkIndex />
+        <Desk />
+        <Yard />
+        <Outro />
       </main>
+
+      {/* cairn scroll indicator */}
+      <div className="cairn-ind" id="cairn-ind" aria-hidden="true">
+        <svg viewBox="0 0 44 120" id="cairn-svg" />
+      </div>
+
+      {/* idle whisper */}
+      <span className="idle-line mono" id="idle-line" aria-hidden="true">STILL HERE? IT STILL ISN&rsquo;T DONE</span>
+
+      {/* stone hover tip */}
+      <div className="stone-tip mono" id="stone-tip" aria-hidden="true" />
+
+      {/* project viewer: each project is its own proof sheet (built by the engine) */}
+      <section className="pv" id="pv" role="dialog" aria-modal="true" aria-label="Project proof sheet" />
+
+      {/* signature: cursor-trailing reveal */}
+      <div className="reveal" aria-hidden="true">
+        <div className="reveal-scaler" id="reveal-scaler">
+          <div className="reveal-plate" id="reveal-plate" />
+        </div>
+      </div>
+
+      {/* the printer's loupe (press and hold a plate) */}
+      <div className="loupe" id="loupe" aria-hidden="true" />
+
+      {/* custom cursor */}
+      <div className="cursor" id="cursor" aria-hidden="true">
+        <span className="cursor-label">PROOF ↗</span>
+      </div>
     </>
   );
 }
