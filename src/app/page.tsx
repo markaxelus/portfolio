@@ -27,8 +27,11 @@ export default function Home() {
   return (
     <EngineProvider>
       {/* LOADER: the make-ready runs isolated in a frame (src set by the engine
-          on first visit only). */}
-      <div id="makeready">
+          on first visit only). Ships hidden (.out) until the loader engine is
+          built (Phase 8); the booth is a full-viewport #0C0B08 cover, so an
+          un-managed one blacks out the whole page — this is the settled/
+          return-visit fallback in the meantime. */}
+      <div id="makeready" className="out">
         <iframe
           id="mr-frame"
           title="Loading"
