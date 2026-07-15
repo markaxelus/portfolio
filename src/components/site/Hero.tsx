@@ -1,8 +1,16 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useRef, type CSSProperties } from "react";
+import { useHero } from "@/app/_engine/hero/use-hero";
+import { inkChars } from "@/app/_engine/hero/chars";
 
 export default function Hero() {
+  const rootRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  useHero(rootRef, titleRef);
+
   return (
-    <section className="hero" id="hero">
+    <section className="hero" id="hero" ref={rootRef}>
       {/* the specimen: his favourite glyph, at every optical size */}
       <div className="specimen final" aria-hidden="true">
         <span className="spec-head mono">SPECIMEN &mdash; FRAUNCES VF &middot; OPSZ 9&rarr;144</span>
@@ -35,11 +43,11 @@ export default function Hero() {
       <span className="d-run spec final"><span className="decode" tabIndex={0}><span className="c1">[RUN.M] MESS LAYER ARMED</span><span className="c2">press M. you&rsquo;ll see.</span></span> <span className="blink" aria-hidden="true"></span></span>
 
       <p className="eyebrow mono final">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</p>
-      <h1 className="hero-title final v3" id="hero-title">
-        <span className="amp" id="amp" data-ink="">&amp;</span>
+      <h1 className="hero-title final v3" id="hero-title" ref={titleRef}>
+        <span className="amp" id="amp" data-ink="">{inkChars("&")}</span>
         <span className="v3-words">
-          <span className="v3-word v3-mark" id="markw" data-ink="">Mark</span>
-          <span className="v3-word v3-desk" id="deskw" data-ink="">My&nbsp;desk</span>
+          <span className="v3-word v3-mark" id="markw" data-ink="">{inkChars("Mark")}</span>
+          <span className="v3-word v3-desk" id="deskw" data-ink="">{inkChars("My\u00A0desk")}</span>
         </span>
       </h1>
       <aside className="hero-bio mono final" id="hero-bio">

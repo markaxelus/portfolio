@@ -1,8 +1,13 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useRef, type CSSProperties } from "react";
+import { useTrail } from "@/app/_engine/trail/use-trail";
 
 export default function Trail() {
+  const rootRef = useRef<HTMLElement>(null);
+  useTrail(rootRef);
   return (
-    <section className="trail" id="trail">
+    <section className="trail" id="trail" ref={rootRef}>
       <div className="trail-frame final">
         <p className="trail-head mono">FIG.1 &mdash; THE TRAIL SO FAR</p>
         <p className="trail-cap mono">ONE STONE PER YEAR THAT MATTERED &middot; 2019&ndash;2026 &middot; NOT TO SCALE</p>

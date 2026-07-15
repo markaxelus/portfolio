@@ -1,8 +1,20 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useRef, type CSSProperties } from "react";
+import { useJobLog } from "@/app/_engine/outro/useJobLog";
+import { useOkSlip } from "@/app/_engine/outro/useOkSlip";
+import { PM_MODULE, PM_RECTS } from "@/app/_engine/outro/pressmark";
 
 export default function Outro() {
+  const rootRef = useRef<HTMLElement>(null);
+  // the shop witnesses you (owns api.logAct) — mounted first so the OK slip's
+  // stamp can hand it a line
+  useJobLog(rootRef);
+  // the visitor signs the press check (calls api.logAct + api.sndTok)
+  useOkSlip(rootRef);
+
   return (
-    <section className="outro">
+    <section className="outro" ref={rootRef}>
       <span className="d-outro spec final decode" tabIndex={0}><span className="c1">094&#10042; &nbsp;00//WC</span><span className="c2">coffees this quarter. and counting.</span></span>
       <h2 className="outro-title final">Got a brief?<br/><a href="mailto:mrkaxelus@gmail.com" id="write-link">Write to me.</a></h2>
       <div className="amark scrawl" id="amark-write" aria-hidden="true">
@@ -61,14 +73,22 @@ export default function Outro() {
       {/* THE MAKER'S MARK: the approved job-code device — a coarse Data-Matrix-style
            grid (decorative, gapped chunky modules) with an off-register red pass behind
            it, off-square brackets, a reg cross + acid tick, techwear labels. modules
-           injected by main.js; everything themes with the sheet (day/night). */}
+           rendered declaratively (PM_RECTS, deterministic); everything themes with the sheet (day/night). */}
       <figure className="pressmark final">
         <svg className="pm-svg" viewBox="0 0 200 250" role="img" aria-labelledby="pm-title">
           <title id="pm-title">Mark Axelus &mdash; maker's mark</title>
           <path className="pm-brk" d="M26 58 V38 H48"/>
           <path className="pm-brk" d="M174 212 V232 H152"/>
-          <g className="pm-ghost" id="pm-ghost" transform="translate(55 69)"></g>
-          <g className="pm-code" id="pm-cells" transform="translate(52 66)"></g>
+          <g className="pm-ghost" id="pm-ghost" transform="translate(55 69)">
+            {PM_RECTS.map((m) => (
+              <rect key={"g" + m.key} x={m.x} y={m.y} width={PM_MODULE} height={PM_MODULE} />
+            ))}
+          </g>
+          <g className="pm-code" id="pm-cells" transform="translate(52 66)">
+            {PM_RECTS.map((m) => (
+              <rect key={"c" + m.key} x={m.x} y={m.y} width={PM_MODULE} height={PM_MODULE} />
+            ))}
+          </g>
           <g className="pm-reg"><circle cx="162" cy="58" r="4.5"/><path d="M162 50 V66 M154 58 H170"/></g>
           <rect className="pm-acid" x="150" y="150" width="7" height="7"/>
           <text className="pm-lbl pm-dim pm-r" x="178" y="88">JOB Nº 07</text>

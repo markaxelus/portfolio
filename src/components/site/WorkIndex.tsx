@@ -1,8 +1,14 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useRef, type CSSProperties } from "react";
+import { useLine } from "@/app/_engine/line/useLine";
 
 export default function WorkIndex() {
+  const rootRef = useRef<HTMLElement>(null);
+  useLine(rootRef);
+
   return (
-    <section className="index" id="index">
+    <section className="index" id="index" ref={rootRef}>
       <p className="index-head mono final">SELECTED WORK / 2024&ndash;2025</p>
       <p className="index-sub mono final">THE RUN, ON THE LINE &mdash; BRUSH A SHEET &middot; IT HOLDS &middot; CLICK &mdash; PULL ITS PROOF</p>
 

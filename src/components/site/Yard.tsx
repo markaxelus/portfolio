@@ -1,19 +1,30 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useRef, type CSSProperties } from "react";
+import { useCairn } from "@/app/_engine/yard/useCairn";
+import { useStoneTip } from "@/app/_engine/yard/useStoneTip";
 
 export default function Yard() {
+  const groundRef = useRef<HTMLDivElement>(null);
+  const pileRef = useRef<SVGGElement>(null);
+  const countRef = useRef<HTMLParagraphElement>(null);
+
+  useCairn({ groundRef, pileRef, countRef });
+  useStoneTip(pileRef);
+
   return (
     <section className="yard" id="yard">
       <div className="yard-head final">
         <p className="mono">PASSERS-BY</p>
-        <p className="mono yard-count" id="yard-count">LEAVE A STONE</p>
+        <p className="mono yard-count" id="yard-count" ref={countRef}>LEAVE A STONE</p>
       </div>
       <div className="yard-ground final" id="yard-ground" role="button" tabIndex={0}
-           aria-label="Add your stone to the cairn">
+           aria-label="Add your stone to the cairn" ref={groundRef}>
         {/* headroom above y0 for the tower to grow before it topples */}
         <svg id="yard-svg" viewBox="0 -80 1000 240" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
           <path id="ground-line" d="M14,144 C180,141 360,146 500,143 C660,140 840,145 986,142"
                 fill="none"/>
-          <g id="pile"></g>
+          <g id="pile" ref={pileRef}></g>
         </svg>
       </div>
       <div className="proof-notes" aria-hidden="true">

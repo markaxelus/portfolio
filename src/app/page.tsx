@@ -12,6 +12,8 @@ import NoiseToggle from "./_chrome/NoiseToggle";
 import ProofToggle from "./_chrome/ProofToggle";
 import CairnIndicator from "./_chrome/CairnIndicator";
 import VisitCounter from "./_engine/VisitCounter";
+import ThoughtThread from "./_engine/thread/ThoughtThread";
+import AmbientLife from "./_engine/ambient/AmbientLife";
 
 /**
  * Mark Axelus — My Desk (v4)
@@ -127,6 +129,9 @@ export default function Home() {
           <circle id="th-tip" className="th-red" r="4" />
         </svg>
 
+        {/* the thought-thread engine (mess only; drives #thread by id) */}
+        <ThoughtThread />
+
         <Hero />
 
         {/* kinetic seam */}
@@ -170,6 +175,9 @@ export default function Home() {
 
       {/* the visit odometer — reads the real global count from Redis */}
       <VisitCounter />
+
+      {/* ambient life: audio registry, tab-title, idle whisper, page-awake */}
+      <AmbientLife />
     </EngineProvider>
   );
 }

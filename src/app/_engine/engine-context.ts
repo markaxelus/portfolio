@@ -20,7 +20,7 @@ export interface EngineApi {
   positionAnchors?: () => void;
   disarmSetting?: () => void;
   kickSheet?: (i: number) => void;
-  sndClack?: () => void;
+  sndClack?: (vol?: number) => void;
   sndTok?: () => void;
   sndSlam?: () => void;
   resetLooseType?: () => void;
