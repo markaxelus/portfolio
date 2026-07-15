@@ -36,7 +36,7 @@ export default function Hero() {
       <div className="d-cluster spec final">
         <span className="decode" tabIndex={0}><span className="c1">MA//TC-IV <span className="sq" aria-hidden="true"></span></span><span className="c2">mark axelus, fourth redesign this year</span></span>
         <span className="decode" tabIndex={0}><span className="c1">00.MA2093 &nbsp;00 01</span><span className="c2">means nothing. looks great.</span></span>
-        <span className="decode" tabIndex={0}><span className="c1">VISIT Nº <span id="visit-n">001</span></span><span className="c2">yes, i&rsquo;m counting.</span></span>
+        <span className="decode" tabIndex={0}><span className="c1">VISIT Nº <span id="visit-n" suppressHydrationWarning>001</span></span><span className="c2">yes, i&rsquo;m counting.</span></span>
       </div>
       <span className="d-scatter spec final decode" tabIndex={0}><span className="c1">R.00 &nbsp;&#9633; &nbsp;-sL</span><span className="c2">leftover from v2. sentimental.</span></span>
       <span className="d-cross final" aria-hidden="true"></span>

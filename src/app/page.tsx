@@ -21,9 +21,9 @@ import LineGlass from "./_engine/line/LineGlass";
 import Loader from "./_engine/loader/Loader";
 
 /**
- * Mark Axelus — My Desk (v4)
+ * Mark Axelus — My Desk
  *
- * Genuine React/Next rebuild of the searchlight prototype. This composes the
+ * The portfolio: a React/Next rebuild of the searchlight prototype. This composes the
  * fixed print-shop chrome, the post-<main> singleton overlays, and the page
  * sections. SSR ships the SETTLED/printed DOM (no `.unstruck`, no `set-*`
  * arming); the ported motion engine (EngineProvider + hooks, in progress) arms
@@ -68,8 +68,8 @@ export default function Home() {
         </svg>
         <span className="jobline mono">
           SHEET Nº 001 &middot; MARK AXELUS &middot; WORKING PROOF &middot;{" "}
-          <span id="job-date" />
-          <span id="job-ok" />
+          <span id="job-date" suppressHydrationWarning />
+          <span id="job-ok" suppressHydrationWarning />
         </span>
         <span className="print-slug mono">
           PRINTED FROM THE WORKING PROOF &middot; MRKAXELUS@GMAIL.COM
@@ -101,7 +101,7 @@ export default function Home() {
       {/* corner navigation */}
       <a className="corner tl mono" href="#top">MARK AXELUS</a>
       <a className="corner tr mono" href="mailto:mrkaxelus@gmail.com">CONTACT ↗</a>
-      <a className="corner bl mono" href="#top">&copy;2026 &mdash; ALL MINE<span id="clock" /></a>
+      <a className="corner bl mono" href="#top">&copy;2026 &mdash; ALL MINE<span id="clock" suppressHydrationWarning /></a>
       <ProofToggle />
 
       {/* underdrawing: grid + margin guides (mess mode) */}
@@ -118,7 +118,7 @@ export default function Home() {
         <div className="stamp" id="stamp">
           <span className="stamp-line1">MARK AXELUS &mdash; WORKING PROOF</span>
           <span className="stamp-line2">STILL NOT DONE</span>
-          <span className="stamp-line3 mono">AT MY DESK &middot; <span id="stamp-date" /></span>
+          <span className="stamp-line3 mono">AT MY DESK &middot; <span id="stamp-date" suppressHydrationWarning /></span>
         </div>
         <span className="note hand-b n-knows" id="knows-note" style={{ "--d": ".64s" } as CSSProperties} />
       </div>
