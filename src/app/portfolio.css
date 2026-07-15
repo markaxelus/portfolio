@@ -1,0 +1,3314 @@
+/* ============================================================
+   CAIRN™ — the proof sheet
+   Final layer: stone / ink / signal blue.
+   Working layer: red pencil, two hands (K + B), grid, stamps.
+   ============================================================ */
+
+:root {
+  --stone: #DDDBD4;
+  --stone-deep: #CFCDC5;
+  --ink: #16150F;
+  --accent: #2A2AF0;
+  --acid: #B4C400;
+  --pencil: #C7361F;
+  --pencil-soft: rgba(199, 54, 31, 0.55);
+  --graphite: rgba(22, 21, 15, 0.70);
+  --hairline: rgba(22, 21, 15, 0.34);
+  /* blind-impression rim (the impression line's unstruck state) */
+  --emb-hi: rgba(255, 255, 255, 0.5);
+  --emb-lo: rgba(22, 21, 15, 0.16);
+  --frame: 2vw;
+  --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-thunk: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* night office — the same sheet, after 23:00 */
+body.night {
+  --stone: #16140F;
+  --stone-deep: #23201A;
+  --ink: #DDDBD4;
+  --acid: #C6D600;
+  --pencil: #F0603F;
+  --pencil-soft: rgba(240, 96, 63, 0.55);
+  --graphite: rgba(221, 219, 212, 0.70);
+  --hairline: rgba(221, 219, 212, 0.32);
+  /* night emboss: on dark paper the rim is mostly its highlight */
+  --emb-hi: rgba(221, 219, 212, 0.11);
+  --emb-lo: rgba(0, 0, 0, 0.55);
+}
+body { transition: background-color 0.5s var(--ease-out), color 0.5s var(--ease-out); }
+.night .grain {
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='180'%20height='180'%3E%3Cfilter%20id='g'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.82'%20numOctaves='3'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'%20result='n'/%3E%3CfeFlood%20flood-color='%23000'%20result='b'/%3E%3CfeComposite%20in='n'%20in2='b'%20operator='over'%20result='f'/%3E%3CfeColorMatrix%20in='f'%20type='matrix'%20values='0%200%200%200%201%200%200%200%200%201%200%200%200%200%201%200.2126%200.7152%200.0722%200%200'/%3E%3C/filter%3E%3Crect%20width='180'%20height='180'%20filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  /* TYPE-SCALE RULE. The label/furniture tier is fixed-rem, so on large
+     monitors it used to strand at 8–10px while the vw-driven display type
+     kept growing. Scale the root with the viewport instead: phones/laptops
+     hold at 16px, big screens climb to 20px, so every rem-based size (labels,
+     notes, meta) grows in proportion. Display type is vw-capped up there, so
+     this lifts the small text without bloating the headline. */
+  font-size: clamp(16px, 0.667vw + 8px, 20px);
+}
+
+body {
+  background: var(--stone);
+  color: var(--ink);
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--accent); color: var(--stone); }
+.proof ::selection { background: var(--pencil); }
+
+a { color: inherit; text-decoration: none; }
+a:focus-visible,
+button:focus-visible,
+.row:focus-visible,
+.yard-ground:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.mono {
+  font-family: "Space Mono", monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.7;
+}
+
+/* the two hands */
+.hand-k {
+  font-family: "Caveat", cursive;
+  font-size: 1.35rem;
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--pencil);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.hand-b {
+  font-family: "Zeyada", cursive;
+  font-size: 1.4rem;
+  line-height: 1.05;
+  color: var(--graphite);
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+.hand-k em, .hand-b em { font-style: normal; opacity: 0.75; }
+.struck { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--pencil-soft); }
+
+/* ---------- grain overlay ---------- */
+/* pre-baked 180px noise tiles (stitchTiles makes them seamless). NO blend mode:
+   a full-screen mix-blend-mode layer forces the compositor to isolate + re-blend
+   the whole page every frame (the ticker/reg-mark animate continuously, so that
+   cost never stops). The blend math is baked into the tile alpha instead —
+   multiply by gray g at opacity a === black at alpha a(1-g); screen === white
+   at alpha a*g — identical pixels on any backdrop. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.08;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='180'%20height='180'%3E%3Cfilter%20id='g'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.82'%20numOctaves='3'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'%20result='n'/%3E%3CfeFlood%20flood-color='%23fff'%20result='w'/%3E%3CfeComposite%20in='n'%20in2='w'%20operator='over'%20result='f'/%3E%3CfeColorMatrix%20in='f'%20type='matrix'%20values='0%200%200%200%200%200%200%200%200%200%200%200%200%200%200%20-0.2126%20-0.7152%20-0.0722%200%201'/%3E%3C/filter%3E%3Crect%20width='180'%20height='180'%20filter='url(%23g)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* ---------- global frame ---------- */
+.frame {
+  position: fixed;
+  inset: var(--frame);
+  border: 1px solid var(--ink);
+  z-index: 50;
+  pointer-events: none;
+  animation: frame-in 0.7s var(--ease-out) both;
+}
+.frame::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: sweep 1s var(--ease-out) 0.35s both;
+}
+/* the pile: this proof is the top sheet of a working stack — two more
+   sheet edges peek out bottom-right, with the stack's soft shadow */
+.frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow:
+    3px 3px 0 -1px var(--stone),
+    4px 4px 0 0 var(--hairline),
+    7px 7px 0 -1px var(--stone),
+    8px 8px 0 0 rgba(22, 21, 15, 0.16),
+    14px 16px 26px rgba(22, 21, 15, 0.12);
+}
+.night .frame::before {
+  box-shadow:
+    3px 3px 0 -1px var(--stone),
+    4px 4px 0 0 var(--hairline),
+    7px 7px 0 -1px var(--stone),
+    8px 8px 0 0 rgba(221, 219, 212, 0.14),
+    14px 16px 26px rgba(0, 0, 0, 0.4);
+}
+@keyframes frame-in {
+  from { transform: scale(0.985); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+@keyframes sweep {
+  0%   { transform: scaleX(0); opacity: 1; }
+  72%  { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+/* ---------- proof-sheet furniture (always on, quiet) ---------- */
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  /* softened via color, not opacity — the jobline needs a solid chip
+     so the ticker can't shine through it */
+  color: color-mix(in srgb, var(--ink) 55%, var(--stone));
+  animation: setdown 0.6s var(--ease-out) 1.2s both;
+  transition: color 0.5s var(--ease-out);
+}
+.proof .sheet { color: var(--pencil); }
+
+.crop { position: absolute; width: 12px; height: 12px; }
+.crop::before, .crop::after { content: ""; position: absolute; background: currentColor; }
+.crop::before { width: 12px; height: 1px; }
+.crop::after  { width: 1px; height: 12px; }
+.crop.tl { top: calc(var(--frame) - 16px); left: calc(var(--frame) - 16px); }
+.crop.tl::before { bottom: 0; left: 0; } .crop.tl::after { right: 0; top: 0; }
+.crop.tr { top: calc(var(--frame) - 16px); right: calc(var(--frame) - 16px); }
+.crop.tr::before { bottom: 0; right: 0; } .crop.tr::after { left: 0; top: 0; }
+.crop.bl { bottom: calc(var(--frame) - 16px); left: calc(var(--frame) - 16px); }
+.crop.bl::before { top: 0; left: 0; } .crop.bl::after { right: 0; bottom: 0; }
+.crop.br { bottom: calc(var(--frame) - 16px); right: calc(var(--frame) - 16px); }
+.crop.br::before { top: 0; right: 0; } .crop.br::after { left: 0; bottom: 0; }
+
+.regmark {
+  position: absolute;
+  top: calc(var(--frame) - 26px);
+  left: 50%;
+  margin-left: -9px;
+  width: 18px;
+  height: 18px;
+  animation: reg-spin 90s linear infinite;
+}
+@keyframes reg-spin { to { transform: rotate(360deg); } }
+
+.jobline {
+  position: absolute;
+  /* docked flush to the sheet edge, out of the content's travel path */
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.55rem;
+  white-space: nowrap;
+  /* solid chip: page content (the ticker) passes underneath, not through */
+  background: var(--stone);
+  padding: 0.25rem 0.75rem;
+  transition: background-color 0.5s var(--ease-out);
+}
+
+/* ---------- corner navigation ---------- */
+.corner {
+  position: fixed;
+  z-index: 55;
+  padding: 0.5rem 0.65rem;
+  background: var(--stone);
+  /* a visible tab, not wallpaper — these are controls */
+  border: 1px solid var(--hairline);
+  animation: setdown 0.6s var(--ease-out) 0.95s both;
+  transition:
+    color 0.25s var(--ease-out),
+    background-color 0.25s var(--ease-out),
+    border-color 0.25s var(--ease-out);
+}
+button.corner {
+  cursor: pointer;
+  font-family: "Space Mono", monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.7;
+  color: inherit;
+}
+.corner.tl { top: calc(var(--frame) - 0.85em); left: calc(var(--frame) + 1.4vw); }
+.corner.tr { top: calc(var(--frame) - 0.85em); right: calc(var(--frame) + 1.4vw); }
+.corner.bl { bottom: calc(var(--frame) - 0.85em); left: calc(var(--frame) + 1.4vw); }
+.corner.br { bottom: calc(var(--frame) - 0.85em); right: calc(var(--frame) + 1.4vw); }
+.corner:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--stone);
+}
+.corner.br:hover {
+  background: var(--pencil);
+  border-color: var(--pencil);
+  color: var(--stone);
+}
+.corner:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.proof .corner.br { color: var(--pencil); border-color: var(--pencil); }
+/* THE SETTING — matter arrives by hand. nothing on this sheet floats UP
+   (that's the web's gesture, not the shop's): furniture is set DOWN onto
+   the paper with a breath of over-press, the way a sort is seated in the
+   chase. ink is a different law (the strike) and stays untouched. */
+@keyframes setdown {
+  0%   { opacity: 0; transform: translateY(-9px); }
+  55%  { opacity: 1; }
+  74%  { transform: translateY(1px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- page shell ---------- */
+.page { padding: calc(var(--frame) + 1px); }
+
+/* the finished layer ghosts back in proof mode */
+.final { transition: opacity 0.5s var(--ease-out), filter 0.5s var(--ease-out); }
+.proof .final { opacity: 0.34; filter: saturate(0.5); }
+
+/* ---------- hero ---------- */
+.hero {
+  position: relative;
+  min-height: calc(100vh - 2 * var(--frame));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 24%);
+  grid-template-rows: auto 1fr auto;
+  padding: 3.2vw 1.4vw 4.5rem;
+}
+
+.eyebrow {
+  grid-column: 1 / -1;
+  color: var(--ink);
+  opacity: 0.75;
+  /* --sd is seeded per load (js) — the furniture never lands in the same
+     order twice. the fallback keeps no-js/loader loads sane. */
+  animation: setdown 0.6s var(--ease-out) var(--sd, 1s) both;
+}
+.eyebrow em { font-style: normal; color: var(--accent); }
+
+.hero-title {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  align-self: center;
+  user-select: none;
+  -webkit-user-select: none;
+  font-weight: 480;
+  font-variation-settings: "opsz" 144;
+  /* two-line lockup — line 2 "& my desk" sets the measure now */
+  font-size: clamp(3.2rem, 10.6vw, 12.5rem);
+  line-height: 0.84;
+  letter-spacing: -0.035em;
+  margin-left: -0.045em;
+}
+.hl-mask {
+  display: block;
+  overflow: hidden;
+  clip-path: inset(-0.08em -0.1em 0 -0.1em);
+}
+/* masks exist for the entrance only — once the lines land they release,
+   so commas and descenders render whole (js adds .landed). the filled
+   entrance transform also drops: a transformed .hl is a stacking
+   context that sits over (and steals clicks from) the specimen. */
+.hero-title.landed .hl-mask { overflow: visible; clip-path: none; }
+.hero-title.landed .hl { animation: none; transform: none; }
+.hl {
+  display: block;
+  transform: translateY(115%);
+  animation: line-up 0.9s var(--ease-out) both;
+}
+.hl-mask:nth-child(1) .hl { animation-delay: 0.4s; }
+.hl-mask:nth-child(2) .hl { animation-delay: 0.53s; }
+.hl .amp {
+  font-style: italic;
+  font-weight: 340;
+  color: var(--accent);
+}
+/* per-character ink pooling */
+.hl .ch {
+  display: inline-block;
+  font-variation-settings: "opsz" 144, "wght" 480, "SOFT" 0, "WONK" 0;
+  transition: font-variation-settings 0.28s var(--ease-out);
+}
+.hl .amp .ch { font-variation-settings: "opsz" 144, "wght" 340, "SOFT" 0, "WONK" 0; }
+/* in proof mode the letterforms go back to being unfinished */
+.proof .hl .ch { font-variation-settings: "opsz" 144, "wght" 420, "SOFT" 75, "WONK" 1; }
+.proof .hl .amp .ch { font-variation-settings: "opsz" 144, "wght" 300, "SOFT" 80, "WONK" 1; }
+@keyframes line-up {
+  from { transform: translateY(115%); }
+  to   { transform: translateY(0); }
+}
+
+/* ============ V3 HERO — the giant roman & behind, MARK / MY DESK
+   (Bespoke Stencil, cut/industrial) crossing over it. asymmetric cluster. ============ */
+/* the & and the word-block share ONE grid cell (they overlap, both centred),
+   so the & is genuinely centred BEHIND the words — the words cross its body. */
+.hero-title.v3 {
+  position: relative;
+  display: grid;
+  grid-template-areas: "stack";
+  align-items: center;
+  overflow: visible;
+  margin-left: 0;
+  padding: 1rem 0;
+}
+.hero-title.v3 .amp {
+  grid-area: stack;
+  align-self: center;
+  justify-self: start;
+  z-index: 0;                             /* BEHIND */
+  margin-left: clamp(0.5rem, 3vw, 3.5rem);
+  color: var(--accent);
+  font-family: "Fraunces", serif;
+  font-style: normal;                     /* ROMAN & — matches hero-asym-mock.html exactly (the & Mark wants) */
+  font-variation-settings: "opsz" 144, "wght" 470;
+  font-size: clamp(13rem, 30vw, 36rem);
+  line-height: 0.8;
+  transform: translateY(3%);              /* the & has no descender — nudge its glyph onto the words' centre */
+  /* grabbable like the letters — no pointer-events:none */
+}
+/* GOTCHA (measured): naming SOFT/WONK in the axis list SWAPS the & to a narrow
+   alternate (0.720em vs 0.878em advance) even at value 0. The wide loopy & the
+   mock shows = opsz+wght ONLY. Never add SOFT/WONK to the amp's axis string. */
+.hero-title.v3 .amp .ch { display: inline-block; font-variation-settings: "opsz" 144, "wght" 470; }
+.hero-title.v3 .v3-words {
+  grid-area: stack;
+  align-self: center;
+  z-index: 1;                             /* ON TOP of the & */
+  position: relative;
+}
+.hero-title.v3 .v3-word {
+  display: block;
+  color: var(--ink);
+  font-family: "Excon", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  line-height: 0.9;
+  font-size: clamp(2.8rem, 6.8vw, 7.4rem);
+}
+.hero-title.v3 .v3-word .ch { display: inline-block; }
+/* the two sorts sit in the stick like loosely-set type — NOT two flat stacked
+   lines (Mark: "too linear"). a real vertical gap, a wider offset delta, and a
+   slight splay (each sort leans its own way) break the linearity. angles stay
+   small and transform-origin sits at the left so the ragged margin holds and
+   the words never overflow the sheet. */
+.hero-title.v3 .v3-mark {
+  margin-left: clamp(1.5rem, 5vw, 5rem);
+  transform-origin: left center;
+  /* --rest = the sort's splay at rest; the entrance keyframes end on it */
+  --rest: rotate(-3deg);
+  transform: var(--rest);
+}
+.hero-title.v3 .v3-desk {
+  margin-left: clamp(7rem, 18vw, 18rem);
+  margin-top: clamp(0.8rem, 2.4vw, 2.4rem);
+  transform-origin: left center;
+  --rest: rotate(1.8deg);
+  transform: var(--rest);
+}
+
+/* ---- the lockup is set by hand (non-loader loads only — when the loader
+   runs, its flight IS the entrance and body.hero-set is never added).
+   the & is the heaviest sort so it seats first, with real weight; the two
+   words set over it, each arriving on its own vector (opposite laterals,
+   a touch more lean than their rest splay) and landing EXACTLY on their
+   splay — the variance is in the arrival, never the destination. ---- */
+body.hero-set .hero-title.v3 .amp {
+  animation: seat-amp 0.78s var(--ease-out) 0.12s both;
+}
+body.hero-set .hero-title.v3 .v3-mark {
+  --ax: -16px; --ay: -20px; --dl: -1.4deg;
+  animation: set-word 0.62s var(--ease-out) 0.38s both;
+}
+body.hero-set .hero-title.v3 .v3-desk {
+  --ax: 18px; --ay: -15px; --dl: 1.1deg;
+  animation: set-word 0.62s var(--ease-out) 0.55s both;
+}
+/* the &'s rest transform is translateY(3%) — keep these keyframes in sync
+   with .hero-title.v3 .amp above */
+@keyframes seat-amp {
+  0%   { opacity: 0; transform: translateY(calc(3% - 30px)) scale(1.035); }
+  60%  { opacity: 1; }
+  78%  { transform: translateY(calc(3% + 2px)) scale(1.004); }
+  100% { opacity: 1; transform: translateY(3%); }
+}
+@keyframes set-word {
+  0%   { opacity: 0; transform: translate(var(--ax, 0px), var(--ay, -18px)) var(--rest, translate(0, 0)) rotate(var(--dl, 0deg)); }
+  55%  { opacity: 1; }
+  76%  { transform: translate(0px, 1.6px) var(--rest, translate(0, 0)); }
+  100% { opacity: 1; transform: var(--rest, translate(0, 0)); }
+}
+/* the hero furniture chatters in around the lockup — seeded --sd from js,
+   never the same order twice. only on hero-set loads (under the loader the
+   furniture is long settled by the flood, which is correct: the loader
+   reveals a finished sheet). */
+body.hero-set .d-cluster .decode,
+body.hero-set .d-scatter,
+body.hero-set .d-cross,
+body.hero-set .d-run,
+body.hero-set .loose-decal,
+body.hero-set .plates-decal {
+  animation: setdown 0.5s var(--ease-out) var(--sd, 1.3s) both;
+}
+
+.hero-bio {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: end;
+  justify-self: end;
+  width: min(28.7em, 90vw);
+  margin-bottom: 0.5rem;
+  text-align: left;
+  opacity: 0.85;
+  animation: setdown 0.6s var(--ease-out) var(--sd, 1.05s) both;
+}
+.hero-bio .bio-rule {
+  display: block;
+  width: 2.4rem;
+  height: 1px;
+  background: var(--accent);
+  margin-bottom: 0.9rem;
+}
+
+/* ---------- ticker seam ---------- */
+.ticker {
+  overflow: hidden;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  padding: 0.7rem 0;
+  /* the hero is ~one viewport tall, so without this the marquee parks
+     exactly at the fold on load, right where the jobline lives */
+  margin-top: 10vh;
+  /* no load-time entrance — the ticker sits below the fold and the scroll
+     SETTING owns it (it used to run an invisible rise under the fold) */
+  white-space: nowrap;
+}
+.ticker-track {
+  display: inline-flex;
+  width: max-content;
+  animation: tick 44s linear infinite;
+}
+.proof .ticker-track { animation-play-state: paused; }
+.ticker-track span { padding-right: 3rem; opacity: 0.8; }
+.ticker-track .tick-mark { color: var(--accent); }
+@keyframes tick {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ---------- the trail so far: a figure, not a timeline ----------
+   FIG.1 — stones sized by the weight each year carried, on a ground line
+   measured through their actual bases (buildTerrain), the 2022 gap left
+   as a gap, the present stone proud of the line. no dashed connector —
+   the connector was the metronome tell. */
+.trail { position: relative; padding: 7vw 1.4vw 4vw; }
+.trail-frame {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  border-top: 1px solid var(--ink);
+  padding-top: 0.7rem;
+  margin-bottom: 5.5rem;
+}
+.trail-head { opacity: 0.75; }
+.trail-cap { opacity: 0.7; text-align: right; }
+
+.terrain { position: relative; }
+.terrain-ground {
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.terrain-ground .ground {
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.terrain-ground .tick { stroke: var(--hairline); stroke-width: 1; }
+.terrain-ground .gap-ghost { stroke: var(--graphite); stroke-width: 1.2; stroke-dasharray: 3 4; fill: none; opacity: 0.6; }
+
+/* the stones sit on the ground; the measured line runs through their bases */
+.terrain-stones {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.15fr 1.05fr 0.66fr 0.82fr 1fr 1.2fr;
+  align-items: end;
+  height: 118px;
+}
+.stone-slot { display: flex; justify-content: center; align-items: flex-end; }
+.mile-stone {
+  display: block;
+  width: calc(58px * var(--sz, 1));
+  height: calc(33px * var(--sz, 1));
+  transform: translateY(calc(var(--lift, 0) * 1px));
+}
+.mile-stone path { stroke: var(--ink); stroke-width: 1.5; fill: var(--stone-deep); }
+.stone-slot.is-now .mile-stone path { fill: var(--accent); stroke: var(--ink); }
+.stone-gap { align-items: flex-end; }
+.gap-tick {
+  display: block;
+  width: 1px;
+  height: 22px;
+  background: repeating-linear-gradient(var(--graphite) 0 3px, transparent 3px 6px);
+  opacity: 0.65;
+}
+
+/* the legend — years + facts, aligned under their stones by the same grid */
+.terrain-labels {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.15fr 1.05fr 0.66fr 0.82fr 1fr 1.2fr;
+  gap: 0 1.1rem;
+  margin-top: 1.6rem;
+}
+.mile-label { min-width: 0; }
+.mile-year { color: var(--accent); margin: 0 0 0.35rem; }
+.mile-fact {
+  font-size: clamp(0.88rem, 1.02vw, 1.08rem);
+  font-variation-settings: "opsz" 20;
+  line-height: 1.32;
+  max-width: 22ch;
+  opacity: 0.82;
+}
+.mile-label-gap { opacity: 0.5; }
+.mile-label-gap .mile-year { color: var(--graphite); }
+.gap-fact { opacity: 0.4; }
+
+/* mess scrawls under the figure (proof layer only) */
+.mile-note { top: 46%; font-size: 1.25rem; --tilt: -2deg; }
+.mile-note:nth-child(odd) { --tilt: 1.6deg; }
+.n-2022 { top: 2%; left: 33%; --tilt: -3deg; }
+.n-2025 { bottom: 6%; right: 6%; --tilt: 2deg; }
+
+/* ---------- at the desk ---------- */
+.desk {
+  position: relative;
+  padding: 2vw 1.4vw 7vw;
+}
+.desk-head { opacity: 0.78; margin-bottom: 1.6rem; }
+/* rows left, the operator's plate right */
+@media (min-width: 821px) {
+  .desk {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(200px, 20vw, 280px);
+    gap: 0 5vw;
+    align-items: start;
+  }
+  .desk-head { grid-column: 1 / -1; }
+  .desk-rows { grid-column: 1; min-width: 0; }
+  .op { grid-column: 2; grid-row: 2; }
+}
+.desk-row {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 1.5rem;
+  padding: 0.9rem 0.2vw;
+  border-bottom: 1px solid var(--hairline);
+}
+.desk-row:first-of-type { border-top: 1px solid var(--hairline); }
+.desk-k { opacity: 0.75; }
+.desk-v {
+  font-size: clamp(1.1rem, 1.6vw, 1.6rem);
+  font-weight: 420;
+  font-variation-settings: "opsz" 40;
+  letter-spacing: -0.01em;
+}
+.n-desk { top: -0.4rem; right: 34%; --tilt: 2deg; }
+
+/* ---------- the operator's plate ---------- */
+/* the person, printed in the site's inks: duotone + one misregistered
+   red pass + the same 9px screen the project plates use. baked colors,
+   like every plate — it stays a lit print on the night sheet. */
+/* right margin keeps the plate clear of the fixed edge chrome
+   (scroll telemetry + cairn indicator live in that strip) */
+.op { position: relative; margin: 0.35rem 2.4rem 0 0; }
+.op-print {
+  display: block;
+  width: 100%;
+  height: auto;
+  isolation: isolate; /* multiply passes never blend past the plate */
+}
+.op-redpass,
+.op-inkpass { mix-blend-mode: multiply; }
+.op-redpass {
+  transform: translate(7px, 5px);
+  transition: transform 0.5s var(--ease-out);
+}
+/* hover pulls the red pass into register */
+.op:hover .op-redpass { transform: translate(0, 0); }
+.op-cap {
+  margin-top: 0.65rem;
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  line-height: 1.8;
+  opacity: 0.55;
+}
+
+/* the mess holds the unscreened original, taped over the print */
+.op-candid {
+  display: none;
+  position: absolute;
+  top: -2.5%;
+  left: -6%;
+  right: 6%;
+  z-index: 5;
+  transform: rotate(-2.4deg);
+}
+body.proof .op-candid { display: block; }
+.op-candid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 7px solid #F6F3EA;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+}
+.op-candid::before,
+.op-candid::after {
+  content: "";
+  position: absolute;
+  top: -0.85rem;
+  width: 26%;
+  height: 1.8rem;
+  background: rgba(244, 240, 226, 0.5);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.op-candid::before { left: 5%; transform: rotate(-5deg); }
+.op-candid::after { right: 5%; transform: rotate(4deg); }
+.op-candid .n-opc {
+  /* to the left of the photo — the plate caption owns the space below */
+  position: absolute;
+  right: 102%;
+  bottom: 12%;
+  white-space: nowrap;
+  --tilt: -2deg;
+}
+@media (max-width: 820px) {
+  .op { max-width: 320px; margin-top: 2.2rem; }
+}
+
+/* doodles — they just exist */
+.dd-cup { width: 54px; height: 62px; bottom: 8%; right: 22%; --tilt: 4deg; }
+.dd-tally { width: 90px; height: 30px; bottom: 12%; right: 12%; --tilt: -2deg; }
+.n-tally { bottom: 4%; right: 11%; font-size: 1.1rem; --tilt: -3deg; }
+/* he lost count in march. then recounted anyway. twice. */
+.n-cmath { bottom: 0.2%; right: 5.5%; font-size: 1.15rem; --tilt: 2deg; }
+/* the pen test: the corner where the red pen got scribbled back to life */
+.dd-pentest { width: 92px; height: 54px; bottom: 12%; left: 5%; --tilt: -3deg; }
+.n-pentest { bottom: 6%; left: 4.5%; font-size: 1.15rem; --tilt: 2deg; }
+.dd-spiral { width: 44px; height: 44px; top: 38%; left: 3%; --tilt: 0deg; }
+.n-time1 { top: 30%; left: 2.5%; font-size: 1.15rem; --tilt: -4deg; }
+.n-redo { top: 55%; left: 2%; max-width: 11rem; font-size: 1.15rem; --tilt: 3deg; }
+/* the day log runs down the margin OUT OF ORDER — midnight above morning.
+   nothing at this desk happens in a straight line. */
+.n-time2 { top: 67%; left: 2.2%; font-size: 1.05rem; --tilt: 2deg; }
+.n-time3 { top: 72%; left: 3.4%; font-size: 1.12rem; --tilt: -3deg; }
+.dd-burst { width: 30px; height: 30px; top: 71.2%; left: 1.2%; --tilt: 8deg; }
+.dd-zzz { width: 38px; height: 38px; top: -148px; right: calc(9% - 22px); --tilt: 6deg; }
+/* the moon cleared out when the EMAIL tab moved in under it */
+.dd-moon { width: 44px; height: 40px; top: 6%; right: 34%; --tilt: -6deg; }
+.dd-plane { width: 74px; height: 50px; bottom: 24%; right: 36%; --tilt: -4deg; }
+/* the maker's mark gets fact-checked (the 2am pen tested it, obviously) */
+.n-pm { right: 26%; bottom: 34%; text-align: right; --tilt: 1.6deg; }
+.dd-pm-arrow { width: 66px; height: 32px; right: 21.5%; bottom: 33%; --tilt: 0deg; }
+.dd-pm-arrow .draw { stroke: var(--graphite); }
+
+/* some doodles in pencil, some in pen */
+.scrawl.dd-zzz .draw, .scrawl.dd-moon .draw, .scrawl.dd-cup .draw {
+  stroke: var(--graphite);
+  stroke-width: 2;
+}
+
+/* the late-night admission */
+.big-line {
+  left: 1.4vw;
+  top: 18%;
+  font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+  font-weight: 600;
+  --tilt: -2.5deg;
+}
+.big-reply {
+  left: calc(1.4vw + 3rem);
+  top: calc(18% + 3.2rem);
+  font-size: 1.5rem;
+  --tilt: -1deg;
+}
+.n-outro { left: 1.4vw; bottom: 4.5vw; --tilt: -1.6deg; }
+
+/* ---------- project index ---------- */
+/* ============================================================
+   THE LINE — the shop's drying line (SELECTED WORK).
+   one strung wire meanders through the section; the four plates
+   hang salon-style from drop-cords of different lengths, each
+   with its own rest-lean. machined hardware only — the desk owns
+   the handmade. geometry set by buildLine() in main.js; this file
+   owns the look. sway/drag transforms are written by JS onto the
+   .row (pivot: the clip), so nothing here transitions transform.
+   ============================================================ */
+
+.index {
+  position: relative;
+  padding: 6vw 1.4vw 8vw;
+  /* height set by buildLine() — the hang needs room. clip-x keeps the
+     meandering wire + leaning sheets from ever widening the ICB (the
+     pocket-proof rule); clip leaves the vertical hang untouched. */
+  overflow-x: clip;
+}
+.index-head { opacity: 0.78; }
+.index-sub {
+  opacity: 0.72;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  margin-top: 0.5rem;
+}
+
+.line-wire {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  color: var(--ink);
+}
+.line-wire path.w { fill: none; stroke: currentColor; stroke-width: 1.5; }
+.line-wire path.w-hi { fill: none; stroke: rgba(255, 255, 255, 0.42); stroke-width: 0.6; transform: translateY(-1px); }
+.line-wire .cord { fill: none; stroke: currentColor; stroke-width: 1.1; opacity: 0.85; }
+.line-wire .hw path, .line-wire .hw line, .line-wire .hw rect, .line-wire .hw circle {
+  stroke: currentColor; fill: none; stroke-width: 1.3;
+}
+.line-wire .hw .fill { fill: var(--stone-deep); }
+.line-wire .hw .dot { fill: currentColor; stroke: none; }
+.night .line-wire path.w-hi { stroke: rgba(255, 255, 255, 0.14); }
+/* a hard flick runs down the wire */
+.line-wire.hum { animation: line-hum 0.9s var(--ease-out); }
+@keyframes line-hum {
+  0% { transform: translateY(0); } 20% { transform: translateY(1.4px); }
+  45% { transform: translateY(-0.9px); } 72% { transform: translateY(0.4px); }
+  100% { transform: translateY(0); }
+}
+
+/* the instrument: positioned by buildLine into a clear pocket */
+.line-wll {
+  position: absolute;
+  z-index: 4;
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+  background: color-mix(in srgb, var(--stone) 92%, var(--ink));
+  padding: 6px 10px 5px;
+  white-space: nowrap;
+}
+.line-wll em { font-style: normal; color: var(--acid); }
+.line-wll.blip em { color: var(--pencil); }
+
+/* ---- the hanging sheet (the row, rehung) ---- */
+.row {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  padding: 0;
+  transform-origin: 50% 0;    /* the clip is the pivot */
+  will-change: transform;
+  filter: drop-shadow(0 14px 20px rgba(22, 21, 15, 0.16));
+  transition: opacity 0.55s var(--ease-out), color 0.45s var(--ease-out),
+    filter 0.35s var(--ease-out);
+  touch-action: pan-y;        /* a thumb can still scroll past the run */
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;          /* a swing shouldn't select the sheet's text */
+  -webkit-user-select: none;
+}
+/* lifted off the line to inspect — the shadow drops away beneath it */
+.index.is-hovering .row.is-active {
+  filter: drop-shadow(0 26px 34px rgba(22, 21, 15, 0.26));
+}
+.night .index.is-hovering .row.is-active {
+  filter: drop-shadow(0 26px 40px rgba(0, 0, 0, 0.5));
+}
+.row-clip {
+  position: absolute;
+  left: 50%;
+  top: -19px;
+  width: 32px;
+  height: 21px;
+  margin-left: -16px;
+}
+.row-clip rect { fill: var(--stone-deep); stroke: var(--ink); stroke-width: 1.3; }
+.row-clip line { stroke: var(--ink); stroke-width: 1.3; }
+.row-clip circle { fill: var(--ink); }
+.row-etch {
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.5rem;
+  letter-spacing: 0.22em;
+  color: var(--graphite);
+  opacity: 0.7;
+  white-space: nowrap;
+}
+/* the sheet face: paper margin around the plate */
+.row-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background-size: cover;
+  background-position: center;
+  border: 6px solid var(--sheet-edge, #E6E4DC);
+  outline: 1px solid rgba(22, 21, 15, 0.16);
+  background-color: var(--stone-deep);
+  box-sizing: border-box;
+}
+.row { --sheet-edge: #E6E4DC; background: var(--sheet-edge); }
+.night .row { --sheet-edge: #221F18; }
+.row-strip {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.25em 0.6em;
+  padding: 8px 10px 7px;
+}
+.row-num {
+  grid-column: 1; grid-row: 1;
+  font-size: 0.55rem; letter-spacing: 0.18em; opacity: 0.6;
+  transform: translateY(-0.15em);
+}
+.row-title {
+  grid-column: 2; grid-row: 1;
+  font-weight: 460;
+  font-variation-settings: "opsz" 60, "SOFT" 0, "WONK" 0;
+  font-size: clamp(1rem, 1.55vw, 1.55rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  transition:
+    letter-spacing 0.6s var(--ease-out),
+    font-variation-settings 0.45s var(--ease-out);
+}
+.row-meta {
+  grid-column: 2; grid-row: 2;
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  opacity: 0.8;
+  transition: opacity 0.45s var(--ease-out);
+}
+.row-ref { text-align: left; }
+/* the working note, printed on the sheet margin under the strip */
+.row-desc {
+  display: block;
+  padding: 0 10px 9px;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+  opacity: 0.72;
+  max-width: none;
+}
+
+.index.is-hovering .row { opacity: 0.3; }
+.index.is-hovering .row.is-active { opacity: 1; color: var(--accent); }
+.index.is-hovering .row.is-active .row-title {
+  letter-spacing: 0.005em;
+  font-variation-settings: "opsz" 60, "SOFT" 45, "WONK" 1;
+}
+.index.is-hovering .row.is-active .row-num,
+.index.is-hovering .row.is-active .row-meta { opacity: 1; }
+
+/* the dock: the run so far */
+.line-dock { position: absolute; z-index: 1; }
+.dock-table { position: absolute; left: 0; right: 0; bottom: 0; height: 1.5px; background: var(--ink); }
+.dock-table::after {
+  content: ""; position: absolute; left: 8%; right: 8%; top: 2.5px; height: 1px;
+  background: var(--hairline);
+}
+.dock-stack { position: absolute; bottom: 1.5px; left: 10%; width: 54%; }
+.dock-stack i {
+  display: block; position: relative; height: 6px;
+  background: var(--sheet-edge, #E6E4DC);
+  border: 1px solid rgba(22, 21, 15, 0.3); border-bottom: none;
+  margin: 0 auto;
+}
+.dock-stack i:nth-child(1) { width: 94%; transform: translateX(2px); }
+.dock-stack i:nth-child(2) { width: 91%; transform: translateX(-2px); }
+.dock-stack i:nth-child(3) { width: 88%; transform: translateX(1px); }
+.dock-stack i:nth-child(4) { width: 85%; }
+.dock-tally {
+  position: absolute; left: 10%; bottom: -26px;
+  font-size: 0.5rem; letter-spacing: 0.2em;
+  color: var(--graphite); white-space: nowrap;
+}
+.dock-tally em { font-style: normal; color: var(--acid); }
+
+/* ---------- visitors' cairn ---------- */
+.yard { position: relative; padding: 0 1.4vw 6vw; }
+.yard-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  opacity: 0.78;
+  margin-bottom: 0.6rem;
+}
+.yard-ground {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+#yard-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+#ground-line {
+  stroke: var(--graphite);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+#pile path {
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: var(--stone-deep);
+}
+#pile path.signal { fill: var(--accent); fill-opacity: 0.85; stroke: var(--ink); }
+/* the new stone drops into place on the stack (the topple is JS-driven) */
+#pile .stone-inner.dropping {
+  animation: stone-drop 0.5s var(--ease-thunk) both;
+}
+@keyframes stone-drop {
+  0%   { transform: translateY(-105px); }
+  70%  { transform: translateY(0) scaleY(1); }
+  82%  { transform: translateY(0) scaleY(0.85); }
+  100% { transform: translateY(0) scaleY(1); }
+}
+
+/* ---------- outro ---------- */
+.outro {
+  position: relative;
+  padding: 0 1.4vw 80px;        /* clears the fixed SEE THE MESS corner (~62px tall) so the footer isn't on top of it */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(360px, 26vw, 440px);
+  align-items: start;
+  column-gap: clamp(2rem, 5vw, 5rem);
+  row-gap: 1rem;
+}
+.outro-title {
+  grid-column: 1;
+  grid-row: 1;
+  font-weight: 440;
+  font-variation-settings: "opsz" 144;
+  font-size: clamp(2.6rem, 7vw, 8rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+.outro-title a { border-bottom: 2px solid var(--accent); transition: color 0.4s var(--ease-out); }
+.outro-title a:hover { color: var(--accent); }
+/* the doors out — same tab language as the corners: email · github · linkedin */
+.outro-links {
+  grid-column: 2;
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  margin: 0.4rem 0 0.2rem;
+}
+.olink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  background: var(--stone);
+  border: 1px solid var(--hairline);
+  transition:
+    color 0.25s var(--ease-out),
+    background-color 0.25s var(--ease-out),
+    border-color 0.25s var(--ease-out);
+}
+.olink svg { width: 13px; height: 13px; display: block; }
+.olink:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--stone);
+}
+.olink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.colophon {
+  grid-column: 1 / -1;      /* full-width footer — no longer cramped in the rail */
+  text-align: right;
+  opacity: 0.72;
+  font-size: 0.58rem;
+}
+
+/* ---------- the outro right rail: socials · maker's mark · colophon ----------
+   fills the void beside the check. socials stack (email on top), the mark sits
+   below them, the colophon rides the bottom. */
+.outro-rail {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: stretch;            /* fill the height of title + check ... */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;    /* ... contacts + mark ride HIGH in the rail */
+  gap: 1rem;
+  min-width: 0;
+}
+.outro-rail .outro-links {
+  flex-direction: column;      /* EMAIL on top, GITHUB + LINKEDIN paired below it */
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 70px 0 0;            /* nudged down off the very top — middle ground */
+  width: 100%;
+  max-width: 16rem;
+}
+.outro-rail .olink { justify-content: flex-start; }
+.olink-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+/* footer sits under the matrix in the rail, anchored to its right edge. it
+   SHRINKS TO FIT its own longest line so each markup line always holds ONE
+   length — nowrap + the widened rail column keep the fluid root scale from
+   growing the long line past its box and re-wrapping it (the tiny hang left at
+   the very narrowest 2-col widths stays inside the gutter, clear of the check).
+   the extra top margin gives the maker's mark a bit of air above the type. */
+.outro-rail .colophon {
+  width: auto;
+  align-self: flex-end;
+  text-align: right;
+  white-space: nowrap;
+  margin-top: calc(2.6rem + 10px);
+}
+
+/* THE MAKER'S MARK — a real Data Matrix (scan → email), off-square + off-register.
+   the code TILE is fixed dark-on-light so it scans in day AND night; the furniture
+   (brackets, labels, reg cross, acid tick) themes with the sheet. */
+.pressmark {
+  width: 100%;
+  max-width: 210px;
+  opacity: 0.92;
+  align-self: flex-end;             /* drifts to the rail's outer edge, away from the socials */
+  margin-right: 0.6rem;
+  transform: rotate(-3deg);         /* struck onto the sheet, not placed in a grid cell */
+  transform-origin: 60% 45%;
+}
+.pm-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.pm-code rect { fill: var(--ink); }
+.pm-ghost { opacity: 0.4; }                   /* the off-register red pass, behind the ink */
+.pm-ghost rect { fill: var(--pencil); }
+.pm-brk { fill: none; stroke: var(--ink); stroke-width: 1.4; }
+.pm-reg { fill: none; stroke: var(--accent); stroke-width: 1; }
+.pm-acid { fill: var(--acid); }
+.pm-lbl { font-family: "Space Mono", monospace; letter-spacing: 0.1em; }
+.pm-name { font-size: 9.5px; fill: var(--ink); }
+.pm-dim { font-size: 7px; fill: var(--graphite); }
+.pm-r { text-anchor: end; }
+
+/* ---------- cairn scroll indicator ---------- */
+.cairn-ind {
+  position: fixed;
+  top: 50%;
+  right: calc(var(--frame) + 0.55vw);
+  transform: translateY(-50%);
+  z-index: 45;
+  pointer-events: none;
+  animation: setdown 0.6s var(--ease-out) 1.3s both;
+}
+.cairn-ind svg { display: block; width: 34px; height: 94px; }
+.cairn-ind path {
+  stroke: var(--ink);
+  stroke-width: 1.4;
+  fill: var(--stone-deep);
+  opacity: 0;
+  transform: translateY(-7px);
+  transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-thunk);
+}
+.cairn-ind path.top-stone { fill: var(--accent); }
+.cairn-ind path.on { opacity: 1; transform: translateY(0); }
+.proof .cairn-ind path { stroke: var(--pencil); fill: none; }
+
+/* ============================================================
+   ANCHORED HAND MARKS (mess layer, positioned by JS)
+   ============================================================ */
+
+.amark {
+  position: absolute;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0;
+  transition: opacity 0.45s var(--ease-out) var(--d, 0.2s);
+}
+.amark svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.amark .draw { stroke-width: 3; }
+.proof .amark.seen { opacity: 1; }
+
+/* ============================================================
+   LOOSE TYPE (the case is open — main-page toy)
+   ============================================================ */
+
+.loose-decal {
+  position: absolute;
+  left: 26rem;
+  top: calc(3.2vw + 0.2rem);
+  z-index: 7;
+  border: 0;
+  background: none;
+  padding: 0.3rem 0;
+  font-family: "Space Mono", monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.4s var(--ease-out), color 0.3s var(--ease-out);
+}
+body.has-cursor .loose-decal { opacity: 0.55; }
+body.has-cursor .loose-decal:hover { opacity: 1; color: var(--accent); }
+.proof .loose-decal { opacity: 0.15 !important; pointer-events: none; }
+
+/* the plate pull's nameplate — same spec-decal language, stacked under
+   the loose-type one. nothing on this sheet is key-only: the gesture is
+   named on its face, and a click runs one demo pull. fine-pointer only,
+   like the gesture itself. */
+.plates-decal {
+  position: absolute;
+  left: 26rem;
+  top: calc(3.2vw + 1.5rem);
+  z-index: 7;
+  border: 0;
+  background: none;
+  padding: 0.3rem 0;
+  font-family: "Space Mono", monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.4s var(--ease-out), color 0.3s var(--ease-out);
+}
+body.has-cursor .plates-decal { opacity: 0.55; }
+body.has-cursor .plates-decal:hover { opacity: 1; color: var(--accent); }
+.proof .plates-decal { opacity: 0.15 !important; pointer-events: none; }
+
+/* once the type is loose, the line masks let go */
+.type-loose .hl-mask { overflow: visible; clip-path: none; }
+/* the sorts are the .ch inside the v3 lockup (.amp / .v3-word) now, NOT the
+   old .hl lines — scope the loose-type + ink-pooling transitions to the hero
+   title itself, or a reset SNAPS home instead of travelling back, and the
+   swell loses its ease (the 0.28s hides the quantised weight steps). */
+.hero-title .ch { cursor: none; transition: font-variation-settings 0.28s var(--ease-out); }
+.hero-title .ch.grabbed { transition: none; }
+.hero-title .ch.returning { transition: transform 0.7s var(--ease-thunk); }
+.cursor.is-grab {
+  width: 52px;
+  height: 52px;
+  background: transparent;
+  border-color: #fff;
+}
+.cursor.is-grab .cursor-label { opacity: 1; }
+
+/* ============================================================
+   THE DECAL LAYER (always on — the machine speaks in mono)
+   ============================================================ */
+
+.spec {
+  font-family: "Space Mono", monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.75;
+  color: var(--ink);
+  opacity: 0.55;
+}
+
+/* decodable marks: cryptic until touched */
+.decode {
+  pointer-events: auto;
+  cursor: help;
+  border-bottom: 1px dotted rgba(22, 21, 15, 0.35);
+  padding-bottom: 1px;
+}
+.night .decode { border-bottom-color: rgba(221, 219, 212, 0.35); }
+.decode .c2 { display: none; color: var(--accent); }
+.decode:hover .c1, .decode:focus-visible .c1 { display: none; }
+.decode:hover .c2, .decode:focus-visible .c2 { display: inline; }
+
+/* micro geometry */
+.sq {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--acid);
+  vertical-align: middle;
+}
+.sq.hollow { background: transparent; border: 1px solid currentColor; }
+.blink {
+  display: inline-block;
+  width: 6px;
+  height: 10px;
+  background: var(--acid);
+  vertical-align: middle;
+  animation: caret 1.1s steps(2, start) infinite;
+}
+@keyframes caret { 50% { opacity: 0; } }
+
+/* hero spec cluster — lower-left grip zone, off the grid on purpose */
+.d-cluster {
+  position: absolute;
+  bottom: 6.5vw;
+  left: 1.5vw;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* scattered marks */
+.d-scatter {
+  position: absolute;
+  left: 42%;
+  top: 30%;
+  z-index: 6;
+  pointer-events: none;
+}
+.d-cross {
+  position: absolute;
+  left: 3%;
+  top: 63%;
+  width: 16px;
+  height: 16px;
+  opacity: 0.55;
+  z-index: 6;
+}
+.d-cross::before, .d-cross::after {
+  content: "";
+  position: absolute;
+  background: currentColor;
+}
+.d-cross::before { left: 0; right: 0; top: 7px; height: 1px; }
+.d-cross::after { top: 0; bottom: 0; left: 7px; width: 1px; }
+
+/* run-status — empty band left of the bio column */
+.d-run {
+  position: absolute;
+  right: 27%;
+  bottom: 2vw;
+  text-align: right;
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* live scroll telemetry — right edge, above the cairn */
+.d-scroll {
+  position: fixed;
+  right: calc(var(--frame) + 0.55vw);
+  top: 32%;
+  writing-mode: vertical-rl;
+  z-index: 45;
+  pointer-events: none;
+}
+
+/* the specimen — his favourite glyph at every optical size, like a
+   torn corner of a type-specimen book */
+.specimen {
+  position: absolute;
+  right: 3.5vw;
+  top: 10vh;
+  /* above the full-width headline line-box, which otherwise steals the
+     glyphs' hover-swell (the .hl gotcha) — worsened once the root-scale
+     rule enlarged the cascade into the headline's band */
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+  user-select: none;
+  -webkit-user-select: none;
+  text-align: right;
+  /* the cascade's height is fixed (rem/vw-based, not vh-based) while the
+     bio below it is pinned to the bottom of a ~100vh hero — on a short
+     window (most non-maximized Mac browser windows land well under
+     980px tall) the two collide. Scale the whole plate down from its top
+     edge once the window gets shorter than a comfortable ~980px; at
+     980px+ (the height this was designed against) scale stays at 1, so
+     nothing changes on a normal full-height window. */
+  transform-origin: top right;
+  transform: scale(min(1, calc(100vh / 1060px)));
+}
+.spec-head {
+  color: var(--graphite);
+  font-size: 0.52rem;
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 0.45rem;
+  margin-bottom: 0.5rem;
+}
+.spec-amp {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  line-height: 0.9;
+  font-weight: 500;
+  color: var(--ink);
+  font-variation-settings: "opsz" var(--o), "wght" var(--w), "SOFT" 0, "WONK" var(--k, 0);
+  transition: font-variation-settings 0.35s var(--ease-out);
+}
+.spec-amp:hover {
+  font-variation-settings: "opsz" var(--o), "wght" calc(var(--w) + 90), "SOFT" 70, "WONK" var(--k, 0);
+}
+.spec-amp i {
+  font-style: normal;
+  color: var(--graphite);
+  font-size: 0.5rem;
+  order: -1; /* the axis label sits to the left, like a specimen sheet */
+}
+.spec-amp.s1 { font-size: 1.35rem; }
+.spec-amp.s2 { font-size: 2.2rem; }
+.spec-amp.s3 { font-size: 3.6rem; }
+.spec-amp.s4 { font-size: 6rem; }
+.spec-amp.s5 {
+  font-size: clamp(6.5rem, 9.5vw, 11rem);
+  font-style: italic;
+  color: var(--accent);
+}
+.spec-foot {
+  color: var(--graphite);
+  font-size: 0.5rem;
+  border-top: 1px solid var(--hairline);
+  padding-top: 0.45rem;
+  margin-top: 0.6rem;
+}
+
+/* the ink calibration bar — proof-sheet furniture beside the specimen */
+.tonebar {
+  position: absolute;
+  right: 22vw;
+  top: 12vh;
+  width: 13px;
+  height: 32vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 0;
+  pointer-events: none;
+}
+.tonebar i {
+  flex: 1;
+  background: var(--ink);
+  opacity: var(--t);
+  border-bottom: 1px solid var(--stone);
+}
+.tonebar .mono {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  right: -0.3rem;
+  writing-mode: vertical-rl;
+  color: var(--graphite);
+  font-size: 0.5rem;
+  white-space: nowrap;
+}
+
+/* the fold line — the void is measured, not empty */
+.foldline {
+  position: absolute;
+  left: 57%;
+  top: 5vh;
+  bottom: 9vh;
+  border-left: 1px dashed var(--hairline);
+  z-index: 0;
+  pointer-events: none;
+}
+.foldline i {
+  position: absolute;
+  top: -0.4rem;
+  left: 0.45rem;
+  font-style: normal;
+  color: var(--graphite);
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+}
+
+/* ---- the specimen is PULLED, size by size (THE SETTING) ----
+   body.spec-set arms the choreography: the header rule ticks in, then the
+   & is pulled at every size — smallest first, the 144pt italic accent one
+   LAST and heaviest — each glyph's axis label chattering in just after its
+   pull. the tonebar inks its ramp step by step (machine-linear ON PURPOSE:
+   it is a calibration instrument; linearity is its job — the jitter lives
+   in the human elements). the foldline is scored down the sheet.
+   on plain loads spec-set arrives at init; when the loader ran it arrives
+   at release, so the shop finishes the sheet right after the flood
+   (body.spec-armed pre-hides the plate under the booth so nothing flashes
+   mid-reveal). --sd / --sdur are seeded inline by js. */
+body.spec-armed .spec-head, body.spec-armed .spec-amp,
+body.spec-armed .spec-foot, body.spec-armed .tonebar,
+body.spec-armed .foldline { opacity: 0; }
+body.spec-set .spec-head { animation: tickin 0.45s var(--ease-out) 0.15s both; }
+body.spec-set .spec-amp {
+  animation: pull-in var(--sdur, 0.5s) var(--ease-out) var(--sd, 0.4s) both;
+}
+body.spec-set .spec-amp i {
+  animation: tickin 0.4s var(--ease-out) calc(var(--sd, 0.4s) + 0.18s) both;
+}
+body.spec-set .spec-foot { animation: tickin 0.45s var(--ease-out) 1.35s both; }
+body.spec-set .tonebar { animation: tickin 0.25s var(--ease-out) 0.5s both; }
+body.spec-set .tonebar i { animation: ink-up 0.3s linear var(--sd, 0.5s) both; }
+body.spec-set .foldline {
+  transform-origin: top;
+  animation: score 0.7s var(--ease-out) 1.05s both;
+}
+body.spec-set .foldline i { animation: tickin 0.4s var(--ease-out) 1.55s both; }
+@keyframes pull-in {
+  0%   { opacity: 0; transform: translateY(-12px); }
+  55%  { opacity: 1; }
+  76%  { transform: translateY(1.2px); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes tickin { from { opacity: 0; } to { opacity: 1; } }
+/* the steps land on their own tone, not full ink */
+@keyframes ink-up { from { opacity: 0; } to { opacity: var(--t); } }
+@keyframes score { from { opacity: 0; transform: scaleY(0); } to { opacity: 1; transform: scaleY(1); } }
+
+/* grip tape — name running up the left edge */
+.tape {
+  position: fixed;
+  left: calc(var(--frame) - 1.9em);
+  bottom: calc(var(--frame) + 6vw);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 0.5rem;
+  letter-spacing: 0.3em;
+  opacity: 0.4;
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* hazard stripes — the grip corner */
+.hazard {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--acid) 0 7px,
+    var(--ink) 7px 14px
+  );
+}
+.hz-bl {
+  left: calc(var(--frame) - 6px);
+  bottom: calc(var(--frame) + 12vw);
+  width: 11px;
+  height: 90px;
+  clip-path: polygon(0 8%, 100% 0, 100% 100%, 0 92%);
+}
+.hz-r {
+  right: calc(var(--frame) - 4px);
+  top: 18%;
+  width: 7px;
+  height: 34px;
+}
+
+/* night-office switch — a decal that works */
+.night-toggle {
+  position: fixed;
+  /* clears the CONTACT tab above it (the tab grew a border) */
+  top: calc(var(--frame) + 1.1vw + 0.9rem);
+  right: calc(var(--frame) + 1.4vw);
+  z-index: 55;
+  border: 0;
+  background: none;
+  padding: 0.25rem 0;
+  font-family: "Space Mono", monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+  opacity: 0.6;
+  cursor: pointer;
+}
+.night-toggle:hover { opacity: 1; color: var(--accent); }
+.night-toggle .moon { color: var(--acid); }
+
+/* paint chips — the color bar works now */
+.chips {
+  position: fixed;
+  bottom: calc(var(--frame) - 20px);
+  left: calc(var(--frame) + 8vw);
+  display: flex;
+  gap: 3px;
+  z-index: 55;
+  animation: setdown 0.6s var(--ease-out) 1.2s both;
+}
+.chips .chip-static {
+  display: block;
+  width: 14px;
+  height: 9px;
+}
+.chips .chip-ink { background: var(--ink); }
+.chips .chip-fade { background: linear-gradient(90deg, var(--ink), var(--stone)); }
+.chips .chip {
+  width: 14px;
+  height: 9px;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease-thunk);
+}
+.chips .chip:hover { transform: translateY(-2px); }
+.chips .chip[aria-pressed="true"] {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 0 -1px var(--ink);
+}
+
+/* row part-numbers */
+.row-ref {
+  display: block;
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  opacity: 0.55;
+  text-align: right;
+}
+
+/* outro coffee counter */
+.d-outro {
+  position: absolute;
+  right: 1.4vw;
+  top: 0;
+  z-index: 6;
+  pointer-events: none;
+  text-align: right;
+}
+
+/* ============================================================
+   THE WORKING LAYER (proof mode)
+   ============================================================ */
+
+/* baseline grid + margin guides */
+.under {
+  position: fixed;
+  inset: calc(var(--frame) + 1px);
+  z-index: 44;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.55s var(--ease-out);
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 23px,
+      rgba(199, 54, 31, 0.13) 23px,
+      rgba(199, 54, 31, 0.13) 24px
+    ),
+    linear-gradient(to right, rgba(199, 54, 31, 0.3) 0, rgba(199, 54, 31, 0.3) 1px, transparent 1px),
+    linear-gradient(to left, rgba(199, 54, 31, 0.3) 0, rgba(199, 54, 31, 0.3) 1px, transparent 1px);
+  background-position: 0 0, 1.4vw 0, calc(100% - 1.4vw) 0;
+  background-repeat: repeat, no-repeat, no-repeat;
+}
+.proof .under { opacity: 1; }
+/* the red survives the dark */
+.night .under {
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 23px,
+      rgba(240, 96, 63, 0.16) 23px,
+      rgba(240, 96, 63, 0.16) 24px
+    ),
+    linear-gradient(to right, rgba(240, 96, 63, 0.35) 0, rgba(240, 96, 63, 0.35) 1px, transparent 1px),
+    linear-gradient(to left, rgba(240, 96, 63, 0.35) 0, rgba(240, 96, 63, 0.35) 1px, transparent 1px);
+}
+.night .stamp { mix-blend-mode: normal; }
+.night .coffee .draw { stroke: rgba(214, 168, 110, 0.5); }
+
+/* notes: shared behaviour */
+.note {
+  opacity: 0;
+  transform: translateY(6px) rotate(var(--tilt, -1.5deg));
+  transition:
+    opacity 0.45s var(--ease-out) var(--d, 0s),
+    transform 0.45s var(--ease-out) var(--d, 0s),
+    filter 0.35s var(--ease-out) 0s;
+  pointer-events: none;
+}
+body:not(.proof) .note { transition-delay: 0s; }
+/* a note appears only once it has scrolled into view (js adds .seen) */
+.proof .note.seen { opacity: 1; transform: translateY(0) rotate(var(--tilt, -1.5deg)); }
+
+/* scrawled SVG strokes draw themselves in */
+.scrawl .draw {
+  stroke: var(--pencil);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.9s ease var(--d, 0s);
+}
+.scrawl .draw.echo { stroke-width: 1.2; opacity: 0.4; }
+.proof .seen .draw, .proof .seen.scrawl .draw { stroke-dashoffset: 0; }
+
+/* note containers inside sections */
+.proof-notes {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.proof-notes .note { position: absolute; }
+
+/* hero marginalia placement */
+.n-eyebrow { top: calc(3.2vw + 1.4rem); left: 24rem; --tilt: -2deg; }
+.drafts {
+  top: calc(3.2vw + 11.5rem);
+  right: 6%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  max-width: 15rem;
+  --tilt: 1.2deg;
+}
+.drafts-head { color: var(--pencil); opacity: 0.85; margin-bottom: 0.3rem; }
+.n-lh { left: 46%; top: 57%; --tilt: -1deg; }
+
+/* the version ledger — the bio says "fourth version this year"; the margins
+   keep the score, stacked right under the REJECTED drafts (two ledgers of
+   dead attempts, one corner of the sheet). */
+.versions {
+  right: 6.5%;
+  top: 53%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  max-width: 15rem;
+  --tilt: -1.4deg;
+}
+.vers-head { color: var(--pencil); opacity: 0.85; margin-bottom: 0.3rem; }
+
+/* the arrow from "do not scale" up at the & that got scaled anyway */
+.dd-nsarrow {
+  width: 58px;
+  height: 50px;
+  left: calc(var(--frame) + 17vw);
+  bottom: calc(6vh + 2.4rem);
+  --tilt: 0deg;
+}
+.dd-nsarrow .draw { stroke: var(--graphite); }
+
+/* JS-anchored callouts (positioned by main.js) */
+.anchor {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.45s var(--ease-out) var(--d, 0s);
+  pointer-events: none;
+}
+.proof .anchor.seen { opacity: 1; }
+.anchor svg { display: block; overflow: visible; }
+/* the amp circle: the box is SIZED FROM THE LIVE GLYPH by positionAnchors
+   (the v3 & is a monument — up to ~36rem); the 180×120 loop stretches with
+   preserveAspectRatio="none" while the stroke keeps its pen weight. captions
+   sit on the loop's corners, not stacked under a fixed box. */
+.anchor-amp { width: 180px; height: 120px; }
+.anchor-amp svg { width: 100%; height: 100%; }
+.anchor-amp .hand-k, .anchor-amp .hand-b { position: absolute; white-space: nowrap; }
+.anchor-amp .ac-1 { left: 10%; bottom: -0.7rem; }
+.anchor-amp .ac-2 { left: 14%; bottom: -2.3rem; }
+.anchor-amp .ac-3 { right: 3%; top: 0.2rem; transform: rotate(1.6deg); }
+.anchor-bio svg { width: 24px; height: 100%; position: absolute; left: 0; top: 0; }
+.anchor-bio .hand-b { position: absolute; right: calc(100% + 2rem); top: 30%; width: 11.5rem; text-align: right; }
+
+/* index marginalia */
+.coffee {
+  width: 130px;
+  height: 122px;
+  top: -1.5rem;
+  right: 12%;
+  --tilt: 0deg;
+}
+.coffee .draw { stroke: rgba(128, 84, 40, 0.5); stroke-width: 3.2; }
+.n-coffee { top: 4.2rem; right: calc(12% - 3.4rem); --tilt: 2deg; }
+
+/* the pen's aside hangs off the sheet's lower corner now */
+.row-note {
+  position: absolute;
+  right: -1.2rem;
+  top: calc(100% + 0.55rem);
+  max-width: 15rem;
+  text-align: right;
+  z-index: 5;
+}
+.row:nth-of-type(odd) .row-note { --tilt: 1.4deg; right: auto; left: -0.8rem; text-align: left; }
+
+/* outro marginalia */
+.n-outro { left: 1.4vw; bottom: 4.5vw; --tilt: -1.6deg; }
+
+/* the machine layer steps back while the hand talks */
+.proof .d-cluster, .proof .d-scatter, .proof .d-cross,
+.proof .d-run, .proof .d-scroll, .proof .row-ref, .proof .d-outro { opacity: 0.15; }
+.proof .tape { opacity: 0.12; }
+.proof .hazard { opacity: 0.25; }
+.proof .specimen { opacity: 0.34; filter: saturate(0.5); }
+.proof .night-toggle { opacity: 0.35; }
+
+/* mess notes for the interactive decals */
+.n-chips {
+  position: absolute;
+  bottom: calc(var(--frame) + 14px);
+  left: calc(var(--frame) + 8vw + 6rem);
+  white-space: nowrap;
+  --tilt: -2deg;
+}
+.n-night {
+  position: absolute;
+  top: calc(var(--frame) + 2.8vw);
+  right: calc(var(--frame) + 1.2vw);
+  text-align: right;
+  --tilt: 1.5deg;
+}
+.chip-ring {
+  position: absolute;
+  bottom: calc(var(--frame) - 26px);
+  left: calc(var(--frame) + 8vw - 1.6rem);
+  width: 118px;
+  height: 42px;
+  opacity: 0;
+  transition: opacity 0.45s var(--ease-out) 0.5s;
+}
+.proof .chip-ring.seen { opacity: 1; }
+
+/* the cat — scratched in quickly, then she just sits there */
+.cat {
+  position: absolute;
+  top: -97px;
+  right: 9%;
+  width: 118px;
+  height: 98px;
+  z-index: 5;
+  --tilt: 0deg;
+}
+.cat .draw {
+  stroke: var(--graphite);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  transition: stroke-dashoffset 0.16s steps(3, end) var(--dd, 0s);
+}
+.n-cat {
+  position: absolute;
+  top: -52px;
+  right: calc(9% + 8.5rem);
+  text-align: right;
+  white-space: nowrap;
+  --tilt: -2deg;
+  z-index: 5;
+}
+
+/* the favorite child gets circled — the ring wraps the strip's number.
+   (the strip sits ABOVE the description on the hung sheet now, so the ring
+   anchors up from the sheet's bottom edge, not below it.) */
+.num-ring {
+  position: absolute;
+  left: -14px;
+  bottom: 4.5rem;
+  top: auto;
+  width: 72px;
+  height: 46px;
+  z-index: 5;
+}
+.n-fav {
+  position: absolute;
+  left: 3.9rem;
+  bottom: 4.2rem;
+  top: auto;
+  --tilt: -3deg;
+  z-index: 5;
+}
+
+/* fixed proof callouts */
+.proof-fixed { position: fixed; inset: 0; z-index: 56; pointer-events: none; }
+.n-margin {
+  position: absolute;
+  top: calc(var(--frame) + 4.8vw);
+  left: calc(var(--frame) + 1.8vw);
+  --tilt: -1deg;
+}
+
+/* the stamp */
+.stamp {
+  position: absolute;
+  top: calc(var(--frame) + 4.2vw);
+  right: calc(var(--frame) + 4vw);
+  padding: 0.7rem 1.1rem 0.6rem;
+  border: 2px solid var(--pencil);
+  box-shadow: inset 0 0 0 3px var(--stone), inset 0 0 0 4px var(--pencil);
+  color: var(--pencil);
+  text-align: center;
+  transform: rotate(7deg) scale(1.3);
+  opacity: 0;
+  transition:
+    opacity 0.35s ease var(--d, 0.5s),
+    transform 0.35s var(--ease-thunk) var(--d, 0.5s);
+  mix-blend-mode: multiply;
+  -webkit-mask-image: radial-gradient(ellipse 120% 90% at 42% 50%, #000 55%, rgba(0,0,0,0.55) 100%);
+          mask-image: radial-gradient(ellipse 120% 90% at 42% 50%, #000 55%, rgba(0,0,0,0.55) 100%);
+}
+.stamp { --d: 0.5s; }
+.proof .stamp { opacity: 0.9; transform: rotate(7deg) scale(1); }
+.stamp-line1 {
+  display: block;
+  font-family: "Space Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+}
+.stamp-line2 {
+  display: block;
+  font-family: "Space Mono", monospace;
+  font-size: 1.02rem;
+  letter-spacing: 0.24em;
+  font-weight: 700;
+  margin-top: 0.15rem;
+}
+.stamp-line3 { display: block; font-size: 0.52rem; margin-top: 0.25rem; }
+
+/* cursor turns red pencil in proof mode */
+.proof .cursor { background: var(--pencil); }
+.proof .reveal { display: none; }
+
+/* ---------- reveal container (signature trail) ---------- */
+.reveal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 30vw;
+  height: 38vh;
+  min-height: 0;
+  z-index: 40;
+  pointer-events: none;
+  will-change: transform;
+}
+.reveal-scaler {
+  width: 100%;
+  height: 100%;
+  transform: scale(0);
+  transform-origin: 50% 50%;
+  transition: transform 0.65s var(--ease-out);
+  overflow: hidden;
+}
+.reveal-plate {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+/* ---------- custom cursor ---------- */
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 70;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  transition:
+    width 0.4s var(--ease-out),
+    height 0.4s var(--ease-out),
+    background-color 0.4s var(--ease-out),
+    border-color 0.4s var(--ease-out);
+  border: 1px solid transparent;
+  will-change: transform;
+}
+.cursor .cursor-label {
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out) 0.1s;
+  white-space: nowrap;
+}
+body.pointer-seen .cursor { opacity: 1; }
+.cursor.is-view {
+  width: 86px;
+  height: 86px;
+  background: transparent;
+  border-color: #fff;
+}
+.cursor.is-view .cursor-label { opacity: 1; }
+
+/* ---------- ?fps dev meter ---------- */
+.fps-meter {
+  position: fixed;
+  bottom: calc(var(--frame) + 3.2rem);
+  right: calc(var(--frame) + 0.8rem);
+  z-index: 90;
+  padding: 0.3rem 0.55rem;
+  background: var(--ink);
+  color: var(--acid);
+  pointer-events: none;
+}
+
+/* ---------- pointer-mode gating ---------- */
+@media (hover: hover) and (pointer: fine) and (min-width: 821px) {
+  body.has-cursor, body.has-cursor a, body.has-cursor button { cursor: none; }
+  body.has-cursor .cursor { display: flex; }
+}
+
+@media (hover: none), (pointer: coarse), (max-width: 820px) {
+  .cursor, .reveal { display: none !important; }
+  .row-thumb { display: block; }
+  /* loose type + plate pull are fine-pointer gestures; on coarse/narrow
+     the decals are dead weight that (at left: 26rem) widen the layout
+     viewport past the device — killing them re-imposes the sheet */
+  .loose-decal, .plates-decal { display: none !important; }
+}
+
+/* ---------- narrower desktops: drop the delicate anchored notes ---------- */
+@media (max-width: 1100px) {
+  .anchor, .row-note, .n-lh, .n-eyebrow, .n-coffee, .coffee,
+  .n-2022, .n-2025, .n-desk, .n-cat, .n-time1, .n-redo, .n-tally,
+  .dd-spiral, .dd-cup, .dd-tally, .dd-moon, .dd-plane, .dd-zzz,
+  .versions, .dd-nsarrow, .n-time2, .n-time3, .dd-burst, .n-cmath,
+  .dd-pentest, .n-pentest, .dd-tries, .n-tries, .n-pm, .dd-pm-arrow { display: none; }
+  .drafts { max-width: 12rem; right: 2%; }
+  .cat { width: 92px; height: 76px; top: -75px; right: 4%; }
+}
+
+/* ---------- small screens ---------- */
+@media (max-width: 820px) {
+  :root { --frame: 3.5vw; }
+  .hero {
+    grid-template-columns: 1fr;
+    /* top padding clears the corner tab + [N]/[S]/[L] decal stack */
+    padding: calc(14vw + 3.6rem) 2vw 12vw;
+    gap: 8vw;
+  }
+  .hero-title { font-size: clamp(2.1rem, 11.4vw, 5.4rem); }
+  .hero-bio { grid-column: 1; grid-row: auto; justify-self: start; margin-bottom: 0; }
+  /* the line hangs a narrow salon column (geometry from buildLine) */
+  .row-title { font-size: clamp(1rem, 4.4vw, 1.4rem); }
+  .row-desc { font-size: 0.6rem; }
+  .index-sub { max-width: 82vw; line-height: 1.8; }
+  /* the figure compacts: stones stay a row on a hairline ground, the
+     legend drops to two readable columns */
+  .terrain-ground { display: none; }
+  .terrain-stones { height: 80px; border-bottom: 1px solid var(--ink); }
+  .terrain-labels { grid-template-columns: 1fr 1fr; gap: 1.7rem 1.2rem; margin-top: 1.8rem; }
+  .mile-label-gap { display: none; }
+  .trail-frame { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
+  .trail-cap { text-align: left; }
+  .desk-row { grid-template-columns: 6.5rem minmax(0, 1fr); gap: 1rem; }
+  .colophon { grid-column: 1; text-align: left; }
+  .corner { padding: 0.4rem 0.5rem; }
+  .corner.tl, .corner.bl { left: calc(var(--frame) + 3vw); }
+  .corner.tr, .corner.br { right: calc(var(--frame) + 3vw); }
+  .outro { grid-template-columns: 1fr; }
+  .outro-rail { grid-column: 1; grid-row: auto; }
+  .check-pair { margin-left: 0; }
+  .pressmark { max-width: 200px; }
+  .outro-links { grid-column: 1; justify-content: flex-start; }
+  .cairn-ind, .regmark, .chips, .chip-ring, .n-chips, .n-night { display: none; }
+  .tape, .hz-r, .d-cluster, .d-scatter, .d-cross, .d-scroll { display: none; }
+  .specimen, .tonebar, .foldline { display: none; }
+  .night-toggle { top: calc(var(--frame) + 8vw + 0.9rem); }
+  .jobline { font-size: 0.48rem; bottom: 2px; }
+  .crop { display: none; }
+  .drafts { display: none; }
+  .n-margin { display: none; }
+  /* the stamp is re-imposed for the narrow sheet: centred and un-scaled so
+     its rotated corner can't hang off the edge and widen the viewport */
+  .stamp {
+    top: auto;
+    bottom: calc(var(--frame) + 15vw);
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%) rotate(6deg) scale(1);
+    transform-origin: center;
+    max-width: 88vw;
+  }
+  .proof .stamp { transform: translateX(-50%) rotate(6deg) scale(1); }
+  /* two hero scrawls collide with the stacked mobile bio / run off-edge —
+     the do-not-scale note goes, the knows-note re-anchors above the stamp */
+  .n-noscale { display: none; }
+  .n-knows {
+    top: auto;
+    bottom: calc(var(--frame) + 15vw + 3.4rem);
+    left: 5vw;
+    right: auto;
+    max-width: 72vw;
+    text-align: left;
+  }
+  .n-outro { position: static; display: block; margin-top: 1rem; }
+  .yard { padding-bottom: 12vw; }
+}
+
+@media (max-width: 540px) {
+  .jobline { display: none; }
+  /* on a small phone the long colophon line is allowed to wrap rather than
+     run off the left edge — nowrap keeps it one line everywhere it fits */
+  .outro-rail .colophon { white-space: normal; }
+}
+
+/* ---------- still mode: no motion at all (?still) ---------- */
+.still *, .still *::before, .still *::after {
+  animation: none !important;
+  transition: none !important;
+}
+.still .hl { transform: none; }
+.still .scrawl .draw { stroke-dashoffset: 0; }
+.still body:not(.proof) .scrawl .draw { stroke-dashoffset: 1; }
+.still .hl .ch { transform: none !important; }
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .frame, .frame::after, .corner, .eyebrow, .hl,
+  .hero-bio, .ticker, .ticker-track, .sheet, .cairn-ind,
+  .regmark, .blink, .chips {
+    animation: none !important;
+  }
+  .hl { transform: none; }
+  .reveal-scaler, .row, .row-title, .row-num, .row-meta, .cursor,
+  .note, .anchor, .stamp, .sheet, .under, .final, .cairn-ind path {
+    transition: none !important;
+  }
+  .scrawl .draw { transition: none !important; stroke-dashoffset: 0; }
+  body:not(.proof) .scrawl .draw { stroke-dashoffset: 1; }
+  .loose-decal, .plates-decal { display: none; }
+  #pile .stone-inner.dropping { animation: none !important; }
+  .hero-title .ch { transition: none !important; }
+}
+
+/* ============================================================
+   MAKE-READY — the press dials your sheet into register (first
+   arrival each session, before the press-check strike). the three
+   ink passes glide together — one continuous convergence, smooth,
+   never stepped — as the counter reads the real load. at register
+   the booth floods to the hero and its own passes slide home.
+   one fiction: make-ready → strike → in register.
+   ============================================================ */
+
+/* ============================================================
+   LOADER — the approved lockup make-ready (loader-lockup-mock.html)
+   runs ISOLATED in an iframe so its classes can't touch the page.
+   The frame is opaque and covers the page while the real page
+   settles behind it. At register the loader reads the live hero's
+   own word positions across the (full-viewport, same-origin) frame
+   and the four words FLIP from the lockup INTO them — the headline
+   MOVES into the page, it isn't replaced — then the booth floods to
+   the page's colours and the frame fades away to reveal the identical
+   hero behind it. src is set by JS, so return visits never load it.
+   ============================================================ */
+#makeready { position: fixed; inset: 0; z-index: 220; background: #0C0B08;
+  transition: opacity 0.7s var(--ease-out); }
+#makeready.out { opacity: 0; pointer-events: none; }
+#mr-frame { display: block; width: 100%; height: 100%; border: 0; background: #0C0B08; }
+@media (prefers-reduced-motion: reduce) { #makeready { display: none; } }
+.still #makeready { display: none; }
+@media print { #makeready { display: none; } }
+
+/* ============================================================
+   THE LAST SLUG — the accent "&" is the finale. On first visit the
+   loader CEDES the & at the relax: ONE fixed native-size type-reel
+   takes the lockup amp's exact spot (already showing &), starts
+   rolling as it flies the same path as the words, cruises through
+   the reveal, then BRAKES back into the crisp italic "&" as the
+   last wisp of the frame fade clears. The landing is the IMPRESSION:
+   the glyph presses 2px into the paper and settles (transform-only,
+   in main.js) — the near-miss/snap/shudder/bloom theater was all cut
+   as janky/forced. The same E from first roll to seat, never two
+   elements. First-visit only; every fallback simply leaves the "&"
+   in place. Reel built + sized by main.js.
+   ============================================================ */
+#amp { position: relative; }
+body.amp-armed #amp .ch { opacity: 0; }   /* the empty slot — advance reserved, no reflow of 'nerve' */
+.amp-reel {
+  position: absolute; overflow: hidden;
+  clip-path: inset(0 -0.2em);              /* clips top/bottom (the window); horizontal room for the swash */
+  pointer-events: none; z-index: 2;        /* left/top/width/height set inline from the measured amp box */
+}
+/* the FLIGHT reel — rides ABOVE the loader frame (z 221 > #makeready's 220) so
+   the spin is visible on the booth mid-flight; colour is set inline (the lockup's
+   lavender), then flooded to the live accent by __ampFlood at the loader's flood */
+.amp-reel--flight { position: fixed; z-index: 221; }
+.amp-reel--flight .rc { color: inherit; }
+.amp-reel.spinning {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+}
+.amp-reel-strip { position: relative; will-change: transform; }
+.amp-cell { display: flex; align-items: center; justify-content: center; }
+.rc {
+  font-style: normal;                      /* the V3 giant & is ROMAN (the mock's exact glyph) */
+  font-variation-settings: "opsz" 144, "wght" 470;   /* no SOFT/WONK — naming them swaps the & (see hero gotcha) */
+  color: var(--accent); line-height: 1;    /* font-size + letter-spacing set inline (the amp's own) */
+}
+
+/* ============================================================
+   PRESS CHECK — the sheet comes into register (once per session)
+   three passes (red, blue, ink) slide home; the regmark locks
+   ============================================================ */
+
+@keyframes press-register {
+  0% {
+    text-shadow:
+      -0.05em 0.018em 0 var(--pencil),
+      0.044em -0.014em 0 var(--accent);
+  }
+  100% {
+    text-shadow:
+      0 0 0 var(--pencil),
+      0 0 0 var(--accent);
+  }
+}
+.press-check .hero-title {
+  /* the lines rise misregistered (last word lands ~1.56s into the
+     entrance), then the passes slide home in under a second */
+  animation: press-register 0.85s var(--ease-out) 1.6s both;
+}
+/* repaint = reprint: a new ink means a quick re-register (chip click) */
+.hero-title.reprint { animation: press-register 0.45s var(--ease-out); }
+@keyframes reg-lock {
+  0%   { transform: rotate(-70deg) scale(1.5); opacity: 0; }
+  55%  { opacity: 1; }
+  100% { transform: rotate(0deg) scale(1); opacity: 1; }
+}
+.press-check .regmark {
+  animation: reg-lock 0.85s var(--ease-out) both, reg-spin 90s linear 0.85s infinite;
+}
+
+/* ============================================================
+   SIGNATURE Nº 4 — the plate pull (chosen), with the loupe as a
+   quiet delight. the light table was a third tryout; it read as a
+   debug rectangle and did a worse version of the mess's job, so it
+   was struck (graveyard, July 2026).
+   ============================================================ */
+
+/* the printer's loupe: press and hold a plate. the glass magnifies the
+   halftone — and the micro plate notes only it can read */
+.loupe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 71;
+  pointer-events: none;   /* a visual overlay — never steal the hover from the sheet */
+  width: 184px;
+  height: 184px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background-color: #0c0c14;
+  background-repeat: no-repeat;
+  box-shadow:
+    0 6px 22px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.22),
+    inset 0 0 26px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: translate3d(-300px, -300px, 0);
+  pointer-events: none;
+  display: none;
+  transition: opacity 0.16s var(--ease-out);
+}
+body.has-cursor .loupe { display: block; }
+.loupe.on { opacity: 1; }
+.cursor.is-loupe { opacity: 0 !important; }
+
+/* --- 3. the plate pull: shift-drag the headline and the red/blue
+   passes come off register, following the hand; thunk back on release --- */
+.hero-title.plates-return { transition: text-shadow 0.55s var(--ease-thunk); }
+
+/* ============================================================
+   THE PROJECT VIEWER — every project is its own proof sheet
+   ============================================================ */
+
+.pv {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--stone);
+  overflow-y: auto;
+  overflow-x: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease-out);
+}
+.pv-open .pv { opacity: 1; pointer-events: auto; }
+html.pv-open { overflow: hidden; }
+.pv-open .reveal, .pv-open .idle-line { display: none !important; }
+
+.pv-sheet {
+  position: relative;
+  min-height: 100%;
+  padding: clamp(3rem, 7vh, 6rem) clamp(1.4rem, 6vw, 7rem) 0;
+  animation: pv-rise 0.45s var(--ease-out) both;
+}
+@keyframes pv-rise {
+  from { opacity: 0; transform: translateY(3vh); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.pv-num {
+  position: absolute;
+  top: -6vw;
+  right: -4vw;
+  font-size: 42vw;
+  line-height: 1;
+  font-weight: 500;
+  opacity: 0.05;
+  pointer-events: none;
+  user-select: none;
+}
+.pv-close {
+  position: fixed;
+  top: calc(var(--frame) - 0.85em);
+  right: calc(var(--frame) + 1.4vw);
+  z-index: 66;
+  padding: 0.5rem 0.65rem;
+  background: var(--stone);
+  border: 1px solid var(--hairline);
+  cursor: pointer;
+  color: inherit;
+  transition: color 0.25s, background-color 0.25s, border-color 0.25s;
+}
+.pv-close:hover { background: var(--ink); color: var(--stone); border-color: var(--ink); }
+.pv-close em { font-style: normal; opacity: 0.5; }
+
+.pv-head { max-width: 60rem; }
+.pv-kicker { color: var(--accent); }
+.pv-title {
+  font-size: clamp(3.4rem, 9vw, 9.5rem);
+  line-height: 0.9;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  margin: 1.2rem 0 1.4rem -0.04em;
+}
+.pv-lede {
+  font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+  max-width: 44ch;
+  line-height: 1.4;
+}
+
+.pv-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 15rem) minmax(0, 1fr);
+  gap: 3rem clamp(2rem, 5vw, 5rem);
+  margin-top: clamp(2.5rem, 6vh, 4.5rem);
+}
+.pv-meta {
+  position: sticky;
+  top: 4rem;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  border-top: 1px solid var(--ink);
+  padding-top: 1rem;
+}
+.pv-meta span {
+  display: block;
+  color: var(--graphite);
+  font-size: 0.6rem;
+  margin-bottom: 0.15rem;
+}
+.pv-meta ul { list-style: none; }
+.pv-meta li { padding: 0.12rem 0; }
+
+.pv-body { max-width: 62rem; padding-bottom: 2rem; }
+.pv-plate {
+  width: 100%;
+  aspect-ratio: 8 / 5;
+  background-size: cover;
+  background-position: center 30%;
+  border: 1px solid var(--ink);
+  margin-bottom: clamp(2rem, 5vh, 3.5rem);
+}
+.pv-body h3 {
+  color: var(--accent);
+  margin: 2.6rem 0 0.9rem;
+}
+.pv-body > p {
+  font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+  line-height: 1.55;
+  max-width: 58ch;
+}
+.pv-duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin-top: 2.6rem;
+}
+.pv-duo figure {
+  aspect-ratio: 3 / 2;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--ink);
+}
+.pv-stats {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+  margin-top: 2.6rem;
+  border-top: 1px solid var(--ink);
+  padding-top: 1.4rem;
+}
+.pv-stats b {
+  display: block;
+  font-size: clamp(2.2rem, 4.5vw, 4rem);
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+.pv-stats .mono { color: var(--graphite); font-size: 0.55rem; }
+.pv-quote {
+  margin: 3rem 0 0;
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  line-height: 1.25;
+  font-style: italic;
+  max-width: 30ch;
+}
+.pv-quote footer { margin-top: 1rem; font-style: normal; color: var(--graphite); }
+
+.pv-next {
+  display: block;
+  margin: clamp(3rem, 8vh, 5.5rem) calc(-1 * clamp(1.4rem, 6vw, 7rem)) 0;
+  padding: clamp(2rem, 5vh, 3.5rem) clamp(1.4rem, 6vw, 7rem) clamp(2.6rem, 6vh, 4rem);
+  border-top: 1px solid var(--ink);
+  transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out);
+}
+.pv-next .mono { color: var(--graphite); transition: color 0.3s; }
+.pv-next b {
+  display: block;
+  font-size: clamp(2.6rem, 7vw, 6.5rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-top: 0.5rem;
+}
+.pv-next:hover { background: var(--ink); color: var(--stone); }
+.pv-next:hover .mono { color: var(--stone); }
+.pv-jobline {
+  display: block;
+  text-align: center;
+  padding: 1.2rem 0 0.6rem;
+  color: var(--graphite);
+  font-size: 0.55rem;
+}
+
+/* the mess works in here exactly like it does out there:
+   the red grid rises, the case ghosts back, the pens speak */
+.proof .pv-sheet::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 23px,
+      rgba(199, 54, 31, 0.13) 23px,
+      rgba(199, 54, 31, 0.13) 24px
+    ),
+    linear-gradient(to right, rgba(199, 54, 31, 0.3) 0, rgba(199, 54, 31, 0.3) 1px, transparent 1px),
+    linear-gradient(to left, rgba(199, 54, 31, 0.3) 0, rgba(199, 54, 31, 0.3) 1px, transparent 1px);
+  background-position: 0 0, 1.4vw 0, calc(100% - 1.4vw) 0;
+  background-repeat: repeat, no-repeat, no-repeat;
+}
+.night.proof .pv-sheet::before {
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 23px,
+      rgba(240, 96, 63, 0.16) 23px,
+      rgba(240, 96, 63, 0.16) 24px
+    ),
+    linear-gradient(to right, rgba(240, 96, 63, 0.35) 0, rgba(240, 96, 63, 0.35) 1px, transparent 1px),
+    linear-gradient(to left, rgba(240, 96, 63, 0.35) 0, rgba(240, 96, 63, 0.35) 1px, transparent 1px);
+}
+.pv-head, .pv-grid, .pv-next, .pv-num, .pv-jobline {
+  transition: opacity 0.5s var(--ease-out), filter 0.5s var(--ease-out);
+}
+.proof .pv-head, .proof .pv-grid, .proof .pv-next,
+.proof .pv-num, .proof .pv-jobline {
+  opacity: 0.34;
+  filter: saturate(0.5);
+}
+.proof .pv-num { opacity: 0.02; }
+
+/* the sheet has its own way into the mess */
+.pv-messbtn {
+  position: fixed;
+  bottom: calc(var(--frame) - 0.85em);
+  right: calc(var(--frame) + 1.4vw);
+  z-index: 66;
+  padding: 0.5rem 0.65rem;
+  background: var(--stone);
+  border: 1px solid var(--hairline);
+  cursor: pointer;
+  color: inherit;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.7;
+  transition: color 0.25s, background-color 0.25s, border-color 0.25s;
+}
+.pv-messbtn:hover { background: var(--pencil); border-color: var(--pencil); color: var(--stone); }
+.proof .pv-messbtn { color: var(--pencil); border-color: var(--pencil); }
+
+/* the mess annotates the case too */
+.pv-notes { z-index: 5; }
+.n-pv1 { top: 12rem; right: 6vw; --tilt: -2deg; }
+.n-pv2 { top: 30rem; left: 16rem; --tilt: 1.5deg; }
+.n-pv3 { bottom: 15rem; left: 42%; --tilt: -1.5deg; }
+
+@media (max-width: 820px) {
+  .pv-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .pv-meta { position: static; }
+  .pv-duo, .pv-stats { grid-template-columns: 1fr; }
+  .pv-num { font-size: 70vw; }
+}
+
+/* ============================================================
+   MESS ADDITIONS — the desk keeps talking
+   ============================================================ */
+
+/* the desk lamp: entering the mess warms the paper */
+body.proof { --stone: #E1DBCC; --stone-deep: #D2CBB9; }
+body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
+
+/* the thought-thread: the re-read. two pens, a tip, and events */
+.thread {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 4;
+  pointer-events: none;
+  display: none;
+}
+.proof .thread { display: block; }
+.th-red { color: var(--pencil); }
+.th-gra { color: var(--graphite); }
+.thread path { stroke: currentColor; stroke-linecap: round; }
+.th-main { stroke-width: 2.4; opacity: 0.55; }
+.th-echo { stroke-width: 1.2; opacity: 0.22; transform: translate(2px, 2px); }
+.th-ev {
+  stroke-width: 2.2;
+  opacity: 0;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.6s var(--ease-out), opacity 0.2s var(--ease-out);
+}
+.th-ev.on { opacity: 0.55; stroke-dashoffset: 0; }
+#th-scratch.on { transition-delay: 0.45s; }
+#th-tip {
+  fill: currentColor;
+  stroke: none;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+/* fresh ink: the scrawl nearest the cursor is still wet */
+.proof .note.wet {
+  filter: contrast(1.25) brightness(0.78);
+}
+
+/* the record spins for as long as the mess is open */
+.dd-vinyl { left: 4%; top: 22%; width: 128px; }
+.vinyl-spin { transform-box: fill-box; transform-origin: 50% 50%; }
+.proof .dd-vinyl.seen .vinyl-spin { animation: vinyl-spin 7s linear infinite; }
+@keyframes vinyl-spin { to { transform: rotate(360deg); } }
+.dd-notes { left: 15%; top: 8%; width: 56px; }
+.n-vinyl { left: 5%; top: 66%; --tilt: -2deg; }
+
+/* the gauge */
+.dd-mood { left: 3%; bottom: 4%; width: 104px; }
+.n-mood { left: 12%; bottom: 3%; --tilt: 1.5deg; }
+
+.n-noscale { bottom: 6vh; left: calc(var(--frame) + 3vw); --tilt: -1deg; }
+
+/* the mess knows you (fixed, just under the stamp) */
+.n-knows {
+  position: absolute;
+  top: calc(var(--frame) + 3vw + 9.2rem);
+  right: 6vw;
+  --tilt: -2deg;
+}
+
+.dd-ttt { right: 8%; top: -3.4rem; width: 74px; }
+.n-ttt { right: 3%; top: 2.2rem; --tilt: 2deg; }
+
+.argue {
+  top: 30%;
+  right: 3%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  max-width: 15rem;
+}
+.argue .hand-b { padding-left: 1.6rem; }
+
+.todo {
+  top: 5.2rem;
+  right: 6%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--pencil-soft);
+  transform: rotate(1.2deg);
+}
+/* the operator's plate owns the top-right now — the card moves inboard */
+@media (min-width: 821px) {
+  .todo { right: 30%; }
+}
+.todo-head { color: var(--pencil); font-size: 0.52rem; margin-bottom: 0.25rem; }
+
+.dd-map { left: 2%; bottom: -0.4rem; width: 180px; }
+.n-map { left: 2%; bottom: -2.6rem; --tilt: -1.5deg; }
+
+/* the passers-by, in the 2am hand — left of the cairn, clear of the tower */
+.n-cairn-a { left: 7%; top: 26%; --tilt: -3deg; font-size: 1.2rem; }
+.n-cairn-b { left: 8%; top: 46%; --tilt: 2deg; font-size: 1.1rem; }
+.dd-cairn-arrow { left: 23%; top: 60%; width: 70px; }
+.n-cairn-c { left: 20%; top: 68%; --tilt: -2deg; }
+/* the failed cairn sketch, scribbled out — it wouldn't sit still.
+   lives LEFT of the tower: the right band belongs to the fixed
+   stamp/knows-note column at most scroll positions. */
+.dd-tries { left: 27%; top: 28%; width: 118px; height: 76px; --tilt: 3deg; }
+.n-tries { left: 35%; top: 35%; text-align: left; --tilt: -2deg; }
+
+.dd-rip { right: 27%; bottom: 13%; width: 130px; }
+.n-rip { right: 21%; bottom: 5%; --tilt: 2deg; text-align: center; }
+
+@media (max-width: 820px) {
+  .dd-ttt, .n-ttt, .argue, .dd-map, .n-map,
+  .dd-vinyl, .dd-notes, .n-vinyl, .dd-mood, .n-mood { display: none; }
+  /* the pocket sheet keeps one cairn aside — the thematic one — and drops
+     the rest so nothing crowds the tower or the header */
+  .dd-cairn-arrow, .n-cairn-c, .n-cairn-b { display: none; }
+  .n-cairn-a { left: 7%; top: 34%; --tilt: -2deg; font-size: 1.05rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proof .dd-vinyl.seen .vinyl-spin { animation: none !important; }
+  .op-redpass { transition: none !important; }
+}
+
+/* ============================================================
+   PRESS NOISE — opt-in, muted by default
+   ============================================================ */
+
+.noise-toggle {
+  position: fixed;
+  top: calc(var(--frame) + 1.1vw + 2.25rem);
+  right: calc(var(--frame) + 1.4vw);
+  z-index: 55;
+  border: 0;
+  background: none;
+  padding: 0.25rem 0;
+  font-family: "Space Mono", monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.6;
+  cursor: pointer;
+}
+.noise-toggle:hover { opacity: 1; color: var(--accent); }
+.noise-toggle[aria-pressed="true"] { color: var(--acid); opacity: 0.9; }
+.proof .noise-toggle { opacity: 0.35; }
+
+/* ============================================================
+   SMALL DELIGHTS — idle whisper, stone tips, odometer, the tail
+   ============================================================ */
+
+/* two minutes of nothing */
+.idle-line {
+  position: fixed;
+  bottom: calc(var(--frame) + 0.8rem);
+  left: 50%;
+  transform: translate(-50%, 5px);
+  z-index: 45;
+  opacity: 0;
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  pointer-events: none;
+  color: var(--ink);
+  font-size: 0.55rem;
+}
+.idle-line.on { opacity: 0.65; transform: translate(-50%, 0); }
+
+/* who left this one, and when */
+.stone-tip {
+  position: fixed;
+  z-index: 72;
+  transform: translate(-50%, -140%);
+  background: var(--ink);
+  color: var(--stone);
+  padding: 0.32rem 0.5rem;
+  font-size: 0.55rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.25s var(--ease-out);
+  pointer-events: none;
+}
+.stone-tip.on { opacity: 1; }
+#pile path { pointer-events: auto; }
+
+/* the visit counter rolls like an odometer */
+.odo {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  vertical-align: -0.18em;
+}
+.odo-reel { display: block; }
+.odo-reel span { display: block; height: 1em; line-height: 1; }
+body.odo-live .odo-reel { transition: transform 0.9s var(--ease-out); }
+
+/* the regmark is also a fidget */
+.regmark { pointer-events: auto; cursor: pointer; }
+@keyframes reg-fidget { to { transform: rotate(720deg); } }
+.regmark.fidget { animation: reg-fidget 0.9s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* ============================================================
+   THE PAGE IS AWAKE — small unprompted acts, one at a time
+   ============================================================ */
+
+/* a letter rattles loose in its case (invites the grab) */
+@keyframes rattle {
+  20%  { transform: translate(0.02em, -0.028em) rotate(1.1deg); }
+  45%  { transform: translate(-0.018em, 0.014em) rotate(-1.3deg); }
+  70%  { transform: translate(0.012em, 0) rotate(0.7deg); }
+  100% { transform: none; }
+}
+.hero-title .ch.rattle { animation: rattle 0.55s ease-in-out; }
+
+/* the regmark corrects its drift — `rotate` composes with the
+   transform-based reg-spin instead of replacing it */
+@keyframes reg-hiccup {
+  30%  { rotate: -10deg; }
+  60%  { rotate: 5deg; }
+  100% { rotate: 0deg; }
+}
+.regmark.hiccup {
+  animation: reg-spin 90s linear infinite, reg-hiccup 0.7s var(--ease-out);
+}
+
+/* the cat, alive at last (mess layer) */
+.cat .cat-tail { transform-box: fill-box; transform-origin: 0% 100%; }
+.cat.flick .cat-tail { animation: tail-flick 0.55s var(--ease-out); }
+@keyframes tail-flick {
+  30%  { transform: rotate(-11deg); }
+  62%  { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* only exists 23:00–06:00 desk time */
+.n-uplate {
+  display: none;
+  top: calc(12% + 3.4rem);
+  right: 22%;
+  font-size: 1.5rem;
+  --tilt: -2deg;
+}
+.late-desk .n-uplate { display: block; }
+
+@media (max-width: 820px) {
+  .noise-toggle { top: calc(var(--frame) + 8vw + 2.25rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press-check .hero-title, .press-check .regmark { animation: none !important; }
+  .regmark.fidget { animation: none !important; }
+  .hero-title .ch.rattle, .regmark.hiccup { animation: none !important; }
+  .ok-stamp.thunk { animation: none !important; }
+  .ok-tab::after, .ok-tab.holding::after { transition: none !important; }
+  .odo-reel { transition: none !important; }
+  .idle-line { transition: none !important; }
+  .stone-tip { transition: none !important; }
+  .cat.flick .cat-tail { animation: none !important; }
+  /* THE SETTING never arms under reduced motion (js), but a mid-session
+     switch must land everything instantly and whole. animation:none lets
+     each element's own base opacity apply; only the classes that PIN
+     opacity to 0 need explicit visible overrides. */
+  .set-in, .set-fade, .trail .mile-stone, .trail .gap-tick,
+  #pile .stone-inner, .spec-head, .spec-amp, .spec-amp i, .spec-foot,
+  .tonebar, .tonebar i, .foldline, .foldline i,
+  .hero-title.v3 .amp, .hero-title.v3 .v3-word,
+  .d-cluster .decode, .d-scatter, .d-cross, .d-run,
+  .loose-decal, .plates-decal {
+    animation: none !important;
+  }
+  .set-in, .set-fade { opacity: 1 !important; }
+  body.spec-armed .spec-head, body.spec-armed .spec-amp,
+  body.spec-armed .spec-foot, body.spec-armed .tonebar,
+  body.spec-armed .foldline { opacity: 1; }
+  .trail.stones-armed .mile-stone, .trail.stones-armed .gap-tick,
+  .trail.stones-armed #terrain-ground .tick,
+  .yard.stones-armed #pile .stone-inner { opacity: 1; }
+  .trail.stones-armed #terrain-ground .ground {
+    stroke-dasharray: none; stroke-dashoffset: 0;
+  }
+}
+
+/* ============================================================
+   THE IMPRESSION LINE — the sheet prints as read (Direction Nº 003)
+   below a fixed hairline every section is blind impression: real
+   type, uninked. crossing the line strikes it — one-way, persisted.
+   struck is the DEFAULT (no-js, print, ?still, reduced motion and
+   return visits all get a printed sheet); js arms .unstruck at boot
+   and only the line — or a deliberate touch — takes it away. the
+   hero is always pre-struck: the press-check intro is its strike.
+   ============================================================ */
+
+.impline {
+  position: fixed;
+  left: calc(var(--frame) + 1.4vw);
+  right: calc(var(--frame) + 1.4vw);
+  top: 62vh; /* js keeps this in step with IMP_LINE */
+  border-top: 1px solid var(--hairline);
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-out);
+}
+/* instrument end-ticks, like the crop marks' little sister */
+.impline::before,
+.impline::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  width: 1px;
+  height: 7px;
+  background: var(--hairline);
+}
+.impline::before { left: 0; }
+.impline::after { right: 0; }
+.impline i {
+  position: absolute;
+  right: 0;
+  top: 0.45rem; /* the label sits on the blind side — the side it explains */
+  font-style: normal;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  color: var(--graphite);
+}
+body.imp-armed .impline {
+  opacity: 0.55;
+  animation: imp-in 0.6s var(--ease-out) 1.5s both;
+}
+@keyframes imp-in {
+  from { opacity: 0; }
+  to   { opacity: 0.55; }
+}
+/* the mess prints everything on entry — the line has nothing to do there */
+body.proof .impline { opacity: 0 !important; }
+
+/* the blind state. text embosses via transparent fill + a two-tone
+   rim (inherited, so one rule covers every descendant); svg linework
+   presses to the rim tone; plates ghost to almost nothing; borders
+   fade to the rim. !important: unprinted paper must beat every hover
+   and accent beneath it. */
+.unstruck, .unstruck * {
+  color: transparent !important;
+  text-shadow: 0 1px 1px var(--emb-hi), 0 -1px 1px var(--emb-lo) !important;
+  border-color: var(--emb-lo) !important;
+}
+.unstruck .mile-stone path,
+.unstruck #pile path {
+  stroke: var(--emb-lo) !important;
+  fill: transparent !important;
+}
+.unstruck #ground-line,
+.unstruck .terrain-ground .ground,
+.unstruck .terrain-ground .tick { stroke: var(--emb-lo) !important; }
+.unstruck .gap-tick, .unstruck .olink svg { opacity: 0.2; }
+.unstruck .op-print, .unstruck .row-thumb { opacity: 0.05; }
+/* the seam doesn't run until it's printed */
+.unstruck .ticker-track { animation-play-state: paused; }
+/* display type is soft until the ink hits — the axis strike;
+   body text strikes by color only (zero reflow) */
+.unstruck .row-title { font-variation-settings: "opsz" 100, "SOFT" 90, "WONK" 1; }
+.unstruck .outro-title { font-variation-settings: "opsz" 144, "SOFT" 90, "WONK" 1; }
+
+/* the strike: ink floods in fast. the transition lives on .striking so
+   it survives the class swap (~500ms), then each element's own rules
+   take back over. the 1px shudder is an inline translate step in js —
+   a keyframe here would restart entrance animations that fill. */
+.striking, .striking * {
+  transition:
+    color 0.12s ease,
+    text-shadow 0.12s ease,
+    opacity 0.14s ease,
+    border-color 0.12s ease,
+    fill 0.14s ease,
+    stroke 0.14s ease,
+    font-variation-settings 0.3s var(--ease-out);
+}
+
+/* ============ THE SETTING — scroll reveal ============
+   the content arrives per viewport as you reach it, layered OVER the ink
+   strike: the strike is ink, this is MATTER — and matter is set DOWN onto
+   the sheet by hand, never floated up (fade-up is the one gesture that
+   belongs to no print shop). REPLAYS every load — not persisted — that's
+   the alive part; the ink-strike stays one-time.
+   asymmetry is the law here: --sy/--sx/--sr/--sd/--sdur are seeded inline
+   per element per load (js), so no two things move identically and no two
+   loads are identical. arrival varies; the DESTINATION is always exact —
+   no resting tilts (motivated asymmetry only, Mark's rule).
+   armed by JS only (no-js / reduced / ?still / print ship visible). uses
+   ANIMATION, never `transition`, so it can't clobber the strike's
+   .striking transition; the strike's 1px shudder is the `translate`
+   property, which composes with these `transform`s. fires as each unit
+   ENTERS from the bottom (js rootMargin) so every unit reliably triggers. */
+@keyframes set-in {
+  0%   { opacity: 0; transform: translate(var(--sx, 0px), var(--sy, -16px)) rotate(var(--sr, 0deg)); }
+  55%  { opacity: 1; }
+  74%  { transform: translate(0px, 1.4px); }
+  100% { opacity: 1; transform: none; }
+}
+.set-in { opacity: 0; }
+.set-in.set-go { animation: set-in var(--sdur, 0.5s) var(--ease-out) var(--sd, 0s) both; }
+/* fade ONLY where a transform would fight something already animating it:
+   the hanging sheets (.row — the sway loop owns their transform; they get
+   a real draft KICK through the line physics instead, so each one swings
+   from being just-hung and settles per its own pendulum) and the dock. */
+.set-fade { opacity: 0; }
+.set-fade.set-go { opacity: 1; }
+.line-dock.set-fade, .yard-ground.set-fade { transition: opacity 0.72s var(--ease-out); }
+/* a revealed sheet still dims on hover — .index.is-hovering .row (0,3,0)
+   out-specifies .set-fade.set-go (0,2,0), so hover always wins; the fade
+   itself rides the .row's own `transition: opacity` (never replaced here). */
+
+/* ---- the trail: stones LAND, then the ground is measured ----
+   stones drop with real gravity (accelerating fall — the cairn's law) and
+   seat with the stone squash; the measured ground line then DRAWS through
+   their landed bases (the measurement being taken — it can't exist before
+   the stones do), ticks and legend following. left-to-right with seeded
+   jitter; the 2026 accent stone lands LAST. on a first visit they land as
+   blind emboss and the strike inks them at the line — matter, then ink. */
+.trail.stones-armed .mile-stone { opacity: 0; }
+.trail.stones-armed .gap-tick { opacity: 0; }
+.trail.stones-armed #terrain-ground .ground {
+  stroke-dasharray: 1;           /* buildTerrain sets pathLength=1 */
+  stroke-dashoffset: 1;
+}
+.trail.stones-armed #terrain-ground .tick { opacity: 0; }
+.trail.stones-go .mile-stone {
+  transform-origin: 50% 100%;
+  animation: stone-land 0.55s var(--ease-out) var(--sd, 0s) both;
+}
+@keyframes stone-land {
+  0%   { opacity: 0; transform: translateY(calc(var(--lift, 0) * 1px - 46px));
+         animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6); } /* falls, accelerating */
+  14%  { opacity: 1; }
+  72%  { transform: translateY(calc(var(--lift, 0) * 1px)) scaleY(1); }
+  82%  { transform: translateY(calc(var(--lift, 0) * 1px)) scaleY(0.93); } /* the seat */
+  100% { opacity: 1; transform: translateY(calc(var(--lift, 0) * 1px)) scaleY(1); }
+}
+.trail.ground-drawn #terrain-ground .ground {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.7s var(--ease-out);
+}
+.trail.ground-drawn #terrain-ground .tick { opacity: 1; transition: opacity 0.45s var(--ease-out) 0.4s; }
+.trail.ground-drawn .gap-tick { opacity: 0.65; transition: opacity 0.45s var(--ease-out) 0.5s; }
+
+/* ---- the yard: the cairn is STACKED, stone by stone ----
+   same drop the guestbook already speaks (.dropping), pre-hidden through
+   the delay so nothing hovers mid-air. the choreography classes are
+   stripped once it lands (js) so renderCairn re-runs stay inert. */
+.yard.stones-armed #pile .stone-inner { opacity: 0; }
+.yard.stones-go #pile .stone-inner {
+  animation: cairn-set 0.5s var(--ease-thunk) var(--sd, 0s) both;
+}
+@keyframes cairn-set {
+  0%   { opacity: 0; transform: translateY(-105px); }
+  14%  { opacity: 1; }
+  70%  { transform: translateY(0) scaleY(1); }
+  82%  { transform: translateY(0) scaleY(0.85); }
+  100% { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+
+/* the mess is handled in js: setProof() disarms the setting (strips the
+   classes) so .final dims to its 0.34 mess opacity instead of being pinned
+   by the reveal. a proof still prints whole. */
+@media print {
+  .set-in, .set-fade { opacity: 1 !important; animation: none !important; transform: none !important; }
+  .trail .mile-stone, .trail .gap-tick, #pile .stone-inner {
+    opacity: 1 !important; animation: none !important;
+  }
+  .trail #terrain-ground .ground { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
+  .trail #terrain-ground .tick { opacity: 1 !important; }
+}
+
+/* the regmark counts the strikes — one notch (36°) per unit, a full
+   turn for a full first read. `rotate` composes with reg-spin, same
+   trick as the drift-correct hiccup. */
+.regmark { transition: rotate 0.4s var(--ease-thunk); }
+
+/* ============================================================
+   HOLD REGISTER — the sheet is only true when you are still
+   (Direction Nº 003, P2). scroll velocity shears the ink passes
+   of the display type 1–3px (inline text-shadow, written in the
+   existing scroll rAF); ~300ms of stillness and everything thunks
+   back into register. the regmark's crosshair drifts by exactly
+   the same error — the page's live instrument. the shear rides on
+   inline styles; these rules only supply the settle transition.
+   ============================================================ */
+
+.reg-settling .regel { transition: text-shadow 0.35s var(--ease-thunk); }
+.reg-settling .regmark {
+  transition:
+    translate 0.35s var(--ease-thunk),
+    rotate 0.4s var(--ease-thunk);
+}
+
+/* ============================================================
+   THE OK SLIP — the visitor signs the press check
+   (Direction Nº 003, P3). a typeset approval slip: machine-set
+   initials (typed, never handwritten — the hand lives in the
+   mess), three stamp-tabs that commit on a HOLD and say so on
+   their face, a stamp that thunks down in the accent ink, and a
+   jobline that carries the verdict forever after.
+   ============================================================ */
+
+/* the press-check pair — approve (slip) | witness (log), tight side by side */
+.check-pair {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;      /* the log rides UNDER the check, its ticket tail */
+  align-items: flex-start;
+  gap: 1.3rem;
+  margin-top: 0.75rem;
+  margin-left: clamp(0.5rem, 2vw, 2rem);   /* nudged in off the frame edge */
+}
+.okslip {
+  position: relative;
+  width: min(100%, 30rem);
+  border: 1px solid var(--ink);
+  padding: 1rem 1.2rem 1.1rem;
+}
+.ok-head { letter-spacing: 0.2em; opacity: 0.8; }
+.ok-sheet { opacity: 0.72; font-size: 0.56rem; margin-top: 0.15rem; }
+.ok-by {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin: 0.95rem 0 0.75rem;
+  opacity: 0.85;
+}
+.ok-by input {
+  border: 0;
+  border-bottom: 1px solid var(--hairline);
+  background: none;
+  color: var(--ink);
+  font-family: "Space Mono", monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.2rem;
+  width: 7ch;
+  border-radius: 0;
+}
+.ok-by input:focus { outline: none; border-bottom-color: var(--accent); }
+.ok-by input::placeholder { color: var(--graphite); }
+.ok-tabs { display: flex; flex-direction: column; gap: 0.45rem; }
+.ok-tab {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  border: 1px solid var(--hairline);
+  background: var(--stone);
+  color: var(--ink);
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  transition:
+    border-color 0.25s var(--ease-out),
+    color 0.25s var(--ease-out),
+    background-color 0.5s var(--ease-out);
+}
+.ok-tab em { font-style: normal; opacity: 0.45; font-size: 0.5rem; letter-spacing: 0.2em; }
+.ok-tab:hover { border-color: var(--ink); }
+/* the ink rises while you hold — stamping should feel like stamping */
+.ok-tab::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0.16;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.15s var(--ease-out);
+  pointer-events: none;
+}
+.ok-tab.holding::after { transform: scaleY(1); transition: transform 0.62s linear; }
+.ok-tab[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.ok-fine { opacity: 0.66; font-size: 0.54rem; margin-top: 0.7rem; }
+
+/* the stamp: machine-crisp, accent ink, a few degrees off square —
+   the same double-ring construction as the mess stamp, none of its
+   hand (that one is rubber; this one is steel) */
+.ok-stamp {
+  position: absolute;
+  right: -1.1rem;
+  top: 44%;
+  padding: 0.55rem 0.95rem 0.5rem;
+  border: 2px solid var(--accent);
+  box-shadow: inset 0 0 0 3px var(--stone), inset 0 0 0 4px var(--accent);
+  background: color-mix(in srgb, var(--stone) 82%, transparent);
+  color: var(--accent);
+  text-align: center;
+  transform: rotate(-4deg);
+  opacity: 0;
+  pointer-events: none;
+}
+.ok-stamp.on { opacity: 0.92; }
+.ok-stamp .oks1 { display: block; font-size: 0.78rem; letter-spacing: 0.2em; font-weight: 700; white-space: nowrap; }
+.ok-stamp .oks2 { display: block; font-size: 0.55rem; letter-spacing: 0.14em; margin-top: 0.2rem; white-space: nowrap; }
+@keyframes ok-thunk {
+  0%   { transform: rotate(-4deg) scale(1.7); opacity: 0; }
+  55%  { opacity: 0.92; }
+  74%  { transform: rotate(-4deg) scale(0.94); }
+  100% { transform: rotate(-4deg) scale(1); opacity: 0.92; }
+}
+.ok-stamp.thunk { animation: ok-thunk 0.4s var(--ease-thunk) both; }
+
+/* the mess replies beside the slip */
+.n-okr1 { left: 2%; bottom: 30%; --tilt: -2deg; }
+.n-okr2 { left: 7%; bottom: 24%; --tilt: 1.4deg; }
+.n-okr3 { left: 4%; bottom: 18%; --tilt: -1deg; }
+
+@media (max-width: 820px) {
+  /* the overhanging stamp would widen the pocket proof — tuck it in */
+  .ok-stamp { right: 0.2rem; }
+}
+
+/* ============================================================
+   THE JOB LOG — the shop witnesses you (Direction Nº 003, P4).
+   dry trade language, desk-time stamps, newest first (top); appears only
+   once you've touched something. local-only, and it says so.
+   ============================================================ */
+
+.joblog {
+  text-align: left;           /* under the check now, matched to the slip width */
+  width: min(100%, 30rem);
+  opacity: 0.5;
+  font-size: 0.55rem;
+}
+.jl-head { letter-spacing: 0.2em; opacity: 0.85; margin-bottom: 0.3rem; }
+.joblog ul { list-style: none; }
+/* capped + scrollable so a long shift never drags the outro down; the
+   newest line sits on TOP and js keeps it scrolled to the start */
+#jl-lines {
+  /* the view holds the last ~3 acts; older ones live on the rail (and the
+     whole thing still prints uncapped). keeps the outro from growing down. */
+  max-height: 3.15rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;            /* native bar hidden — we render our own DOM rail */
+}
+#jl-lines::-webkit-scrollbar { display: none; }
+/* THE SCROLL RAIL, AS REAL DOM. native ::-webkit-scrollbar is an unreliable
+   lottery — overlay/fluent Chrome ignores it, Firefox barely styles it — so the
+   ticket printer's tractor feed is an actual element: sprocket holes punched down
+   a hairline margin + an ink carriage js-synced to scroll (inks up on hover/drag).
+   shown only while the log overflows (.has-scroll). */
+.jl-scroll { position: relative; }
+.jl-scroll.has-scroll #jl-lines { padding-right: 14px; }   /* clear the rail */
+.jl-rail {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 9px;
+  border-left: 1px solid var(--hairline);
+  background: radial-gradient(circle, var(--hairline) 0 1px, transparent 1.5px) center top / 9px 8px repeat-y;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s var(--ease-out);
+}
+.jl-scroll.has-scroll .jl-rail { opacity: 1; pointer-events: auto; }
+.jl-thumb {
+  position: absolute; left: 2px; right: 1px; top: 0; min-height: 16px;
+  background: var(--ink); cursor: grab; touch-action: none;
+  transition: background-color 0.2s var(--ease-out);
+}
+.jl-rail:hover .jl-thumb, .jl-thumb.drag { background: var(--accent); }
+.jl-thumb.drag { cursor: grabbing; }
+.joblog li { padding: 0.08rem 0; }
+.joblog li.jl-div { opacity: 0.55; letter-spacing: 0.3em; padding: 0.3rem 0 0.2rem; }
+/* the ticket printer's caret — blinks only while a line is being written */
+.joblog li.jl-typing::after {
+  content: ""; display: inline-block;
+  width: 0.42em; height: 0.9em; margin-left: 0.12em; vertical-align: -0.08em;
+  background: currentColor; animation: jl-caret 0.72s steps(1) infinite;
+}
+@keyframes jl-caret { 50% { opacity: 0; } }
+.jl-fine { opacity: 0.72; margin-top: 0.45rem; font-size: 0.54rem; }
+
+/* it prints on your copy — the whole log, uncapped (that's the joke) */
+@media print {
+  #jl-lines { max-height: none; overflow: visible; }
+  .joblog li.jl-typing::after { display: none; }
+  .jl-rail { display: none; }
+}
+
+@media (max-width: 820px) {
+  .joblog { grid-column: 1; justify-self: start; text-align: left; }
+}
+
+/* ============================================================
+   CTRL+P — printing produces a clean proof sheet
+   ============================================================ */
+
+.print-slug { display: none; }
+
+@media print {
+  @page { margin: 12mm; }
+
+  body, body.night {
+    --stone: #fff;
+    --stone-deep: #ececec;
+    --ink: #000;
+    --accent: #000;
+    --acid: #000;
+    --pencil: #000;
+    --graphite: rgba(0, 0, 0, 0.55);
+    --hairline: rgba(0, 0, 0, 0.3);
+    --frame: 0px;
+    background: #fff;
+    color: #000;
+  }
+
+  /* nothing moves on paper */
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    text-shadow: none !important;
+  }
+  .hl, .hl .ch { transform: none !important; }
+  .hl .ch { font-variation-settings: "opsz" 144, "wght" 480, "SOFT" 0, "WONK" 0 !important; }
+  .hl .amp .ch { font-variation-settings: "opsz" 144, "wght" 340, "SOFT" 0, "WONK" 0 !important; }
+  .final { opacity: 1 !important; filter: none !important; }
+
+  /* screen chrome stays on screen */
+  .grain, .frame, .cursor, .reveal, .cairn-ind, .d-scroll,
+  .tape, .hazard, .chips, .night-toggle, .noise-toggle, .loupe,
+  .corner, .ticker, .under, .proof-fixed, .proof-notes,
+  .idle-line, .stone-tip, .loose-decal, .plates-decal,
+  .amark, .pv, .thread, .d-cluster, .d-scatter, .d-cross, .d-run,
+  .d-outro, .row-thumb, .fps-meter, .regmark, .terrain-ground {
+    display: none !important;
+  }
+  /* the figure prints as stones on a plain rule + its legend */
+  .terrain-stones { border-bottom: 1px solid #000; height: 60px; }
+  .mile-label { break-inside: avoid; }
+
+  /* the line prints as a plain manifest — sheets off the wire, in a row */
+  .line-wire, .line-wll, .line-dock, .row-clip, .row-etch, .index-sub {
+    display: none !important;
+  }
+  .index { height: auto !important; }
+  .row {
+    position: static !important;
+    width: auto !important;
+    transform: none !important;
+    filter: none !important;
+    background: none;
+    display: block;
+    padding: 4mm 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    break-inside: avoid;
+  }
+  .row-strip { padding: 0; }
+  .row-title { font-size: 16pt; }
+  .row-desc { padding: 1mm 0 0; opacity: 0.75; }
+
+  /* proof furniture rides every page */
+  .sheet { opacity: 1 !important; color: #000; }
+  .crop.tl { top: 0; left: 0; }
+  .crop.tr { top: 0; right: 0; }
+  .crop.bl { bottom: 0; left: 0; }
+  .crop.br { bottom: 0; right: 0; }
+  .jobline { bottom: 0; font-size: 7pt; }
+  .print-slug {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 7pt;
+    letter-spacing: 0.14em;
+  }
+
+  /* the sheet reflows as a document */
+  .page { padding: 10mm 0 14mm; }
+  .hero { min-height: 0; padding: 10mm 0 8mm; }
+  .hero-title { font-size: 44pt; line-height: 0.9; }
+  .eyebrow { margin-bottom: 6mm; }
+  .trail, .index, .desk, .yard, .outro { padding: 8mm 0; }
+  .row { padding: 5mm 0; break-inside: avoid; }
+  .row-title { font-size: 26pt; }
+  .desk-row, .mile, .yard, .outro { break-inside: avoid; }
+  .outro-title { font-size: 34pt; }
+  .outro-title a { border-bottom-width: 1pt; }
+
+  /* the operator's plate prints — it's content, registration error and all */
+  .desk { display: block; }
+  .op { max-width: 52mm; margin: 6mm 0 0; break-inside: avoid; }
+  .op-candid { display: none !important; }
+
+  /* the doors out print as plain slugs with their full addresses */
+  .outro-links { display: block; text-align: right; }
+  .olink { border: 0; padding: 0; background: none; }
+  .olink svg { display: none; }
+  .olink::after { content: " — " attr(href); }
+
+  /* the ok slip prints — it's part of the proof — minus the screen
+     instructions; a committed stamp prints in black like everything */
+  .ok-fine { display: none !important; }
+  .okslip { break-inside: avoid; }
+
+  /* the sheet always prints struck (beforeprint strikes it in js;
+     this is the belt for renderers that skip the event) */
+  .impline { display: none !important; }
+  .unstruck, .unstruck * {
+    color: #000 !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+    border-color: rgba(0, 0, 0, 0.3) !important;
+  }
+  .unstruck .mile-stone path,
+  .unstruck #pile path { stroke: #000 !important; fill: #ececec !important; }
+}

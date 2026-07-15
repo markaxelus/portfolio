@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE LOCKUP — asymmetric make-ready (mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- EXACT same Fraunces axes/URL as index.html (incl. WONK) — a different subset
+     renders the glyphs with subtly different metrics, which broke the 1:1 hand-off -->
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=excon@400,700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THE LOCKUP — the load as an ASYMMETRIC event.
+     The site's word is "asymmetricness." So the first frame is
+     not a centred convergence — it's a lockup: the headline's
+     weight slams in OFF-CENTRE, leans (will it topple?), the
+     passes come into register, and it THUNKS and holds LEVEL.
+     Off-balance load, holds level = nerve. The cairn topples;
+     the lockup holds. Then it floods to stone and it already IS
+     the (asymmetric) hero — the load becomes the page.
+     Autoplays; REPLAY top-right. Reduced motion ships the page.
+     ============================================================ */
+  :root {
+    --booth: #0C0B08;
+    --stone: #DDDBD4;
+    --ink: #16150F;
+    --pencil: #C7361F;        /* the red pass */
+    --accent: #2A2AF0;        /* the blue pass (paper) */
+    --accent-lum: #7C7CFF;    /* the blue pass (booth) */
+    --acid: #B4C400;
+    --mono: "Space Mono", monospace;
+    --frame: 2.2vw;
+    --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+    --ease-thunk: cubic-bezier(0.34, 1.42, 0.5, 1);   /* overshoots → the teeter */
+    --bg: var(--booth);
+    --fg: var(--stone);
+    --lean: -4.6deg;          /* the held lean during make-ready */
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Fraunces", Georgia, serif;
+    font-optical-sizing: auto;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.65s var(--ease-out), color 0.65s var(--ease-out);
+  }
+  .mono { font-family: var(--mono); }
+
+  /* the raking work-light — off-centre, over the weight (lower-left) */
+  .glow {
+    position: fixed; inset: -25vh -25vw; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse 52vw 58vh at 30% 66%,
+      rgba(228,221,201,0.12), rgba(228,221,201,0.03) 54%, transparent 76%);
+    opacity: 0; transition: opacity 0.8s var(--ease-out);
+  }
+  body.lit .glow { opacity: 0.5; }
+  body.page .glow { opacity: 0; }
+
+  /* ============ THE SPOTLIGHT — a TRAVELLING followspot (from the searchlight) ============
+     the house dims and a circular pool ROAMS the make-ready — the counter, the
+     plate, the void — then HOMES onto the word as it comes into register. no
+     fixture, no beam: just the moving light. the surround stays visible (~40%). */
+  .searchdark {
+    position: fixed; inset: 0; z-index: 16; pointer-events: none; background: #0C0B08;
+    -webkit-mask-image: radial-gradient(circle var(--sr,300px) at var(--sx,50%) var(--sy,50%), transparent 0 62%, #000 100%);
+            mask-image: radial-gradient(circle var(--sr,300px) at var(--sx,50%) var(--sy,50%), transparent 0 62%, #000 100%);
+    opacity: 0; transition: opacity 0.8s var(--ease-out);
+  }
+  body.lit .searchdark { opacity: 0.07; }   /* the page is basically full-bright; the spot is a warm highlight */
+  body.page .searchdark { opacity: 0; }
+  /* a warm bloom rides the pool — smaller now, tighter on the word */
+  .searchwarm {
+    position: fixed; z-index: 17; pointer-events: none; left: 0; top: 0; width: 620px; height: 620px;
+    margin: -310px 0 0 -310px; opacity: 0; will-change: transform; transition: opacity 0.8s var(--ease-out);
+    background: radial-gradient(circle, rgba(255,241,214,0.32) 0%, rgba(255,240,210,0.15) 38%, rgba(255,240,210,0.05) 60%, transparent 72%);
+  }
+  body.lit .searchwarm { opacity: 1; }
+  body.page .searchwarm { opacity: 0; }
+
+  /* ---------- the measured axis: the void is off-centre, not empty ---------- */
+  .axis {
+    position: fixed; z-index: 2; top: 0; bottom: 0; left: 58%;
+    width: 1px; background: currentColor; opacity: 0;
+    transition: opacity 0.6s var(--ease-out);
+  }
+  body.lit .axis { opacity: 0.13; }
+  body.page .axis { opacity: 0.11; }
+  .axis .tick { position: absolute; top: 22%; left: 6px; font-family: var(--mono);
+    font-size: 8.5px; letter-spacing: 0.3em; opacity: 0.7; white-space: nowrap; }
+
+  /* a hazard rule runs OFF the bottom-left corner (under the weight) */
+  .hazard {
+    position: fixed; z-index: 2; left: -4vw; bottom: 6.5vh; width: 34vw; height: 12px;
+    transform: rotate(-4deg); transform-origin: left center;
+    background: repeating-linear-gradient(-45deg,
+      currentColor 0 7px, transparent 7px 15px);
+    opacity: 0; transition: opacity 0.6s var(--ease-out);
+    -webkit-mask-image: linear-gradient(90deg, #000 62%, transparent);
+            mask-image: linear-gradient(90deg, #000 62%, transparent);
+  }
+  body.lit .hazard { opacity: 0.16; }
+  body.page .hazard { opacity: 0.14; }
+
+  /* the stripe echoed up the RIGHT edge — the element Mark called asymmetric,
+     repeated to tie the two sides together and weight the right edge */
+  .edge-strip {
+    position: fixed; z-index: 2; right: 0; top: 11vh; bottom: 11vh; width: 15px;
+    background: repeating-linear-gradient(-45deg, currentColor 0 6px, transparent 6px 13px);
+    opacity: 0; transition: opacity 0.6s var(--ease-out);
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 16%, #000 84%, transparent);
+            mask-image: linear-gradient(180deg, transparent, #000 16%, #000 84%, transparent);
+  }
+  body.lit .edge-strip { opacity: 0.17; }
+  body.page .edge-strip { opacity: 0.15; }
+
+  /* an OFF-CENTRE registration cross floating in the void (not the middle) */
+  .cross {
+    position: fixed; z-index: 3; left: 77%; top: 31%; width: 48px; height: 48px;
+    margin: -24px 0 0 -24px; opacity: 0;
+    transition: opacity 0.6s var(--ease-out), transform 0.9s var(--ease-out);
+  }
+  body.lit .cross { opacity: 0.6; }
+  body.page .cross { opacity: 0.5; animation: cross-drift 90s linear infinite; }
+  .cross svg { width: 100%; height: 100%; overflow: visible; display: block; }
+  .cross .ln { stroke: currentColor; stroke-width: 1; fill: none; }
+  .cross .rd { stroke: var(--pencil); stroke-width: 1; fill: none; opacity: 0;
+    transition: transform 0.5s var(--ease-thunk), opacity 0.4s; }
+  .cross .bl { stroke: var(--accent-lum); stroke-width: 1; fill: none; opacity: 0;
+    transition: transform 0.5s var(--ease-thunk), opacity 0.4s; }
+  body.lit .cross .rd, body.lit .cross .bl { opacity: 0.8; }
+  body.registered .cross .rd, body.registered .cross .bl { opacity: 0.8; transform: translate(0,0) !important; }
+  body.page .cross .rd, body.page .cross .bl { opacity: 0; }
+  @keyframes cross-drift { to { transform: rotate(360deg); } }
+
+  /* ---------- the make-ready counter: the bright anchor, near the axis ----------
+     the eye tracks the count while it loads, so it sits near centre — loading
+     still FEELS centred while the composition stays weighted left. */
+  .make {
+    position: fixed; z-index: 8; left: 55%; top: 50%; transform: translateY(-50%);
+    font-family: var(--mono); opacity: 0; text-align: left;
+    transition: opacity 0.5s var(--ease-out), transform 0.6s var(--ease-out);
+  }
+  body.lit .make { opacity: 1; }
+  body.page .make { opacity: 0; transform: translateY(calc(-50% + 16px)); }
+  .make .lbl { display: block; font-size: 9px; letter-spacing: 0.34em; opacity: 0.5; }
+  .make .num { display: block; font-size: clamp(3rem, 7.5vw, 5.6rem); font-weight: 700;
+    line-height: 1; letter-spacing: 0.01em; font-variant-numeric: tabular-nums lining-nums; }
+  .make .num em { font-style: normal; font-size: 0.36em; opacity: 0.5; }
+  .make .err { display: block; margin-top: 5px; font-size: 11px; letter-spacing: 0.14em;
+    color: var(--pencil); min-height: 1.3em; }
+  .make .err.ok { color: var(--acid); }
+
+  /* the ink/tone bar under the counter — real mass, part of the make-ready
+     (stays as hero furniture, so the right never goes empty again) */
+  .tonebar {
+    position: fixed; z-index: 8; left: 55%; top: calc(50% + 98px);
+    display: flex; gap: 4px; align-items: center; opacity: 0;
+    transition: opacity 0.5s var(--ease-out);
+  }
+  body.lit .tonebar { opacity: 0.92; }
+  body.page .tonebar { opacity: 0.72; }
+  .tonebar i { width: 18px; height: 13px; display: block; }
+  .tonebar .cap { font-family: var(--mono); font-size: 8px; letter-spacing: 0.18em;
+    opacity: 0.5; margin-left: 7px; white-space: nowrap; }
+
+  /* the safe-working-load decal, boxed (weight in the upper-right) */
+  .wll {
+    position: fixed; z-index: 8; top: 18vh; right: clamp(1.1rem, 6vw, 6rem);
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.18em; line-height: 1.6;
+    border: 1px solid currentColor; padding: 6px 9px 5px; opacity: 0; text-align: right;
+    transition: opacity 0.5s var(--ease-out);
+  }
+  body.lit .wll { opacity: 0.72; }
+  body.page .wll { opacity: 0; }
+  .wll b { display: block; font-weight: 400; color: var(--acid); }
+
+  /* techwear slugs scattered into the void (persist as hero decals) */
+  .slugs {
+    position: fixed; z-index: 8; right: clamp(1.1rem, 6vw, 6rem); top: 58vh;
+    text-align: right; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.2em; line-height: 2.25; opacity: 0;
+    transition: opacity 0.6s var(--ease-out);
+  }
+  body.lit .slugs { opacity: 0.46; }
+  body.page .slugs { opacity: 0.44; }
+  .slugs span { display: block; white-space: nowrap; }
+  .slugs .sq { display: inline-block; width: 5px; height: 5px; border: 1px solid currentColor;
+    vertical-align: middle; margin: 0 3px; }
+  .slugs em { font-style: normal; color: var(--accent-lum); }
+  body.page .slugs em { color: var(--accent); }
+
+  /* the HELD tag — the payoff, appears at the level-out */
+  .held {
+    position: fixed; z-index: 9; left: clamp(1.1rem, 7vw, 7rem); bottom: 28vh;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em;
+    color: var(--acid); border: 1.4px solid var(--acid); padding: 6px 10px 5px;
+    opacity: 0; transform: translateY(6px) rotate(-2deg); pointer-events: none;
+  }
+  body.registered .held { animation: held-in 0.42s var(--ease-thunk) 0.06s both; }
+  body.page .held { opacity: 0; transition: opacity 0.4s; }
+  @keyframes held-in {
+    0% { opacity: 0; transform: translateY(6px) rotate(-2deg) scale(1.15); }
+    100% { opacity: 0.95; transform: translateY(0) rotate(-2deg) scale(1); }
+  }
+
+  /* ---------- crop brackets: hug the leaning lockup, fly to the page corners ---------- */
+  .bk {
+    position: fixed; z-index: 7; left: 0; top: 0; width: 64px; height: 64px;
+    border: 0 solid currentColor; pointer-events: none; opacity: 0;
+    /* 0.7s: launched WITH the light's final approach, lands as the lamp settles */
+    transition: transform 0.7s var(--ease-out), opacity 0.5s var(--ease-out);
+    will-change: transform;
+  }
+  body.framed .bk { opacity: 0.66; }   /* the frame appears WITH the light landing on the word */
+  body.page .bk { opacity: 0.5; }
+  .bk.tl { border-top-width: 1.4px; border-left-width: 1.4px; }
+  .bk.tr { border-top-width: 1.4px; border-right-width: 1.4px; }
+  .bk.bl { border-bottom-width: 1.4px; border-left-width: 1.4px; }
+  .bk.br { border-bottom-width: 1.4px; border-right-width: 1.4px; }
+
+  /* ============ THE LOCKUP — the headline as weighted, off-centre type ============ */
+  .stage { position: fixed; inset: 0; z-index: 5; pointer-events: none; }
+  .lockup {
+    position: absolute; left: clamp(1.1rem, 7vw, 8rem); bottom: 27vh;
+    transform-origin: 7% 88%;               /* pivot at the heavy base */
+    transform: rotate(var(--lean));
+    /* no will-change: a promoted layer caches a mid-flight texture of the words
+       (the amp, which also shifts lavender→blue, leaves a stale coloured ghost) */
+  }
+  .line {
+    display: block; color: var(--fg); line-height: 0.86; letter-spacing: -0.03em;
+    font-weight: 460; white-space: nowrap;
+    opacity: 0; transform: translateY(-14px);
+  }
+  body.lit .line { animation: lockdrop 0.55s var(--ease-out) forwards;
+    animation-delay: calc(var(--i) * 0.11s + 0.12s); }
+  @keyframes lockdrop { to { opacity: 1; transform: translateY(0); } }
+  /* the staircase — irregular indents (hand-composed, not a ruler diagonal) */
+  /* V3 lockup: Excon words + a roman Fraunces & — matches the real hero so the
+     flying letterforms ARE the hero's (the flight scales, the bake lands 1:1). */
+  .l-mark   { --i: 0; margin-left: 6.2vw;  font-size: clamp(2rem, 5vw, 3.7rem);
+              font-family: "Excon", sans-serif; font-weight: 700; text-transform: uppercase; }
+  .l-amp    { --i: 1; margin-left: 3.2vw;  font-size: clamp(2.8rem, 7vw, 5.4rem); margin-top: -0.02em;
+              font-family: "Fraunces", serif; font-style: normal; color: var(--accent-lum);
+              font-variation-settings: "opsz" 144, "wght" 470; }
+  .l-desk   { --i: 2; margin-left: 0;      font-size: clamp(2.2rem, 6.6vw, 5.2rem); margin-top: -0.02em;
+              font-family: "Excon", sans-serif; font-weight: 700; text-transform: uppercase; }
+  body.page .l-amp { color: var(--accent); }
+  /* the parent's flight reel took the & at the relax — our amp yields the same
+     frame (visibility, not opacity: an atomic swap, never a fade-out) */
+  body.ceded .l-amp { visibility: hidden; }
+  /* the keystone carries the misregister (red/blue passes, set inline by JS) */
+
+  /* ---------- page furniture: fades in with the flood ---------- */
+  .eyebrow {
+    position: fixed; z-index: 6; left: clamp(1.1rem, 7vw, 8rem); top: 15vh;
+    font-family: var(--mono); font-size: clamp(0.55rem, 0.82vw, 0.7rem);
+    letter-spacing: 0.28em; color: var(--ink); white-space: nowrap;
+    opacity: 0; transition: opacity 0.7s var(--ease-out) 0.25s;
+  }
+  .eyebrow em { font-style: normal; color: var(--accent); }
+  body.page .eyebrow { opacity: 0.9; }
+
+  .bio {
+    position: fixed; z-index: 6; right: clamp(1.1rem, 7vw, 7rem); bottom: 19vh;
+    width: min(15rem, 42vw); font-family: var(--mono); font-size: 12px;
+    line-height: 1.65; color: var(--ink); text-align: left;
+    opacity: 0; transition: opacity 0.7s var(--ease-out) 0.35s;
+  }
+  body.page .bio { opacity: 0.82; }
+  .bio .rule { display: block; width: 34px; height: 2px; background: var(--accent); margin-bottom: 12px; }
+
+  .corner {
+    position: fixed; z-index: 6; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.24em; color: var(--ink); opacity: 0;
+    transition: opacity 0.6s var(--ease-out) 0.3s;
+  }
+  body.page .corner { opacity: 0.66; }
+  .corner.tl { top: calc(var(--frame) + 2px); left: calc(var(--frame) + 22px); }
+  .corner.br { bottom: calc(var(--frame) + 44px); right: calc(var(--frame) + 22px); }
+
+  .jobline {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+    background: color-mix(in srgb, var(--stone) 88%, var(--ink));
+    border-top: 1px solid rgba(22,21,15,0.16);
+    display: flex; justify-content: space-between; gap: 16px;
+    padding: 8px 18px; font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.2em; color: rgba(22,21,15,0.66); white-space: nowrap;
+    opacity: 0; transition: opacity 0.6s var(--ease-out) 0.3s;
+  }
+  body.page .jobline { opacity: 1; }
+  .jobline b { font-weight: 400; color: var(--pencil); }
+  .jobline em { font-style: normal; color: var(--accent); }
+
+  /* ---------- chrome ---------- */
+  .cap {
+    position: fixed; z-index: 20; left: calc(var(--frame) + 18px); bottom: calc(var(--frame) + 10px);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; color: var(--fg); opacity: 0.5;
+    max-width: 52vw;
+  }
+  body.page .cap { color: var(--ink); opacity: 0.55; }
+  .cap b { font-weight: 700; }
+  .replay {
+    position: fixed; z-index: 20; right: var(--frame); top: calc(var(--frame) + 2px);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--fg);
+    background: none; border: 1px solid currentColor; padding: 7px 12px 6px;
+    cursor: pointer; opacity: 0.55; transition: opacity 0.4s, background-color 0.2s, color 0.2s;
+  }
+  body.page .replay { color: var(--ink); opacity: 0.8; }
+  .replay:hover { background: currentColor; }
+  .replay:hover span { color: var(--bg); }
+
+  /* ============ MORE ASSETS — authentic press + techwear furniture ============ */
+
+  /* the LIT PLATE: the work itself, being made ready. Baked (a print stays a
+     print in any mode); its red pass is off-register and comes true on resolve */
+  .plate {
+    position: fixed; z-index: 6; left: 67%; top: 46%; width: clamp(148px, 17vw, 222px);
+    transform: rotate(-1.6deg); opacity: 0;
+    transition: opacity 0.6s var(--ease-out) 0.15s, transform 0.9s var(--ease-out);
+    filter: drop-shadow(0 12px 24px rgba(0,0,0,0.45));
+  }
+  body.lit .plate { opacity: 1; }
+  body.page .plate { opacity: 0.96; }
+  .plate svg { width: 100%; display: block; border: 1px solid rgba(221,219,212,0.14); }
+  .plate-cap { display: block; margin-top: 6px; font-family: var(--mono);
+    font-size: 8px; letter-spacing: 0.2em; color: var(--fg); opacity: 0.55; white-space: nowrap; }
+
+  /* the proof slug, rotated up the plate's edge */
+  .pslug {
+    position: fixed; z-index: 6; left: 65.4%; top: 46%; transform: rotate(-90deg);
+    transform-origin: left top; font-family: var(--mono); font-size: 8.5px;
+    letter-spacing: 0.26em; color: var(--fg); opacity: 0; white-space: nowrap;
+    transition: opacity 0.6s var(--ease-out);
+  }
+  body.lit .pslug { opacity: 0.5; } body.page .pslug { opacity: 0.42; }
+
+  /* a registration STAR target in the void (different mark = variety) */
+  .star { position: fixed; z-index: 3; left: 60%; top: 15%; width: 30px; height: 30px;
+    margin: -15px 0 0 -15px; opacity: 0; transition: opacity 0.6s var(--ease-out); }
+  body.lit .star { opacity: 0.38; } body.page .star { opacity: 0.34; }
+  .star svg { width: 100%; height: 100%; display: block; }
+  .star line { stroke: currentColor; stroke-width: 1.4; }
+
+  /* a spec/code cluster, upper-left — techwear density */
+  .spec-cluster {
+    position: fixed; z-index: 8; left: clamp(1.1rem, 7vw, 8rem); top: 11vh;
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.2em; line-height: 2;
+    opacity: 0; transition: opacity 0.6s var(--ease-out);
+  }
+  body.lit .spec-cluster { opacity: 0.34; } body.page .spec-cluster { opacity: 0; }
+  .spec-cluster span { display: block; white-space: nowrap; }
+  .spec-cluster em { font-style: normal; color: var(--accent-lum); }
+
+  /* a halftone screen patch, lower-right — print texture as an object */
+  .htpatch {
+    position: fixed; z-index: 3; right: clamp(1.1rem, 6vw, 6rem); top: 49vh;
+    width: 46px; height: 46px; opacity: 0; transition: opacity 0.6s var(--ease-out);
+    background-image: radial-gradient(currentColor 1.1px, transparent 1.3px);
+    background-size: 6px 6px;
+  }
+  body.lit .htpatch { opacity: 0.2; } body.page .htpatch { opacity: 0.18; }
+
+  /* scattered tiny squares + arrows (the controller aesthetic) */
+  .mk { position: fixed; z-index: 3; font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.2em; opacity: 0; transition: opacity 0.6s var(--ease-out); }
+  body.lit .mk { opacity: 0.3; } body.page .mk { opacity: 0.28; }
+  .mk .sq { display: inline-block; width: 6px; height: 6px; border: 1px solid currentColor;
+    vertical-align: middle; margin: 0 3px; }
+  .mk-1 { left: 46%; top: 23%; } .mk-2 { left: 41%; bottom: 15vh; } .mk-3 { left: 89%; top: 52%; }
+
+  /* ============ MOVEMENT — the bed assembles, the passes hunt, the reveal strikes ============ */
+
+  /* staggered slide-in: each asset SETTLES into place (build, don't just fade) */
+  .cross, .star, .tonebar, .wll, .slugs, .spec-cluster, .htpatch, .mk, .plate, .pslug {
+    transition-property: opacity, transform;
+    transition-duration: 0.55s, 0.8s;
+    transition-timing-function: var(--ease-out), var(--ease-thunk);
+  }
+  .cross        { transform: scale(0.5);  transition-delay: 0.10s; }
+  body.lit .cross { transform: scale(1); }
+  .star         { transform: scale(0.4);  transition-delay: 0.14s; }
+  body.lit .star  { transform: scale(1); }
+  .tonebar      { transform: translateX(-16px); transition-delay: 0.18s; }
+  body.lit .tonebar { transform: translateX(0); }
+  .spec-cluster { transform: translateX(-16px); transition-delay: 0.24s; }
+  body.lit .spec-cluster { transform: translateX(0); }
+  .wll          { transform: translateX(18px);  transition-delay: 0.28s; }
+  body.lit .wll   { transform: translateX(0); }
+  .slugs        { transform: translateX(18px);  transition-delay: 0.34s; }
+  body.lit .slugs { transform: translateX(0); }
+  .plate        { transform: translateY(-30px) rotate(-1.6deg); transition-delay: 0.30s; }
+  body.lit .plate { transform: rotate(-1.6deg); }
+  .pslug        { transform: translateX(-10px) rotate(-90deg);  transition-delay: 0.48s; }
+  body.lit .pslug { transform: rotate(-90deg); }
+  .htpatch      { transform: scale(0.4);  transition-delay: 0.40s; }
+  body.lit .htpatch { transform: scale(1); }
+  .mk           { transform: scale(0.3);  transition-delay: 0.44s; }
+  body.lit .mk    { transform: scale(1); }
+
+  /* the densitometer sweeps the tone bar (reading each patch) */
+  .tonebar .scan {
+    position: absolute; top: -3px; height: 19px; left: 0; width: 12px; pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(180,196,0,0.55), transparent); opacity: 0;
+  }
+  body.lit .tonebar .scan { opacity: 1; animation: densi 1.5s var(--ease-out) infinite; }
+  body.registered .tonebar .scan, body.page .tonebar .scan { opacity: 0; animation: none; }
+  @keyframes densi { 0% { transform: translateX(-4px); } 100% { transform: translateX(162px); } }
+
+  /* a scan line crawls the plate as it's read */
+  .plate .scanline {
+    position: absolute; left: 1px; right: 1px; top: 0; height: 2px; pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(124,124,255,0.65), transparent); opacity: 0;
+  }
+  body.lit .plate .scanline { opacity: 1; animation: scandown 2.3s linear infinite; }
+  body.registered .plate .scanline, body.page .plate .scanline { opacity: 0; animation: none; }
+  @keyframes scandown { 0% { transform: translateY(2px); } 100% { transform: translateY(148px); } }
+
+  /* the star target keeps turning */
+  .star svg { animation: spin 40s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* the reveal: a light sweep strikes across as it becomes the page */
+  .flash {
+    position: fixed; inset: 0; z-index: 10; pointer-events: none; opacity: 0;
+    background: linear-gradient(105deg, transparent 34%, rgba(228,221,201,0.5) 50%, transparent 66%);
+  }
+  body.page .flash { animation: sweep 0.85s var(--ease-out) both; }
+  @keyframes sweep {
+    0% { opacity: 0; transform: translateX(-55%); }
+    35% { opacity: 0.9; }
+    100% { opacity: 0; transform: translateX(55%); }
+  }
+
+  /* page furniture slides in (not just fades) */
+  .eyebrow { transition: opacity 0.7s var(--ease-out) 0.25s, transform 0.7s var(--ease-out) 0.25s;
+    transform: translateY(-8px); }
+  body.page .eyebrow { transform: translateY(0); }
+  .bio { transition: opacity 0.7s var(--ease-out) 0.35s, transform 0.7s var(--ease-out) 0.35s;
+    transform: translateX(16px); }
+  body.page .bio { transform: translateX(0); }
+
+  /* ============ THE MISREGISTER — the keystone's passes, loud, then home ============ */
+  .l-desk { position: relative; }
+  .l-desk .ghost {
+    position: absolute; left: 0; top: 0; white-space: nowrap; pointer-events: none;
+    opacity: 0.9;
+  }
+  .l-desk .ghost.red  { color: var(--pencil); }
+  .l-desk .ghost.blue { color: var(--accent-lum); }
+  body.page .l-desk .ghost.blue { color: var(--accent); }
+  .l-desk .ink-face { position: relative; }   /* the key pass sits on top of its ghosts */
+
+  /* engineering-drawing dimension line, clamped under the word */
+  .measure {
+    position: fixed; z-index: 4; left: clamp(1.1rem, 7vw, 8rem); bottom: 19.5vh;
+    width: min(46vw, 340px); height: 1px; background: currentColor; opacity: 0;
+    transition: opacity 0.6s var(--ease-out) 0.5s;
+  }
+  body.lit .measure  { opacity: 0.4; }
+  body.page .measure { opacity: 0.32; }
+  .measure::before, .measure::after {
+    content: ""; position: absolute; top: -6px; width: 1px; height: 13px; background: currentColor;
+  }
+  .measure::before { left: 0; } .measure::after { right: 0; }
+  .measure .mlbl {
+    position: absolute; top: -7px; left: 50%; transform: translateX(-50%);
+    background: var(--bg); padding: 0 8px; font-family: var(--mono);
+    font-size: 8.5px; letter-spacing: 0.2em; color: currentColor; white-space: nowrap;
+  }
+
+  /* the grip-tape rail up the left edge */
+  .grip {
+    position: fixed; z-index: 3; left: 0; top: 0; bottom: 0; width: 22px;
+    display: flex; align-items: center; justify-content: center;
+    writing-mode: vertical-rl; text-orientation: mixed;
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.34em; color: var(--fg);
+    opacity: 0; transition: opacity 0.6s var(--ease-out);
+    background: repeating-linear-gradient(180deg, transparent 0 5px, rgba(128,128,128,0.05) 5px 6px);
+  }
+  body.lit .grip  { opacity: 0.4; }
+  body.page .grip { opacity: 0.5; }
+
+  /* ============ THE THUNK — the lock lands hard ============ */
+  /* the whole lockup jolts a pixel as it registers (the press slamming true) */
+  body.registered .stage { animation: thunk 0.2s var(--ease-out); }
+  @keyframes thunk {
+    0%   { transform: none; }
+    25%  { transform: translate(-2px, 1.5px); }
+    55%  { transform: translate(1.5px, -1px); }
+    100% { transform: none; }
+  }
+  /* OK TO RUN hits on the same beat */
+  body.registered .make .err.ok { animation: okhit 0.4s var(--ease-thunk); transform-origin: left center; }
+  @keyframes okhit { 0% { transform: scale(1.18); } 60% { transform: scale(0.98); } 100% { transform: scale(1); } }
+
+  /* embedded as the real page's loader (in an iframe): hide the mock's own chrome */
+  body.embed .replay, body.embed .cap { display: none !important; }
+
+  /* ============ THE HAND-OFF — the lockup RELAXES into the real hero ============
+     embed only: once registered, the four words FLIP from the lockup to the LIVE
+     hero's own word positions (read across the same-origin frame), then the booth
+     floods. so the headline isn't replaced — it MOVES into the page, and the flood
+     reveals the identical hero settled underneath. while the words travel, the
+     make-ready furniture clears so the flight reads clean.
+     (no will-change on the words: a promoted layer scales its raster, so the
+     text renders soft/ghosted against the crisp hero at the hand-off.) */
+  body.relaxing .glow, body.relaxing .searchdark, body.relaxing .searchwarm,
+  body.relaxing .axis, body.relaxing .hazard, body.relaxing .edge-strip,
+  body.relaxing .cross, body.relaxing .star, body.relaxing .make, body.relaxing .tonebar,
+  body.relaxing .wll, body.relaxing .slugs, body.relaxing .held, body.relaxing .bk,
+  body.relaxing .plate, body.relaxing .pslug, body.relaxing .spec-cluster,
+  body.relaxing .htpatch, body.relaxing .mk, body.relaxing .measure, body.relaxing .grip,
+  /* embed: the LIVE page owns the eyebrow/bio/corners/jobline — the loader's own
+     copies would double against them through the reveal, so keep them down */
+  body.relaxing .eyebrow, body.relaxing .bio, body.relaxing .corner, body.relaxing .jobline {
+    opacity: 0 !important;
+    transition: opacity 0.4s var(--ease-out) !important;
+  }
+  /* the keystone's misregister passes merge away as the ink-face resolves to the
+     crisp hero form — otherwise the soft (wider) ghosts fringe past it */
+  body.relaxing .l-desk .ghost {
+    opacity: 0 !important;
+    transition: opacity 0.3s var(--ease-out) !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  @media (max-width: 640px) {
+    :root { --lean: -3.6deg; }
+    .make { left: 8%; top: auto; bottom: 17vh; transform: none; }
+    .tonebar, .wll, .plate, .pslug, .spec-cluster, .htpatch, .mk { display: none; }
+    .star { left: 72%; top: 12%; }
+    .slugs { top: auto; bottom: 24vh; right: 6vw; font-size: 9px; }
+    .bio { display: none; }
+    .axis { left: 66%; }
+    .cross { left: 80%; top: 22%; }
+    .cap { max-width: 70vw; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="glow" aria-hidden="true"></div>
+  <div class="flash" aria-hidden="true"></div>
+
+  <!-- the travelling followspot: a dim surround with a moving pool -->
+  <div class="searchdark" aria-hidden="true"></div>
+  <div class="searchwarm" aria-hidden="true"></div>
+
+  <div class="grip" aria-hidden="true"><span>AXELUS &bull; AXELUS &bull; AXELUS</span></div>
+
+  <!-- engineering-drawing measurement clamped on the word -->
+  <div class="measure" aria-hidden="true"><span class="mlbl mono">W. 42.0 mm &middot; &plusmn;0.00 &middot; HELD</span></div>
+
+  <!-- the measured void -->
+  <div class="axis" aria-hidden="true"><span class="tick mono">AXIS 62 &middot; THE VOID IS MEASURED</span></div>
+  <div class="hazard" aria-hidden="true"></div>
+  <div class="edge-strip" aria-hidden="true"></div>
+
+  <!-- off-centre registration cross in the void -->
+  <div class="cross" aria-hidden="true">
+    <svg viewBox="0 0 40 40">
+      <circle class="rd" cx="20" cy="20" r="10"/><path class="rd" d="M20 4v9M20 27v9M4 20h9M27 20h9"/>
+      <circle class="bl" cx="20" cy="20" r="10"/><path class="bl" d="M20 4v9M20 27v9M4 20h9M27 20h9"/>
+      <circle class="ln" cx="20" cy="20" r="10"/><path class="ln" d="M20 3v10M20 27v10M3 20h10M27 20h10"/>
+    </svg>
+  </div>
+
+  <!-- the make-ready counter: the bright anchor near the axis -->
+  <div class="make" aria-hidden="true">
+    <span class="lbl">MAKE-READY &middot; LOCKUP</span>
+    <span class="num"><span id="num">00</span><em>%</em></span>
+    <span class="err" id="err">SETTING THE FORME</span>
+  </div>
+
+  <!-- the ink/tone bar under the counter -->
+  <div class="tonebar" aria-hidden="true">
+    <i class="scan"></i>
+    <i style="background:#16150F"></i><i style="background:rgba(22,21,15,.55)"></i>
+    <i style="background:rgba(22,21,15,.28)"></i><i style="background:#C7361F"></i>
+    <i style="background:#7C7CFF"></i><i style="background:#B4C400"></i>
+    <i style="background:#E6E4DC; outline:1px solid rgba(120,120,120,.4); outline-offset:-1px"></i>
+    <span class="cap">3 INKS &middot; D50</span>
+  </div>
+
+  <!-- the safe-working-load decal, boxed -->
+  <div class="wll" aria-hidden="true">[W.L.L.] SAFE LOAD<b>04 SHEETS &middot; HOLDS</b></div>
+
+  <!-- techwear slugs, lower-right -->
+  <div class="slugs" aria-hidden="true">
+    <span>MA//TC-IV</span>
+    <span>[RUN.M] LOCKUP ARMED</span>
+    <span>REF// 0x2F &middot; OK</span>
+    <span>R.00 <i class="sq"></i><i class="sq"></i> &rarr;</span>
+  </div>
+
+  <!-- the lit plate: the work being made ready (its red pass comes into register) -->
+  <div class="plate" aria-hidden="true">
+    <svg viewBox="0 0 220 150" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <pattern id="ht" width="5" height="5" patternUnits="userSpaceOnUse">
+          <circle cx="1.2" cy="1.2" r="1.15" fill="#7C7CFF" opacity="0.16"/>
+        </pattern>
+      </defs>
+      <rect width="220" height="150" fill="#0E0D0A"/>
+      <g class="plate-red" fill="none" stroke="#C7361F" stroke-width="1.4" opacity="0.85">
+        <circle cx="150" cy="76" r="20"/><circle cx="150" cy="76" r="40"/><circle cx="150" cy="76" r="60"/>
+        <path d="M34 18 L204 132"/>
+      </g>
+      <g fill="none" stroke="#7C7CFF" stroke-width="1.4" opacity="0.92">
+        <circle cx="150" cy="76" r="20"/><circle cx="150" cy="76" r="40"/><circle cx="150" cy="76" r="60"/>
+        <path d="M34 18 L204 132"/>
+      </g>
+      <rect width="220" height="150" fill="url(#ht)"/>
+      <text x="12" y="134" font-family="Fraunces, serif" font-size="54" fill="#DDDBD4" opacity="0.06" font-weight="700">03</text>
+      <path d="M8 8h10M8 8v10" stroke="#DDDBD4" stroke-width="1" opacity="0.5" fill="none"/>
+      <path d="M212 142h-10M212 142v-10" stroke="#DDDBD4" stroke-width="1" opacity="0.5" fill="none"/>
+    </svg>
+    <i class="scanline"></i>
+    <span class="plate-cap">NIGHT OFFICE &middot; PROOF 03/04</span>
+  </div>
+  <span class="pslug" aria-hidden="true">MAKE-READY &middot; D50 &middot; 00/04</span>
+
+  <!-- a registration star target -->
+  <div class="star" aria-hidden="true">
+    <svg viewBox="0 0 30 30">
+      <line x1="15" y1="1" x2="15" y2="29"/><line x1="1" y1="15" x2="29" y2="15"/>
+      <line x1="5" y1="5" x2="25" y2="25"/><line x1="25" y1="5" x2="5" y2="25"/>
+      <line x1="15" y1="2" x2="15" y2="28" transform="rotate(22.5 15 15)"/>
+      <line x1="15" y1="2" x2="15" y2="28" transform="rotate(67.5 15 15)"/>
+      <line x1="15" y1="2" x2="15" y2="28" transform="rotate(112.5 15 15)"/>
+      <line x1="15" y1="2" x2="15" y2="28" transform="rotate(157.5 15 15)"/>
+    </svg>
+  </div>
+
+  <!-- techwear code cluster -->
+  <div class="spec-cluster" aria-hidden="true">
+    <span>MRTHM //TC-IV</span>
+    <span>00.MA2093 &middot; 00 01</span>
+    <span>[RUN.R] <em>SENSORY INPUT</em></span>
+  </div>
+
+  <!-- print texture + scattered marks -->
+  <div class="htpatch" aria-hidden="true"></div>
+  <span class="mk mk-1" aria-hidden="true"><i class="sq"></i>&rarr;</span>
+  <span class="mk mk-2" aria-hidden="true">&#9633;&#9633;</span>
+  <span class="mk mk-3" aria-hidden="true">&larr;<i class="sq"></i></span>
+
+  <span class="held" id="held" aria-hidden="true">HELD &middot; OFF-CENTRE &middot; LEVEL</span>
+
+  <!-- crop brackets -->
+  <i class="bk tl" id="bk-tl"></i><i class="bk tr" id="bk-tr"></i>
+  <i class="bk bl" id="bk-bl"></i><i class="bk br" id="bk-br"></i>
+
+  <!-- THE LOCKUP: the headline, weighted off-centre -->
+  <div class="stage" aria-hidden="true">
+    <div class="lockup" id="lockup">
+      <span class="line l-mark">Mark</span>
+      <span class="line l-amp">&amp;</span>
+      <span class="line l-desk" id="keystone"><span class="ghost red">my desk</span><span class="ghost blue">my desk</span><span class="ink-face">my desk</span></span>
+    </div>
+  </div>
+
+  <!-- page furniture (arrives with the flood) -->
+  <p class="eyebrow" aria-hidden="true">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</p>
+  <aside class="bio mono" aria-hidden="true">
+    <span class="rule"></span>
+    I&rsquo;m Mark. I design and build interfaces that hold their nerve. I work slowly, ship rarely, and put everything on the page.
+  </aside>
+  <span class="corner tl mono" aria-hidden="true">MARK AXELUS</span>
+  <span class="corner br mono" aria-hidden="true">SEE THE MESS</span>
+  <div class="jobline" aria-hidden="true">
+    <span>SHEET Nº 001 &middot; MARK AXELUS &middot; WORKING PROOF</span>
+    <span><b>LOCKED OFF-CENTRE</b> &middot; <em>HOLDS LEVEL</em> &middot; D50 5000K</span>
+  </div>
+
+  <span class="cap">LOAD — <b>THE LOCKUP</b> &middot; the weight sits off-centre, and holds level</span>
+  <button class="replay" id="replay" type="button"><span>&#8630; REPLAY</span></button>
+
+<script>
+  var body   = document.body;
+  var numEl  = document.getElementById("num");
+  var errEl  = document.getElementById("err");
+  var keystone = document.getElementById("keystone");
+  var lockup = document.getElementById("lockup");
+  var crossR = document.querySelector(".cross .rd");
+  var crossB = document.querySelector(".cross .bl");
+  var plateR = document.querySelector(".plate-red");
+  var ghostR = document.querySelector(".l-desk .ghost.red");
+  var ghostB = document.querySelector(".l-desk .ghost.blue");
+  var sdark  = document.querySelector(".searchdark");
+  var swarm  = document.querySelector(".searchwarm");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* when run as the real page's loader (in an iframe): hide chrome, flood to the
+     live page's own colours, and signal the parent when the sheet is set */
+  var embed  = /[?&]embed(\b|=)/.test(location.search);
+  if (embed) body.classList.add("embed");
+
+  /* the travelling followspot: a dim surround with a moving circular pool */
+  var spx = 0, spy = 0, spW = innerWidth, spH = innerHeight;
+  function lerp(a, b, t){ return a + (b - a) * t; }
+  function writeSpot(now){
+    if (!sdark) return;
+    /* the lamp is HELD — a faint hand drift + a slow breathing iris while the
+       shop is still working; register STILLS it (stillness = registration,
+       the site's own law). callers without a clock get the lamp at rest. */
+    var still = registered || reduce || now == null;
+    var x = spx, y = spy;
+    if (!still){
+      x += Math.sin(now * 0.0031) * 5 + Math.sin(now * 0.0013) * 3;
+      y += Math.cos(now * 0.0023) * 4;
+      sdark.style.setProperty("--sr", (300 + Math.sin(now * 0.0017) * 18).toFixed(0) + "px");
+    }
+    sdark.style.setProperty("--sx", x.toFixed(1) + "px");
+    sdark.style.setProperty("--sy", y.toFixed(1) + "px");
+    swarm.style.transform = "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px)";
+  }
+  /* measure the ACTUAL centres — the tour's stations. zero-rects (a station
+     hidden at this breakpoint, e.g. the plate on mobile) stay null so the
+     viewport fallbacks take over instead of aiming the lamp at 0,0 */
+  var wordC = null, countC = null, plateC = null, formeC = null;
+  function centreOf(el){
+    if (!el) return null;
+    var r = el.getBoundingClientRect();
+    return (r.width > 1 || r.height > 1) ? [r.left + r.width/2, r.top + r.height/2] : null;
+  }
+  function measureSpots(){
+    wordC  = centreOf(keystone);
+    countC = centreOf(document.querySelector(".make"));
+    plateC = centreOf(document.querySelector(".plate"));
+    formeC = centreOf(document.querySelector(".l-mark"));   /* the forme: the upper lockup */
+  }
+
+  var BASE_LEAN = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--lean")) || -4.6;
+  var MAXOFF = 15;              /* the make-ready registration error, in px */
+  var CLIMB  = 3550;           /* make-ready duration before the good pull (slower — it breathes) */
+  var MORPH_MS = 920;          /* the flight: the lockup relaxes into the real hero */
+  var ampCeded = false;        /* the parent's flight reel took the & (set at relax) */
+
+  var timers = [], rafId = null, fontsReady = false, registered = false;
+  function at(ms, fn){ timers.push(setTimeout(fn, ms)); }
+  function clearAll(){ timers.forEach(clearTimeout); timers = []; if (rafId) cancelAnimationFrame(rafId); rafId = null; }
+  function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+  function easeInOut(t){ return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+
+  /* the misregister: red pass up-left, blue pass down-right, by the error */
+  function setReg(off){
+    /* the keystone's passes blow WAY apart, then slam home — a loud misprint that registers */
+    var big = off * 4.4;
+    if (ghostR) ghostR.style.transform = "translate("+(-big).toFixed(1)+"px,"+(-big*0.52).toFixed(1)+"px)";
+    if (ghostB) ghostB.style.transform = "translate("+( big).toFixed(1)+"px,"+( big*0.52).toFixed(1)+"px)";
+    crossR.style.transform = "translate("+(-off*0.28)+"px,"+(-off*0.18)+"px)";
+    crossB.style.transform = "translate("+( off*0.28)+"px,"+( off*0.18)+"px)";
+    if (plateR) plateR.setAttribute("transform", "translate("+(off*0.6).toFixed(2)+","+(off*0.34).toFixed(2)+")");
+  }
+
+  /* seat the brackets around the leaning lockup (the size that was right) */
+  function hugBrackets(){
+    var r = lockup.getBoundingClientRect(), pad = 26, bk = 64;
+    var pts = {
+      "bk-tl":[r.left-pad, r.top-pad], "bk-tr":[r.right+pad-bk, r.top-pad],
+      "bk-bl":[r.left-pad, r.bottom+pad-bk], "bk-br":[r.right+pad-bk, r.bottom+pad-bk]
+    };
+    for (var id in pts) document.getElementById(id).style.transform = "translate("+pts[id][0]+"px,"+pts[id][1]+"px)";
+  }
+  /* release them to the viewport corners (loader frame → page frame) */
+  function cornerBrackets(){
+    var vw = innerWidth, vh = innerHeight, fr = 0.022*vw, bk = 64;
+    var pts = { "bk-tl":[fr,fr], "bk-tr":[vw-fr-bk,fr], "bk-bl":[fr,vh-fr-bk], "bk-br":[vw-fr-bk,vh-fr-bk] };
+    for (var id in pts) document.getElementById(id).style.transform = "translate("+pts[id][0]+"px,"+pts[id][1]+"px)";
+  }
+
+  var climbStart = 0, regAt = 0, framed = false;
+  function frame(now){
+    /* smooth make-ready: 0 → ~100, capped below 100 until the fonts are in */
+    var p = clamp((now - climbStart)/CLIMB, 0, 1);
+    var e = easeInOut(p);
+    if (!fontsReady) e = Math.min(e, 0.97);
+    var v = Math.round(e*100);
+    numEl.textContent = (v<10?"0":"")+v;
+    /* the passes HUNT for register — a decaying vibration on the way in */
+    var jitter = (1-e) * 2.6 * Math.sin((now - climbStart) * 0.028);
+    setReg((1-e)*MAXOFF + jitter);
+    errEl.textContent = e<0.34 ? "REG +1.5 mm — OFF" : (e<0.72 ? "REG +0.7 mm" : "REG +0.2 mm — CLOSE");
+
+    /* the held lean, with a slow breathing sway — a heavy thing kept in tension */
+    if (!registered){
+      var sway = Math.sin((now - climbStart)/820) * 0.7;
+      lockup.style.transform = "rotate("+(BASE_LEAN + sway)+"deg)";
+    }
+
+    /* THE INSPECTION TOUR — the operator walks the lamp across the job:
+       the plate (the work) → the counter (the gauge) → the forme (the upper
+       lockup) → down onto the keystone WORD, where it settles, the box lands
+       with it, and the iris closes. brisk between stations (the lerp arcs
+       through them, never parking), heavy on the final settle. */
+    var st, leg;
+    if      (e < 0.10){ st = plateC || [0.74*spW, 0.48*spH]; leg = 0; }
+    else if (e < 0.26){ st = countC || [0.55*spW, 0.50*spH]; leg = 1; }
+    else if (e < 0.46){ st = formeC || wordC || [0.22*spW, 0.50*spH]; leg = 2; }
+    else              { st = wordC  || [0.22*spW, 0.62*spH]; leg = 3; }
+    var k = leg < 3 ? 0.085 : 0.058;
+    spx = lerp(spx, st[0], k); spy = lerp(spy, st[1], k); writeSpot(now);
+
+    /* the crop-bracket frame launches as the lamp turns onto the FORME —
+       the box frames the lockup while the light sweeps down it, and both
+       land together (fired on the final leg it still trailed ~0.5s; fired
+       on arrival — the original — it trailed ~0.85s) */
+    if (!framed && leg >= 2 && wordC){
+      framed = true; body.classList.add("framed"); hugBrackets();
+    }
+
+    if (p>=1 && fontsReady && !registered){ register(); }
+    /* as it finishes, the light irises down to a point on the 100% */
+    if (registered && regAt){
+      var sr = Math.max(0, 300 * (1 - (now - regAt) / 560));
+      sdark.style.setProperty("--sr", sr.toFixed(0) + "px");
+    }
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function register(){
+    registered = true;
+    regAt = performance.now();        /* the light starts shrinking from here */
+    numEl.textContent = "100";
+    setReg(0);
+    errEl.textContent = "IN REGISTER — OK TO RUN"; errEl.classList.add("ok");
+    /* the teeter → the hold: swings past level (ease-thunk overshoots) and sets true — snappier now */
+    lockup.style.transition = "transform 0.5s var(--ease-thunk)";
+    lockup.style.transform = "rotate(0deg)";
+    body.classList.add("registered");
+    at(700, relaxToHero);   /* the light irises down onto the word FIRST, then the words fly */
+  }
+
+  function toPage(){
+    if (rafId){ cancelAnimationFrame(rafId); rafId = null; }   /* the make-ready loop is done */
+    bakeToNative();   /* re-set the flown words in the hero's native font so the reveal is 1:1 */
+    body.classList.add("page");
+    /* flood to stone, OR — when embedded — to the LIVE page's real colours so
+       the hand-off is a seamless cross-fade, not a flash (day or night) */
+    var bg = "var(--stone)", fg = "var(--ink)";
+    if (embed){
+      try {
+        var pcs = getComputedStyle(parent.document.body);
+        if (pcs.backgroundColor && pcs.backgroundColor !== "rgba(0, 0, 0, 0)") bg = pcs.backgroundColor;
+        var ph = parent.document.querySelector(".hero-title") || parent.document.body;
+        fg = getComputedStyle(ph).color;
+      } catch (e) {}
+    }
+    body.style.setProperty("--bg", bg);
+    body.style.setProperty("--fg", fg);
+    /* the flooding reel: the parent's flight reel flips to the live accent the
+       same instant the old body.page .l-amp colour flip would have happened */
+    if (ampCeded){ try { if (parent.__ampFlood) parent.__ampFlood(); } catch (e) {} }
+    setReg(0);                                                 /* passes dead in register */
+    cornerBrackets();
+    if (embed){ try { parent.postMessage("mr-lockup-done", "*"); } catch (e) {} }
+  }
+
+  /* ---------- the tight text box of an element (glyphs, not the block) ---------- */
+  function textRect(el){
+    if (!el) return null;
+    try {
+      var rng = (el.ownerDocument || document).createRange();
+      rng.selectNodeContents(el);
+      var b = rng.getBoundingClientRect();
+      if (b.width < 2 && b.height < 2) b = el.getBoundingClientRect();
+      return b;
+    } catch (e) { return el.getBoundingClientRect(); }
+  }
+
+  /* the VISUAL glyph box, measured across the per-letter .ch spans so a leading/
+     trailing space is excluded — hero #amp is "& " (a trailing nbsp) and #deskw is
+     "my desk", so a raw Range would include those spaces and offset the landing.
+     the .ch range excludes them. */
+  function glyphRect(el){
+    if (!el) return null;
+    try {
+      var chs = el.querySelectorAll(".ch");
+      if (chs.length){
+        var rng = (el.ownerDocument || document).createRange();
+        rng.setStartBefore(chs[0]); rng.setEndAfter(chs[chs.length - 1]);
+        var b = rng.getBoundingClientRect();
+        if (b.width > 2) return b;
+      }
+    } catch (e) {}
+    return textRect(el);
+  }
+  /* where the LIVE hero's four words sit — read straight across the same-origin
+     frame (the iframe is full-viewport, so its coords == the page's). null unless
+     embedded AND the hero has already landed, so we never fly to a moving target. */
+  function heroTargets(){
+    if (!embed) return null;
+    try {
+      var pd = parent.document, ht = pd.getElementById("hero-title");
+      if (!ht || !ht.classList.contains("landed")) return null;
+      var amp = pd.getElementById("amp"), mkw = pd.getElementById("markw");
+      var dsk = pd.getElementById("deskw");
+      if (!amp || !mkw || !dsk) return null;
+      var t = { mark: glyphRect(mkw), amp: glyphRect(amp),
+                desk: glyphRect(dsk) };
+      if (!t.mark || !t.amp || !t.desk) return null;
+      return t;
+    } catch (e) { return null; }
+  }
+
+  /* THE FLIP: each word travels + scales from its lockup box to the hero's box.
+     the booth stays dark through the flight; then toPage() floods and the words
+     are already sitting exactly on the real hero, so the reveal is seamless. */
+  function relaxToHero(){
+    var T = heroTargets();
+    if (!T){ toPage(); return; }          /* no live hero (standalone / not ready) → old flood */
+    /* THE CEDE: hand the & to the parent's flight reel — one element that takes
+       this exact spot (first frame: the same &), starts rolling as it flies the
+       words' own path, and seats on the page. SYNCHRONOUS: the reel exists
+       before our amp hides, so the swap never shows a gap. parent absent or
+       refusing → the amp flies as a word and the page spins it in place. */
+    var ampEl = document.querySelector(".l-amp");
+    ampCeded = false;
+    if (embed && ampEl){
+      try {
+        var fn = parent.__ampFly;
+        if (fn){
+          var aR = textRect(ampEl);
+          if (aR && aR.width) ampCeded = !!fn(
+            { left: aR.left, top: aR.top, width: aR.width, height: aR.height },
+            MORPH_MS, getComputedStyle(ampEl).color);
+        }
+      } catch (e) { ampCeded = false; }
+    }
+    if (ampCeded) body.classList.add("ceded");
+    body.classList.add("relaxing");       /* clear the make-ready furniture, keep the words */
+    /* (the old Fraunces soft→crisp keystone resolve died with the face change —
+       Excon has no variable axes; the words fly at their final letterforms) */
+    var nf = document.querySelector(".l-desk .ink-face");
+    /* the & flies as a word ONLY when the parent didn't take it — when ceded,
+       the parent's reel is already flying that exact path, spinning */
+    var map = [
+      [document.querySelector(".l-mark"),   T.mark,   null, 0],
+      [document.querySelector(".l-desk"),   T.desk,   nf,   0]
+    ];
+    if (!ampCeded) map.splice(1, 0, [ampEl, T.amp, null, 0]);
+    map.forEach(function(m){
+      var el = m[0], dest = m[1]; if (!el || !dest) return;
+      var eb = el.getBoundingClientRect();
+      var s = textRect(m[2] || el); if (!s || !s.width) return;
+      /* pivot on the GLYPH's top-left within the element (Range box, not the
+         block box) so scale lands the glyph exactly on the hero's glyph */
+      var gx = s.left - eb.left, gy = s.top - eb.top;
+      var srcW = m[3] || s.width;      /* scale from the FINAL letterform when given (nerve) */
+      var dx = dest.left - s.left, dy = dest.top - s.top, sc = dest.width / srcW;
+      el.style.animation = "none";     /* drop the lockdrop fill (it was holding opacity)... */
+      el.style.opacity = "1";          /* ...so pin the word visible for the flight */
+      el.style.transformOrigin = gx.toFixed(1) + "px " + gy.toFixed(1) + "px";
+      el.style.transition = "transform " + MORPH_MS + "ms var(--ease-out)";
+      requestAnimationFrame(function(){
+        el.style.transform = "translate(" + dx.toFixed(1) + "px," + dy.toFixed(1) + "px) scale(" + sc.toFixed(4) + ")";
+      });
+    });
+    at(MORPH_MS + 30, toPage);
+  }
+
+  /* THE 1:1 LANDING: a glyph scaled up by transform never renders pixel-identical
+     to the same glyph SET natively at that size (hinting, sub-pixel, stem widths),
+     so the reveal snapped — "not 1 to 1". just before the flood, re-set each flown
+     word in the hero's OWN font (size + variation + weight + style) with the scale
+     dropped, translated to the exact same box. now the hand-off is native→native. */
+  function bakeToNative(){
+    var T = heroTargets();
+    if (!T) return;
+    var pd = parent.document;
+    /* bake to the target's RENDERED face: the amp target is `#amp .ch` (the
+       .ch carries the axis rule), the words are the word spans themselves.
+       copying computed fontVariationSettings — never a hand-built string —
+       is what keeps the SOFT/WONK gotcha out: naming those axes on the amp
+       swaps the & to the narrow alternate even at 0 (measured on the hero). */
+    function targCS(sel){ var e = pd.querySelector(sel); return e ? getComputedStyle(e) : null; }
+    /* [ lockup el, dest rect, target selector, measure-el ] — each word bakes
+       to ITS OWN target's face + size: V3 = Excon words + a giant Fraunces &,
+       so the hand-off is 1:1 per element regardless of mixed fonts/sizes. */
+    var specs = [
+      [document.querySelector(".l-mark"),   T.mark,   "#markw", null],
+      [document.querySelector(".l-desk"),   T.desk,   "#deskw", document.querySelector(".l-desk .ink-face")]
+    ];
+    /* a ceded amp is hidden and never flew — leave it out of the bake (its line
+       keeps its lockup box, so the flow the other words re-measure in is stable) */
+    if (!ampCeded) specs.splice(1, 0, [document.querySelector(".l-amp"), T.amp, "#amp .ch", null]);
+    /* pass 1 — set each word to ITS target's native font (size reflows the flow) */
+    specs.forEach(function (sp) {
+      var el = sp[0]; if (!el) return;
+      var cs = targCS(sp[2]); if (!cs) return;
+      el.style.transition = "none";
+      el.style.transform  = "none";
+      el.style.fontFamily = cs.fontFamily;            /* Excon or Fraunces — match the target */
+      el.style.fontSize   = cs.fontSize;
+      el.style.fontWeight = cs.fontWeight;
+      el.style.fontStyle  = cs.fontStyle;
+      el.style.letterSpacing = cs.letterSpacing;
+      el.style.textTransform = cs.textTransform;
+      el.style.fontVariationSettings = cs.fontVariationSettings;
+    });
+    void lockup.offsetWidth;   /* one reflow; the native lockup layout is now settled */
+    /* pass 2 — translate each native word onto its exact hero box */
+    specs.forEach(function (sp) {
+      var el = sp[0], dest = sp[1]; if (!el || !dest) return;
+      var nat = textRect(sp[3] || el);
+      if (!nat || !nat.width) return;
+      el.style.transform = "translate(" + (dest.left - nat.left).toFixed(2) + "px," +
+                                          (dest.top  - nat.top ).toFixed(2) + "px)";
+    });
+  }
+
+  function play(){
+    clearAll();
+    registered = false; framed = false; ampCeded = false;
+    ["lit","registered","page","framed","set","relaxing","ceded"].forEach(function(c){ body.classList.remove(c); });
+    body.style.setProperty("--bg", "var(--booth)");
+    body.style.setProperty("--fg", "var(--stone)");
+    errEl.classList.remove("ok");
+    lockup.style.transition = "none";
+    lockup.style.transform = "rotate("+BASE_LEAN+"deg)";
+    numEl.textContent = "00"; errEl.textContent = "SETTING THE FORME";
+    setReg(MAXOFF);
+    /* clear any flight transforms from a prior run, then restart the line drop-in */
+    var nf0 = document.querySelector(".l-desk .ink-face");
+    if (nf0){ nf0.style.transition = "none"; nf0.style.fontVariationSettings = ""; }
+    var lines = lockup.querySelectorAll(".line");
+    lines.forEach(function(l){ l.style.animation = "none"; l.style.transition = "none";
+      l.style.transform = ""; l.style.transformOrigin = ""; l.style.opacity = "";
+      l.style.fontSize = ""; l.style.fontVariationSettings = "";
+      /* the bake sets the target's whole face now — clear it all for REPLAY */
+      l.style.fontFamily = ""; l.style.fontWeight = ""; l.style.fontStyle = "";
+      l.style.letterSpacing = ""; l.style.textTransform = ""; });
+    void lockup.offsetWidth;
+    lines.forEach(function(l){ l.style.animation = ""; l.style.transition = ""; });
+
+    if (reduce){
+      fontsReady = true; registered = true;
+      body.classList.add("lit");
+      numEl.textContent = "100"; errEl.textContent = "IN REGISTER — OK TO RUN"; errEl.classList.add("ok");
+      setReg(0); lockup.style.transform = "rotate(0deg)";
+      hugBrackets(); toPage();
+      return;
+    }
+
+    regAt = 0; if (sdark) sdark.style.setProperty("--sr", "300px");   /* reset the iris */
+    spW = innerWidth; spH = innerHeight; wordC = null; countC = null; plateC = null; formeC = null;
+    var pl0 = centreOf(document.querySelector(".plate"));   /* null when hidden (mobile) — not 0,0 */
+    spx = pl0 ? pl0[0] : 0.74*spW; spy = pl0 ? pl0[1] : 0.48*spH;
+    writeSpot();
+    cornerBrackets();   /* the frame waits at the viewport corners, hidden, until it lands with the light */
+    at(60, function(){ body.classList.add("lit"); });
+    at(1100, measureSpots);            /* the real word + counter centres, once settled */
+    climbStart = performance.now();
+    rafId = requestAnimationFrame(frame);
+  }
+
+  /* don't let the counter claim 100 before the type is really set */
+  if (document.fonts && document.fonts.ready){
+    document.fonts.ready.then(function(){ fontsReady = true; });
+  } else { fontsReady = true; }
+  /* failsafe so a slow/blocked font never hangs the load */
+  setTimeout(function(){ fontsReady = true; }, 2600);
+
+  document.getElementById("replay").addEventListener("click", play);
+  addEventListener("resize", function(){
+    spW = innerWidth; spH = innerHeight; measureSpots();
+    if (body.classList.contains("page")) cornerBrackets();
+    else if (framed) hugBrackets();
+  });
+  play();
+</script>
+</body>
+</html>
