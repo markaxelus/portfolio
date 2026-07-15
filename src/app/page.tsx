@@ -5,6 +5,11 @@ import WorkIndex from "@/components/site/WorkIndex";
 import Desk from "@/components/site/Desk";
 import Yard from "@/components/site/Yard";
 import Outro from "@/components/site/Outro";
+import EngineProvider from "./_engine/EngineProvider";
+import PaintChips from "./_chrome/PaintChips";
+import NightToggle from "./_chrome/NightToggle";
+import NoiseToggle from "./_chrome/NoiseToggle";
+import ProofToggle from "./_chrome/ProofToggle";
 
 /**
  * Mark Axelus — My Desk (v4)
@@ -18,7 +23,7 @@ import Outro from "@/components/site/Outro";
  */
 export default function Home() {
   return (
-    <>
+    <EngineProvider>
       {/* LOADER: the make-ready runs isolated in a frame (src set by the engine
           on first visit only). */}
       <div id="makeready">
@@ -64,20 +69,10 @@ export default function Home() {
       <span className="hazard hz-bl" aria-hidden="true" />
       <span className="hazard hz-r" aria-hidden="true" />
 
-      <div className="chips">
-        <span className="chip-static chip-ink" aria-hidden="true" />
-        <button className="chip" type="button" data-ai="0" aria-label="Paint it signal blue" style={{ background: "#2A2AF0" }} />
-        <button className="chip" type="button" data-ai="1" aria-label="Paint it magenta" style={{ background: "#D6246E" }} />
-        <button className="chip" type="button" data-ai="2" aria-label="Paint it acid" style={{ background: "#B4C400" }} />
-        <span className="chip-static chip-fade" aria-hidden="true" />
-      </div>
+      <PaintChips />
 
-      <button className="night-toggle" type="button" id="night-btn" aria-pressed="false">
-        [N] NIGHT OFFICE <span className="moon">&#9686;</span>
-      </button>
-      <button className="noise-toggle" type="button" id="noise-btn" aria-pressed="false">
-        [S] PRESS NOISE &mdash; OFF
-      </button>
+      <NightToggle />
+      <NoiseToggle />
 
       {/* live telemetry */}
       <span className="d-scroll spec" aria-hidden="true">
@@ -93,9 +88,7 @@ export default function Home() {
       <a className="corner tl mono" href="#top">MARK AXELUS</a>
       <a className="corner tr mono" href="mailto:mrkaxelus@gmail.com">CONTACT ↗</a>
       <a className="corner bl mono" href="#top">&copy;2026 &mdash; ALL MINE<span id="clock" /></a>
-      <button className="corner br mono" id="proof-btn" type="button" aria-pressed="false">
-        SEE&nbsp;THE&nbsp;MESS
-      </button>
+      <ProofToggle />
 
       {/* underdrawing: grid + margin guides (mess mode) */}
       <div className="under" aria-hidden="true" />
@@ -171,6 +164,6 @@ export default function Home() {
       <div className="cursor" id="cursor" aria-hidden="true">
         <span className="cursor-label">PROOF ↗</span>
       </div>
-    </>
+    </EngineProvider>
   );
 }
