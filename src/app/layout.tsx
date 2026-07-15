@@ -41,8 +41,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    // suppressHydrationWarning: the pre-paint hold script (below) stamps
+    // `mr-hold` on <html> before React hydrates — an intentional mismatch
+    <html lang="en" suppressHydrationWarning>
       <head>
+        {/* THE PRE-PAINT HOLD: the make-ready booth must be UP before first
+            paint on first visits — the React reveal lands hydration-late, so
+            the sheet used to flash before the loader covered it. This blocking
+            script mirrors willLoaderRun() exactly (first visit each session or
+            ?loader replay; never reduced / ?still) and raises `html.mr-hold`;
+            use-loader lowers it the moment it takes over, and a CSS guard
+            animation lowers it even if the engine never arrives. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var q=location.search;if(/[?&]still(\\b|=)/.test(q))return;if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(/[?&]loader(\\b|=)/.test(q)||sessionStorage.getItem('ma-press-check')==null)document.documentElement.classList.add('mr-hold');}catch(e){}})();",
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

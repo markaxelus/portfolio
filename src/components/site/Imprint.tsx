@@ -5,8 +5,12 @@
  * typeset as a ledger, and the marlin re-cut as an engraved printer's device
  * at the foot (Aldus kept a dolphin; this shop keeps a marlin — OceanAID's
  * signal-blue billfish, in linework with the red working pass, never a flat
- * mascot). The voice line (the hero motif, now admitting the day job) hands
- * across a dashed seam to the block. FINAL layer only: no hand marks.
+ * mascot; hovering it slides the red pass into register, the operator
+ * plate's move). The voice line (the hero motif, now admitting the day job)
+ * hands across a dashed seam to the block; under it, THE SHIFTS ledger sets
+ * the day-job admission as shop data with dot leaders. The employer is a
+ * live link (oceanaid.ca, corner-tab invert on hover). FINAL layer only:
+ * no hand marks.
  *
  * Asymmetric by the site's law. Deliberate resting tilts live on the inner
  * `.imp-rot` wrappers; the seeded set-in arrival (armed on `.imp-piece` by
@@ -35,12 +39,13 @@ export default function Imprint() {
               <b className="il3">Now with a day job.</b>
             </div>
           </div>
-          {/* the aside: the admission typeset small, machine-set (no hand) */}
-          <div className="imp-piece imp-note final">
-            <div className="imp-rot mono">
-              <span>THE DESK DIDN&rsquo;T MOVE. THE HOURS DID.</span>
-              <span>OCEANAID GETS THE DAYLIGHT.</span>
-              <span>THIS SHEET GETS WHAT&rsquo;S LEFT.</span>
+          {/* the shifts: the admission as shop DATA, not an aphorism — a
+              typeset schedule with dot leaders (the shop runs two shifts) */}
+          <div className="imp-piece imp-shifts final">
+            <div className="imp-rot">
+              <span className="shf-h mono">THE SHIFTS</span>
+              <span className="shf-row mono"><i>SHIFT 01</i><b aria-hidden="true" /><em>09:00 → 17:00 &middot; OCEANAID</em></span>
+              <span className="shf-row mono"><i>SHIFT 02</i><b aria-hidden="true" /><em className="shf-late">23:00 → ? &middot; THIS SHEET</em></span>
             </div>
           </div>
           <div className="imp-piece imp-kick final" aria-hidden="true">
@@ -65,7 +70,9 @@ export default function Imprint() {
 
             <div className="ib-entry ib-now">
               <span className="ib-k mono">CURRENTLY ▸</span>
-              <span className="ib-emp">OceanAID</span>
+              <a className="ib-emp" href="https://oceanaid.ca" target="_blank" rel="noopener">
+                OceanAID<span className="ib-ext mono" aria-hidden="true">&nbsp;↗</span>
+              </a>
               <span className="ib-meta mono">SOFTWARE ENGINEER &middot; MAY 2026 → NOW</span>
             </div>
 
@@ -76,10 +83,12 @@ export default function Imprint() {
             </div>
 
             {/* MAKAIRA — the engraved device: ink linework, accent hatching
-                on the sail, the red pass a breath off register */}
+                on the sail, the red pass a breath off register. Hover slides
+                the red pass INTO register (the operator plate's move) — the
+                ghost offset lives in CSS so it can transition. */}
             <figure className="ib-device" aria-hidden="true">
               <svg viewBox="0 0 220 120">
-                <g className="dev-ghost" transform="translate(2.5,2)">
+                <g className="dev-ghost">
                   <path d="M72,48 C94,41 126,38 160,44 C166,45 170,46 173,48 C170,50 166,52 160,53 C128,60 96,62 84,58 C78,56 73,53 72,51 Z" />
                   <path d="M86,44 C90,26 98,14 108,12 C124,10 140,22 152,42" />
                   <path d="M170,44 C182,34 196,24 206,14 M206,14 C192,30 186,40 184,48 C186,56 192,68 206,86 M170,52 C182,62 196,74 206,86" />
@@ -112,7 +121,7 @@ export default function Imprint() {
               <figcaption className="mono">DEVICE OF OCEANAID &middot; MAKAIRA sp.</figcaption>
             </figure>
 
-            <footer className="ib-foot mono">THE DESK ▸ PACIFIC TIME &middot; STILL RUNS LATE</footer>
+            <footer className="ib-foot mono">THE DESK ▸ VICTORIA BC &middot; PACIFIC TIME</footer>
           </div>
         </div>
 

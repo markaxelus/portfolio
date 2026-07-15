@@ -99,8 +99,11 @@ export default function Outro() {
         </svg>
       </figure>
 
+      {/* the colophon tells the truth: v2 runs on a framework, so the old
+          NO FRAMEWORK boast became a lie — the working proof admits it
+          instead (same register as STILL NOT DONE) */}
       <p className="colophon mono final">SET IN FRAUNCES, EXCON &amp; SPACE MONO ( + TWO PENS )<br/>
-        NO FRAMEWORK &middot; NO TRACKERS &middot; HAND-BUILT<br/>
+        HAND-SET &middot; NO TRACKERS &middot; ONE FRAMEWORK, ADMITTED<br/>
         24PX GRID &middot; 3 INKS &middot; 1 CAT<span id="colo-pulled"></span></p>
       </div>{/* /outro-rail */}
 

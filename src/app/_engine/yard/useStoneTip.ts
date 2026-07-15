@@ -35,6 +35,8 @@ export function useStoneTip(pileRef: RefObject<SVGGElement | null>): void {
       if (!p || p.tagName !== "path") return;
       if (p.classList.contains("house")) {
         tipEl.textContent = "THE HOUSE STACK — MINE";
+      } else if (p.classList.contains("passer")) {
+        tipEl.textContent = "PASSED THROUGH · LEFT NO NOTE";
       } else if (p.dataset.n) {
         let label = "Nº " + String(p.dataset.n).padStart(3, "0");
         if (p.dataset.t) label += " — " + stoneAge(+p.dataset.t);

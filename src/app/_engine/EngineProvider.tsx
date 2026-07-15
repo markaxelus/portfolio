@@ -147,6 +147,22 @@ export default function EngineProvider({ children }: { children: React.ReactNode
     document.addEventListener("mousemove", onMove);
 
     const cursorEl = document.getElementById("cursor");
+
+    /* the dot acts over anything pressable (delegated — one listener, pure
+       class toggle). Semantic elements plus the few non-semantic clickables;
+       the labeled states (PROOF / GRAB / the loupe) ride their own classes
+       and win in the cascade. */
+    const ACT_SEL =
+      'a, button, input, textarea, select, label, [role="button"],' +
+      ' [tabindex]:not([tabindex="-1"]), .regmark, .jl-thumb, .yard-ground';
+    const onOver = (e: MouseEvent) => {
+      const t = e.target as Element | null;
+      cursorEl?.classList.toggle(
+        "is-act",
+        !!(t && typeof t.closest === "function" && t.closest(ACT_SEL)),
+      );
+    };
+    document.addEventListener("mouseover", onOver);
     const revealEl = document.querySelector<HTMLElement>(".reveal");
     let raf = 0;
     const frame = () => {
@@ -189,6 +205,7 @@ export default function EngineProvider({ children }: { children: React.ReactNode
     raf = requestAnimationFrame(frame);
     return () => {
       document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseover", onOver);
       cancelAnimationFrame(raf);
     };
   }, []);

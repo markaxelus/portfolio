@@ -16,19 +16,22 @@ import { deskStatus } from "@/lib/desk";
  *
  * aria-hidden decorative furniture; `.mono .final` so it dims in the mess and
  * the marquee pauses there (`.proof .ticker-track`). The old "AVAILABLE Q4 2026"
- * line was dropped at Mark's request (July 2026).
+ * line was dropped at Mark's request (July 2026); "I SHIP SLOWLY" / "REPLIES IN
+ * 48H" were re-voiced and "NO FRAMEWORK" corrected (the v2 rebuild made it a
+ * lie) at his request too (July 15). One hint per cycle — PRESS M keeps the
+ * slot.
  */
 function lines(now: Date): string[] {
   return [
     "CODE · DESIGN · TYPE · MOTION",
     deskStatus(now),
     "THE KERNING IS DONE. IT ISN’T.",
-    "I SHIP SLOWLY, ON PURPOSE",
+    "MOST OF THIS WAS SET AFTER MIDNIGHT",
     "THERE’S ANOTHER PAGE UNDER THIS ONE. PRESS M",
-    "NO FRAMEWORK · NO TRACKERS · HAND-BUILT",
+    "NO TRACKERS · YOUR STONES STAY IN YOUR BROWSER",
     "ONE-PERSON OPERATION",
     "STILL NOT DONE. NEVER QUITE IS.",
-    "MRKAXELUS@GMAIL.COM · REPLIES IN 48H",
+    "MRKAXELUS@GMAIL.COM · THE DESK WRITES BACK",
   ];
 }
 

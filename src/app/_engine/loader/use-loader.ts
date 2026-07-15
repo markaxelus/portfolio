@@ -59,8 +59,13 @@ export function useLoader(): void {
 
   useEffect(() => {
     /* GATE — caches willLoaderRun (locks it true) before the sessionStorage
-       write below. false ⇒ booth stays hidden, page settled: do nothing. */
-    if (!willLoaderRun()) return;
+       write below. false ⇒ booth stays hidden, page settled: do nothing
+       (beyond dropping a stale pre-paint hold, belt and braces — the head
+       script mirrors this gate so the two should always agree). */
+    if (!willLoaderRun()) {
+      document.documentElement.classList.remove("mr-hold");
+      return;
+    }
 
     const mrEl = document.getElementById("makeready");
     if (!mrEl) return;
@@ -98,6 +103,9 @@ export function useLoader(): void {
     mrEl.classList.remove("out");
     void mrEl.offsetWidth; // commit the instant opacity before restoring transition
     mrEl.style.transition = prevTransition;
+    /* the engine owns the booth from here — lower the pre-paint hold (its
+       guard animation must never race the real release) */
+    document.documentElement.classList.remove("mr-hold");
 
     /* teardown registry */
     const timers: Array<ReturnType<typeof setTimeout>> = [];

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { getGlobalVisits } from "@/lib/visits";
 
 /**
  * The visit odometer (main.js 1812–1866), rewired to the REAL data:
@@ -103,12 +104,13 @@ export default function VisitCounter() {
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
-    // the odometer reads the GLOBAL count from Redis (/api/visits)
-    fetch("/api/visits")
-      .then((r) => r.json())
-      .then((data: { total?: number }) => {
+    // the odometer reads the GLOBAL count from Redis (/api/visits) — via the
+    // shared memoized fetch (the yard's passers-by ride the same request)
+    getGlobalVisits()
+      .then((fetched) => {
         if (cancelled) return;
-        const total = Math.max(1, Number(data?.total) || visits);
+        if (fetched === null) throw new Error("visits unreachable");
+        const total = Math.max(1, fetched || visits);
         const width = Math.max(3, String(total).length);
         // the colophon admits the same real count under "NO TRACKERS"
         fillColophon(total);

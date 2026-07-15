@@ -4,6 +4,7 @@ import { useEffect, useRef, type RefObject } from "react";
 import { useEngine } from "@/app/_engine/engine-context";
 import { mulberry32, stonePath, SVG_NS } from "@/lib/rng";
 import { clamp } from "@/lib/math";
+import { getGlobalVisits } from "@/lib/visits";
 
 /**
  * The visitors' cairn — ported VERBATIM from prototypes/main.js (1914–2120).
@@ -20,6 +21,15 @@ import { clamp } from "@/lib/math";
  * ({stack, ground}; v1's scattered stones migrate into ground) + ma-stone-seq.
  * Every 9th visitor stone is a signal (accent) stone. On a drop it knocks the
  * shared stone tok (engine.api.current.sndTok?.()).
+ *
+ * THE PASSERS-BY (July 15, Mark's ask — the yard read as seven lonely stones):
+ * the ground carries a scatter of dimmed stones seeded from the REAL global
+ * visit count (getGlobalVisits — the same Redis number the odometer shows),
+ * one per ~40 visits, capped. The cairn's honesty promise holds: nothing here
+ * is invented — these are the people who passed and didn't click. Positions
+ * are seeded by INDEX (not by the count), so the scatter is stable across
+ * loads and new passers appear at new spots without reshuffling the yard.
+ * Redis unreachable ⇒ no scatter, the yard renders as before.
  */
 
 type StackStone = {
@@ -37,7 +47,9 @@ type StoneMeta = {
   t?: number;
   house?: boolean;
   sig?: boolean;
+  passer?: boolean;
 };
+type PasserStone = { x: number; rx: number; ry: number; seed: number };
 type GeomStone = {
   cx: number;
   cy: number;
@@ -147,6 +159,7 @@ export function useCairn({ groundRef, pileRef, countRef }: CairnRefs): void {
       if (meta.t) p.dataset.t = String(meta.t);
       if (meta.house) p.classList.add("house");
       if (meta.sig) p.classList.add("signal");
+      if (meta.passer) p.classList.add("passer");
       inner.appendChild(p);
       g.appendChild(inner);
       pileEl!.appendChild(g);
@@ -155,7 +168,33 @@ export function useCairn({ groundRef, pileRef, countRef }: CairnRefs): void {
 
     let stackStones: StackStone[] = [];
     let groundStones: GroundStone[] = [];
+    let passerStones: PasserStone[] = [];
     let stoneSeq = 0;
+
+    /* the passers-by: one dimmed ground stone per ~40 real visits, capped so
+       the yard stays a yard. Each stone's seed/position derive from its INDEX
+       (stable spot forever); the count only decides how many exist yet. The
+       scatter thins near centre stage so the cairn keeps its ground. */
+    const PASSER_PER = 40;
+    const PASSER_CAP = 28;
+    function buildPassers(total: number) {
+      const n = clamp(Math.round(total / PASSER_PER), 8, PASSER_CAP);
+      passerStones = [];
+      for (let i = 0; i < n; i++) {
+        const seed = 0x7a55 + i * 131;
+        const r = mulberry32(seed);
+        let x = 55 + r() * 890;
+        if (Math.abs(x - 500) < 85)
+          x = x < 500 ? 500 - 85 - r() * 190 : 500 + 85 + r() * 190;
+        const sz = stoneSize(seed);
+        passerStones.push({
+          x: clamp(Math.round(x), 55, 945),
+          rx: Math.max(9, sz.rx - 3),
+          ry: Math.max(4, sz.ry - 1),
+          seed,
+        });
+      }
+    }
     function loadCairn(): { stack: StackStone[]; ground: GroundStone[] } {
       try {
         const raw = localStorage.getItem(STORE_KEY);
@@ -241,6 +280,17 @@ export function useCairn({ groundRef, pileRef, countRef }: CairnRefs): void {
 
     function renderCairn(dropLast: boolean) {
       while (pileEl!.firstChild) pileEl!.removeChild(pileEl!.firstChild);
+      /* passers first — the quiet layer BEHIND the placed stones */
+      passerStones.forEach(function (s) {
+        drawStoneG(
+          s.x,
+          GROUND_Y - s.ry,
+          s.rx,
+          s.ry,
+          { seed: s.seed, passer: true },
+          false,
+        );
+      });
       let b = GROUND_Y + 1;
       OURS.forEach(function (s) {
         drawStoneG(500, b - s.ry, s.rx, s.ry, { seed: s.seed, house: true }, false);
@@ -264,7 +314,11 @@ export function useCairn({ groundRef, pileRef, countRef }: CairnRefs): void {
     }
 
     function updateCount() {
-      const total = OURS.length + stackStones.length + groundStones.length;
+      const total =
+        OURS.length +
+        stackStones.length +
+        groundStones.length +
+        passerStones.length;
       const verb = mqFine.matches ? "CLICK" : "TAP";
       countEl!.textContent = total + " STONES — " + verb + " TO LEAVE YOURS";
     }
@@ -430,6 +484,17 @@ export function useCairn({ groundRef, pileRef, countRef }: CairnRefs): void {
 
     renderCairn(false);
     updateCount();
+
+    /* the passers arrive when the real count does (memoized fetch — the
+       odometer rides the same request). A re-render here is safe whether the
+       setting choreography has fired or not: before, the fresh inners simply
+       join the cascade; after, they draw seated. */
+    getGlobalVisits().then((total) => {
+      if (disposed || !total) return;
+      buildPassers(total);
+      renderCairn(false);
+      updateCount();
+    });
 
     const onClick = () => addStone();
     const onKey = (e: KeyboardEvent) => {
