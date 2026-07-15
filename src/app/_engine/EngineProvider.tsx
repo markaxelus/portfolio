@@ -280,11 +280,21 @@ export default function EngineProvider({ children }: { children: React.ReactNode
       if (jd) jd.textContent = dateStr;
       if (sd) sd.textContent = dateStr;
     }
+    const shiftRows = document.querySelectorAll<HTMLElement>(
+      ".imp-shifts .shf-row",
+    );
     const tick = () => {
       const now = new Date();
       if (clockEl) clockEl.textContent = " — " + deskTime(now) + " AT MY DESK";
       const h = deskHour(now);
       document.body.classList.toggle("late-desk", h >= 23 || h < 6);
+      /* the shifts ledger knows which shift is RUNNING right now (imprint):
+         SHIFT 01 is the day job's hours, SHIFT 02 the sheet's late window —
+         the same window as late-desk. Between shifts, neither is marked. */
+      if (shiftRows.length === 2) {
+        shiftRows[0].classList.toggle("shf-on", h >= 9 && h < 17);
+        shiftRows[1].classList.toggle("shf-on", h >= 23 || h < 6);
+      }
     };
     tick();
     const id = setInterval(tick, 30000);

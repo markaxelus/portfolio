@@ -606,7 +606,9 @@ body.hero-set .plates-decal {
 /* mess scrawls under the figure (proof layer only) */
 .mile-note { top: 46%; font-size: 1.25rem; --tilt: -2deg; }
 .mile-note:nth-child(odd) { --tilt: 1.6deg; }
-.n-2022 { top: 2%; left: 33%; --tilt: -3deg; }
+/* the gap scrawl rides wherever the gap year sits (2024, slot 4 of 6) —
+   the thought-thread anchors on .n-gap, keep the class if the year moves */
+.n-gap { top: 2%; left: 46%; --tilt: -3deg; }
 .n-2025 { bottom: 6%; right: 6%; --tilt: 2deg; }
 
 /* ---------- the imprint: the colophon seam (who's at the desk, and where) ----
@@ -696,6 +698,19 @@ body.hero-set .plates-decal {
 .shf-row b { flex: 1; border-bottom: 1px dotted var(--graphite); opacity: 0.5; transform: translateY(-0.28em); }
 .shf-row em { font-style: normal; }
 .shf-late { color: var(--accent); }
+/* the ledger is a live instrument: the desk clock marks the shift that is
+   RUNNING right now (EngineProvider's tick toggles .shf-on) — machine state,
+   so it takes the acid, like [RUN.M] */
+.shf-row.shf-on::after {
+  content: "● RUNNING";
+  font-size: 0.52rem;
+  letter-spacing: 0.16em;
+  color: var(--acid);
+  white-space: nowrap;
+}
+@media print {
+  .shf-row::after { display: none !important; } /* live info, not record */
+}
 
 /* the hand-off down into the work */
 .imp-kick { --rot: -1.5deg; margin-top: 3.4rem; }
@@ -814,6 +829,10 @@ body.hero-set .plates-decal {
   transition: transform 0.45s var(--ease-out);
 }
 .ib-device:hover .dev-ghost { transform: translate(0, 0); }
+/* the page-awake act: the red pass creeps further out, then eases home
+   (hover wins — a held pointer pins the pass in register) */
+.ib-device .dev-ghost.adrift { transform: translate(5px, 3.8px); }
+.ib-device:hover .dev-ghost.adrift { transform: translate(0, 0); }
 .dev-lat { fill: none; stroke: var(--ink); stroke-width: 0.9; opacity: 0.4; }
 .dev-eye { fill: var(--ink); }
 .dev-wave { fill: none; stroke: var(--ink); stroke-width: 1; opacity: 0.35; }
@@ -2274,7 +2293,7 @@ body.pointer-seen .cursor { opacity: 1; }
 /* ---------- narrower desktops: drop the delicate anchored notes ---------- */
 @media (max-width: 1100px) {
   .anchor, .row-note, .n-lh, .n-eyebrow, .n-coffee, .coffee,
-  .n-2022, .n-2025, .n-desk, .n-cat, .n-time1, .n-redo, .n-tally,
+  .n-gap, .n-2025, .n-desk, .n-cat, .n-time1, .n-redo, .n-tally,
   .dd-spiral, .dd-cup, .dd-tally, .dd-moon, .dd-plane, .dd-zzz,
   .versions, .dd-nsarrow, .n-time2, .n-time3, .dd-burst, .n-cmath,
   .dd-pentest, .n-pentest, .dd-tries, .n-tries, .n-pm, .dd-pm-arrow { display: none; }

@@ -48,6 +48,10 @@ export function useHoldRegister(): void {
       heroTitle,
       document.querySelector<HTMLElement>(".outro-title"),
       document.querySelector<HTMLElement>(".spec-amp.s5"),
+      /* the imprint's voice line shears too (display type) — its third line
+         keeps its own permanent off-register shadow (a child declaration
+         beats the inherited inline pass), so only the true lines drift */
+      document.querySelector<HTMLElement>(".imp-line .imp-rot"),
       ...Array.from(document.querySelectorAll<HTMLElement>(".row")).map((r) =>
         r.querySelector<HTMLElement>(".row-title"),
       ),

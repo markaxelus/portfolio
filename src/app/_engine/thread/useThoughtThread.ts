@@ -137,7 +137,7 @@ export function useThoughtThread(): void {
         amp = pageRect("#amp"),
         lh = pageRect(".n-lh"),
         nosc = pageRect(".n-noscale"),
-        y2022 = pageRect(".n-2022"),
+        y2022 = pageRect(".n-gap") /* the trail-gap scrawl (2024 now) */,
         ttt = pageRect(".dd-ttt"),
         argue = pageRect(".argue"),
         coffee = pageRect(".coffee"),

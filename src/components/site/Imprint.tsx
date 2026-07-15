@@ -73,7 +73,7 @@ export default function Imprint() {
               <a className="ib-emp" href="https://oceanaid.ca" target="_blank" rel="noopener">
                 OceanAID<span className="ib-ext mono" aria-hidden="true">&nbsp;↗</span>
               </a>
-              <span className="ib-meta mono">SOFTWARE ENGINEER &middot; MAY 2026 → NOW</span>
+              <span className="ib-meta mono">JUNIOR SOFTWARE ENGINEER &middot; MAY 2026 → NOW</span>
             </div>
 
             <div className="ib-entry ib-prev">
