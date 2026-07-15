@@ -17,6 +17,8 @@ import AmbientLife from "./_engine/ambient/AmbientLife";
 import StrikeSystem from "./_engine/strike/StrikeSystem";
 import MessLayer from "./_engine/mess/MessLayer";
 import TheSetting from "./_engine/setting/TheSetting";
+import LineGlass from "./_engine/line/LineGlass";
+import Loader from "./_engine/loader/Loader";
 
 /**
  * Mark Axelus — My Desk (v4)
@@ -45,6 +47,8 @@ export default function Home() {
           aria-hidden="true"
         />
       </div>
+      {/* the make-ready loader engine (first visit only; no-ops otherwise) */}
+      <Loader />
 
       {/* grain */}
       <div className="grain" aria-hidden="true" />
@@ -190,6 +194,9 @@ export default function Home() {
 
       {/* the setting = matter law: the seeded-asymmetric load entrance */}
       <TheSetting />
+
+      {/* the glass is the cursor: the loupe/zoom on the work plates */}
+      <LineGlass />
     </EngineProvider>
   );
 }

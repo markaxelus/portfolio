@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { mulberry32 } from "@/lib/rng";
 import { useEngine } from "@/app/_engine/engine-context";
+import { willLoaderRun } from "@/app/_engine/loader-state";
 
 /**
  * THE SETTING — matter arrives by hand (main.js initSetting, 2728–2960),
@@ -198,22 +199,31 @@ export function useSetting(): void {
     };
 
     /* ---- first-load hero: the lockup is set by hand, the furniture chatters
-       in around it. NON-LOADER path only — always taken here (mrRan === false;
-       the loader that would suppress this is Phase 8, not yet built). ---- */
-    document.body.classList.add("hero-set", "spec-set");
-    bodyCls.push("hero-set", "spec-set");
-    const eyeEl = document.querySelector<HTMLElement>(".eyebrow");
-    if (eyeEl) eyeEl.style.setProperty("--sd", rj(0.8, 1.15).toFixed(2) + "s");
-    const bioEl = document.querySelector<HTMLElement>(".hero-bio");
-    if (bioEl) bioEl.style.setProperty("--sd", rj(0.9, 1.3).toFixed(2) + "s");
-    [
-      ".d-cluster .decode", ".d-scatter", ".d-cross", ".d-run",
-      ".loose-decal", ".plates-decal",
-    ].forEach((sel) => {
-      document.querySelectorAll<HTMLElement>(sel).forEach((el) => {
-        el.style.setProperty("--sd", rj(1.0, 1.85).toFixed(2) + "s");
+       in around it. When the LOADER runs (willLoaderRun) its flight IS the
+       entrance, so skip hero-set and land the hero at REST — the loader flips
+       its words into the live rects and must see them settled. Otherwise
+       (return visit / reduced) the setting owns the entrance. spec-set + the
+       specimen/tonebar pulls run on BOTH paths. ---- */
+    if (willLoaderRun()) {
+      document.getElementById("hero-title")?.classList.add("landed");
+    } else {
+      document.body.classList.add("hero-set");
+      bodyCls.push("hero-set");
+      const eyeEl = document.querySelector<HTMLElement>(".eyebrow");
+      if (eyeEl) eyeEl.style.setProperty("--sd", rj(0.8, 1.15).toFixed(2) + "s");
+      const bioEl = document.querySelector<HTMLElement>(".hero-bio");
+      if (bioEl) bioEl.style.setProperty("--sd", rj(0.9, 1.3).toFixed(2) + "s");
+      [
+        ".d-cluster .decode", ".d-scatter", ".d-cross", ".d-run",
+        ".loose-decal", ".plates-decal",
+      ].forEach((sel) => {
+        document.querySelectorAll<HTMLElement>(sel).forEach((el) => {
+          el.style.setProperty("--sd", rj(1.0, 1.85).toFixed(2) + "s");
+        });
       });
-    });
+    }
+    document.body.classList.add("spec-set");
+    bodyCls.push("spec-set");
 
     /* the specimen pulls run on BOTH paths (here + at loader release) — the
        vars are seeded either way. smallest first, accelerating into the 144pt
