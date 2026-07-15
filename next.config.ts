@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  // ESLint is currently unloadable (the `minimatch` override is ESM-only and
+  // breaks eslint's CommonJS resolution), and lint of the in-progress rebuild
+  // isn't a deploy gate — don't let it block `next build` on Vercel.
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
