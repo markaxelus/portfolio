@@ -1,27 +1,31 @@
 /**
- * THE IMPRINT — THE TWO SHIFTS. The colophon seam between the trail (how I
- * got here) and the work (what I made), set at poster scale: the stage is one
- * bordered plate SPLIT at a hard seam into the two shifts of the same life.
- * SHIFT 01 is the day panel (sheet-light: OceanAID, the junior title, the
- * hours); SHIFT 02 is the night panel (ink-dark: MY DESK, no closing time).
- * The panels keep their literal inks in BOTH site modes: the shifts are
- * absolute, so by day the night panel burns dark, and in the night office the
- * day panel glows light. The voice line and the engraved marlin both CROSS
- * the seam and change ink mid-stroke (two identical copies, clip-path cut at
- * --seam) — one person, printed across both worlds.
+ * THE IMPRINT — THE TWO SHIFTS, torn. The colophon seam between the trail
+ * (how I got here) and the work (what I made). No box, no straight seam
+ * (Mark: the bordered rectangle read as linear): SHIFT 01 lives on the OPEN
+ * SHEET — the voice line as masthead, OceanAID large in accent, the junior
+ * title, the UVic line — and SHIFT 02 is a dark SLAB TORN out of the night
+ * office and laid onto the page, its left edge a ragged tear (clip-path
+ * polygon), overhanging the stage top and bottom so nothing lines up into a
+ * row. The slab anti-flips with the site mode (--slab-* vars): by day it is
+ * the dark shape on the light sheet, in the night office it burns light in
+ * the dark room — the other shift is always the one glowing.
+ *
+ * The engraved marlin CROSSES THE TEAR: two identical copies share the
+ * slab's exact box and clip to the same polygon pair, so the fish changes
+ * ink mid-stroke — page inks (token, mode-flipping) before the tear, slab
+ * inks (anti-flipping, acid hatch) after it.
  *
  * Life: the voice line rides the hold-register (shears with scroll; the
  * punch line keeps its permanent knock), the desk clock marks the RUNNING
- * shift on the kickers (.shf-row/.shf-on, EngineProvider tick), the marlin's
- * red pass drifts off register as a page-awake act and slides home on hover.
- * The seeded set-in arrival arms `.imp-piece` (armGroup); resting tilts live
- * on inner elements so the two never fight. FINAL layer only: no hand marks.
- * Reflows to plain flow on the pocket sheet; prints as flowed facts.
+ * shift on the kickers (.shf-row/.shf-on, EngineProvider tick), the
+ * marlin's red pass drifts as a page-awake act and slides home on hover.
+ * The seeded set-in arrival arms `.imp-piece` (armGroup). FINAL layer only:
+ * no hand marks. Pocket sheet flows it; the proof prints flowed facts.
  */
 
 /* the engraved marlin, drawn once — body/sail/tail linework + hatch + the
-   red working pass. Rendered twice (day inks / night inks) and clipped at
-   the seam so the fish changes colour where it crosses. */
+   red working pass. Rendered twice (page inks / slab inks) and clipped at
+   the tear so the fish changes colour where it crosses. */
 function MarlinSVG() {
   return (
     <svg viewBox="0 0 220 120">
@@ -57,18 +61,6 @@ function MarlinSVG() {
   );
 }
 
-/* the voice line, rendered once per ink copy — identical markup so the two
-   clipped copies register perfectly */
-function VoiceLines() {
-  return (
-    <>
-      <b className="il1">Still one person,</b>
-      <b className="il2">one desk.</b>
-      <b className="il3">Now with a day job.</b>
-    </>
-  );
-}
-
 export default function Imprint() {
   return (
     <section className="imprint" id="imprint">
@@ -77,17 +69,19 @@ export default function Imprint() {
         <p className="imp-cap mono">WHO&rsquo;S AT THE DESK &middot; AND WHERE</p>
       </div>
 
-      <div className="imp-split">
-        {/* the voice line owns the day panel's top; the marlin is the one
-            seam-crosser (two crossers in one band read as noise). FIRST in
-            DOM so the pocket sheet flows it above the panels; z-lifted on
-            the wide plate so the panels' ink fields never paint over it. */}
+      <div className="imp-stage">
+        {/* the voice line — the open sheet's masthead. FIRST in DOM so the
+            pocket sheet flows it on top; z-lifted over the slab. */}
         <div className="imp-piece imp-line final">
-          <div className="imp-rot"><VoiceLines /></div>
+          <div className="imp-rot">
+            <b className="il1">Still one person,</b>
+            <b className="il2">one desk.</b>
+            <b className="il3">Now with a day job.</b>
+          </div>
         </div>
 
-        {/* SHIFT 01 — the day panel: sheet-light, the employer's hours */}
-        <div className="imp-piece imp-shift imp-day final">
+        {/* SHIFT 01 — no panel, no box: the day facts sit on the sheet */}
+        <div className="imp-piece imp-day final">
           <p className="ish-k shf-row mono">SHIFT 01 &middot; 09:00 → 17:00</p>
           <a className="ish-emp" href="https://oceanaid.ca" target="_blank" rel="noopener">
             OceanAID<span className="ish-ext mono" aria-hidden="true">&nbsp;↗</span>
@@ -99,28 +93,31 @@ export default function Imprint() {
           </p>
         </div>
 
-        {/* SHIFT 02 — the night panel: ink-dark, the desk's hours */}
-        <div className="imp-piece imp-shift imp-night final">
-          <p className="ish-k shf-row mono">SHIFT 02 &middot; 23:00 → ?</p>
-          <span className="ish-emp">My desk.</span>
-          <p className="ish-t mono">OWNER &middot; OPERATOR &middot; JANITOR</p>
-          <p className="ish-d mono">EST. 2022 → NO CLOSING TIME</p>
+        {/* SHIFT 02 — the slab torn out of the night office, ragged left
+            edge, overhanging the stage so nothing reads as a row */}
+        <div className="imp-piece imp-slab final">
+          <div className="imp-night-c">
+            <p className="ish-k shf-row mono">SHIFT 02 &middot; 23:00 → ?</p>
+            <span className="ish-emp">My desk.</span>
+            <p className="ish-t mono">OWNER &middot; OPERATOR &middot; JANITOR</p>
+            <p className="ish-d mono">EST. 2022 → NO CLOSING TIME</p>
+          </div>
           <p className="ish-tonight mono">TONIGHT ▸ THIS PAGE, AGAIN</p>
           <span className="imp-regx" aria-hidden="true" />
           <span className="imp-sq" aria-hidden="true" />
         </div>
 
-        {/* MAKAIRA sp. leaps the seam — day inks left of the cut, night inks
-            right of it. Hover slides the red pass into register. */}
+        {/* MAKAIRA sp. crosses the tear — page inks left of it, slab inks
+            after. Hover slides the red pass into register. */}
         <div className="imp-piece imp-marlin final" aria-hidden="true">
           <div className="m-copy m-day"><MarlinSVG /></div>
           <div className="m-copy m-night"><MarlinSVG /></div>
-          <span className="im-cap mono">MAKAIRA sp. &middot; CROSSES THE SEAM NIGHTLY</span>
+          <span className="im-cap mono">MAKAIRA sp. &middot; CROSSES THE TEAR NIGHTLY</span>
         </div>
 
-        {/* the seam itself, named and dated */}
+        {/* the tear, named */}
         <span className="imp-seam mono final" aria-hidden="true">
-          THE SEAM &middot; ONE PERSON, BOTH SIDES
+          THE TEAR &middot; ONE PERSON, BOTH SIDES
         </span>
       </div>
 
