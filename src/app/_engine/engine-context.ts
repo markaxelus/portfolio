@@ -8,6 +8,29 @@ export interface Point {
 }
 
 /**
+ * The imperative registry — the React translation of main.js's hoisted/late-
+ * bound cross-subsystem functions. Each owner assigns its handle in a mount
+ * effect (e.g. `api.current.logAct = ...`); callers invoke through it
+ * (`api.current.regKick?.(1.8)`) and safely no-op until the owner mounts.
+ */
+export interface EngineApi {
+  logAct?: (line: string, instant?: boolean) => void;
+  regKick?: (px: number) => void;
+  strikeAll?: (instant?: boolean) => void;
+  positionAnchors?: () => void;
+  disarmSetting?: () => void;
+  kickSheet?: (i: number) => void;
+  sndClack?: () => void;
+  sndTok?: () => void;
+  sndSlam?: () => void;
+  resetLooseType?: () => void;
+  closeProject?: () => void;
+  openProject?: (idx: number) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [k: string]: ((...args: any[]) => unknown) | undefined;
+}
+
+/**
  * The shared engine context — the React translation of main.js's module scope.
  * Truly-global state that drives what renders (accent/plates, theme, mess/proof,
  * noise) plus the media flags every physics system reads. Hot-path values
@@ -44,6 +67,9 @@ export interface EngineCtx {
   mouse: RefObject<Point>;
   /** subscribe a per-scroll-frame callback (prog 0..1); returns an unsubscribe */
   subscribeScroll: (fn: (prog: number) => void) => () => void;
+
+  /** cross-subsystem imperative handles (see EngineApi) */
+  api: RefObject<EngineApi>;
 }
 
 export const EngineContext = createContext<EngineCtx | null>(null);

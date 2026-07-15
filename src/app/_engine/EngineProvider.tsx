@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { EngineContext, type EngineCtx, type Point } from "./engine-context";
+import { EngineContext, type EngineApi, type EngineCtx, type Point } from "./engine-context";
 import { ACCENTS, PROJECTS, plateURI } from "@/lib/plates";
 import { deskDateStr, deskHour, deskTime } from "@/lib/desk";
 import { clamp, lerp, r2 } from "@/lib/math";
@@ -36,6 +36,9 @@ export default function EngineProvider({ children }: { children: React.ReactNode
   // the single pointer feed + per-frame singletons
   const mouseRef = useRef<Point>({ x: 0, y: 0 });
   const loupeOnRef = useRef(false);
+
+  // cross-subsystem imperative registry (owners assign, callers no-op-safe call)
+  const apiRef = useRef<EngineApi>({});
 
   // scroll-frame fan-out (strike / hold-register / thread / setting subscribe here)
   const scrollSubs = useRef<Set<(prog: number) => void>>(new Set());
@@ -308,7 +311,7 @@ export default function EngineProvider({ children }: { children: React.ReactNode
       proofOn, setProof,
       noiseOn, setNoise,
       reduced, stillMode, trailEnabled,
-      mouse: mouseRef, subscribeScroll,
+      mouse: mouseRef, subscribeScroll, api: apiRef,
     }),
     [accentI, setAccent, plates, isNight, setNight, proofOn, setProof, noiseOn, setNoise, reduced, stillMode, trailEnabled, subscribeScroll],
   );
