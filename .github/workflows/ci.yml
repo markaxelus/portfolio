@@ -5,7 +5,30 @@ on:
   pull_request:
 
 jobs:
+  # Runs on every push/PR — a fast, meaningful green signal during the rebuild.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  # The E2E smoke exercises the finished site; it targets the OLD multi-page
+  # portfolio and is being rewritten for the v4 single-page site. Run it only on
+  # main + PRs (i.e. at cutover), not on every in-progress feature-branch push.
   smoke-tests:
+    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
