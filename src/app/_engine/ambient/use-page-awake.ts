@@ -104,14 +104,21 @@ export function usePageAwake(): void {
       if (regEl) regEl.classList.add("hiccup");
     }
 
-    /* the imprint device's red pass creeps further off register, then the
-       shop eases it home (the .dev-ghost transition carries both ways) */
-    const devEl = document.querySelector<SVGGElement>(".ib-device .dev-ghost");
+    /* the imprint marlin's red pass creeps further off register, then the
+       shop eases it home (the .dev-ghost transition carries both ways).
+       TWO ghosts — the fish is printed once per side of the seam — so the
+       act must move them in register with each other. */
+    const devEls = Array.prototype.slice.call(
+      document.querySelectorAll(".imp-marlin .dev-ghost"),
+    ) as SVGGElement[];
     let adriftT: ReturnType<typeof setTimeout> | null = null;
     function actAdrift() {
-      if (!devEl || devEl.classList.contains("adrift")) return;
-      devEl.classList.add("adrift");
-      adriftT = setTimeout(() => devEl.classList.remove("adrift"), 900);
+      if (!devEls.length || devEls[0].classList.contains("adrift")) return;
+      devEls.forEach((el) => el.classList.add("adrift"));
+      adriftT = setTimeout(
+        () => devEls.forEach((el) => el.classList.remove("adrift")),
+        900,
+      );
     }
     const onRegAnimEnd = (e: AnimationEvent) => {
       if (e.animationName === "reg-hiccup" && regEl) regEl.classList.remove("hiccup");
@@ -143,7 +150,7 @@ export function usePageAwake(): void {
       rattleTimers.forEach((to) => clearTimeout(to));
       rattleTimers.clear();
       if (adriftT) clearTimeout(adriftT);
-      if (devEl) devEl.classList.remove("adrift");
+      devEls.forEach((el) => el.classList.remove("adrift"));
       if (regEl) {
         regEl.removeEventListener("animationend", onRegAnimEnd as EventListener);
         regEl.classList.remove("hiccup");

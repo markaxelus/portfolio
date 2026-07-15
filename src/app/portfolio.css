@@ -611,14 +611,16 @@ body.hero-set .plates-decal {
 .n-gap { top: 2%; left: 46%; --tilt: -3deg; }
 .n-2025 { bottom: 6%; right: 6%; --tilt: 2deg; }
 
-/* ---------- the imprint: the colophon seam (who's at the desk, and where) ----
-   recomposed as a real IMPRESSUM: the voice line hands across a dashed seam
-   to the bordered imprint block — presswork entries set as a ledger, the
-   marlin re-cut as an engraved printer's device at the foot (Aldus kept a
-   dolphin; this shop keeps a marlin). asymmetric by law — resting tilts on
-   .imp-rot, the seeded set-in on .imp-piece settling true. the void between
-   the columns is measured by the seam, not left empty. FINAL layer; no hand
-   marks. */
+/* ---------- the imprint: THE TWO SHIFTS (who's at the desk, and where) ----
+   the colophon seam at poster scale: one bordered plate split at a hard seam
+   into the two shifts of the same life. SHIFT 01 (day panel, sheet-light) is
+   OceanAID; SHIFT 02 (night panel, ink-dark) is the desk. The panels keep
+   LITERAL inks in both site modes — the shifts are absolute, so one panel
+   always burns against the room. The voice line and the engraved marlin
+   cross the seam and change ink mid-stroke: two identical copies clipped at
+   --seam. Life: hold-register shear on the voice line, the clock's RUNNING
+   marker on the kickers, the page-awake drift on the marlin's red pass.
+   FINAL layer; no hand marks. */
 .imprint { position: relative; padding: 4vw 1.4vw 5vw; }
 .imp-frame {
   display: flex;
@@ -632,40 +634,103 @@ body.hero-set .plates-decal {
 .imp-head { opacity: 0.75; }
 .imp-cap { opacity: 0.7; text-align: right; }
 
-.imp-stage {
-  --seam-gap: clamp(2.6rem, 7vw, 7rem);
+/* the split plate — the seam position drives every clip below */
+.imp-split {
+  --seam: 56%;
+  /* the shifts are absolute: literal inks, NOT the flipping tokens */
+  --day-bg: #DDDBD4;
+  --day-ink: #16150F;
+  --night-bg: #16150F;
+  --night-ink: #DDDBD4;
   position: relative;
-  max-width: 1080px;
+  max-width: 1240px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1.04fr 0.96fr;
-  gap: var(--seam-gap);
+  grid-template-columns: var(--seam) calc(100% - var(--seam));
+  min-height: clamp(400px, 42vw, 600px);
+  border: 1px solid var(--ink);
 }
-/* the outer piece carries the seeded set-in (arrival transform settles to
-   none); the inner .imp-rot carries the deliberate resting tilt, so the two
-   never clobber each other */
 .imp-rot {
   transform: rotate(var(--rot, 0deg));
   transform-origin: var(--origin, left top);
 }
 
-/* the voice column — the line up top, the hand-off pinned to the block's foot */
-.imp-voice {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-top: 2.4rem;
+/* ---- the panels: the two shifts ---- */
+.imp-shift {
+  position: relative;
+  /* the voice line owns the top of the plate; the shift entries sit low */
+  padding: clamp(11rem, 21vw, 17rem) clamp(1.2rem, 2.6vw, 2.6rem) clamp(1.4rem, 3vw, 2.6rem);
+}
+.imp-day { background: var(--day-bg); color: var(--day-ink); }
+.imp-night { background: var(--night-bg); color: var(--night-ink); }
+
+.ish-k { font-size: 0.62rem; letter-spacing: 0.22em; opacity: 0.85; }
+.ish-emp {
+  display: inline-block;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(2.1rem, 4.6vw, 4rem);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  margin: 0.45rem 0 0.6rem;
+}
+.imp-day .ish-emp {
+  color: var(--accent);
+  border-bottom: 3px solid var(--accent);
+  padding: 0 0.1em 3px;
+  margin-left: -0.1em;
+  text-decoration: none;
+  transition:
+    background-color 0.25s var(--ease-out),
+    color 0.25s var(--ease-out);
+}
+.imp-day .ish-emp:hover,
+.imp-day .ish-emp:focus-visible {
+  background: var(--accent);
+  color: var(--day-bg);
+  outline: none;
+}
+.ish-ext { font-size: 0.42em; vertical-align: 0.6em; letter-spacing: 0; }
+.imp-night .ish-emp { color: var(--night-ink); transform: rotate(-1.1deg); transform-origin: left bottom; }
+.ish-t { font-size: 0.66rem; letter-spacing: 0.08em; margin-top: 0.1rem; }
+.ish-d { font-size: 0.6rem; letter-spacing: 0.08em; opacity: 0.65; margin-top: 0.35rem; }
+.ish-prev {
+  font-size: 0.56rem;
+  letter-spacing: 0.06em;
+  opacity: 0.6;
+  margin-top: 1.6rem;
+  max-width: 34rem;
+  transform: rotate(-0.9deg);
+  transform-origin: left top;
 }
 
-/* the voice line — the hero motif, ragged-left and crooked, the day-job
-   admission knocked off register */
-.imp-line { --rot: 0deg; }
+/* the desk clock marks the shift that is RUNNING right now (machine state →
+   the acid, like [RUN.M]); live info, so it never prints */
+.shf-row.shf-on::after {
+  content: " ● RUNNING";
+  font-size: 0.52rem;
+  letter-spacing: 0.16em;
+  color: var(--acid);
+  white-space: nowrap;
+}
+
+/* ---- the voice line: the day panel's masthead ---- */
+.imp-line {
+  position: absolute;
+  top: clamp(1.6rem, 3.4vw, 3.2rem);
+  left: 0;
+  width: var(--seam);
+  z-index: 1; /* first in DOM (pocket-sheet flow) — lift over the panels */
+  pointer-events: none;
+  color: var(--day-ink);
+}
+.imp-line .imp-rot { padding-left: clamp(1.2rem, 3vw, 3rem); }
 .imp-line b {
   display: block;
   font-family: "Fraunces", Georgia, serif;
   font-weight: 500;
-  font-size: clamp(1.65rem, 3.8vw, 2.95rem);
-  line-height: 1.12;
+  font-size: clamp(1.9rem, 4.4vw, 3.6rem);
+  line-height: 1.1;
   letter-spacing: -0.01em;
 }
 .imp-line .il1 { transform: rotate(-2.2deg); }
@@ -676,151 +741,66 @@ body.hero-set .plates-decal {
   text-shadow: 2px 0 0 var(--accent), -2px 0 0 var(--pencil-soft);
 }
 
-/* the shifts — the admission as shop data: a typeset schedule with dot
-   leaders, staggered in off the line's rag */
-.imp-shifts { --rot: -0.8deg; margin: 2.6rem 0 0 clamp(1.4rem, 4vw, 3.6rem); max-width: 28rem; }
-.shf-h {
-  display: block;
-  font-size: 0.56rem;
-  letter-spacing: 0.24em;
-  color: var(--graphite);
-  margin-bottom: 0.5rem;
-}
-.shf-row {
-  display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  font-size: 0.62rem;
-  letter-spacing: 0.05em;
-  margin-top: 0.45rem;
-}
-.shf-row i { font-style: normal; color: var(--graphite); letter-spacing: 0.18em; }
-.shf-row b { flex: 1; border-bottom: 1px dotted var(--graphite); opacity: 0.5; transform: translateY(-0.28em); }
-.shf-row em { font-style: normal; }
-.shf-late { color: var(--accent); }
-/* the ledger is a live instrument: the desk clock marks the shift that is
-   RUNNING right now (EngineProvider's tick toggles .shf-on) — machine state,
-   so it takes the acid, like [RUN.M] */
-.shf-row.shf-on::after {
-  content: "● RUNNING";
-  font-size: 0.52rem;
-  letter-spacing: 0.16em;
-  color: var(--acid);
-  white-space: nowrap;
-}
-@media print {
-  .shf-row::after { display: none !important; } /* live info, not record */
-}
-
-/* the hand-off down into the work */
-.imp-kick { --rot: -1.5deg; margin-top: 3.4rem; }
-.imp-kick .imp-rot { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--accent); }
-
-/* the seam: a dashed fold rule down the measured void between the columns,
-   its label reading up the fold (position derived from the grid math, not
-   eyeballed: left column is 52% of the tracks plus half the gap) */
-.imp-seam {
+/* ---- the marlin leaps the seam, high in the plate's empty band — head in
+   the day shift, body and tail in the night (day inks | night inks) ---- */
+.imp-marlin {
   position: absolute;
-  left: calc((100% - var(--seam-gap)) * 0.52 + var(--seam-gap) / 2);
-  top: 3%;
-  bottom: 4%;
-  border-left: 1px dashed var(--ink);
-  opacity: 0.3;
-  writing-mode: vertical-rl;
-  font-size: 0.5rem;
-  letter-spacing: 0.28em;
-  padding-left: 0.4rem;
-  white-space: nowrap;
+  left: 0;
+  right: 0;
+  top: clamp(1.8rem, 4vw, 3.6rem);
+  pointer-events: auto;
+  text-align: left;
 }
-
-/* the imprint block — the bordered impressum, resting a hair off true,
-   the next blank slip peeking out from under it */
-.imp-block { --rot: 1.2deg; --origin: right top; margin-top: 1.4rem; }
-.imp-block .imp-rot {
-  position: relative;
-  border: 1px solid var(--ink);
-  padding: 1.05rem 1.3rem 1rem;
-  background: var(--stone);
+.imp-marlin .m-copy {
+  padding-left: calc(var(--seam) - clamp(140px, 15vw, 200px));
 }
-.imp-block .imp-rot::before {
-  content: "";
-  position: absolute;
-  inset: 10px -11px -11px 10px;
-  border: 1px solid var(--ink);
-  opacity: 0.22;
-  z-index: -1;
-}
-.ib-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.58rem;
-  letter-spacing: 0.24em;
-  opacity: 0.8;
-  border-bottom: 1px solid var(--ink);
-  padding-bottom: 0.55rem;
-  margin-bottom: 0.95rem;
-}
-.ib-reg { position: relative; width: 13px; height: 13px; opacity: 0.65; }
-.ib-reg::before, .ib-reg::after { content: ""; position: absolute; background: var(--ink); }
-.ib-reg::before { left: 6px; top: 0; width: 1px; height: 13px; }
-.ib-reg::after { top: 6px; left: 0; height: 1px; width: 13px; }
-
-.ib-entry { display: block; padding-bottom: 0.85rem; }
-.ib-now { border-bottom: 1px dashed var(--hairline); margin-bottom: 0.85rem; }
-.ib-k { display: block; font-size: 0.6rem; letter-spacing: 0.22em; color: var(--accent); }
-.ib-prev .ib-k { color: var(--graphite); }
-.ib-emp {
-  display: inline-block;
-  font-family: "Fraunces", Georgia, serif;
-  font-weight: 500;
-  font-size: clamp(1.45rem, 2.6vw, 2.1rem);
-  margin: 0.3rem 0 0.4rem;
-}
-.ib-now .ib-emp {
-  color: var(--accent);
-  border-bottom: 2px solid var(--accent);
-  padding: 0 0.12em 2px;
-  margin-left: -0.12em;
-  text-decoration: none;
-  transition:
-    background-color 0.25s var(--ease-out),
-    color 0.25s var(--ease-out);
-}
-/* the employer is a live link — corner-tab invert on hover */
-.ib-now .ib-emp:hover,
-.ib-now .ib-emp:focus-visible {
-  background: var(--accent);
-  color: var(--stone);
-  outline: none;
-}
-.ib-ext { font-size: 0.5em; vertical-align: 0.5em; letter-spacing: 0; }
-.ib-prev .ib-emp { font-size: clamp(1.05rem, 1.7vw, 1.4rem); }
-.ib-meta { display: block; font-size: 0.6rem; letter-spacing: 0.06em; color: var(--graphite); }
-
-/* the device — engraved linework in the three inks: ink strokes, accent
-   hatching on the sail, the red pass a breath off register */
-.ib-device { margin: 0; padding: 0.8rem 0 0.65rem; border-top: 1px solid var(--ink); text-align: center; }
-.ib-device svg {
-  width: min(70%, 224px);
+.imp-marlin .m-copy svg {
+  width: clamp(250px, 29vw, 440px);
   height: auto;
-  display: inline-block;
   overflow: visible;
-  transform: rotate(-2.5deg);
+  transform: rotate(-7deg);
 }
-.dev-body, .dev-tail, .dev-fin, .dev-gill {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.imp-marlin .m-day { clip-path: inset(-30% calc(100% - var(--seam)) -30% 0); }
+.imp-marlin .m-night {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(-30% 0 -30% var(--seam));
 }
-.dev-hatch { fill: none; stroke: var(--accent); stroke-width: 1.3; stroke-linecap: round; }
-/* the red pass rides off register; hovering the device slides it home
-   (the operator plate's move) — offset lives here so it can transition */
-.dev-ghost {
+.im-cap {
+  display: block;
+  padding-left: calc(var(--seam) + clamp(6rem, 10vw, 10rem));
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  color: var(--night-ink);
+  opacity: 0.55;
+  /* tucked under the tail, above the night kicker */
+  margin-top: clamp(-4.8rem, -6vw, -2.8rem);
+}
+
+/* the engraved strokes — day copy in the day inks */
+.m-day .dev-body, .m-day .dev-tail, .m-day .dev-fin, .m-day .dev-gill {
+  fill: none; stroke: var(--day-ink); stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.m-day .dev-hatch { fill: none; stroke: var(--accent); stroke-width: 1.3; stroke-linecap: round; }
+.m-day .dev-lat { fill: none; stroke: var(--day-ink); stroke-width: 0.9; opacity: 0.4; }
+.m-day .dev-eye { fill: var(--day-ink); }
+.m-day .dev-wave { fill: none; stroke: var(--day-ink); stroke-width: 1; opacity: 0.35; }
+.m-day .dev-ghost { stroke: var(--pencil); }
+/* ...and the night copy in the night inks (acid hatch, brightened red) */
+.m-night .dev-body, .m-night .dev-tail, .m-night .dev-fin, .m-night .dev-gill {
+  fill: none; stroke: var(--night-ink); stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.m-night .dev-hatch { fill: none; stroke: var(--acid); stroke-width: 1.3; stroke-linecap: round; }
+.m-night .dev-lat { fill: none; stroke: var(--night-ink); stroke-width: 0.9; opacity: 0.4; }
+.m-night .dev-eye { fill: var(--night-ink); }
+.m-night .dev-wave { fill: none; stroke: var(--night-ink); stroke-width: 1; opacity: 0.35; }
+.m-night .dev-ghost { stroke: #F0603F; }
+/* the red pass rides off register; hover slides it home; the page-awake
+   drift creeps it further out, then eases back */
+.imp-marlin .dev-ghost {
   fill: none;
-  stroke: var(--pencil);
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -828,65 +808,81 @@ body.hero-set .plates-decal {
   transform: translate(2.5px, 2px);
   transition: transform 0.45s var(--ease-out);
 }
-.ib-device:hover .dev-ghost { transform: translate(0, 0); }
-/* the page-awake act: the red pass creeps further out, then eases home
-   (hover wins — a held pointer pins the pass in register) */
-.ib-device .dev-ghost.adrift { transform: translate(5px, 3.8px); }
-.ib-device:hover .dev-ghost.adrift { transform: translate(0, 0); }
-.dev-lat { fill: none; stroke: var(--ink); stroke-width: 0.9; opacity: 0.4; }
-.dev-eye { fill: var(--ink); }
-.dev-wave { fill: none; stroke: var(--ink); stroke-width: 1; opacity: 0.35; }
-.ib-device figcaption {
-  font-size: 0.52rem;
+.imp-marlin:hover .dev-ghost,
+.imp-marlin:hover .dev-ghost.adrift { transform: translate(0, 0); }
+.imp-marlin .dev-ghost.adrift { transform: translate(5px, 3.8px); }
+
+/* ---- the seam, named (starts below the fish's crossing band) ---- */
+.imp-seam {
+  position: absolute;
+  left: var(--seam);
+  top: 46%;
+  bottom: 3%;
+  opacity: 0.45;
+  writing-mode: vertical-rl;
+  font-size: 0.5rem;
+  letter-spacing: 0.28em;
+  padding-left: 0.35rem;
+  white-space: nowrap;
+  color: var(--night-ink); /* it reads on the dark side of the cut */
+}
+
+/* the night panel's quiet furniture */
+.imp-night .imp-regx { position: absolute; right: 8%; top: 12%; width: 16px; height: 16px; opacity: 0.5; }
+.imp-night .imp-regx::before, .imp-night .imp-regx::after { content: ""; position: absolute; background: var(--night-ink); }
+.imp-night .imp-regx::before { left: 7px; top: 0; width: 1px; height: 16px; }
+.imp-night .imp-regx::after { top: 7px; left: 0; height: 1px; width: 16px; }
+.imp-night .imp-sq { position: absolute; right: 14%; bottom: 14%; width: 6px; height: 6px; border: 1px solid var(--acid); opacity: 0.6; transform: rotate(16deg); }
+.ish-tonight {
+  position: absolute;
+  left: clamp(1.2rem, 2.6vw, 2.6rem);
+  bottom: 1.2rem;
+  font-size: 0.56rem;
   letter-spacing: 0.18em;
-  color: var(--graphite);
-  margin-top: 0.35rem;
+  opacity: 0.5;
+  transform: rotate(-0.8deg);
+  transform-origin: left bottom;
 }
 
-.ib-foot {
-  border-top: 1px solid var(--ink);
-  padding-top: 0.6rem;
-  font-size: 0.58rem;
-  letter-spacing: 0.16em;
-  opacity: 0.85;
-}
+/* the hand-off down into the work */
+.imp-kick { --rot: -1.5deg; max-width: 1240px; margin: 1.1rem auto 0; }
+.imp-kick .imp-rot { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--accent); }
 
-/* print furniture measuring the margins */
-.imp-regx { position: absolute; left: 39%; top: 6%; width: 16px; height: 16px; opacity: 0.5; }
-.imp-regx::before, .imp-regx::after { content: ""; position: absolute; background: var(--ink); }
-.imp-regx::before { left: 7px; top: 0; width: 1px; height: 16px; }
-.imp-regx::after { top: 7px; left: 0; height: 1px; width: 16px; }
-.imp-sq { position: absolute; width: 6px; height: 6px; border: 1px solid var(--ink); opacity: 0.4; }
-.imp-sq.s1 { left: 3%; top: 64%; transform: rotate(12deg); }
-.imp-sq.s2 { left: 44%; bottom: 3%; transform: rotate(20deg); }
-
-/* the pocket sheet: the stage unwinds to plain upright flow (legible first);
-   the block keeps its border — it stays an object, not a list */
+/* the pocket sheet: the plate unwinds — the panels stack full-width (the
+   night panel keeps its dark ink: the split stays bold), the voice line
+   returns to flow in one ink, the marlin swims the day panel */
 @media (max-width: 820px) {
-  .imp-stage { display: block; max-width: none; }
-  .imp-voice { padding-top: 0; }
-  .imp-piece { margin: 0 0 1.7rem; }
-  .imp-rot { transform: none !important; }
-  .imp-line b { transform: none !important; margin-left: 0 !important; }
   .imp-frame { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
   .imp-cap { text-align: left; }
-  .imp-block { margin-top: 0.2rem; }
-  .ib-now .ib-emp { font-size: clamp(1.7rem, 8.4vw, 2.3rem); }
-  .ib-device svg { transform: none; }
-  .imp-seam, .imp-regx, .imp-sq, .imp-kick { display: none; }
+  .imp-split { display: block; min-height: 0; }
+  .imp-shift { padding: 1.4rem 1.2rem 1.6rem; }
+  .imp-line { position: static; width: auto; pointer-events: none; padding: 1.4rem 1.2rem 0.4rem; background: var(--day-bg); }
+  .imp-line .imp-rot { padding-left: 0; }
+  .imp-line b { transform: none !important; margin-left: 0 !important; }
+  .imp-day .ish-emp { font-size: clamp(1.9rem, 8.8vw, 2.6rem); }
+  .imp-night .ish-emp { font-size: clamp(1.9rem, 8.8vw, 2.6rem); transform: none; }
+  .ish-tonight { position: static; margin-top: 1.5rem; transform: none; }
+  .imp-marlin { position: static; padding: 0.8rem 1.2rem 1.2rem; background: var(--day-bg); }
+  .imp-marlin .m-copy { padding-left: 0; }
+  .imp-marlin .m-copy svg { width: min(72vw, 300px); transform: rotate(-4deg); }
+  .imp-marlin .m-day { clip-path: none; }
+  .imp-marlin .m-night { display: none; }
+  .im-cap { padding-left: 0; margin-top: 0.3rem; color: var(--day-ink); }
+  .imp-seam, .imp-kick { display: none; }
 }
 
-/* the proof: the colophon prints as the imprint block it is, device and
-   screen furniture stripped */
+/* the proof: the two shifts print as flowed facts — panels drop their ink
+   fields, the crossing copies collapse to one, live/screen furniture goes */
 @media print {
-  .imp-seam, .imp-regx, .imp-sq, .imp-kick, .ib-device { display: none !important; }
-  .imp-stage { display: block !important; max-width: none !important; }
-  .imp-piece { margin: 0 0 3mm !important; }
+  .imp-split { display: block !important; min-height: 0 !important; border-color: #000 !important; }
+  .imp-shift { padding: 4mm !important; background: none !important; color: #000 !important; }
+  .imp-line { position: static !important; width: auto !important; padding: 4mm 4mm 0 !important; }
+  .imp-line b { transform: none !important; margin-left: 0 !important; text-shadow: none !important; }
+  .imp-marlin, .imp-seam, .imp-kick, .imp-regx, .imp-sq { display: none !important; }
+  .imp-day .ish-emp { color: #000 !important; border-color: #000 !important; }
+  .imp-night .ish-emp { color: #000 !important; }
   .imp-rot { transform: none !important; }
-  .imp-line b { transform: none !important; margin-left: 0 !important; }
-  .imp-block .imp-rot { border-color: #000 !important; }
-  .ib-head, .ib-foot, .ib-now { border-color: #000 !important; }
-  .ib-now .ib-emp { border-color: #000 !important; }
+  .ish-prev, .imp-night .ish-emp { transform: none !important; }
 }
 
 /* ---------- at the desk ---------- */

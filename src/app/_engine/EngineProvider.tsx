@@ -281,7 +281,7 @@ export default function EngineProvider({ children }: { children: React.ReactNode
       if (sd) sd.textContent = dateStr;
     }
     const shiftRows = document.querySelectorAll<HTMLElement>(
-      ".imp-shifts .shf-row",
+      ".imprint .shf-row",
     );
     const tick = () => {
       const now = new Date();

@@ -33,16 +33,16 @@ export default function Trail() {
           </div>
         </div>
         <div className="terrain-labels">
-          <div className="mile-label"><p className="mile-year mono">2019</p><p className="mile-fact">Still in high school. The code stuck anyway.</p></div>
-          <div className="mile-label"><p className="mile-year mono">2022</p><p className="mile-fact">Chose CS at university. The plan was marine biology.</p></div>
+          <div className="mile-label"><p className="mile-year mono">2019</p><p className="mile-fact">High school. Not one line of code yet.</p></div>
+          <div className="mile-label"><p className="mile-year mono">2022</p><p className="mile-fact">Picked CS at university. Couldn&rsquo;t tell you why.</p></div>
           <div className="mile-label"><p className="mile-year mono">2023</p><p className="mile-fact">First all-nighter that produced something worth keeping.</p></div>
           <div className="mile-label mile-label-gap"><p className="mile-year mono">2024</p><p className="mile-fact gap-fact">&mdash;</p></div>
-          <div className="mile-label"><p className="mile-year mono">2025</p><p className="mile-fact">The university started paying me to build AI systems.</p></div>
+          <div className="mile-label"><p className="mile-year mono">2025</p><p className="mile-fact">Started building AI systems. The stakes turned real.</p></div>
           <div className="mile-label"><p className="mile-year mono is-now-year">2026</p><p className="mile-fact">You&rsquo;re here, reading this.</p></div>
         </div>
       </div>
       <div className="proof-notes" aria-hidden="true">
-        <span className="note hand-k mile-note" style={{ "--d": ".1s", left: "4%" } as CSSProperties}>in class. under the desk.</span>
+        <span className="note hand-k mile-note" style={{ "--d": ".1s", left: "4%" } as CSSProperties}>the before picture.</span>
         <span className="note hand-k mile-note" style={{ "--d": ".2s", left: "23%" } as CSSProperties}>wanted whales. got compilers.</span>
         <span className="note hand-k mile-note" style={{ "--d": ".3s", left: "53%" } as CSSProperties}>the all-nighter worked. once.</span>
         <span className="note hand-k mile-note" style={{ "--d": ".4s", left: "70%" } as CSSProperties}>terrifying. correct.</span>
