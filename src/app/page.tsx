@@ -11,6 +11,7 @@ import NightToggle from "./_chrome/NightToggle";
 import NoiseToggle from "./_chrome/NoiseToggle";
 import ProofToggle from "./_chrome/ProofToggle";
 import CairnIndicator from "./_chrome/CairnIndicator";
+import VisitCounter from "./_engine/VisitCounter";
 
 /**
  * Mark Axelus — My Desk (v4)
@@ -163,6 +164,9 @@ export default function Home() {
       <div className="cursor" id="cursor" aria-hidden="true">
         <span className="cursor-label">PROOF ↗</span>
       </div>
+
+      {/* the visit odometer — reads the real global count from Redis */}
+      <VisitCounter />
     </EngineProvider>
   );
 }
