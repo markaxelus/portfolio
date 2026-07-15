@@ -9,6 +9,12 @@ import { useEffect } from "react";
  * you" note (`#knows-note`) stays on localStorage (personal return-state Redis
  * can't track per user). Widened past the original 3-digit clamp for the real
  * (4-digit+) count.
+ *
+ * The colophon also admits the count (`#colo-pulled`, the ironic wink under
+ * "NO TRACKERS"): the same global `total` prints on its own line beneath the
+ * colophon as "PULLED OVER N,NNN VISITS" — the real edition size across both
+ * versions of the site. (In the prototype this hung off the impression line's
+ * retire; that system was removed, so it rides the visit fetch now.)
  */
 
 // module-scope so the personal increment happens once per real load, not twice
@@ -43,6 +49,22 @@ function rollOdo(reels: HTMLElement[], n: number, width: number): void {
   odoDigits(n, width).forEach((d, i) => {
     if (reels[i]) reels[i].style.transform = "translateY(-" + d + "em)";
   });
+}
+
+// the colophon admits the count under "NO TRACKERS" — the same global total,
+// on its own line beneath "1 CAT" (built with a <br> + text node, no innerHTML)
+function fillColophon(total: number): void {
+  const el = document.getElementById("colo-pulled");
+  if (!el) return;
+  el.textContent = "";
+  el.appendChild(document.createElement("br"));
+  el.appendChild(
+    document.createTextNode(
+      total <= 1
+        ? "PULLED IN ONE VISIT"
+        : "PULLED OVER " + total.toLocaleString() + " VISITS",
+    ),
+  );
 }
 
 export default function VisitCounter() {
@@ -88,6 +110,8 @@ export default function VisitCounter() {
         if (cancelled) return;
         const total = Math.max(1, Number(data?.total) || visits);
         const width = Math.max(3, String(total).length);
+        // the colophon admits the same real count under "NO TRACKERS"
+        fillColophon(total);
         if (staticMode) {
           buildOdo(visitEl, total, width);
         } else {
@@ -102,7 +126,9 @@ export default function VisitCounter() {
       })
       .catch(() => {
         // Redis unreachable — fall back to the personal count so it still shows
-        if (!cancelled && visitEl) buildOdo(visitEl, visits, 3);
+        if (cancelled) return;
+        if (visitEl) buildOdo(visitEl, visits, 3);
+        fillColophon(visits);
       });
 
     return () => {
