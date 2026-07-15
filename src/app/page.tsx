@@ -14,6 +14,9 @@ import CairnIndicator from "./_chrome/CairnIndicator";
 import VisitCounter from "./_engine/VisitCounter";
 import ThoughtThread from "./_engine/thread/ThoughtThread";
 import AmbientLife from "./_engine/ambient/AmbientLife";
+import StrikeSystem from "./_engine/strike/StrikeSystem";
+import MessLayer from "./_engine/mess/MessLayer";
+import TheSetting from "./_engine/setting/TheSetting";
 
 /**
  * Mark Axelus — My Desk (v4)
@@ -178,6 +181,15 @@ export default function Home() {
 
       {/* ambient life: audio registry, tab-title, idle whisper, page-awake */}
       <AmbientLife />
+
+      {/* the strike = ink law: impression line + hold register + regmark */}
+      <StrikeSystem />
+
+      {/* the mess layer: proof cascade, notes reveal, anchored marks, cat, ink */}
+      <MessLayer />
+
+      {/* the setting = matter law: the seeded-asymmetric load entrance */}
+      <TheSetting />
     </EngineProvider>
   );
 }
