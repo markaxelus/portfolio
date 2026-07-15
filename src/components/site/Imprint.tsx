@@ -115,6 +115,9 @@ export default function Imprint() {
           <span className="im-cap mono">MAKAIRA sp. &middot; CROSSES THE TEAR NIGHTLY</span>
         </div>
 
+        {/* a scrap of the night, broken off in the tearing, fallen low-left */}
+        <span className="imp-piece imp-scrap final" aria-hidden="true" />
+
         {/* the tear, named */}
         <span className="imp-seam mono final" aria-hidden="true">
           THE TEAR &middot; ONE PERSON, BOTH SIDES

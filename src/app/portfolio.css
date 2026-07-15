@@ -748,15 +748,17 @@ body.night .imp-stage {
 /* ---- SHIFT 02: the slab torn out of the night office ---- */
 /* the slab and the marlin share ONE box so the tear clips register;
    it overhangs the stage bottom hard and the top gently (the section
-   caption above must stay clear) */
+   caption above must stay clear). The tear's foot SWEEPS LEFT (41.5%)
+   under the stage and the bottom edge is torn too — no straight line
+   survives on the shape. */
 .imp-slab, .imp-marlin {
   position: absolute;
-  inset: -0.9rem clamp(-3rem, -3vw, -1rem) -2rem 0;
+  inset: -0.9rem clamp(-3rem, -3vw, -1rem) -2.6rem 0;
 }
 .imp-slab {
   background: var(--slab-bg);
   color: var(--slab-ink);
-  clip-path: polygon(59.2% 0%, 57.4% 11%, 59% 23%, 55.8% 37%, 57.6% 50%, 54.3% 63%, 56.4% 77%, 52.9% 92%, 54% 100%, 100% 100%, 100% 0%);
+  clip-path: polygon(59.2% 0%, 57.4% 11%, 59% 23%, 55.8% 37%, 57.6% 50%, 54.3% 63%, 56.4% 74%, 50.8% 84%, 53% 90%, 41.5% 100%, 58% 97.8%, 72% 99.6%, 86% 97.6%, 100% 99.3%, 100% 0%);
 }
 .imp-night-c {
   position: absolute;
@@ -783,7 +785,13 @@ body.night .imp-stage {
 
 /* ---- the marlin crosses the tear (page inks | slab inks) ---- */
 .imp-marlin { pointer-events: auto; text-align: left; z-index: 1; }
+/* BOTH copies are absolute inset 0 — they must share the exact box, or the
+   zigzag evaluates at different y-percentages per copy and the fish loses a
+   band at the tear (it did, on wide viewports: the flow copy's box was
+   content-height while the overlay filled the slab box) */
 .imp-marlin .m-copy {
+  position: absolute;
+  inset: 0;
   padding-top: clamp(2.4rem, 5vw, 4.6rem);
   padding-left: calc(56% - clamp(140px, 15vw, 200px));
 }
@@ -794,22 +802,19 @@ body.night .imp-stage {
   transform: rotate(-7deg);
 }
 .imp-marlin .m-day {
-  clip-path: polygon(0% 0%, 59.2% 0%, 57.4% 11%, 59% 23%, 55.8% 37%, 57.6% 50%, 54.3% 63%, 56.4% 77%, 52.9% 92%, 54% 100%, 0% 100%);
+  clip-path: polygon(0% 0%, 59.2% 0%, 57.4% 11%, 59% 23%, 55.8% 37%, 57.6% 50%, 54.3% 63%, 56.4% 74%, 50.8% 84%, 53% 90%, 41.5% 100%, 0% 100%);
 }
 .imp-marlin .m-night {
-  position: absolute;
-  inset: 0;
-  clip-path: polygon(59.2% 0%, 57.4% 11%, 59% 23%, 55.8% 37%, 57.6% 50%, 54.3% 63%, 56.4% 77%, 52.9% 92%, 54% 100%, 100% 100%, 100% 0%);
+  clip-path: polygon(59.2% 0%, 57.4% 11%, 59% 23%, 55.8% 37%, 57.6% 50%, 54.3% 63%, 56.4% 74%, 50.8% 84%, 53% 90%, 41.5% 100%, 58% 97.8%, 72% 99.6%, 86% 97.6%, 100% 99.3%, 100% 0%);
 }
 .im-cap {
-  display: block;
-  padding-left: calc(56% + clamp(6rem, 10vw, 10rem));
+  position: absolute;
+  left: calc(56% + clamp(6rem, 10vw, 10rem));
+  top: calc(clamp(2.4rem, 5vw, 4.6rem) + clamp(250px, 29vw, 440px) * 0.44);
   font-size: 0.52rem;
   letter-spacing: 0.18em;
   color: var(--slab-ink);
   opacity: 0.55;
-  /* tucked under the tail, above the slab kicker */
-  margin-top: clamp(-4.8rem, -6vw, -2.8rem);
 }
 
 /* the page copy prints in the sheet's own inks (they flip with the mode) */
@@ -846,6 +851,20 @@ body.night .imp-stage {
 .imp-marlin:hover .dev-ghost,
 .imp-marlin:hover .dev-ghost.adrift { transform: translate(0, 0); }
 .imp-marlin .dev-ghost.adrift { transform: translate(5px, 3.8px); }
+
+/* ---- the scrap: a chip of the night that broke off when the slab was
+   torn, fallen onto the sheet low and LEFT — the counterweight that keeps
+   the composition off balance. Anti-flips with the slab. ---- */
+.imp-scrap {
+  position: absolute;
+  left: 24%;
+  bottom: -1.9rem;
+  width: clamp(70px, 9vw, 122px);
+  height: clamp(30px, 3.6vw, 48px);
+  background: var(--slab-bg);
+  clip-path: polygon(4% 38%, 30% 6%, 62% 18%, 100% 2%, 88% 62%, 96% 100%, 40% 88%, 12% 96%, 0% 64%);
+  transform: rotate(-7deg);
+}
 
 /* ---- the tear, named (runs down the page side of the ragged edge) ---- */
 .imp-seam {
@@ -886,12 +905,12 @@ body.night .imp-stage {
   .imp-night-c .ish-emp { font-size: clamp(1.9rem, 8.8vw, 2.6rem); transform: none; }
   .ish-tonight { position: static; margin-top: 1.5rem; transform: none; }
   .imp-marlin { position: static; padding: 1rem 0 0.4rem; z-index: auto; }
-  .imp-marlin .m-copy { padding: 0; }
+  .imp-marlin .m-copy { position: static; padding: 0; }
   .imp-marlin .m-copy svg { width: min(72vw, 300px); transform: rotate(-4deg); }
   .imp-marlin .m-day { clip-path: none; }
   .imp-marlin .m-night { display: none; }
-  .im-cap { padding-left: 0; margin-top: 0.3rem; color: var(--ink); }
-  .imp-seam, .imp-kick { display: none; }
+  .im-cap { position: static; margin-top: 0.3rem; color: var(--ink); }
+  .imp-seam, .imp-kick, .imp-scrap { display: none; }
 }
 
 /* the proof: the two shifts print as flowed facts — the slab drops its ink
@@ -911,7 +930,7 @@ body.night .imp-stage {
   .imp-night-c { position: static !important; }
   .imp-night-c .ish-emp { color: #000 !important; transform: none !important; }
   .ish-tonight { position: static !important; transform: none !important; }
-  .imp-marlin, .imp-seam, .imp-kick, .imp-regx, .imp-sq { display: none !important; }
+  .imp-marlin, .imp-seam, .imp-kick, .imp-regx, .imp-sq, .imp-scrap { display: none !important; }
   .imp-day .ish-emp { color: #000 !important; border-color: #000 !important; transform: none !important; }
   .ish-prev { transform: none !important; }
   .imp-rot { transform: none !important; }
