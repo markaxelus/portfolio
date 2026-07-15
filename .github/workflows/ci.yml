@@ -25,7 +25,7 @@ jobs:
         run: npm run build
 
   # The E2E smoke exercises the finished site; it targets the OLD multi-page
-  # portfolio and is being rewritten for the v4 single-page site. Run it only on
+  # portfolio and is being rewritten for the v2 single-page site. Run it only on
   # main + PRs (i.e. at cutover), not on every in-progress feature-branch push.
   smoke-tests:
     if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
