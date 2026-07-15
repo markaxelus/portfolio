@@ -59,6 +59,14 @@ export function useHoldRegister(): void {
     ].filter((el): el is HTMLElement => !!el);
     regEls.forEach((el) => el.classList.add("regel"));
 
+    /* the imprint's night slab is MATTER, not ink — under scroll it lags a
+       few px (the torn piece isn't fully seated) and thunks home with the
+       type. The night fish rides inside it, so the crossing shears AT THE
+       TEAR while you move and re-registers when you stop. Written via the
+       CSS `translate` property — the set-in arrival animates `transform`,
+       so the two never fight. */
+    const slabEl = document.querySelector<HTMLElement>(".imp-slab");
+
     let regCur = 0;
     let regPrevY = -1;
     let regSettleT = 0;
@@ -101,6 +109,11 @@ export function useHoldRegister(): void {
         "translate",
         q === 0 ? "0px 0px" : (q * 0.5).toFixed(2) + "px " + (q * 0.9).toFixed(2) + "px",
       );
+      if (slabEl)
+        slabEl.style.setProperty(
+          "translate",
+          q === 0 ? "0px 0px" : "0px " + (q * 1.4).toFixed(2) + "px",
+        );
     }
     function regSettle() {
       document.body.classList.add("reg-settling");
@@ -113,6 +126,7 @@ export function useHoldRegister(): void {
           regEls[i].style.textShadow = "";
         }
         reg.style.setProperty("translate", "");
+        if (slabEl) slabEl.style.setProperty("translate", "");
         regLastShadow = "";
       }, 430);
     }
@@ -125,6 +139,7 @@ export function useHoldRegister(): void {
         el.style.textShadow = "";
       });
       reg.style.setProperty("translate", "");
+      if (slabEl) slabEl.style.setProperty("translate", "");
     }
     function regFrame() {
       if (regPrevY < 0) {

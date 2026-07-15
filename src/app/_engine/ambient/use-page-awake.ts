@@ -109,7 +109,7 @@ export function usePageAwake(): void {
        TWO ghosts — the fish is printed once per side of the seam — so the
        act must move them in register with each other. */
     const devEls = Array.prototype.slice.call(
-      document.querySelectorAll(".imp-marlin .dev-ghost"),
+      document.querySelectorAll(".imprint .dev-ghost"),
     ) as SVGGElement[];
     let adriftT: ReturnType<typeof setTimeout> | null = null;
     function actAdrift() {

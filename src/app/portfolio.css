@@ -755,10 +755,29 @@ body.night .imp-stage {
   position: absolute;
   inset: -0.9rem clamp(-3rem, -3vw, -1rem) -2.6rem 0;
 }
+/* the tear: many small nicks with a drift, not sawteeth (big zigzags read
+   as lightning bolts at wide viewports — Mark's screenshot). The foot still
+   sweeps hard left; the bottom edge is gently torn. Entering the mess
+   RE-TEARS it (same point count, jittered — clip-path interpolates), so the
+   cut is never quite the same page twice. */
 .imp-slab {
   background: var(--slab-bg);
   color: var(--slab-ink);
-  clip-path: polygon(59.2% 0%, 57.4% 11%, 59% 23%, 55.8% 37%, 57.6% 50%, 54.3% 63%, 56.4% 74%, 50.8% 84%, 53% 90%, 41.5% 100%, 58% 97.8%, 72% 99.6%, 86% 97.6%, 100% 99.3%, 100% 0%);
+  clip-path: polygon(58.8% 0%, 57.9% 6%, 58.6% 13%, 57.2% 21%, 57.9% 28%, 56.8% 36%, 57.4% 43%, 56.2% 50%, 56.8% 57%, 55.4% 64%, 54.2% 71%, 52.6% 78%, 50.9% 85%, 48.6% 91%, 46.2% 96%, 44% 100%, 52% 98.6%, 63% 99.5%, 74% 98.3%, 86% 99.4%, 100% 98.8%, 100% 0%);
+  transition: clip-path 0.8s var(--ease-out);
+}
+body.proof .imp-slab {
+  clip-path: polygon(59.4% 0%, 57.3% 6%, 58.9% 13%, 56.6% 21%, 58.3% 28%, 56.2% 36%, 57.8% 43%, 55.7% 50%, 57.2% 57%, 55% 64%, 53.8% 71%, 53.1% 78%, 50.2% 85%, 49% 91%, 45.6% 96%, 44.6% 100%, 51.4% 98.9%, 63.6% 99.2%, 73.4% 98.6%, 86.6% 99.1%, 100% 98.5%, 100% 0%);
+}
+/* stillness thunks the slab home with the type (hold-register writes its
+   lag via the `translate` property; the settle window lets it ease back) */
+body.reg-settling .imp-slab {
+  transition:
+    clip-path 0.8s var(--ease-out),
+    translate 0.4s var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .imp-slab { transition: none; }
 }
 .imp-night-c {
   position: absolute;
@@ -783,29 +802,41 @@ body.night .imp-stage {
 .imp-slab .imp-regx::after { top: 7px; left: 0; height: 1px; width: 16px; }
 .imp-slab .imp-sq { position: absolute; right: 15%; bottom: 16%; width: 6px; height: 6px; border: 1px solid var(--acid); opacity: 0.6; transform: rotate(16deg); }
 
-/* ---- the marlin crosses the tear (page inks | slab inks) ---- */
-.imp-marlin { pointer-events: auto; text-align: left; z-index: 1; }
-/* BOTH copies are absolute inset 0 — they must share the exact box, or the
-   zigzag evaluates at different y-percentages per copy and the fish loses a
-   band at the tear (it did, on wide viewports: the flow copy's box was
-   content-height while the overlay filled the slab box) */
-.imp-marlin .m-copy {
+/* ---- the marlin crosses the tear (page inks | slab inks) ----
+   REGISTRATION BY CONSTRUCTION: the page copy is UNCLIPPED and painted
+   UNDER the opaque slab; the night copy lives INSIDE the slab, cut by the
+   slab's own polygon. One polygon owns the cut — the two-clip drift that
+   split the fish on wide viewports cannot happen. The copies share the
+   slab's exact box, so their fish coordinates are identical. */
+.imp-marlin { text-align: left; pointer-events: none; }
+.imp-stage .m-copy {
   position: absolute;
   inset: 0;
   padding-top: clamp(2.4rem, 5vw, 4.6rem);
   padding-left: calc(56% - clamp(140px, 15vw, 200px));
+  pointer-events: none;
 }
-.imp-marlin .m-copy svg {
+.imp-stage .m-copy svg {
   width: clamp(250px, 29vw, 440px);
   height: auto;
   overflow: visible;
   transform: rotate(-7deg);
+  transition: transform 0.5s var(--ease-out);
 }
-.imp-marlin .m-day {
-  clip-path: polygon(0% 0%, 59.2% 0%, 57.4% 11%, 59% 23%, 55.8% 37%, 57.6% 50%, 54.3% 63%, 56.4% 74%, 50.8% 84%, 53% 90%, 41.5% 100%, 0% 100%);
+/* the hotspot: the only pointer surface — the fish's own water. Hovering it
+   slides the red pass into register AND the fish noses deeper into the day
+   side (both copies move identically; the cut stays put, so the fish swims
+   THROUGH the tear). */
+.m-hot {
+  position: absolute;
+  left: calc(56% - clamp(140px, 15vw, 200px));
+  top: clamp(2.4rem, 5vw, 4.6rem);
+  width: clamp(250px, 29vw, 440px);
+  aspect-ratio: 220 / 120;
+  pointer-events: auto;
 }
-.imp-marlin .m-night {
-  clip-path: polygon(59.2% 0%, 57.4% 11%, 59% 23%, 55.8% 37%, 57.6% 50%, 54.3% 63%, 56.4% 74%, 50.8% 84%, 53% 90%, 41.5% 100%, 58% 97.8%, 72% 99.6%, 86% 97.6%, 100% 99.3%, 100% 0%);
+.imp-stage:has(.m-hot:hover) .m-copy svg {
+  transform: rotate(-7deg) translateX(-9px);
 }
 .im-cap {
   position: absolute;
@@ -837,9 +868,10 @@ body.night .imp-stage {
 .m-night .dev-eye { fill: var(--slab-ink); }
 .m-night .dev-wave { fill: none; stroke: var(--slab-ink); stroke-width: 1; opacity: 0.35; }
 .m-night .dev-ghost { stroke: var(--slab-red); }
-/* the red pass rides off register; hover slides it home; the page-awake
-   drift creeps it further out, then eases back */
-.imp-marlin .dev-ghost {
+/* the red pass rides off register; hovering the fish slides it home; the
+   page-awake drift creeps it further out, then eases back. Both copies'
+   ghosts move together (same rules, same values). */
+.imp-stage .dev-ghost {
   fill: none;
   stroke-width: 1.6;
   stroke-linecap: round;
@@ -848,9 +880,9 @@ body.night .imp-stage {
   transform: translate(2.5px, 2px);
   transition: transform 0.45s var(--ease-out);
 }
-.imp-marlin:hover .dev-ghost,
-.imp-marlin:hover .dev-ghost.adrift { transform: translate(0, 0); }
-.imp-marlin .dev-ghost.adrift { transform: translate(5px, 3.8px); }
+.imp-stage .dev-ghost.adrift { transform: translate(5px, 3.8px); }
+.imp-stage:has(.m-hot:hover) .dev-ghost,
+.imp-stage:has(.m-hot:hover) .dev-ghost.adrift { transform: translate(0, 0); }
 
 /* ---- the scrap: a chip of the night that broke off when the slab was
    torn, fallen onto the sheet low and LEFT — the counterweight that keeps
@@ -864,6 +896,18 @@ body.night .imp-stage {
   background: var(--slab-bg);
   clip-path: polygon(4% 38%, 30% 6%, 62% 18%, 100% 2%, 88% 62%, 96% 100%, 40% 88%, 12% 96%, 0% 64%);
   transform: rotate(-7deg);
+}
+/* the second chip flew UP — it sits over the section's frame rule, so the
+   composition breaks the section boundary, not just the stage */
+.imp-scrap2 {
+  position: absolute;
+  left: 38%;
+  top: -2.9rem;
+  width: clamp(38px, 4.4vw, 60px);
+  height: clamp(16px, 1.9vw, 26px);
+  background: var(--slab-bg);
+  clip-path: polygon(0% 55%, 22% 10%, 55% 28%, 82% 0%, 100% 48%, 84% 100%, 46% 78%, 14% 92%);
+  transform: rotate(11deg);
 }
 
 /* ---- the tear, named (runs down the page side of the ragged edge) ---- */
@@ -904,13 +948,11 @@ body.night .imp-stage {
   .imp-night-c { position: static; }
   .imp-night-c .ish-emp { font-size: clamp(1.9rem, 8.8vw, 2.6rem); transform: none; }
   .ish-tonight { position: static; margin-top: 1.5rem; transform: none; }
-  .imp-marlin { position: static; padding: 1rem 0 0.4rem; z-index: auto; }
+  .imp-marlin { position: static; padding: 1rem 0 0.4rem; }
   .imp-marlin .m-copy { position: static; padding: 0; }
   .imp-marlin .m-copy svg { width: min(72vw, 300px); transform: rotate(-4deg); }
-  .imp-marlin .m-day { clip-path: none; }
-  .imp-marlin .m-night { display: none; }
-  .im-cap { position: static; margin-top: 0.3rem; color: var(--ink); }
-  .imp-seam, .imp-kick, .imp-scrap { display: none; }
+  .imp-slab .m-night, .m-hot, .im-cap { display: none; }
+  .imp-seam, .imp-kick, .imp-scrap, .imp-scrap2 { display: none; }
 }
 
 /* the proof: the two shifts print as flowed facts — the slab drops its ink
@@ -930,7 +972,8 @@ body.night .imp-stage {
   .imp-night-c { position: static !important; }
   .imp-night-c .ish-emp { color: #000 !important; transform: none !important; }
   .ish-tonight { position: static !important; transform: none !important; }
-  .imp-marlin, .imp-seam, .imp-kick, .imp-regx, .imp-sq, .imp-scrap { display: none !important; }
+  .imp-marlin, .imp-seam, .imp-kick, .imp-regx, .imp-sq, .imp-scrap,
+  .imp-scrap2, .imp-slab .m-night, .im-cap { display: none !important; }
   .imp-day .ish-emp { color: #000 !important; border-color: #000 !important; transform: none !important; }
   .ish-prev { transform: none !important; }
   .imp-rot { transform: none !important; }

@@ -93,9 +93,22 @@ export default function Imprint() {
           </p>
         </div>
 
-        {/* SHIFT 02 — the slab torn out of the night office, ragged left
-            edge, overhanging the stage so nothing reads as a row */}
+        {/* MAKAIRA sp. — the PAGE copy of the fish, unclipped, painted UNDER
+            the slab (the opaque slab covers everything past the tear, so the
+            crossing can never misregister: one polygon owns the cut). The
+            hotspot (.m-hot) is the only thing here that takes the pointer —
+            the field itself must never block the OceanAID link. */}
+        <div className="imp-piece imp-marlin final" aria-hidden="true">
+          <div className="m-copy m-day"><MarlinSVG /></div>
+          <span className="m-hot" />
+        </div>
+
+        {/* SHIFT 02 — the slab torn out of the night office, a soft ragged
+            tear sweeping left at its foot. The NIGHT copy of the fish lives
+            INSIDE it: the slab's own clip cuts fish and shape together. */}
         <div className="imp-piece imp-slab final">
+          <div className="m-copy m-night" aria-hidden="true"><MarlinSVG /></div>
+          <span className="im-cap mono" aria-hidden="true">MAKAIRA sp. &middot; CROSSES THE TEAR NIGHTLY</span>
           <div className="imp-night-c">
             <p className="ish-k shf-row mono">SHIFT 02 &middot; 23:00 → ?</p>
             <span className="ish-emp">My desk.</span>
@@ -107,16 +120,11 @@ export default function Imprint() {
           <span className="imp-sq" aria-hidden="true" />
         </div>
 
-        {/* MAKAIRA sp. crosses the tear — page inks left of it, slab inks
-            after. Hover slides the red pass into register. */}
-        <div className="imp-piece imp-marlin final" aria-hidden="true">
-          <div className="m-copy m-day"><MarlinSVG /></div>
-          <div className="m-copy m-night"><MarlinSVG /></div>
-          <span className="im-cap mono">MAKAIRA sp. &middot; CROSSES THE TEAR NIGHTLY</span>
-        </div>
-
-        {/* a scrap of the night, broken off in the tearing, fallen low-left */}
+        {/* scraps of the night, broken off in the tearing: one fallen
+            low-left (the counterweight), one small chip flung up over the
+            section rule — asymmetry that breaks the section boundary */}
         <span className="imp-piece imp-scrap final" aria-hidden="true" />
+        <span className="imp-piece imp-scrap2 final" aria-hidden="true" />
 
         {/* the tear, named */}
         <span className="imp-seam mono final" aria-hidden="true">
