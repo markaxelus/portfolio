@@ -610,11 +610,13 @@ body.hero-set .plates-decal {
 .n-2025 { bottom: 6%; right: 6%; --tilt: 2deg; }
 
 /* ---------- the imprint: the colophon seam (who's at the desk, and where) ----
-   the bridge between the trail (how I got here) and the work (what I made). a
-   print colophon, not a CV: the current role is the off-register focal decal,
-   the previous role a tilted entry, a marlin (MAKAIRA — accent ink = ocean)
-   tags OceanAID. asymmetric by law — deliberate tilts on .imp-rot, the seeded
-   set-in arrival on .imp-piece settling true. FINAL layer; no hand marks. */
+   recomposed as a real IMPRESSUM: the voice line hands across a dashed seam
+   to the bordered imprint block — presswork entries set as a ledger, the
+   marlin re-cut as an engraved printer's device at the foot (Aldus kept a
+   dolphin; this shop keeps a marlin). asymmetric by law — resting tilts on
+   .imp-rot, the seeded set-in on .imp-piece settling true. the void between
+   the columns is measured by the seam, not left empty. FINAL layer; no hand
+   marks. */
 .imprint { position: relative; padding: 4vw 1.4vw 5vw; }
 .imp-frame {
   display: flex;
@@ -629,28 +631,38 @@ body.hero-set .plates-decal {
 .imp-cap { opacity: 0.7; text-align: right; }
 
 .imp-stage {
+  --seam-gap: clamp(2.6rem, 7vw, 7rem);
   position: relative;
   max-width: 1080px;
   margin: 0 auto;
-  min-height: clamp(360px, 34vw, 460px);
+  display: grid;
+  grid-template-columns: 1.04fr 0.96fr;
+  gap: var(--seam-gap);
 }
 /* the outer piece carries the seeded set-in (arrival transform settles to
    none); the inner .imp-rot carries the deliberate resting tilt, so the two
    never clobber each other */
-.imp-piece { position: absolute; }
 .imp-rot {
   transform: rotate(var(--rot, 0deg));
   transform-origin: var(--origin, left top);
 }
 
+/* the voice column — the line up top, the hand-off pinned to the block's foot */
+.imp-voice {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 2.4rem;
+}
+
 /* the voice line — the hero motif, ragged-left and crooked, the day-job
    admission knocked off register */
-.imp-line { left: 2%; top: 7%; width: 50%; --rot: 0deg; }
+.imp-line { --rot: 0deg; }
 .imp-line b {
   display: block;
   font-family: "Fraunces", Georgia, serif;
   font-weight: 500;
-  font-size: clamp(1.55rem, 3.5vw, 2.7rem);
+  font-size: clamp(1.65rem, 3.8vw, 2.95rem);
   line-height: 1.12;
   letter-spacing: -0.01em;
 }
@@ -662,79 +674,153 @@ body.hero-set .plates-decal {
   text-shadow: 2px 0 0 var(--accent), -2px 0 0 var(--pencil-soft);
 }
 
-/* the current role — the focal decal, pinned right, tilted true */
-.imp-role { right: 2%; top: 5%; width: 34%; --rot: 2deg; --origin: right top; }
-.ir-k { display: block; font-size: 0.62rem; letter-spacing: 0.22em; color: var(--accent); }
-.ir-emp {
+/* the aside — the admission typeset small, staggered in off the line's rag */
+.imp-note { --rot: -0.8deg; margin: 2.6rem 0 0 clamp(1.4rem, 4vw, 3.6rem); }
+.imp-note .imp-rot {
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  line-height: 2;
+  color: var(--graphite);
+  border-left: 1px solid var(--hairline);
+  padding-left: 0.9rem;
+}
+.imp-note span { display: block; }
+
+/* the hand-off down into the work */
+.imp-kick { --rot: -1.5deg; margin-top: 3.4rem; }
+.imp-kick .imp-rot { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--accent); }
+
+/* the seam: a dashed fold rule down the measured void between the columns,
+   its label reading up the fold (position derived from the grid math, not
+   eyeballed: left column is 52% of the tracks plus half the gap) */
+.imp-seam {
+  position: absolute;
+  left: calc((100% - var(--seam-gap)) * 0.52 + var(--seam-gap) / 2);
+  top: 3%;
+  bottom: 4%;
+  border-left: 1px dashed var(--ink);
+  opacity: 0.3;
+  writing-mode: vertical-rl;
+  font-size: 0.5rem;
+  letter-spacing: 0.28em;
+  padding-left: 0.4rem;
+  white-space: nowrap;
+}
+
+/* the imprint block — the bordered impressum, resting a hair off true */
+.imp-block { --rot: 1.2deg; --origin: right top; margin-top: 1.4rem; }
+.imp-block .imp-rot {
+  border: 1px solid var(--ink);
+  padding: 1.05rem 1.3rem 1rem;
+}
+.ib-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.58rem;
+  letter-spacing: 0.24em;
+  opacity: 0.8;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 0.55rem;
+  margin-bottom: 0.95rem;
+}
+.ib-reg { position: relative; width: 13px; height: 13px; opacity: 0.65; }
+.ib-reg::before, .ib-reg::after { content: ""; position: absolute; background: var(--ink); }
+.ib-reg::before { left: 6px; top: 0; width: 1px; height: 13px; }
+.ib-reg::after { top: 6px; left: 0; height: 1px; width: 13px; }
+
+.ib-entry { display: block; padding-bottom: 0.85rem; }
+.ib-now { border-bottom: 1px dashed var(--hairline); margin-bottom: 0.85rem; }
+.ib-k { display: block; font-size: 0.6rem; letter-spacing: 0.22em; color: var(--accent); }
+.ib-prev .ib-k { color: var(--graphite); }
+.ib-emp {
   display: inline-block;
   font-family: "Fraunces", Georgia, serif;
   font-weight: 500;
-  font-size: clamp(1.4rem, 2.7vw, 2.15rem);
+  font-size: clamp(1.45rem, 2.6vw, 2.1rem);
+  margin: 0.3rem 0 0.4rem;
+}
+.ib-now .ib-emp {
   color: var(--accent);
   border-bottom: 2px solid var(--accent);
   padding-bottom: 2px;
-  margin: 0.4rem 0 0.55rem;
 }
-.ir-t { display: block; font-size: 0.66rem; letter-spacing: 0.05em; }
-.ir-d { display: block; font-size: 0.62rem; letter-spacing: 0.06em; color: var(--graphite); margin-top: 0.3rem; }
+.ib-prev .ib-emp { font-size: clamp(1.05rem, 1.7vw, 1.4rem); }
+.ib-meta { display: block; font-size: 0.6rem; letter-spacing: 0.06em; color: var(--graphite); }
 
-/* the marlin — accent ink under a misregistered red pass */
-.imp-marlin { left: 22%; top: 47%; width: clamp(150px, 19vw, 214px); text-align: center; --rot: -14deg; --origin: center; }
-.imp-marlin svg { width: 80%; height: auto; display: block; margin: 0 auto; overflow: visible; }
-.fish-main { fill: var(--accent); }
-.fish-ghost { fill: var(--pencil); opacity: 0.65; }
-.fish-line { fill: none; stroke: var(--stone); stroke-width: 1; opacity: 0.4; }
-.fish-gill { fill: none; stroke: var(--stone); stroke-width: 1.2; opacity: 0.55; }
-.fish-eye { fill: var(--stone); }
-.im-cap { display: block; font-size: 0.55rem; letter-spacing: 0.16em; color: var(--accent); margin-top: 0.15rem; }
-
-/* before OceanAID — the previous role, tilted the other way */
-.imp-prev { right: 4%; top: 55%; width: 30%; --rot: -2.5deg; --origin: right top; }
-.ip-k { display: block; font-size: 0.58rem; letter-spacing: 0.2em; color: var(--graphite); }
-.ip-emp {
-  display: block;
-  font-family: "Fraunces", Georgia, serif;
-  font-weight: 500;
-  font-size: clamp(1rem, 1.8vw, 1.35rem);
-  margin: 0.3rem 0 0.4rem;
+/* the device — engraved linework in the three inks: ink strokes, accent
+   hatching on the sail, the red pass a breath off register */
+.ib-device { margin: 0; padding: 0.8rem 0 0.65rem; border-top: 1px solid var(--ink); text-align: center; }
+.ib-device svg {
+  width: min(70%, 224px);
+  height: auto;
+  display: inline-block;
+  overflow: visible;
+  transform: rotate(-2.5deg);
 }
-.ip-t { display: block; font-size: 0.6rem; letter-spacing: 0.05em; }
-.ip-d { display: block; font-size: 0.58rem; letter-spacing: 0.06em; color: var(--graphite); margin-top: 0.25rem; }
+.dev-body, .dev-tail, .dev-fin, .dev-gill {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.dev-hatch { fill: none; stroke: var(--accent); stroke-width: 1.3; stroke-linecap: round; }
+.dev-ghost { fill: none; stroke: var(--pencil); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: 0.4; }
+.dev-lat { fill: none; stroke: var(--ink); stroke-width: 0.9; opacity: 0.4; }
+.dev-eye { fill: var(--ink); }
+.dev-wave { fill: none; stroke: var(--ink); stroke-width: 1; opacity: 0.35; }
+.ib-device figcaption {
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  color: var(--graphite);
+  margin-top: 0.35rem;
+}
 
-/* print furniture holding the measured void */
-.imp-regx { position: absolute; left: 55%; top: 13%; width: 16px; height: 16px; opacity: 0.5; }
+.ib-foot {
+  border-top: 1px solid var(--ink);
+  padding-top: 0.6rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  opacity: 0.85;
+}
+
+/* print furniture measuring the margins */
+.imp-regx { position: absolute; left: 39%; top: 6%; width: 16px; height: 16px; opacity: 0.5; }
 .imp-regx::before, .imp-regx::after { content: ""; position: absolute; background: var(--ink); }
 .imp-regx::before { left: 7px; top: 0; width: 1px; height: 16px; }
 .imp-regx::after { top: 7px; left: 0; height: 1px; width: 16px; }
 .imp-sq { position: absolute; width: 6px; height: 6px; border: 1px solid var(--ink); opacity: 0.4; }
-.imp-sq.s1 { left: 53%; top: 6%; transform: rotate(12deg); }
-.imp-sq.s2 { left: 17%; top: 85%; transform: rotate(20deg); }
+.imp-sq.s1 { left: 3%; top: 64%; transform: rotate(12deg); }
+.imp-sq.s2 { left: 44%; bottom: 3%; transform: rotate(20deg); }
 
-/* the hand-off down into the work */
-.imp-kick { left: 2%; bottom: 2%; --rot: -1.5deg; }
-.imp-kick .imp-rot { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--accent); }
-
-/* the pocket sheet: the stage unwinds to plain upright flow (legible first) */
+/* the pocket sheet: the stage unwinds to plain upright flow (legible first);
+   the block keeps its border — it stays an object, not a list */
 @media (max-width: 820px) {
-  .imp-stage { max-width: none; min-height: 0; }
-  .imp-piece { position: static; width: auto !important; margin: 0 0 1.7rem; }
+  .imp-stage { display: block; max-width: none; }
+  .imp-voice { padding-top: 0; }
+  .imp-piece { margin: 0 0 1.7rem; }
   .imp-rot { transform: none !important; }
   .imp-line b { transform: none !important; margin-left: 0 !important; }
   .imp-frame { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
   .imp-cap { text-align: left; }
-  .imp-role .ir-emp { font-size: clamp(1.7rem, 8.4vw, 2.3rem); }
-  .imp-marlin { width: clamp(140px, 44vw, 200px); margin: 0.4rem 0 1.9rem; }
-  .imp-regx, .imp-sq, .imp-kick { display: none; }
+  .imp-block { margin-top: 0.2rem; }
+  .ib-now .ib-emp { font-size: clamp(1.7rem, 8.4vw, 2.3rem); }
+  .ib-device svg { transform: none; }
+  .imp-seam, .imp-regx, .imp-sq, .imp-kick { display: none; }
 }
 
-/* the proof: the colophon prints as plain flowed facts, decor stripped */
+/* the proof: the colophon prints as the imprint block it is, device and
+   screen furniture stripped */
 @media print {
-  .imp-marlin, .imp-regx, .imp-sq, .imp-kick { display: none !important; }
-  .imp-stage { min-height: 0 !important; max-width: none !important; }
-  .imp-piece { position: static !important; width: auto !important; margin: 0 0 3mm !important; }
+  .imp-seam, .imp-regx, .imp-sq, .imp-kick, .ib-device { display: none !important; }
+  .imp-stage { display: block !important; max-width: none !important; }
+  .imp-piece { margin: 0 0 3mm !important; }
   .imp-rot { transform: none !important; }
   .imp-line b { transform: none !important; margin-left: 0 !important; }
-  .ir-emp, .ip-emp { border-color: #000 !important; }
+  .imp-block .imp-rot { border-color: #000 !important; }
+  .ib-head, .ib-foot, .ib-now { border-color: #000 !important; }
+  .ib-now .ib-emp { border-color: #000 !important; }
 }
 
 /* ---------- at the desk ---------- */

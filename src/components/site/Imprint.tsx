@@ -1,16 +1,18 @@
 /**
  * THE IMPRINT — the colophon seam between the trail (how I got here) and the
- * work (what I made): who is at the desk, and where. A print colophon, NOT a CV
- * — the current role is the off-register focal decal, the previous role a tilted
- * entry, and a marlin billfish decal (signal blue reads as ocean) tags the
- * employer, OceanAID. FINAL layer only: no hand marks live here (they belong to
- * the mess).
+ * work (what I made): who is at the desk, and where. Set as a real IMPRESSUM,
+ * the bordered imprint block every printed sheet carries: presswork entries
+ * typeset as a ledger, and the marlin re-cut as an engraved printer's device
+ * at the foot (Aldus kept a dolphin; this shop keeps a marlin — OceanAID's
+ * signal-blue billfish, in linework with the red working pass, never a flat
+ * mascot). The voice line (the hero motif, now admitting the day job) hands
+ * across a dashed seam to the block. FINAL layer only: no hand marks.
  *
  * Asymmetric by the site's law. Deliberate resting tilts live on the inner
  * `.imp-rot` wrappers; the seeded set-in arrival (armed on `.imp-piece` by
  * use-setting's armGroup) rides the OUTER element and settles to `transform:
  * none`, so the two never fight. Structure mirrors Trail: a header rule
- * (`.imp-frame`) over a positioned stage (`.imp-stage`). Static markup — the
+ * (`.imp-frame`) over a two-column stage (`.imp-stage`). Static markup — the
  * client SETTING hook arms it by selector; reflows to plain flow on the pocket
  * sheet and in print.
  */
@@ -19,71 +21,105 @@ export default function Imprint() {
     <section className="imprint" id="imprint">
       <div className="imp-frame final">
         <p className="imp-head mono">THE IMPRINT</p>
-        <p className="imp-cap mono">WHO’S AT THE DESK · AND WHERE</p>
+        <p className="imp-cap mono">WHO&rsquo;S AT THE DESK &middot; AND WHERE</p>
       </div>
 
       <div className="imp-stage">
-        {/* the voice line: the hero motif, now admitting the day job (crooked,
-            with the punch line knocked off register) */}
-        <div className="imp-piece imp-line final">
-          <div className="imp-rot">
-            <b className="il1">Still one person,</b>
-            <b className="il2">one desk.</b>
-            <b className="il3">Now with a day job.</b>
+        {/* the voice column: the hero motif admits the day job (crooked, the
+            punch line knocked off register), then hands down into the run */}
+        <div className="imp-voice">
+          <div className="imp-piece imp-line final">
+            <div className="imp-rot">
+              <b className="il1">Still one person,</b>
+              <b className="il2">one desk.</b>
+              <b className="il3">Now with a day job.</b>
+            </div>
+          </div>
+          {/* the aside: the admission typeset small, machine-set (no hand) */}
+          <div className="imp-piece imp-note final">
+            <div className="imp-rot mono">
+              <span>THE DESK DIDN&rsquo;T MOVE. THE HOURS DID.</span>
+              <span>OCEANAID GETS THE DAYLIGHT.</span>
+              <span>THIS SHEET GETS WHAT&rsquo;S LEFT.</span>
+            </div>
+          </div>
+          <div className="imp-piece imp-kick final" aria-hidden="true">
+            <div className="imp-rot mono">PULLED FROM THE RUN ↓</div>
           </div>
         </div>
 
-        {/* the current role: the focal decal, pinned right, off register */}
-        <div className="imp-piece imp-role final">
+        {/* the seam itself: the dashed fold between the trail above and the
+            run below, named and dated (the day the day job started) */}
+        <span className="imp-seam mono final" aria-hidden="true">
+          THE SEAM &middot; TRAIL ABOVE &middot; RUN BELOW &middot; CUT MAY 2026
+        </span>
+
+        {/* the imprint block proper: the bordered impressum — presswork,
+            place, and the printer's device at the foot */}
+        <div className="imp-piece imp-block final">
           <div className="imp-rot">
-            <span className="ir-k mono">CURRENTLY ▸</span>
-            <span className="ir-emp">OceanAID</span>
-            <span className="ir-t mono">SOFTWARE ENGINEER</span>
-            <span className="ir-d mono">MAY 2026 → NOW</span>
+            <header className="ib-head mono">
+              <span>PRESSWORK &amp; PLACE</span>
+              <span className="ib-reg" aria-hidden="true" />
+            </header>
+
+            <div className="ib-entry ib-now">
+              <span className="ib-k mono">CURRENTLY ▸</span>
+              <span className="ib-emp">OceanAID</span>
+              <span className="ib-meta mono">SOFTWARE ENGINEER &middot; MAY 2026 → NOW</span>
+            </div>
+
+            <div className="ib-entry ib-prev">
+              <span className="ib-k mono">BEFORE</span>
+              <span className="ib-emp">University of Victoria</span>
+              <span className="ib-meta mono">AI SYSTEMS DEVELOPER &middot; OCT 2025 → MAY 2026</span>
+            </div>
+
+            {/* MAKAIRA — the engraved device: ink linework, accent hatching
+                on the sail, the red pass a breath off register */}
+            <figure className="ib-device" aria-hidden="true">
+              <svg viewBox="0 0 220 120">
+                <g className="dev-ghost" transform="translate(2.5,2)">
+                  <path d="M72,48 C94,41 126,38 160,44 C166,45 170,46 173,48 C170,50 166,52 160,53 C128,60 96,62 84,58 C78,56 73,53 72,51 Z" />
+                  <path d="M86,44 C90,26 98,14 108,12 C124,10 140,22 152,42" />
+                  <path d="M170,44 C182,34 196,24 206,14 M206,14 C192,30 186,40 184,48 C186,56 192,68 206,86 M170,52 C182,62 196,74 206,86" />
+                </g>
+                <path
+                  className="dev-body"
+                  d="M72,48 C94,41 126,38 160,44 C166,45 170,46 173,48 C170,50 166,52 160,53 C128,60 96,62 84,58 C78,56 73,53 72,51 Z"
+                />
+                <path className="dev-body" d="M72,48.5 L10,57 L72,51.5" />
+                <path className="dev-body" d="M86,44 C90,26 98,14 108,12 C124,10 140,22 152,42" />
+                <g className="dev-hatch">
+                  <path d="M94,40 L98,24" />
+                  <path d="M102,38 L108,17" />
+                  <path d="M110,37 L118,15" />
+                  <path d="M119,37 L128,17" />
+                  <path d="M128,38 L138,22" />
+                  <path d="M137,39 L146,28" />
+                </g>
+                <path className="dev-tail" d="M170,44 C182,34 196,24 206,14" />
+                <path className="dev-tail" d="M206,14 C192,30 186,40 184,48 C186,56 192,68 206,86" />
+                <path className="dev-tail" d="M170,52 C182,62 196,74 206,86" />
+                <path className="dev-fin" d="M92,54 C102,64 112,70 120,72" />
+                <path className="dev-gill" d="M88,45 C85,50 85,55 88,59" />
+                <path className="dev-lat" d="M78,51 C110,52 140,51 168,49" />
+                <circle className="dev-eye" cx="80" cy="47" r="2.2" />
+                <path className="dev-wave" d="M26,100 q9,-7 18,0 t18,0 t18,0" />
+                <path className="dev-wave" d="M130,106 q9,-7 18,0 t18,0" />
+                <path className="dev-wave" d="M84,111 q7,-5 14,0 t14,0" />
+              </svg>
+              <figcaption className="mono">DEVICE OF OCEANAID &middot; MAKAIRA sp.</figcaption>
+            </figure>
+
+            <footer className="ib-foot mono">THE DESK ▸ PACIFIC TIME &middot; STILL RUNS LATE</footer>
           </div>
         </div>
 
-        {/* MAKAIRA — the marlin, for OceanAID: accent ink under a misregistered
-            red pass, swimming the measured void */}
-        <div className="imp-piece imp-marlin final" aria-hidden="true">
-          <div className="imp-rot">
-            <svg viewBox="0 0 210 104">
-              <path
-                className="fish-ghost"
-                transform="translate(3,2)"
-                d="M204,48 L132,44 C124,42 122,40 120,38 C110,26 100,15 92,10 C88,21 84,31 78,37 C62,41 48,42 34,45 C24,38 14,32 6,27 C16,39 22,45 26,51 C20,59 14,67 6,75 C18,64 28,58 36,55 C54,57 70,58 86,59 C90,67 94,73 100,79 C102,71 100,63 104,58 C112,56 122,55 130,53 L204,48 Z"
-              />
-              <path
-                className="fish-main"
-                d="M204,46 L132,42 C124,40 122,38 120,36 C110,24 100,13 92,8 C88,19 84,29 78,35 C62,39 48,40 34,43 C24,36 14,30 6,25 C16,37 22,43 26,49 C20,57 14,65 6,73 C18,62 28,56 36,53 C54,55 70,56 86,57 C90,65 94,71 100,77 C102,69 100,61 104,56 C112,54 122,53 130,51 L204,46 Z"
-              />
-              <path className="fish-line" d="M120,44 C90,46 60,48 34,46" />
-              <path className="fish-gill" d="M116,33 C114,40 114,48 117,54" />
-              <circle className="fish-eye" cx="126" cy="41" r="2.4" />
-            </svg>
-            <span className="im-cap mono">MAKAIRA sp. · OCEANAID</span>
-          </div>
-        </div>
-
-        {/* before OceanAID: the previous role, a tilted entry */}
-        <div className="imp-piece imp-prev final">
-          <div className="imp-rot">
-            <span className="ip-k mono">BEFORE</span>
-            <span className="ip-emp">University of Victoria</span>
-            <span className="ip-t mono">AI SYSTEMS DEVELOPER</span>
-            <span className="ip-d mono">OCT 2025 → MAY 2026</span>
-          </div>
-        </div>
-
-        {/* print furniture filling the measured void */}
+        {/* print furniture measuring the margins */}
         <span className="imp-regx" aria-hidden="true" />
         <span className="imp-sq s1" aria-hidden="true" />
         <span className="imp-sq s2" aria-hidden="true" />
-
-        {/* the hand-off down into the work */}
-        <div className="imp-piece imp-kick final" aria-hidden="true">
-          <div className="imp-rot mono">PULLED FROM THE RUN ↓</div>
-        </div>
       </div>
     </section>
   );
