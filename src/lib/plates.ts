@@ -19,10 +19,10 @@ export interface Project {
 }
 
 export const PROJECTS: Project[] = [
-  { num: "01", motif: "arcs", g: 0.32, micro: "MRD-25 · PASS 2/4 · “MORE PREMIUM” MEANT QUIETER · APPROVED 03:12" },
-  { num: "02", motif: "stripes", g: 0.52, micro: "LRF-25 · WRONG STOCK, RIGHT ACCIDENT · KEPT IT" },
-  { num: "03", motif: "orbits", g: 0.4, micro: "NOF-24 · BUILT AFTER 23:00 · OBVIOUSLY" },
-  { num: "04", motif: "steps", g: 0.6, micro: "SGN-24 · SPLINTERS 11 · REGRETS 0" },
+  { num: "01", motif: "arcs", g: 0.32, micro: "UVE-24 · THE TEAMS PAGE WAS HARDCODED · NOT ANYMORE" },
+  { num: "02", motif: "stripes", g: 0.52, micro: "RLY-25 · REAL-TIME · THE WEBSOCKETS BEHAVED, EVENTUALLY" },
+  { num: "03", motif: "orbits", g: 0.4, micro: "PRT-25 · v4 THIS YEAR · THE FIRST THREE WEREN'T GOOD ENOUGH" },
+  { num: "04", motif: "steps", g: 0.6, micro: "SYN-24 · 10MB PDF · COLD START · UNDER FIVE SECONDS" },
 ];
 
 /** the paint chips pick the site accent; the plates print in it too. The plate

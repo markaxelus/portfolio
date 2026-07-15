@@ -63,41 +63,41 @@ export default function WorkIndex() {
 
       <a className="row" id="p-01" href="#p-01" data-plate="0">
         <svg className="row-clip" viewBox="0 0 34 22" aria-hidden="true"><rect x="2" y="3" width="30" height="8" rx="2"/><line x1="10" y1="11" x2="10" y2="20"/><line x1="24" y1="11" x2="24" y2="20"/><line x1="10" y1="20" x2="24" y2="20"/><circle cx="17" cy="7" r="1.6"/></svg>
-        <span className="row-etch mono final" aria-hidden="true">REF//MRD-25 &middot; CLIPPED ON DELIVERY</span>
+        <span className="row-etch mono final" aria-hidden="true">REF//UVE-24 &middot; CLIPPED ON DELIVERY</span>
         <span className="row-thumb final" aria-hidden="true"></span>
         <span className="row-strip final">
           <span className="row-num mono">01</span>
-          <span className="row-title">Meridian</span>
-          <span className="row-meta mono">IDENTITY &middot; 2025<span className="row-ref">REF//MRD-25</span></span>
+          <span className="row-title">Uveec</span>
+          <span className="row-meta mono">FRONT-END &middot; 2024<span className="row-ref">REF//UVE-24</span></span>
         </span>
-        <span className="row-desc mono final">Identity and site for a climate-data startup &mdash; first sketch to launch in six weeks.</span>
-        <span className="note hand-k row-note" style={{ "--d": ".18s" } as CSSProperties} aria-hidden="true">client asked for &ldquo;more premium.&rdquo;<br/>i made it quieter.</span>
+        <span className="row-desc mono final">Rebuilt the UVic Environmental Engineering Club&rsquo;s site &mdash; dynamic teams, mobile-first, maintainable.</span>
+        <span className="note hand-k row-note" style={{ "--d": ".18s" } as CSSProperties} aria-hidden="true">inherited a hardcoded teams page.<br/>made it edit itself.</span>
       </a>
 
       <a className="row" id="p-02" href="#p-02" data-plate="1">
         <svg className="row-clip" viewBox="0 0 34 22" aria-hidden="true"><rect x="2" y="3" width="30" height="8" rx="2"/><line x1="10" y1="11" x2="10" y2="20"/><line x1="24" y1="11" x2="24" y2="20"/><line x1="10" y1="20" x2="24" y2="20"/><circle cx="17" cy="7" r="1.6"/></svg>
-        <span className="row-etch mono final" aria-hidden="true">REF//LRF-25 &middot; CLIPPED ON DELIVERY</span>
+        <span className="row-etch mono final" aria-hidden="true">REF//RLY-25 &middot; CLIPPED ON DELIVERY</span>
         <span className="row-thumb final" aria-hidden="true"></span>
         <span className="row-strip final">
           <span className="row-num mono">02</span>
-          <span className="row-title">Low Relief</span>
-          <span className="row-meta mono">EDITORIAL &middot; 2025<span className="row-ref">REF//LRF-25</span></span>
+          <span className="row-title">Relay</span>
+          <span className="row-meta mono">FULL-STACK &middot; ONGOING<span className="row-ref">REF//RLY-25</span></span>
         </span>
-        <span className="row-desc mono final">A 240-page artist monograph &mdash; art direction, typesetting, and the print production.</span>
-        <span className="note hand-b row-note" style={{ "--d": ".24s" } as CSSProperties} aria-hidden="true">printed on the wrong stock first. kept it.</span>
+        <span className="row-desc mono final">A project-management app built for real collaboration &mdash; real-time updates, drag-and-drop, Postgres + Prisma.</span>
+        <span className="note hand-b row-note" style={{ "--d": ".24s" } as CSSProperties} aria-hidden="true">fought the websocket re-renders.<br/>won, eventually.</span>
       </a>
 
       <a className="row" id="p-03" href="#p-03" data-plate="2">
         <svg className="row-clip" viewBox="0 0 34 22" aria-hidden="true"><rect x="2" y="3" width="30" height="8" rx="2"/><line x1="10" y1="11" x2="10" y2="20"/><line x1="24" y1="11" x2="24" y2="20"/><line x1="10" y1="20" x2="24" y2="20"/><circle cx="17" cy="7" r="1.6"/></svg>
-        <span className="row-etch mono final" aria-hidden="true">REF//NOF-24 &middot; CLIPPED ON DELIVERY</span>
+        <span className="row-etch mono final" aria-hidden="true">REF//PRT-25 &middot; CLIPPED ON DELIVERY</span>
         <span className="row-thumb final" aria-hidden="true"></span>
         <span className="row-strip final">
           <span className="row-num mono">03</span>
-          <span className="row-title">Night Office</span>
-          <span className="row-meta mono">DIGITAL &middot; 2024<span className="row-ref">REF//NOF-24</span></span>
+          <span className="row-title">Portfolio</span>
+          <span className="row-meta mono">UI/UX &middot; 2025<span className="row-ref">REF//PRT-25</span></span>
         </span>
-        <span className="row-desc mono final">Real-time dashboard for a render farm &mdash; TypeScript, WebGL, dark by default.</span>
-        <span className="note hand-k row-note" style={{ "--d": ".30s" } as CSSProperties} aria-hidden="true">built after 23:00. always am.</span>
+        <span className="row-desc mono final">This very site &mdash; static-fast, hand-tuned motion, built and rebuilt to a very high bar.</span>
+        <span className="note hand-k row-note" style={{ "--d": ".30s" } as CSSProperties} aria-hidden="true">the fourth version this year.<br/>you&rsquo;re on it.</span>
         <svg className="note num-ring scrawl" style={{ "--d": ".42s" } as CSSProperties} viewBox="0 0 84 58" aria-hidden="true">
           <path className="draw" pathLength="1" d="M42,6 C66,4 80,14 78,28 C76,44 58,53 38,52 C18,51 5,42 7,27 C9,12 24,7 46,7" fill="none"/>
         </svg>
@@ -106,15 +106,15 @@ export default function WorkIndex() {
 
       <a className="row" id="p-04" href="#p-04" data-plate="3">
         <svg className="row-clip" viewBox="0 0 34 22" aria-hidden="true"><rect x="2" y="3" width="30" height="8" rx="2"/><line x1="10" y1="11" x2="10" y2="20"/><line x1="24" y1="11" x2="24" y2="20"/><line x1="10" y1="20" x2="24" y2="20"/><circle cx="17" cy="7" r="1.6"/></svg>
-        <span className="row-etch mono final" aria-hidden="true">REF//SGN-24 &middot; CLIPPED ON DELIVERY</span>
+        <span className="row-etch mono final" aria-hidden="true">REF//SYN-24 &middot; CLIPPED ON DELIVERY</span>
         <span className="row-thumb final" aria-hidden="true"></span>
         <span className="row-strip final">
           <span className="row-num mono">04</span>
-          <span className="row-title">Signal Garden</span>
-          <span className="row-meta mono">SPATIAL &middot; 2024<span className="row-ref">REF//SGN-24</span></span>
+          <span className="row-title">Synapse</span>
+          <span className="row-meta mono">AI &middot; 2024<span className="row-ref">REF//SYN-24</span></span>
         </span>
-        <span className="row-desc mono final">Interactive installation mapping radio noise to a garden of light. Built the lot.</span>
-        <span className="note hand-b row-note" style={{ "--d": ".36s" } as CSSProperties} aria-hidden="true">still pulling splinters from my palms</span>
+        <span className="row-desc mono final">NwHacks &mdash; PDFs become editable diagrams. GPT-4 + serverless, under five seconds.</span>
+        <span className="note hand-b row-note" style={{ "--d": ".36s" } as CSSProperties} aria-hidden="true">10MB pdf, cold lambda, five seconds.<br/>somehow.</span>
       </a>
 
       {/* the cat. she just exists — now she sits on the wire.
