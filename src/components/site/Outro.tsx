@@ -76,7 +76,7 @@ export default function Outro() {
            rendered declaratively (PM_RECTS, deterministic); everything themes with the sheet (day/night). */}
       <figure className="pressmark final">
         <svg className="pm-svg" viewBox="0 0 200 250" role="img" aria-labelledby="pm-title">
-          <title id="pm-title">Mark Axelus &mdash; maker's mark</title>
+          <title id="pm-title">Mark Axelus &mdash; maker&#39;s mark</title>
           <path className="pm-brk" d="M26 58 V38 H48"/>
           <path className="pm-brk" d="M174 212 V232 H152"/>
           <g className="pm-ghost" id="pm-ghost" transform="translate(55 69)">
