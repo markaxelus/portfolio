@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { EngineContext, type EngineCtx } from "./engine-context";
+import { EngineContext, type EngineCtx, type Point } from "./engine-context";
 import { ACCENTS, PROJECTS, plateURI } from "@/lib/plates";
 import { deskDateStr, deskHour, deskTime } from "@/lib/desk";
+import { clamp, lerp, r2 } from "@/lib/math";
 
 /**
  * Phase 2 backbone. Holds the truly-global state (accent/theme/proof/noise +
@@ -20,14 +21,30 @@ export default function EngineProvider({ children }: { children: React.ReactNode
   const [noiseOn, setNoiseOn] = useState(false);
   const [reduced, setReduced] = useState(false);
   const [stillMode, setStillMode] = useState(false);
+  const [trailEnabled, setTrailEnabled] = useState(false);
 
-  // ref mirrors so the (future) physics loops can read synchronously
+  // ref mirrors so the physics loops can read synchronously (no subscribe)
   const reducedRef = useRef(false);
   const stillRef = useRef(false);
   const proofRef = useRef(false);
+  const trailRef = useRef(false);
   reducedRef.current = reduced;
   stillRef.current = stillMode;
   proofRef.current = proofOn;
+  trailRef.current = trailEnabled;
+
+  // the single pointer feed + per-frame singletons
+  const mouseRef = useRef<Point>({ x: 0, y: 0 });
+  const loupeOnRef = useRef(false);
+
+  // scroll-frame fan-out (strike / hold-register / thread / setting subscribe here)
+  const scrollSubs = useRef<Set<(prog: number) => void>>(new Set());
+  const subscribeScroll = useCallback((fn: (prog: number) => void) => {
+    scrollSubs.current.add(fn);
+    return () => {
+      scrollSubs.current.delete(fn);
+    };
+  }, []);
 
   // the plate library, re-inked reactively when the accent changes
   // (replaces the imperative boot build + rebuildPlates()).
@@ -87,8 +104,11 @@ export default function EngineProvider({ children }: { children: React.ReactNode
     const mqReduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     const mqFine = window.matchMedia("(pointer: fine)");
     const sync = () => {
-      setReduced(mqReduce.matches);
-      document.body.classList.toggle("has-cursor", mqFine.matches && !mqReduce.matches);
+      const red = mqReduce.matches;
+      const trail = mqFine.matches && !red;
+      setReduced(red);
+      setTrailEnabled(trail);
+      document.body.classList.toggle("has-cursor", trail);
     };
     sync();
     mqReduce.addEventListener("change", sync);
@@ -97,6 +117,104 @@ export default function EngineProvider({ children }: { children: React.ReactNode
       mqReduce.removeEventListener("change", sync);
       mqFine.removeEventListener("change", sync);
     };
+  }, []);
+
+  // --- pointer feed + the always-on cursor / reveal frame (frame() 975–1076) ---
+  useEffect(() => {
+    const m = mouseRef.current;
+    m.x = window.innerWidth / 2;
+    m.y = window.innerHeight / 2;
+    const plate = { x: m.x, y: m.y };
+    let prevPlateX = plate.x;
+    let seen = false;
+    let lastPlateTf = "";
+    let lastDotTf = "";
+    const LERP_PLATE = 0.12;
+
+    const onMove = (e: MouseEvent) => {
+      m.x = e.clientX;
+      m.y = e.clientY;
+      if (!seen) {
+        seen = true;
+        document.body.classList.add("pointer-seen");
+        plate.x = m.x;
+        plate.y = m.y;
+      }
+    };
+    document.addEventListener("mousemove", onMove);
+
+    const cursorEl = document.getElementById("cursor");
+    const revealEl = document.querySelector<HTMLElement>(".reveal");
+    let raf = 0;
+    const frame = () => {
+      if (trailRef.current && seen) {
+        // the dot rides 1:1; the reveal plate keeps its lazy trail (loupe holds it still)
+        if (!loupeOnRef.current && revealEl) {
+          if (reducedRef.current) {
+            plate.x = m.x;
+            plate.y = m.y;
+          } else {
+            plate.x = lerp(plate.x, m.x, LERP_PLATE);
+            plate.y = lerp(plate.y, m.y, LERP_PLATE);
+            if (Math.abs(plate.x - m.x) + Math.abs(plate.y - m.y) < 0.3) {
+              plate.x = m.x;
+              plate.y = m.y;
+            }
+          }
+          const vx = plate.x - prevPlateX;
+          prevPlateX = plate.x;
+          const skew = reducedRef.current ? 0 : clamp(vx * 0.45, -9, 9);
+          const rot = reducedRef.current ? 0 : clamp(vx * 0.06, -1.6, 1.6);
+          const tf =
+            "translate3d(" + r2(plate.x) + "px," + r2(plate.y) + "px,0)" +
+            " translate(-50%,-50%) skewX(" + r2(skew) + "deg) rotate(" + r2(rot) + "deg)";
+          if (tf !== lastPlateTf) {
+            lastPlateTf = tf;
+            revealEl.style.transform = tf;
+          }
+        }
+        if (cursorEl) {
+          const dotTf = "translate3d(" + m.x + "px," + m.y + "px,0) translate(-50%,-50%)";
+          if (dotTf !== lastDotTf) {
+            lastDotTf = dotTf;
+            cursorEl.style.transform = dotTf;
+          }
+        }
+      }
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+    return () => {
+      document.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  // --- scroll engine: prog → #scroll-pct + cairn indicator + subscribers (onScroll 1888) ---
+  useEffect(() => {
+    const pctEl = document.getElementById("scroll-pct");
+    const indStones = Array.from(document.querySelectorAll<SVGPathElement>("#cairn-svg path"));
+    let queued = false;
+    let lastPct = "";
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const prog = max > 0 ? clamp(window.scrollY / max, 0, 1) : 1;
+        indStones.forEach((p, i) => p.classList.toggle("on", prog >= (i + 1) * 0.19));
+        const pct = String(Math.round(prog * 100)).padStart(3, "0");
+        if (pctEl && pct !== lastPct) {
+          lastPct = pct;
+          pctEl.textContent = pct;
+        }
+        scrollSubs.current.forEach((fn) => fn(prog));
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   // --- apply --accent (accent × night) ---
@@ -189,9 +307,10 @@ export default function EngineProvider({ children }: { children: React.ReactNode
       isNight, setNight,
       proofOn, setProof,
       noiseOn, setNoise,
-      reduced, stillMode,
+      reduced, stillMode, trailEnabled,
+      mouse: mouseRef, subscribeScroll,
     }),
-    [accentI, setAccent, plates, isNight, setNight, proofOn, setProof, noiseOn, setNoise, reduced, stillMode],
+    [accentI, setAccent, plates, isNight, setNight, proofOn, setProof, noiseOn, setNoise, reduced, stillMode, trailEnabled, subscribeScroll],
   );
 
   return <EngineContext.Provider value={ctx}>{children}</EngineContext.Provider>;

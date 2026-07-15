@@ -1,6 +1,11 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, useContext, type RefObject } from "react";
+
+export interface Point {
+  x: number;
+  y: number;
+}
 
 /**
  * The shared engine context — the React translation of main.js's module scope.
@@ -31,6 +36,14 @@ export interface EngineCtx {
   reduced: boolean;
   /** `?still` — freeze all motion */
   stillMode: boolean;
+  /** fine pointer && !reduced — the cursor dot / reveal / hover systems run */
+  trailEnabled: boolean;
+
+  /** the single pointer feed (viewport coords); mutated by the root mousemove
+   *  and by drag hooks' own pointermove (the compat-mousemove rule) */
+  mouse: RefObject<Point>;
+  /** subscribe a per-scroll-frame callback (prog 0..1); returns an unsubscribe */
+  subscribeScroll: (fn: (prog: number) => void) => () => void;
 }
 
 export const EngineContext = createContext<EngineCtx | null>(null);

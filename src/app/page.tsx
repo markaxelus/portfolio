@@ -10,6 +10,7 @@ import PaintChips from "./_chrome/PaintChips";
 import NightToggle from "./_chrome/NightToggle";
 import NoiseToggle from "./_chrome/NoiseToggle";
 import ProofToggle from "./_chrome/ProofToggle";
+import CairnIndicator from "./_chrome/CairnIndicator";
 
 /**
  * Mark Axelus — My Desk (v4)
@@ -137,9 +138,7 @@ export default function Home() {
       </main>
 
       {/* cairn scroll indicator */}
-      <div className="cairn-ind" id="cairn-ind" aria-hidden="true">
-        <svg viewBox="0 0 44 120" id="cairn-svg" />
-      </div>
+      <CairnIndicator />
 
       {/* idle whisper */}
       <span className="idle-line mono" id="idle-line" aria-hidden="true">STILL HERE? IT STILL ISN&rsquo;T DONE</span>
