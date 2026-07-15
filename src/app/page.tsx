@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import Hero from "@/components/site/Hero";
 import Trail from "@/components/site/Trail";
+import Imprint from "@/components/site/Imprint";
 import WorkIndex from "@/components/site/WorkIndex";
 import Desk from "@/components/site/Desk";
 import Yard from "@/components/site/Yard";
@@ -13,6 +14,7 @@ import ProofToggle from "./_chrome/ProofToggle";
 import CairnIndicator from "./_chrome/CairnIndicator";
 import VisitCounter from "./_engine/VisitCounter";
 import ThoughtThread from "./_engine/thread/ThoughtThread";
+import Ticker from "./_engine/ticker/Ticker";
 import AmbientLife from "./_engine/ambient/AmbientLife";
 import StrikeSystem from "./_engine/strike/StrikeSystem";
 import MessLayer from "./_engine/mess/MessLayer";
@@ -141,12 +143,11 @@ export default function Home() {
 
         <Hero />
 
-        {/* kinetic seam */}
-        <div className="ticker mono final" aria-hidden="true">
-          <div className="ticker-track" id="ticker-track" />
-        </div>
+        {/* kinetic seam: the marquee in Mark's voice (fills #ticker-track) */}
+        <Ticker />
 
         <Trail />
+        <Imprint />
         <WorkIndex />
         <Desk />
         <Yard />
