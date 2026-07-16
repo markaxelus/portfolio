@@ -690,8 +690,21 @@ body.hero-set .plates-decal {
   font-family: "Space Mono", ui-monospace, monospace;
 }
 
-/* the walls — heavier iron than the furniture */
+/* the walls (plan figure) — heavier iron than the furniture */
 .imp-chart .ck-wall { fill: none; stroke: var(--ink); stroke-width: 2.1; stroke-linecap: round; }
+
+/* the resident (harbour figure) — engraved body, accent hatch */
+.imp-chart .dev-body, .imp-chart .dev-tail, .imp-chart .dev-fin, .imp-chart .dev-gill {
+  fill: none; stroke: var(--ink); stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.imp-chart .dev-hatch path { fill: none; stroke: var(--accent); stroke-width: 1.3; stroke-linecap: round; }
+.imp-chart .dev-lat { fill: none; stroke: var(--ink); stroke-width: 0.9; opacity: 0.4; }
+.imp-chart .dev-eye { fill: var(--ink); }
+.imp-chart .dev-wave { fill: none; stroke: var(--ink); stroke-width: 1; opacity: 0.35; }
+/* hover: the resident noses a length toward the strait (with the pass) */
+.imp-chart .chart-marlin { transition: transform 0.5s var(--ease-out); }
+.imp-chart:hover .chart-marlin { transform: translate(426px, 316px) scale(1.12); }
 
 /* the red working pass rides off register; hovering the chart slides it
    home (the operator-plate gesture); the page-awake act creeps it out */
@@ -736,7 +749,7 @@ body.hero-set .plates-decal {
   .imp-chart.ink-armed .ck-fade,
   .imp-chart.ink-armed .imp-sta,
   .imp-chart.ink-armed .imp-slug { opacity: var(--fop, 1); }
-  .imp-chart .dev-ghost { transition: none; }
+  .imp-chart .chart-marlin, .imp-chart .dev-ghost { transition: none; }
 }
 
 /* ---- the stations: live labels over the plate. DOM order is the engine
@@ -744,8 +757,10 @@ body.hero-set .plates-decal {
 .imp-sta { position: absolute; display: block; line-height: 1.55; white-space: nowrap; }
 .imp-sta .shf-row { display: block; font-size: 0.6rem; letter-spacing: 0.18em; }
 .imp-sta i { display: block; font-style: normal; font-size: 0.5rem; letter-spacing: 0.24em; opacity: 0.5; }
-.imp-sta-oa { left: 62%; top: 24%; }
-.imp-sta-desk { left: 55.5%; top: 68%; }
+.imp-fig-harbour .imp-sta-oa { left: 61%; top: 25.5%; }
+.imp-fig-harbour .imp-sta-desk { left: 25.5%; top: 75.5%; }
+.imp-fig-plan .imp-sta-oa { left: 62%; top: 24%; }
+.imp-fig-plan .imp-sta-desk { left: 55.5%; top: 68%; }
 .imp-slug {
   position: absolute;
   right: 4.5%;
@@ -894,7 +909,7 @@ body.night .imp-deskname { color: var(--acid); }
   .imp-desk { order: 4; }
   .imp-fol { order: 5; }
   .imp-sta { white-space: nowrap; }
-  .imp-sta-oa { left: auto; right: 2%; top: 21%; text-align: right; }
+  .imp-chart .imp-sta-oa { left: auto; right: 2%; top: 21%; text-align: right; }
   .imp-line { position: static; width: auto; padding: 0.2rem 0 1rem; }
   .imp-line b { transform: none !important; margin-left: 0 !important; }
   .imp-chart { position: relative; top: 0; right: auto; width: 106%; margin: 0.4rem 0 1.6rem -3%; }
