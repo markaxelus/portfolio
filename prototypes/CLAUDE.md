@@ -111,6 +111,15 @@ signatures (Mark counts these himself):
   dashed connector. The connector was the metronome tell; a juror flagged it
   as the one templated section. Replaced by the measured FIG.1 terrain
   (§4.3). Don't put the dashed connector back.
+- **The imprint as fragments** (v2 site, July 2026) — four failures in a row:
+  impressum scraps ("looked empty"), a bordered two-shifts box ("read as
+  linear"), the torn night-slab, a scattered off-axis colophon with a marlin
+  printer's-mark mascot. One cause: fragment compositions punctuating voids,
+  plus an unmotivated mascot (the site's world has no fish). Resolved as THE
+  STATUTORY LINE — one set sentence (an imprint is the line every sheet must
+  carry naming its printer and place), facts as mono margin instruments, the
+  desk clock lighting the RUNNING shift. Lesson: a section that keeps dying
+  wants to BE one real print-world object, not a stage of scraps.
 
 ---
 
