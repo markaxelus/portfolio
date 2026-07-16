@@ -111,15 +111,19 @@ signatures (Mark counts these himself):
   dashed connector. The connector was the metronome tell; a juror flagged it
   as the one templated section. Replaced by the measured FIG.1 terrain
   (§4.3). Don't put the dashed connector back.
-- **The imprint as fragments** (v2 site, July 2026) — four failures in a row:
-  impressum scraps ("looked empty"), a bordered two-shifts box ("read as
-  linear"), the torn night-slab, a scattered off-axis colophon with a marlin
-  printer's-mark mascot. One cause: fragment compositions punctuating voids,
-  plus an unmotivated mascot (the site's world has no fish). Resolved as THE
-  STATUTORY LINE — one set sentence (an imprint is the line every sheet must
-  carry naming its printer and place), facts as mono margin instruments, the
-  desk clock lighting the RUNNING shift. Lesson: a section that keeps dying
-  wants to BE one real print-world object, not a stage of scraps.
+- **The imprint's five deaths** (v2 site, July 2026) — impressum scraps
+  ("looked empty"), a bordered two-shifts box ("read as linear"), the torn
+  night-slab, a scattered off-axis colophon, then THE STATUTORY LINE — one
+  big typeset sentence with mono margin instruments. Mark on the sentence:
+  "this is so bad… this is all just words. Add assets, svgs, interactivity,
+  make it asymmetrical. That's what the rest of the page has." LESSON (two
+  halves): a section must BE one real print-world object — but TYPOGRAPHY
+  ALONE IS NOT AN OBJECT on this site. Every living section has a crafted
+  VISUAL ASSET plus a gesture (line/plate/cairn/specimen). Resolved as
+  FIG.2 — THE HARBOUR CHART (v6): an engraved torn chart of Victoria + the
+  strait, two stations lit by the desk clock, the daily passage dashed
+  between, the marlin as RESIDENT (the fish finally motivated — it swims
+  beside the ocean org), ink-in on entry, red pass registers on hover.
 
 ---
 
