@@ -130,7 +130,12 @@ signatures (Mark counts these himself):
   this sheet"); facts in one SHIFT01 config block; ink-in on entry, red
   pass registers on hover, live RUNNING lamps. LESSON: the figure must be
   tied to the DESK or the PLACE, never the employer's industry — and the
-  editable facts live in one config block, never in the artwork.
+  editable facts live in one config block, never in the artwork. FINAL
+  STATE (13e60ea): Mark kept BOTH engravings — Imprint.tsx ships ChartSVG
+  (harbour) and PlanSVG (plan) side by side behind a one-line switch,
+  `const FIGURE: "harbour" | "plan"`; labels/slug/positions follow via
+  imp-fig-* scoped CSS. Harbour is the active figure while the ocean
+  chapter lasts; flip one word when life changes.
 
 ---
 
