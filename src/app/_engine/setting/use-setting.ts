@@ -116,8 +116,9 @@ export function useSetting(): void {
     };
     armGroup(".desk-rows .desk-row", 0.3);
     armGroup(".check-pair, .outro-links, .colophon", 0.34);
-    /* the imprint's pieces are TOSSED on, not dealt — each clause of the
-       statutory line and each margin instrument sets on its own seeded clock */
+    /* the imprint's pieces are TOSSED on, not dealt — the chart, the voice
+       line, the two credits and the folio each set on their own seeded clock
+       (the chart's stroke-by-stroke ink-in is its OWN act, armed separately) */
     armGroup(".imp-piece", 0.34);
 
     /* ---- the hanging sheets: fade in + a DRAFT KICK through the real physics

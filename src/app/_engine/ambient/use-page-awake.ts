@@ -11,7 +11,8 @@ const MUTTER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/·—□";
  * Every 9-22s the page does ONE small unprompted act:
  *   • a hero letter (.ch) RATTLES loose in its case (invites the grab),
  *   • a decode decal (.decode .c1) MUTTERS — re-decodes itself, scramble → settle,
- *   • the regmark HICCUPS — corrects its drift (reg-hiccup composes with reg-spin).
+ *   • the regmark HICCUPS — corrects its drift (reg-hiccup composes with reg-spin),
+ *   • the chart DRIFTS — the imprint's red pass creeps off register, eases home.
  * One act at a time; the RATTLE is weighted double (it carries discovery). Never
  * in the mess (body.proof — the cat has that shift), never when the tab is
  * hidden, never under reduced motion or ?still.
@@ -103,13 +104,29 @@ export function usePageAwake(): void {
       if (regEl) regEl.classList.add("hiccup");
     }
 
+    /* the chart's red working pass creeps further off register, then the
+       shop eases it home (the .dev-ghost transition carries both ways).
+       Several ghost groups — the coast/route pass + the marlin's own —
+       so the act must move them in register with each other. */
+    const devEls = Array.prototype.slice.call(
+      document.querySelectorAll(".imprint .dev-ghost"),
+    ) as SVGGElement[];
+    let adriftT: ReturnType<typeof setTimeout> | null = null;
+    function actAdrift() {
+      if (!devEls.length || devEls[0].classList.contains("adrift")) return;
+      devEls.forEach((el) => el.classList.add("adrift"));
+      adriftT = setTimeout(
+        () => devEls.forEach((el) => el.classList.remove("adrift")),
+        900,
+      );
+    }
     const onRegAnimEnd = (e: AnimationEvent) => {
       if (e.animationName === "reg-hiccup" && regEl) regEl.classList.remove("hiccup");
     };
     if (regEl) regEl.addEventListener("animationend", onRegAnimEnd as EventListener);
 
     // the rattle carries discovery weight (loose type), so it comes up more
-    const ACTS = [actRattle, actMutter, actHiccup, actRattle];
+    const ACTS = [actRattle, actMutter, actHiccup, actAdrift, actRattle];
 
     function scheduleLife() {
       lifeT = setTimeout(() => {
@@ -132,6 +149,8 @@ export function usePageAwake(): void {
       mutteringRef.current = false;
       rattleTimers.forEach((to) => clearTimeout(to));
       rattleTimers.clear();
+      if (adriftT) clearTimeout(adriftT);
+      devEls.forEach((el) => el.classList.remove("adrift"));
       if (regEl) {
         regEl.removeEventListener("animationend", onRegAnimEnd as EventListener);
         regEl.classList.remove("hiccup");

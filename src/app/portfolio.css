@@ -611,19 +611,23 @@ body.hero-set .plates-decal {
 .n-gap { top: 2%; left: 46%; --tilt: -3deg; }
 .n-2025 { bottom: 6%; right: 6%; --tilt: 2deg; }
 
-/* ---------- the imprint: THE STATUTORY LINE (who's at the desk) ----------
-   an imprint, in the shop's own law, is the one line every printed sheet
-   must carry: who printed it, and where. So the section IS that line — one
-   sentence set large and ragged (the type is the object; no slab, no
-   scraps, no mascot), the facts hung off its clauses as margin instruments
-   the way axis labels hang off the specimen. Composition is weighted, not
-   balanced: the sentence is the left mass, the instrument rail hangs right
-   and staggered, the place name is pushed to the far edge by a measured
-   leader. Life: the desk clock lights the shift that is RUNNING right now
-   (.shf-row), the sentence rides the hold-register (.imp-line shears with
-   scroll, thunks home when still), the pieces set down on seeded clocks
-   (.imp-piece). FINAL layer; no hand marks; prints as flowed black facts. */
-.imprint { position: relative; padding: 4vw 1.4vw 6vw; }
+/* ---------- the imprint: FIG.2 — THE HARBOUR CHART (who's at the desk) ----
+   the section's object is a torn fragment of an ENGRAVED CHART of Victoria
+   and the strait, pinned over the sheet — bleeding off the right edge and
+   up over the frame rule. Two stations are charted (the OCEANAID buoy at
+   sea, 09–17; THE DESK registration cross ashore, 23–06), the daily
+   passage dashed between them, the marlin RESIDENT in the charted water.
+   The colophon sits off-axis around it: voice line high-left, the current
+   credit large in accent overlapping the torn edge, the after-hours credit
+   low on the water, folio + furniture in the voids.
+   Life: the chart INKS ITSELF IN stroke-by-stroke on entry (strike = ink;
+   .ink-armed strips it, .inked pulls it — SSR/print/reduced ship it drawn),
+   the red working pass rides off register and slides home on hover (the
+   operator-plate gesture; the page-awake act drifts it), the desk clock
+   lights ● RUNNING on the live station (.shf-row), the voice line rides
+   the hold-register, the pieces set down seeded (.imp-piece). FINAL layer;
+   machine-set; no hand marks. */
+.imprint { position: relative; padding: 4vw 1.4vw 6vw; overflow-x: clip; }
 .imp-frame {
   display: flex;
   justify-content: space-between;
@@ -636,58 +640,179 @@ body.hero-set .plates-decal {
 .imp-head { opacity: 0.75; }
 .imp-cap { opacity: 0.7; text-align: right; }
 
-/* the stage: sentence column + instrument rail */
 .imp-stage {
-  --dfs: clamp(2.15rem, 4.7vw, 4.15rem); /* the sentence's set size */
   position: relative;
   max-width: 1240px;
   margin: 0 auto;
+  min-height: clamp(460px, 44vw, 620px);
 }
 
-/* the legal fiction, named */
-.imp-req {
-  font-size: 0.56rem;
-  letter-spacing: 0.24em;
-  opacity: 0.55;
-  margin-bottom: clamp(1.2rem, 2.4vw, 2.2rem);
+/* ---- THE CHART: the torn fragment. Neatline edges (top + right) are
+   straight; the left + bottom edges are torn — small nicks with a drift,
+   never sawteeth. The rest tilt lives on the inner wrapper (set-in ends
+   at transform:none). ---- */
+.imp-chart {
+  position: absolute;
+  top: -3.4rem;
+  right: clamp(-4.5rem, -3vw, -1.5rem);
+  width: min(63%, 800px);
+  z-index: 1;
+}
+.imp-chart-rot {
+  position: relative;
+  transform: rotate(-1.6deg);
+  transform-origin: 80% 20%;
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+  clip-path: polygon(2.4% 0%, 100% 0%, 100% 97.2%, 88% 98.4%, 76% 97%, 64% 99%, 52% 97.6%, 40% 99.2%, 28% 97.8%, 16% 99%, 6% 97.4%, 4.6% 88%, 3.2% 78%, 4.4% 68%, 2.6% 58%, 3.8% 48%, 2.2% 38%, 3.6% 28%, 2% 18%, 3.4% 9%);
+}
+.imp-chart svg { display: block; width: 100%; height: auto; }
+
+/* the chart's inks — the plates' own language (ink + accent + red pass) */
+.imp-chart .ck-line { fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.imp-chart .ck-fine { fill: none; stroke: var(--ink); stroke-width: 0.9; }
+.imp-chart .ck-hatch path, .imp-chart path.ck-hatch { fill: none; stroke: var(--ink); stroke-width: 0.9; opacity: 0.5; }
+.imp-chart .ck-rhumb path { fill: none; stroke: var(--ink); stroke-width: 0.8; }
+.imp-chart .ck-rhumbx { fill: none; stroke: var(--ink); stroke-width: 0.8; opacity: 0.4; }
+.imp-chart .ck-route { fill: none; stroke: var(--ink); stroke-width: 1.1; }
+.imp-chart .ck-dot circle { fill: var(--ink); }
+.imp-chart .ck-solid { fill: var(--ink); stroke: none; }
+.imp-chart .ck-txt {
+  fill: var(--ink);
+  font-family: "Space Mono", ui-monospace, monospace;
 }
 
-/* ---- the statutory line ---- */
-.imp-line { position: relative; }
-.imp-line .il {
+/* the resident — engraved body, accent hatch, its own red ghost */
+.imp-chart .dev-body, .imp-chart .dev-tail, .imp-chart .dev-fin, .imp-chart .dev-gill {
+  fill: none; stroke: var(--ink); stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.imp-chart .dev-hatch path { fill: none; stroke: var(--accent); stroke-width: 1.3; stroke-linecap: round; }
+.imp-chart .dev-lat { fill: none; stroke: var(--ink); stroke-width: 0.9; opacity: 0.4; }
+.imp-chart .dev-eye { fill: var(--ink); }
+.imp-chart .dev-wave { fill: none; stroke: var(--ink); stroke-width: 1; opacity: 0.35; }
+
+/* the red working pass rides off register; hovering the chart slides it
+   home (the operator-plate gesture); the page-awake act creeps it out */
+.imp-chart .dev-ghost {
+  fill: none;
+  stroke: var(--pencil);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: translate(2.5px, 2px);
+  transition: transform 0.45s var(--ease-out);
+}
+.imp-chart .dev-ghost.adrift { transform: translate(5px, 3.8px); }
+.imp-chart:hover .dev-ghost,
+.imp-chart:hover .dev-ghost.adrift { transform: translate(0, 0); }
+
+/* hover: the resident noses a length toward the strait (with the pass) */
+.imp-chart .chart-marlin { transition: transform 0.5s var(--ease-out); }
+.imp-chart:hover .chart-marlin { transform: translate(426px, 316px) scale(1.12); }
+
+/* ---- the ink-in: strike = ink. Base state is DRAWN (SSR/no-js/print);
+   .ink-armed strips strokes + labels, .inked pulls them on seeded-ish
+   irregular clocks (--ikd per stroke — tossed on, never a metronome). ---- */
+@keyframes imp-ink { to { stroke-dashoffset: 0; } }
+@keyframes imp-fade { to { opacity: var(--fop, 1); } }
+.imp-chart .ck-fade { opacity: var(--fop, 1); }
+.imp-chart.ink-armed .ck-draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.imp-chart.ink-armed .ck-fade,
+.imp-chart.ink-armed .imp-sta,
+.imp-chart.ink-armed .imp-slug { opacity: 0; }
+.imp-chart.inked .ck-draw {
+  animation: imp-ink 0.85s var(--ease-out) both;
+  animation-delay: var(--ikd, 0s);
+}
+.imp-chart.inked .ck-fade,
+.imp-chart.inked .imp-sta,
+.imp-chart.inked .imp-slug {
+  animation: imp-fade 0.5s var(--ease-out) both;
+  animation-delay: var(--ikd, 0s);
+}
+.imp-chart.inked .imp-sta-oa { --ikd: 0.62s; }
+.imp-chart.inked .imp-sta-desk { --ikd: 0.72s; }
+.imp-chart.inked .imp-slug { --ikd: 0.9s; }
+@media (prefers-reduced-motion: reduce) {
+  .imp-chart.ink-armed .ck-draw { stroke-dasharray: none; stroke-dashoffset: 0; }
+  .imp-chart.ink-armed .ck-fade,
+  .imp-chart.ink-armed .imp-sta,
+  .imp-chart.ink-armed .imp-slug { opacity: var(--fop, 1); }
+  .imp-chart .chart-marlin, .imp-chart .dev-ghost { transition: none; }
+}
+
+/* ---- the stations: live labels over the plate. DOM order is the engine
+   contract (day first, night second); the desk clock lights the live one */
+.imp-sta { position: absolute; display: block; line-height: 1.55; white-space: nowrap; }
+.imp-sta .shf-row { display: block; font-size: 0.6rem; letter-spacing: 0.18em; }
+.imp-sta i { display: block; font-style: normal; font-size: 0.5rem; letter-spacing: 0.24em; opacity: 0.5; }
+.imp-sta-oa { left: 61%; top: 25.5%; }
+.imp-sta-desk { left: 25.5%; top: 75.5%; }
+.imp-slug {
+  position: absolute;
+  right: 4.5%;
+  bottom: 3.5%;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  --fop: 0.5;
+  opacity: var(--fop);
+}
+
+/* the desk clock marks the station that is RUNNING right now (machine
+   state → the acid, like [RUN.M]); live info, so it never prints */
+.shf-row.shf-on::after {
+  content: " ● RUNNING";
+  font-size: 0.52rem;
+  letter-spacing: 0.16em;
+  color: var(--acid);
+  white-space: nowrap;
+}
+
+/* ---- the voice line: the note on the maker (hold-register shears it) */
+.imp-line {
+  position: absolute;
+  top: clamp(0.2rem, 1vw, 1rem);
+  left: 0;
+  width: 44%;
+  z-index: 4;
+  pointer-events: none;
+  padding-left: clamp(0.2rem, 1.2vw, 1.2rem);
+}
+.imp-line b {
+  display: block;
   font-family: "Fraunces", Georgia, serif;
   font-weight: 500;
-  font-size: var(--dfs);
-  line-height: 1.08;
+  font-size: clamp(1.8rem, 3.9vw, 3.2rem);
+  line-height: 1.1;
   letter-spacing: -0.012em;
-  transform-origin: left bottom;
 }
-/* the compositor's rag — tiny splays echo the hero lockup's measured lean;
-   destinations exact, never re-tuned by motion */
-.imp-line .il1 { transform: rotate(-0.7deg); }
-.imp-line .il2 { margin-left: 0.9em; transform: rotate(0.4deg); }
-.imp-line .il3 { margin-left: 2.1em; transform: rotate(-0.35deg); }
-.imp-line .il4 { margin-left: 0.35em; transform: rotate(0.5deg); }
-.imp-line .il5 {
-  display: flex;
-  align-items: baseline;
-  gap: 0.35em;
-  margin-top: 0.1em;
-  transform: rotate(-0.3deg);
+.imp-line .il1 { transform: rotate(-2.2deg); }
+.imp-line .il2 { transform: rotate(1deg); margin-left: 1.1em; }
+.imp-line .il3 {
+  transform: rotate(-1deg);
+  margin-left: 0.3em;
+  text-shadow: 2px 0 0 var(--accent), -2px 0 0 var(--pencil-soft);
 }
-/* the place is pushed to the far edge by a measured leader — the void is
-   measured, not empty */
-.imp-lead { flex: 1; border-top: 1px solid var(--hairline); align-self: center; }
+.imp-note { margin-top: 0.85rem; font-size: 0.54rem; letter-spacing: 0.2em; opacity: 0.5; }
 
-/* the one link — the day press, in the working accent. Underline is a
-   text-decoration (paint, not box): a border grew the inline box past its
-   line box and struck through the next line on the tight print setting */
+/* ---- CURRENT: the dominant credit, grazing the torn edge ---- */
+.imp-cur { position: absolute; left: 5%; top: 46%; width: 55%; z-index: 5; }
+.imp-kick { font-size: 0.58rem; letter-spacing: 0.22em; color: var(--accent); }
+.imp-kick-desk { color: var(--ink); opacity: 0.55; }
 .imp-oa {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(2.5rem, 5.7vw, 5rem);
+  line-height: 0.96;
+  letter-spacing: -0.016em;
   color: var(--accent);
   text-decoration: underline;
   text-decoration-thickness: 3px;
-  text-underline-offset: 0.1em;
-  padding: 0 0.06em;
+  text-underline-offset: 0.08em;
+  transform: rotate(-0.6deg);
+  transform-origin: left bottom;
   transition:
     background-color 0.25s var(--ease-out),
     color 0.25s var(--ease-out);
@@ -698,94 +823,109 @@ body.hero-set .plates-decal {
   color: var(--stone);
   outline: none;
 }
-.imp-ext { font-size: 0.34em; vertical-align: 0.72em; letter-spacing: 0; }
-
-/* ---- the instrument rail: the facts, hung off their clauses ---- */
-.imp-ann { position: relative; }
-.imp-ann::before {
-  /* the tick — a hairline reaching back toward the clause it annotates */
-  content: "";
-  position: absolute;
-  left: calc(-1 * clamp(2rem, 4.4vw, 4.4rem));
-  top: 0.5em;
-  width: clamp(1.4rem, 3.4vw, 3.4rem);
-  border-top: 1px solid var(--hairline);
-}
-.ia-k { font-size: 0.6rem; letter-spacing: 0.2em; opacity: 0.85; }
-.ia-v { font-size: 0.56rem; letter-spacing: 0.1em; opacity: 0.62; margin-top: 0.35rem; }
-
-/* the desk clock marks the shift that is RUNNING right now (machine state →
-   the acid, like [RUN.M]); live info, so it never prints */
-.shf-row.shf-on::after {
-  content: " ● RUNNING";
-  font-size: 0.52rem;
-  letter-spacing: 0.16em;
-  color: var(--acid);
-  white-space: nowrap;
+.imp-ext { font-size: 0.32em; vertical-align: 0.75em; letter-spacing: 0; }
+.imp-meta { font-size: 0.62rem; letter-spacing: 0.09em; margin-top: 0.7rem; }
+.imp-bfr {
+  font-size: 0.54rem;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
+  margin-top: 0.45rem;
+  transform: rotate(-0.6deg);
+  transform-origin: left top;
 }
 
-/* ---- the fine print + the folio ---- */
-.imp-foot { margin-top: clamp(1.8rem, 3vw, 2.8rem); }
-.imp-foot p { font-size: 0.56rem; letter-spacing: 0.1em; opacity: 0.55; }
-.imp-foot p + p { margin-top: 0.4rem; }
+/* ---- AFTER HOURS: the standing credit, low on the water ---- */
+.imp-desk { position: absolute; left: 63%; bottom: 3.5%; z-index: 5; }
+.imp-desk .imp-rot { transform: rotate(1.3deg); transform-origin: left top; }
+.imp-deskname {
+  display: inline-block;
+  margin-top: 0.25rem;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(1.4rem, 2.6vw, 2.15rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+body.night .imp-deskname { color: var(--acid); }
+.imp-desk .imp-meta { font-size: 0.56rem; opacity: 0.62; margin-top: 0.5rem; }
+
+/* ---- the folio + scattered furniture ---- */
 .imp-fol {
-  margin-top: 1.3rem;
+  position: absolute;
+  left: 0.5%;
+  bottom: 0;
   display: flex;
   align-items: center;
   gap: 0.55rem;
   opacity: 0.6;
+  z-index: 4;
 }
 .imp-reg { width: 17px; height: 17px; }
 .imp-reg .rk { stroke: var(--ink); stroke-width: 1; }
 .imp-reg .rr { fill: none; stroke: var(--ink); stroke-width: 1; opacity: 0.6; }
 .imp-fol-t { font-size: 0.52rem; letter-spacing: 0.22em; }
-
-/* the open sheet: sentence left, rail right — weighted, not balanced */
-@media (min-width: 821px) {
-  .imp-stage {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(220px, 23vw, 310px);
-    column-gap: clamp(2.4rem, 5vw, 5rem);
-  }
-  .imp-req { grid-column: 1 / -1; }
-  .imp-line { grid-column: 1; }
-  .imp-rail {
-    grid-column: 2;
-    /* the rail hangs off the working clauses (lines 3-4), not the top —
-       staggered, so nothing lines up into a row */
-    padding-top: calc(var(--dfs) * 1.08 * 2 + 0.5rem);
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: clamp(1.4rem, 2.6vw, 2.6rem);
-  }
-  .imp-ann + .imp-ann { margin-left: clamp(0.8rem, 1.6vw, 1.6rem); }
-  .imp-foot,
-  .imp-fol { grid-column: 1; }
+.imp-sq {
+  position: absolute;
+  left: 40%;
+  top: 58%;
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--acid);
+  opacity: 0.6;
+  transform: rotate(18deg);
+  z-index: 2;
 }
+.imp-tick { position: absolute; left: 30.5%; top: 10%; width: 14px; height: 14px; opacity: 0.4; z-index: 2; }
+.imp-tick::before, .imp-tick::after { content: ""; position: absolute; background: var(--ink); }
+.imp-tick::before { left: 6px; top: 0; width: 1px; height: 14px; }
+.imp-tick::after { top: 6px; left: 0; height: 1px; width: 14px; }
 
-/* the pocket sheet: the sentence flows, the instruments stack under it */
+/* the pocket sheet: the composition unwinds — voice, the chart full-bleed,
+   then the credits stacked; the chart keeps its tear and its stations */
 @media (max-width: 820px) {
   .imp-frame { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
   .imp-cap { text-align: left; }
-  .imp-stage { --dfs: clamp(1.7rem, 7.6vw, 2.4rem); }
-  .imp-line .il { margin-left: 0 !important; transform: none; }
-  .imp-rail { margin-top: 1.8rem; display: grid; gap: 1.1rem; }
-  .imp-ann {
-    border-top: 1px solid var(--hairline);
-    padding-top: 0.8rem;
-  }
-  .imp-ann::before { content: none; }
+  /* flex order: the voice leads, then the figure, then the credits */
+  .imp-stage { min-height: 0; display: flex; flex-direction: column; }
+  .imp-line { order: 1; }
+  .imp-chart { order: 2; }
+  .imp-cur { order: 3; }
+  .imp-desk { order: 4; }
+  .imp-fol { order: 5; }
+  .imp-sta { white-space: nowrap; }
+  .imp-sta-oa { left: auto; right: 2%; top: 21%; text-align: right; }
+  .imp-line { position: static; width: auto; padding: 0.2rem 0 1rem; }
+  .imp-line b { transform: none !important; margin-left: 0 !important; }
+  .imp-chart { position: relative; top: 0; right: auto; width: 106%; margin: 0.4rem 0 1.6rem -3%; }
+  .imp-chart-rot { transform: rotate(-1deg); }
+  .imp-sta .shf-row { font-size: 0.52rem; }
+  .imp-sta i { font-size: 0.46rem; }
+  .imp-cur, .imp-desk { position: static; width: auto; margin-bottom: 1.5rem; }
+  .imp-desk .imp-rot { transform: none; }
+  .imp-oa { font-size: clamp(2rem, 9vw, 2.8rem); transform: none; }
+  .imp-bfr { transform: none; }
+  .imp-fol { position: static; margin-top: 0.4rem; }
+  .imp-sq, .imp-tick { display: none; }
 }
 
-/* the proof: the statutory line prints as set — that is the whole point;
-   live lamps and screen furniture go */
+/* the proof: the chart prints DRAWN (a chart that prints is the point);
+   the red pass, the lamps and the screen furniture go */
 @media print {
-  .imp-line .il { transform: none !important; text-shadow: none !important; }
-  .imp-oa { color: #000 !important; }
+  .imp-stage { min-height: 0 !important; }
+  .imp-line, .imp-cur, .imp-desk { position: static !important; width: auto !important; }
+  .imp-line b { transform: none !important; margin-left: 0 !important; text-shadow: none !important; }
+  .imp-oa { color: #000 !important; transform: none !important; }
+  .imp-kick { color: #000 !important; }
+  .imp-bfr { transform: none !important; }
+  .imp-desk .imp-rot { transform: none !important; }
+  .imp-deskname { color: #000 !important; }
+  .imp-chart { position: static !important; width: 100% !important; margin: 4mm 0 !important; }
+  .imp-chart-rot { transform: none !important; background: none !important; clip-path: none !important; }
+  .imp-chart .ck-draw { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; animation: none !important; }
+  .imp-chart .ck-fade, .imp-sta, .imp-slug { animation: none !important; opacity: var(--fop, 1) !important; }
+  .imp-chart .dev-ghost { display: none !important; }
   .shf-row.shf-on::after { content: none !important; }
-  .imp-lead { border-color: #000 !important; }
-  .imp-fol { display: none !important; }
+  .imp-sq, .imp-tick, .imp-fol { display: none !important; }
 }
 
 /* ---------- at the desk ---------- */
