@@ -1507,7 +1507,9 @@ body.proof .op-candid { display: block; }
   width: 100%;
   max-width: 560px;
   justify-self: end;
-  margin: 0.6rem calc(-1 * clamp(0.6rem, 2vw, 2.4rem)) 0 0;
+  /* the whole object rides well OFF the screen edge — the right air is
+     part of the composition, not a bleed */
+  margin: 0.6rem clamp(3rem, 8vw, 9rem) 0 0;
 }
 /* the stack: three sheets at their own leans — the pile language. No
    outline wraps the object; the sheets' offset edges and the tie carry it */
