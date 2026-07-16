@@ -1417,6 +1417,7 @@ body.proof .op-candid { display: block; }
 /* ---------- outro ---------- */
 .outro {
   position: relative;
+  overflow-x: clip;   /* the bundle + its tie bleed right, never widen the ICB */
   padding: 0 1.4vw 80px;        /* clears the fixed SEE THE MESS corner (~62px tall) so the footer isn't on top of it */
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(430px, 36vw, 560px);
@@ -1508,18 +1509,48 @@ body.proof .op-candid { display: block; }
   justify-self: end;
   margin: 0.6rem calc(-1 * clamp(0.6rem, 2vw, 2.4rem)) 0 0;
 }
-.pkt-rot {
+/* the stack: three sheets at their own leans — the pile language. No
+   outline wraps the object; the sheets' offset edges and the tie carry it */
+.bd { position: relative; margin: 1.4rem 0 10rem; }
+.bd-sheet { border: 1px solid var(--hairline); }
+.bd-s1 {
+  position: absolute;
+  inset: -18px -20px 60px 34px;
+  transform: rotate(2.4deg);
+  background: color-mix(in srgb, var(--ink) 7%, var(--stone));
+  z-index: 0;
+}
+.bd-s2 {
+  position: absolute;
+  top: 22px;
+  right: 16px;
+  bottom: -138px;
+  left: -14px;
+  transform: rotate(-1.9deg);
+  background: color-mix(in srgb, var(--ink) 2.5%, var(--stone));
+  z-index: 1;
+}
+.bd-s3 {
   position: relative;
-  transform: rotate(1.4deg);
-  transform-origin: 30% 20%;
+  z-index: 2;
+  transform: rotate(1deg);
+  background: color-mix(in srgb, var(--ink) 4.5%, var(--stone));
+  padding: 1.15rem 1.35rem 1.9rem;
+  margin-left: 84px; /* the tabs poke out from between the sheets here */
 }
-.pkt-rot > svg { display: block; width: 100%; height: auto; overflow: visible; }
-.pk-face {
-  fill: color-mix(in srgb, var(--ink) 5%, transparent);
-  stroke: var(--ink);
-  stroke-width: 1.6;
-  stroke-linejoin: round;
+/* the tie rides OVER everything (nonuniform scale; strokes hold width) */
+.bd-tie {
+  /* replaced elements resolve auto size from intrinsic ratio, not the
+     bottom inset — the stretch must be explicit */
+  position: absolute;
+  top: -26px;
+  left: -26px;
+  width: calc(100% + 52px);
+  height: calc(100% + 176px);
+  z-index: 4;
+  pointer-events: none;
 }
+.bd-tie path, .bd-tie circle { vector-effect: non-scaling-stroke; }
 .pk-line { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; }
 .pk-string { fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-linecap: round; }
 .pk-dot { fill: var(--ink); }
@@ -1565,10 +1596,9 @@ body.proof .op-candid { display: block; }
   .pocket.ink-armed .pf { opacity: var(--fop, 1); }
   .pocket.ink-armed:not(.inked) .dev-ghost { opacity: 0.4; }
 }
-/* the face's printed matter */
-.pf { position: absolute; }
-.pkt-job { left: 6%; top: 4%; font-size: 0.56rem; letter-spacing: 0.16em; opacity: 0.8; }
-.pkt-addr { left: 6%; top: 60%; }
+/* the docket's printed matter — flowed on the top sheet */
+.pkt-job { font-size: 0.56rem; letter-spacing: 0.16em; opacity: 0.8; }
+.pkt-addr { margin-top: 1.3rem; }
 .pkt-kick { font-size: 0.54rem; letter-spacing: 0.22em; opacity: 0.55; }
 .pkt-name {
   font-family: "Fraunces", Georgia, serif;
@@ -1579,8 +1609,22 @@ body.proof .op-candid { display: block; }
   margin-top: 0.3rem;
 }
 .pkt-meta { font-size: 0.56rem; letter-spacing: 0.11em; opacity: 0.65; margin-top: 0.45rem; }
-.pocket .outro-links { right: 7%; top: 59%; }
-.pocket .joblog { left: 6%; bottom: 4.5%; width: 58%; }
+/* the routing tabs poke out from between the sheets, ragged */
+.bd-tabs {
+  position: absolute;
+  left: 0;
+  top: 54%;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.bd-tabs .olink:nth-child(2) { margin-left: -10px; }
+.bd-tabs .olink:nth-child(3) { margin-left: -20px; }
+/* the packing slip lives on the exposed foot of the sheet beneath */
+.pocket .joblog { position: absolute; left: 1.2rem; right: 30%; bottom: 0.7rem; }
+.pocket #jl-lines { max-height: 5.2rem; }
 /* the sheet's scattered furniture (same language as the imprint's) */
 .out-sq {
   position: absolute;
@@ -1602,12 +1646,13 @@ body.proof .op-candid { display: block; }
    the code TILE is fixed dark-on-light so it scans in day AND night; the furniture
    (brackets, labels, reg cross, acid tick) themes with the sheet. */
 .pressmark {
-  right: 6.5%;
-  top: 4%;
-  width: 23%;
+  position: absolute;
+  top: -26px;
+  right: -16px;
+  width: 132px;
   margin: 0;
   opacity: 0.92;
-  transform: rotate(-3deg);         /* franked onto the jacket, not placed */
+  transform: rotate(-4deg);         /* franked over the sheet edge, not placed */
   transform-origin: 60% 45%;
 }
 .pm-svg { width: 100%; height: auto; display: block; overflow: visible; }
@@ -3630,19 +3675,16 @@ body.proof .impline { opacity: 0 !important; }
   .ok-stamp { right: 0.2rem; }
   .outro { display: block; }
   .pocket { max-width: none; margin: 1.6rem 0 0; }
-  /* the pocket flattens into a bordered jacket panel: the engraved art
-     goes, the printed matter FLOWS — same trick as the print sheet */
-  .pkt-rot {
-    transform: rotate(0.8deg);
-    border: 1px solid var(--ink);
-    background: color-mix(in srgb, var(--ink) 5%, transparent);
-    padding: 1rem 1rem 1.2rem;
-  }
-  .pkt-rot > svg { display: none; }
-  .pf { position: static; width: auto; margin: 0 0 1.1rem; }
-  .pf.pressmark { width: 150px; margin: 0.4rem 0 1rem; }
-  .pocket .outro-links { flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 0.5rem; }
-  .pocket .joblog { width: auto; margin-bottom: 0.2rem; }
+  /* the bundle flattens: the back sheet and the tie go, the two working
+     sheets stack as bordered panels with flowing matter */
+  .bd { margin: 1rem 0 0; }
+  .bd-tie, .bd-s1 { display: none; }
+  .bd-s3 { margin-left: 0; transform: rotate(0.7deg); padding: 1rem 1rem 1.2rem; }
+  .bd-s2 { position: static; inset: auto; transform: rotate(-0.5deg); margin-top: 1rem; padding: 0.9rem 1rem; }
+  .pocket .joblog { position: static; }
+  .bd-tabs { position: static; flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 0.5rem; margin: 1rem 0 0.2rem; }
+  .bd-tabs .olink:nth-child(2), .bd-tabs .olink:nth-child(3) { margin-right: 0; }
+  .pressmark { position: static; width: 150px; margin: 1rem 0 0.2rem; transform: rotate(-2deg); }
   .ok-tabs { flex-direction: column; gap: 0.45rem; }
   .ok-tabs .ok-tab { transform: none; }
   .brief-spec { margin: 1.2rem 0 0; }
@@ -3711,12 +3753,14 @@ body.proof .impline { opacity: 0 !important; }
   #jl-lines { max-height: none; overflow: visible; }
   .joblog li.jl-typing::after { display: none; }
   .jl-rail { display: none; }
-  /* the pocket flattens: its printed matter flows, the jacket art goes */
+  /* the bundle flattens: its printed matter flows, the tie art goes */
   .outro { display: block !important; }
   .pocket { max-width: none !important; margin: 0 !important; }
-  .pkt-rot { transform: none !important; }
-  .pkt-rot > svg { display: none !important; }
+  .bd { margin: 0 !important; }
+  .bd-tie, .bd-s1 { display: none !important; }
+  .bd-sheet { position: static !important; inset: auto !important; transform: none !important; background: none !important; border: none !important; margin: 0 !important; padding: 0 !important; }
   .pf { position: static !important; margin: 4mm 0 !important; width: auto !important; animation: none !important; opacity: 1 !important; }
+  .bd-sheet { animation: none !important; opacity: 1 !important; }
   .pocket .outro-links { display: none !important; }
   .ok-stamp { position: static !important; display: inline-block; margin-top: 3mm; }
 }

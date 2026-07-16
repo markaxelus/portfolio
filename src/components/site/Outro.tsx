@@ -7,70 +7,65 @@ import { PM_MODULE, PM_RECTS } from "@/app/_engine/outro/pressmark";
 import OutroPocketInk from "./OutroPocketInk";
 
 /**
- * THE OUTRO — THE JOB POCKET (the finished run goes home in its jacket).
+ * THE OUTRO — THE BUNDLE (the finished run, tied for handoff).
  *
- * The section's object is the JOB POCKET: the manila jacket every real
- * print job travels in, with the docket printed on its face. It unifies
- * everything the outro earned instead of scattering it down a rail:
- *   · the PRESS CHECK is the docket form (same #okslip machinery — the
- *     initials field, three hold-to-commit stamp pads, the steel stamp
- *     that thunks in over the pocket's edge),
- *   · the MAKER'S MARK is the franking, top corner, cancelled with wave
- *     bars (POSTAGE PAID · THE DESK),
- *   · EMAIL / GITHUB / LINKEDIN are the routing tabs on the face,
- *   · the JOB LOG is the packing slip, lower-left of the face,
- *   · the RETURN ADDRESS makes the headline literal — RETURN TO — MARK
- *     AXELUS · AT HIS DESK · VICTORIA BC,
- *   · the string-and-button tie holds the top edge; the red working pass
- *     rides off register and slides home on hover (the plate gesture).
- * "Got a brief? / Write to me." stays the display voice, left; the pocket
- * sits tilted on the right, grazing past the sheet edge. FINAL layer —
- * machine-set; the mess argues in the margins as always.
+ * The section's object is a TIED BUNDLE of sheets — the way a real shop
+ * hands a finished job over: a loose stack at varied small leans (the
+ * site's own pile language), string crossed diagonally over everything,
+ * knotted at the button. No jacket, no box — the container law holds
+ * (a full rectangle outline reads as a box and dies; the STRING is what
+ * says \u201cdelivered\u201d, never the outline):
+ *   · the TOP SHEET is the docket — JOB Nº header, the PRESS CHECK form
+ *     (same #okslip machinery: initials, three hold-to-commit pads, the
+ *     steel stamp that thunks over the sheet edge), and the RETURN
+ *     address that makes the headline literal,
+ *   · the MAKER'S MARK is the franking, overhanging the docket's corner,
+ *     cancelled with wave bars (POSTAGE PAID · THE DESK),
+ *   · the PACKING SLIP (the job log) is the sheet beneath, exposed along
+ *     the bundle's foot,
+ *   · EMAIL / GITHUB / LINKEDIN poke out from BETWEEN the sheets like
+ *     file tabs,
+ *   · the STRING ties the stack shut, PLEASE DO NOT BEND stamped along
+ *     its run; the red working pass rides the tie off register and
+ *     slides home on hover (the plate gesture).
+ * "Got a brief? / Write to me." stays the display voice, left, over the
+ * spec; the bundle sits on the right, grazing past the sheet edge.
+ * FINAL layer — machine-set; the mess argues in the margins as always.
  */
 
-/* the jacket, engraved: edges + gussets, the string-and-button tie, the
-   cancellation over the franking corner, the courtesy line. One red pass. */
-function PocketSVG() {
+/* the tie, drawn OVER the stack: two string runs crossing at the button,
+   the loose tail, the cancellation waves into the franking corner, the
+   courtesy line stamped along the run. Strokes keep width under the
+   nonuniform scale (vector-effect); one red pass rides the tie. */
+function TieSVG() {
   return (
-    <svg viewBox="0 0 620 780" aria-hidden="true">
-      {/* the jacket face (tinted; the blank arrives with the set-down —
-          only the PRINT strikes in) + inner edge */}
-      <path pathLength={1} className="pk-face pk-draw" style={{ "--ikd": "0.05s", "--ikdur": "0.8s" } as React.CSSProperties} d="M14,16 L606,16 L606,764 L14,764 Z" />
-      <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "0.3s" } as React.CSSProperties} d="M14,30 L606,30" />
-      <path pathLength={1} className="pk-fine pk-draw" style={{ opacity: 0.3, "--ikd": "0.38s" } as React.CSSProperties} d="M26,30 L26,764" />
-      {/* gusset ticks — the pocket has a spine */}
-      <g className="pk-fine pk-fade" style={{ "--fop": 0.45, "--ikd": "0.52s" } as React.CSSProperties}>
-        <path d="M14,210 L26,220 M14,300 L26,310 M14,390 L26,400 M14,480 L26,490 M14,570 L26,580" />
-        <path d="M150,764 L160,752 M260,764 L270,752 M370,764 L380,752 M480,764 L490,752" />
-      </g>
-      {/* the string-and-button tie — it TIES ITSELF SHUT, last of the ink */}
-      <circle className="pk-line pk-fade" style={{ "--ikd": "0.95s" } as React.CSSProperties} cx="352" cy="44" r="8" />
-      <circle className="pk-dot pk-fade" style={{ "--ikd": "1.0s" } as React.CSSProperties} cx="352" cy="44" r="2" />
-      <circle className="pk-line pk-fade" style={{ "--ikd": "0.9s" } as React.CSSProperties} cx="352" cy="96" r="8" />
-      <circle className="pk-dot pk-fade" style={{ "--ikd": "0.97s" } as React.CSSProperties} cx="352" cy="96" r="2" />
-      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.1s", "--ikdur": "0.5s" } as React.CSSProperties} d="M345,48 C334,60 370,80 358,92" />
-      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.32s", "--ikdur": "0.5s" } as React.CSSProperties} d="M359,48 C370,60 334,80 346,92" />
-      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.56s", "--ikdur": "0.55s" } as React.CSSProperties} d="M352,104 C378,124 406,118 426,136 C434,142 430,148 422,145" />
-      {/* the cancellation — wave bars strike through the franking corner */}
+    <svg className="bd-tie" viewBox="0 0 600 820" preserveAspectRatio="none" aria-hidden="true">
+      {/* the two runs — near-straight, wrapping corner to corner; they
+          cross in the docket's quiet lower-right */}
+      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.28s", "--ikdur": "0.6s" } as React.CSSProperties} d="M64,58 C218,302 372,546 526,790" />
+      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.56s", "--ikdur": "0.6s" } as React.CSSProperties} d="M556,50 C494,297 431,543 369,790" />
+      {/* the button + the figure-8 knot at the crossing */}
+      <circle className="pk-line pk-fade" style={{ "--ikd": "1.12s" } as React.CSSProperties} cx="414" cy="612" r="9" />
+      <circle className="pk-dot pk-fade" style={{ "--ikd": "1.18s" } as React.CSSProperties} cx="414" cy="612" r="2.2" />
+      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.86s", "--ikdur": "0.45s" } as React.CSSProperties} d="M405,605 C392,620 432,624 423,604 C416,592 398,598 402,612" />
+      {/* the loose tail — the knot never quite finished */}
+      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "2.06s", "--ikdur": "0.5s" } as React.CSSProperties} d="M420,622 C446,660 431,690 459,720 C469,728 477,724 471,715" />
+      {/* the cancellation — wave bars into the franking corner */}
       <g style={{ opacity: 0.55 } as React.CSSProperties}>
-        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "1.85s" } as React.CSSProperties} d="M382,92 q11,-7 22,0 t22,0 t22,0" />
-        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "1.93s" } as React.CSSProperties} d="M394,112 q11,-7 22,0 t22,0" />
-        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.02s" } as React.CSSProperties} d="M382,132 q11,-7 22,0 t22,0 t22,0" />
+        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.28s" } as React.CSSProperties} d="M408,72 q12,-8 24,0 t24,0 t24,0" />
+        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.36s" } as React.CSSProperties} d="M422,94 q12,-8 24,0 t24,0" />
+        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.45s" } as React.CSSProperties} d="M408,116 q12,-8 24,0 t24,0 t24,0" />
       </g>
-      <text className="pk-txt pk-fade" x="384" y="156" fontSize="9" letterSpacing="1.5" style={{ "--fop": 0.55, "--ikd": "2.15s" } as React.CSSProperties}>POSTAGE PAID · THE DESK</text>
-      {/* the docket corner brackets */}
-      <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "0.44s" } as React.CSSProperties} d="M36,146 L36,126 L58,126" />
-      <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "0.5s" } as React.CSSProperties} d="M584,398 L584,418 L562,418" />
-      {/* the courtesy line */}
-      <text className="pk-txt pk-end pk-fade" x="588" y="726" fontSize="9" letterSpacing="1.4" style={{ "--fop": 0.5, "--ikd": "2.28s" } as React.CSSProperties}>PLEASE DO NOT BEND</text>
-      <text className="pk-txt pk-end pk-fade" x="588" y="742" fontSize="9" letterSpacing="1.4" style={{ "--fop": 0.5, "--ikd": "2.36s" } as React.CSSProperties}>IT&rsquo;S BEEN THROUGH ENOUGH</text>
-      {/* the red working pass — prints LAST, lands just off register;
-          hover slides it home */}
-      <g className="dev-ghost" style={{ "--ikd": "2.55s" } as React.CSSProperties}>
-        <path d="M14,16 L606,16 L606,764 L14,764 Z" />
-        <path d="M345,48 C334,60 370,80 358,92" />
-        <path d="M359,48 C370,60 334,80 346,92" />
-        <path d="M352,104 C378,124 406,118 426,136" />
+      {/* the courtesy line — stamped on the exposed foot, a touch off true */}
+      <g className="pk-fade" transform="rotate(-2 120 742)" style={{ "--fop": 0.5, "--ikd": "2.6s" } as React.CSSProperties}>
+        <text className="pk-txt" x="64" y="742" fontSize="10" letterSpacing="1.6">PLEASE DO NOT BEND</text>
+        <text className="pk-txt" x="64" y="758" fontSize="10" letterSpacing="1.6">IT&rsquo;S BEEN THROUGH ENOUGH</text>
+      </g>
+      {/* the red working pass — the tie prints last, just off register */}
+      <g className="dev-ghost" style={{ "--ikd": "2.85s" } as React.CSSProperties}>
+        <path d="M64,58 C218,302 372,546 526,790" />
+        <path d="M556,50 C494,297 431,543 369,790" />
+        <circle cx="414" cy="612" r="9" fill="none" />
       </g>
     </svg>
   );
@@ -104,69 +99,28 @@ export default function Outro() {
         <p className="bs-fine">EVERYTHING ELSE IS OPTIONAL &middot; A PLAIN EMAIL BEATS A DECK</p>
       </div>
 
-      {/* THE JOB POCKET — the rest tilt lives on the inner wrapper
-          (set-in ends at transform:none) */}
+      {/* THE BUNDLE — a loose stack at varied leans, tied shut. The rest
+          leans live on the sheets; set-in ends at transform:none on the
+          wrapper, so it never fights them. */}
       <div className="pocket final" id="pocket">
-        <div className="pkt-rot">
-          <PocketSVG />
+        <div className="bd">
+          {/* the plain proof peeking from the back of the stack */}
+          <span className="bd-sheet bd-s1 pk-fade" style={{ "--ikd": "0.05s" } as CSSProperties} aria-hidden="true" />
 
-          <p className="pf pkt-job mono" style={{ "--ikd": "0.35s" } as CSSProperties}>JOB N&ordm; 004 &mdash; THE WORKING PROOF</p>
-
-          {/* the docket: you've read the sheet — you're the press-check
-              client. initials are machine-set (typed, never handwritten:
-              the hand belongs to the mess); the stamps commit on a hold,
-              and say so on their face. */}
-          <div className="pf okslip" id="okslip" style={{ "--ikd": "0.55s" } as CSSProperties}>
-            <p className="ok-head mono">PRESS CHECK &mdash; APPROVAL</p>
-            <p className="ok-sheet mono">SHEET Nº 001 &middot; WORKING PROOF &middot; <span id="ok-date"></span></p>
-            <label className="ok-by mono">CHECKED BY
-              <input id="ok-initials" type="text" maxLength={4} autoComplete="off"
-                     spellCheck="false" placeholder="&middot;&middot;&middot;&middot;" aria-label="Your initials"/>
-            </label>
-            <div className="ok-tabs">
-              <button className="ok-tab mono" type="button" data-verdict="ok" aria-pressed="false">OK TO PRINT<em>HOLD</em></button>
-              <button className="ok-tab mono" type="button" data-verdict="corr" aria-pressed="false">OK W/ CORRECTIONS<em>HOLD</em></button>
-              <button className="ok-tab mono" type="button" data-verdict="re" aria-pressed="false">REPROOF<em>HOLD</em></button>
+          {/* the packing slip sheet — exposed along the bundle's foot */}
+          <div className="bd-sheet bd-s2 pk-fade" style={{ "--ikd": "0.2s" } as CSSProperties}>
+            <div className="pf joblog mono" id="joblog" style={{ "--ikd": "0.1s" } as CSSProperties} hidden>
+              <p className="jl-head">THE JOB LOG &mdash;</p>
+              <div className="jl-scroll">
+                <ul id="jl-lines"></ul>
+                <div className="jl-rail" id="jl-rail" aria-hidden="true"><span className="jl-thumb" id="jl-thumb"></span></div>
+              </div>
+              <p className="jl-fine">THIS LOG PRINTS ON YOUR COPY ONLY. SHOP POLICY.</p>
             </div>
-            <p className="ok-fine mono">HOLD A STAMP TO COMMIT &middot; ENTER WORKS TOO &middot; RE-STAMPS NOTED</p>
-            <div className="ok-stamp mono" id="ok-stamp" aria-live="polite"></div>
           </div>
 
-          {/* the franking — the maker's mark does postal duty in the corner */}
-          <figure className="pf pressmark" style={{ "--ikd": "0.78s" } as CSSProperties}>
-            <svg className="pm-svg" viewBox="0 0 200 250" role="img" aria-labelledby="pm-title">
-              <title id="pm-title">Mark Axelus &mdash; maker's mark</title>
-              <path className="pm-brk" d="M26 58 V38 H48"/>
-              <path className="pm-brk" d="M174 212 V232 H152"/>
-              <g className="pm-ghost" id="pm-ghost" transform="translate(55 69)">
-                {PM_RECTS.map((m) => (
-                  <rect key={"g" + m.key} x={m.x} y={m.y} width={PM_MODULE} height={PM_MODULE} />
-                ))}
-              </g>
-              <g className="pm-code" id="pm-cells" transform="translate(52 66)">
-                {PM_RECTS.map((m) => (
-                  <rect key={"c" + m.key} x={m.x} y={m.y} width={PM_MODULE} height={PM_MODULE} />
-                ))}
-              </g>
-              <g className="pm-reg"><circle cx="162" cy="58" r="4.5"/><path d="M162 50 V66 M154 58 H170"/></g>
-              <rect className="pm-acid" x="150" y="150" width="7" height="7"/>
-              <text className="pm-lbl pm-dim pm-r" x="178" y="88">JOB Nº 004</text>
-              <text className="pm-lbl pm-dim pm-r" x="178" y="104">DATA // MA</text>
-              <text className="pm-lbl pm-name" x="28" y="198">MRK // AXELUS</text>
-              <text className="pm-lbl pm-dim" x="28" y="212">WORKING PROOF</text>
-              <text className="pm-lbl pm-dim pm-r" x="172" y="228">SCANS TRUE &middot; MMXIX</text>
-            </svg>
-          </figure>
-
-          {/* the return address — the headline, made literal */}
-          <div className="pf pkt-addr" style={{ "--ikd": "0.98s" } as CSSProperties}>
-            <p className="pkt-kick mono">RETURN TO &mdash;</p>
-            <p className="pkt-name">Mark Axelus</p>
-            <p className="pkt-meta mono">AT HIS DESK &middot; VICTORIA BC &middot; NO CLOSING TIME</p>
-          </div>
-
-          {/* the routing tabs — the doors out, franked onto the face */}
-          <div className="pf outro-links" style={{ "--ikd": "1.12s" } as CSSProperties}>
+          {/* the routing tabs — poking out from between the sheets */}
+          <div className="pf outro-links bd-tabs" style={{ "--ikd": "0.95s" } as CSSProperties}>
             <a className="olink mono" href="mailto:mrkaxelus@gmail.com">
               <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"><rect x="1.4" y="3.6" width="13.2" height="8.8" rx="1"/><path d="M2 4.7 8 9 14 4.7"/></svg>EMAIL&nbsp;↗
             </a>
@@ -178,15 +132,65 @@ export default function Outro() {
             </a>
           </div>
 
-          {/* the packing slip — the shop witnesses you */}
-          <div className="pf joblog mono" id="joblog" style={{ "--ikd": "0.1s" } as CSSProperties} hidden>
-            <p className="jl-head">THE JOB LOG &mdash;</p>
-            <div className="jl-scroll">
-              <ul id="jl-lines"></ul>
-              <div className="jl-rail" id="jl-rail" aria-hidden="true"><span className="jl-thumb" id="jl-thumb"></span></div>
+          {/* THE DOCKET — the top sheet; its matter flows */}
+          <div className="bd-sheet bd-s3 pk-fade" style={{ "--ikd": "0.35s" } as CSSProperties}>
+            <p className="pf pkt-job mono" style={{ "--ikd": "0.5s" } as CSSProperties}>JOB N&ordm; 004 &mdash; THE WORKING PROOF</p>
+
+            {/* the docket form: you've read the sheet — you're the press-check
+                client. initials are machine-set (typed, never handwritten:
+                the hand belongs to the mess); the stamps commit on a hold,
+                and say so on their face. */}
+            <div className="pf okslip" id="okslip" style={{ "--ikd": "0.62s" } as CSSProperties}>
+              <p className="ok-head mono">PRESS CHECK &mdash; APPROVAL</p>
+              <p className="ok-sheet mono">SHEET Nº 001 &middot; WORKING PROOF &middot; <span id="ok-date"></span></p>
+              <label className="ok-by mono">CHECKED BY
+                <input id="ok-initials" type="text" maxLength={4} autoComplete="off"
+                       spellCheck="false" placeholder="&middot;&middot;&middot;&middot;" aria-label="Your initials"/>
+              </label>
+              <div className="ok-tabs">
+                <button className="ok-tab mono" type="button" data-verdict="ok" aria-pressed="false">OK TO PRINT<em>HOLD</em></button>
+                <button className="ok-tab mono" type="button" data-verdict="corr" aria-pressed="false">OK W/ CORRECTIONS<em>HOLD</em></button>
+                <button className="ok-tab mono" type="button" data-verdict="re" aria-pressed="false">REPROOF<em>HOLD</em></button>
+              </div>
+              <p className="ok-fine mono">HOLD A STAMP TO COMMIT &middot; ENTER WORKS TOO &middot; RE-STAMPS NOTED</p>
+              <div className="ok-stamp mono" id="ok-stamp" aria-live="polite"></div>
             </div>
-            <p className="jl-fine">THIS LOG PRINTS ON YOUR COPY ONLY. SHOP POLICY.</p>
+
+            {/* the return address — the headline, made literal */}
+            <div className="pf pkt-addr" style={{ "--ikd": "0.8s" } as CSSProperties}>
+              <p className="pkt-kick mono">RETURN TO &mdash;</p>
+              <p className="pkt-name">Mark Axelus</p>
+              <p className="pkt-meta mono">AT HIS DESK &middot; VICTORIA BC &middot; NO CLOSING TIME</p>
+            </div>
+
+            {/* the franking — the maker's mark overhangs the docket corner */}
+            <figure className="pf pressmark" style={{ "--ikd": "0.9s" } as CSSProperties}>
+              <svg className="pm-svg" viewBox="0 0 200 250" role="img" aria-labelledby="pm-title">
+                <title id="pm-title">Mark Axelus &mdash; maker's mark</title>
+                <path className="pm-brk" d="M26 58 V38 H48"/>
+                <path className="pm-brk" d="M174 212 V232 H152"/>
+                <g className="pm-ghost" id="pm-ghost" transform="translate(55 69)">
+                  {PM_RECTS.map((m) => (
+                    <rect key={"g" + m.key} x={m.x} y={m.y} width={PM_MODULE} height={PM_MODULE} />
+                  ))}
+                </g>
+                <g className="pm-code" id="pm-cells" transform="translate(52 66)">
+                  {PM_RECTS.map((m) => (
+                    <rect key={"c" + m.key} x={m.x} y={m.y} width={PM_MODULE} height={PM_MODULE} />
+                  ))}
+                </g>
+                <g className="pm-reg"><circle cx="162" cy="58" r="4.5"/><path d="M162 50 V66 M154 58 H170"/></g>
+                <rect className="pm-acid" x="150" y="150" width="7" height="7"/>
+                <text className="pm-lbl pm-dim pm-r" x="178" y="88">JOB Nº 004</text>
+                <text className="pm-lbl pm-dim pm-r" x="178" y="104">DATA // MA</text>
+                <text className="pm-lbl pm-name" x="28" y="198">MRK // AXELUS</text>
+                <text className="pm-lbl pm-dim" x="28" y="212">WORKING PROOF</text>
+                <text className="pm-lbl pm-dim pm-r" x="172" y="228">SCANS TRUE &middot; MMXIX</text>
+              </svg>
+            </figure>
           </div>
+
+          <TieSVG />
         </div>
       </div>
       <OutroPocketInk />
