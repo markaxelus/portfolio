@@ -1136,8 +1136,8 @@ body.proof .op-candid { display: block; }
 .dd-moon { width: 44px; height: 40px; top: 6%; right: 34%; --tilt: -6deg; }
 .dd-plane { width: 74px; height: 50px; bottom: 24%; right: 36%; --tilt: -4deg; }
 /* the maker's mark gets fact-checked (the 2am pen tested it, obviously) */
-.n-pm { right: 26%; bottom: 34%; text-align: right; --tilt: 1.6deg; }
-.dd-pm-arrow { width: 66px; height: 32px; right: 21.5%; bottom: 33%; --tilt: 0deg; }
+.n-pm { right: 30%; top: 9%; bottom: auto; text-align: right; --tilt: 1.6deg; }
+.dd-pm-arrow { width: 66px; height: 32px; right: 25.5%; top: 7.5%; bottom: auto; --tilt: 0deg; }
 .dd-pm-arrow .draw { stroke: var(--graphite); }
 
 /* some doodles in pencil, some in pen */
@@ -1466,13 +1466,30 @@ body.proof .op-candid { display: block; }
 }
 .colophon {
   grid-column: 1;
-  grid-row: 2;
+  grid-row: 3;
   align-self: end;
   text-align: left;
   opacity: 0.72;
   font-size: 0.58rem;
   margin-top: 2.4rem;
 }
+
+/* the spec — the docket voice answers the headline (A BRIEF, FOR THIS
+   SHOP); the column the headline opens is measured, not empty */
+.outro-title { grid-column: 1; grid-row: 1; }
+.brief-spec { grid-column: 1; grid-row: 2; align-self: start; margin: 1.4rem 0 0 0.2rem; max-width: 30rem; }
+.bs-head { font-size: 0.6rem; letter-spacing: 0.2em; opacity: 0.8; margin-bottom: 0.55rem; }
+.bs-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  border-top: 1px solid var(--hairline);
+  padding: 0.5rem 0.1rem 0.5rem 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+}
+.bs-n { color: var(--accent); font-size: 0.56rem; letter-spacing: 0.16em; }
+.bs-fine { font-size: 0.52rem; letter-spacing: 0.14em; opacity: 0.5; border-top: 1px solid var(--hairline); padding-top: 0.55rem; }
 
 /* ---------- THE JOB POCKET: the finished run, jacketed for return ------
    the manila job jacket every real print job travels in, its docket
@@ -1483,7 +1500,7 @@ body.proof .op-candid { display: block; }
    the red pass rides off register and slides home on hover. */
 .pocket {
   grid-column: 2;
-  grid-row: 1 / span 2;
+  grid-row: 1 / span 3;
   position: relative;
   z-index: 2;
   width: 100%;
@@ -1520,9 +1537,37 @@ body.proof .op-candid { display: block; }
   transition: transform 0.45s var(--ease-out);
 }
 .pocket:hover .dev-ghost { transform: translate(0, 0); }
+/* the print: base = printed (SSR/no-js/print); .ink-armed strips the
+   strokes + the face's matter; .inked strikes it — the jacket rules
+   itself, the face prints, the franking cancels, the string TIES ITSELF
+   SHUT, the red pass lands (imp-* keyframes shared with the imprint) */
+.pocket .pk-fade { opacity: var(--fop, 1); }
+.pocket.ink-armed .pk-draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.pocket.ink-armed .pk-fade,
+.pocket.ink-armed .pf { opacity: 0; }
+.pocket.ink-armed:not(.inked) .dev-ghost { opacity: 0; }
+.pocket.inked .pk-draw {
+  animation: imp-ink var(--ikdur, 0.6s) var(--ease-out) both;
+  animation-delay: var(--ikd, 0s);
+}
+.pocket.inked .pk-fade,
+.pocket.inked .pf {
+  animation: imp-fade 0.5s var(--ease-out) both;
+  animation-delay: var(--ikd, 0s);
+}
+.pocket.inked .dev-ghost {
+  animation: imp-redpass 0.6s var(--ease-out) backwards;
+  animation-delay: var(--ikd, 2.55s);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pocket.ink-armed .pk-draw { stroke-dasharray: none; stroke-dashoffset: 0; }
+  .pocket.ink-armed .pk-fade,
+  .pocket.ink-armed .pf { opacity: var(--fop, 1); }
+  .pocket.ink-armed:not(.inked) .dev-ghost { opacity: 0.4; }
+}
 /* the face's printed matter */
 .pf { position: absolute; }
-.pkt-job { left: 6%; top: 4%; font-size: 0.58rem; letter-spacing: 0.2em; opacity: 0.8; }
+.pkt-job { left: 6%; top: 4%; font-size: 0.56rem; letter-spacing: 0.16em; opacity: 0.8; }
 .pkt-addr { left: 6%; top: 60%; }
 .pkt-kick { font-size: 0.54rem; letter-spacing: 0.22em; opacity: 0.55; }
 .pkt-name {
@@ -3080,8 +3125,8 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
 .dd-tries { left: 27%; top: 28%; width: 118px; height: 76px; --tilt: 3deg; }
 .n-tries { left: 35%; top: 35%; text-align: left; --tilt: -2deg; }
 
-.dd-rip { right: 27%; bottom: 13%; width: 130px; }
-.n-rip { right: 21%; bottom: 5%; --tilt: 2deg; text-align: center; }
+.dd-rip { right: auto; left: 45%; bottom: 8%; width: 130px; }
+.n-rip { right: auto; left: 44%; bottom: 2.5%; --tilt: 2deg; text-align: center; }
 
 @media (max-width: 820px) {
   .dd-ttt, .n-ttt, .argue, .dd-map, .n-map,
@@ -3585,9 +3630,23 @@ body.proof .impline { opacity: 0 !important; }
   .ok-stamp { right: 0.2rem; }
   .outro { display: block; }
   .pocket { max-width: none; margin: 1.6rem 0 0; }
-  .pkt-rot { transform: rotate(0.8deg); }
+  /* the pocket flattens into a bordered jacket panel: the engraved art
+     goes, the printed matter FLOWS — same trick as the print sheet */
+  .pkt-rot {
+    transform: rotate(0.8deg);
+    border: 1px solid var(--ink);
+    background: color-mix(in srgb, var(--ink) 5%, transparent);
+    padding: 1rem 1rem 1.2rem;
+  }
+  .pkt-rot > svg { display: none; }
+  .pf { position: static; width: auto; margin: 0 0 1.1rem; }
+  .pf.pressmark { width: 150px; margin: 0.4rem 0 1rem; }
+  .pocket .outro-links { flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 0.5rem; }
+  .pocket .joblog { width: auto; margin-bottom: 0.2rem; }
   .ok-tabs { flex-direction: column; gap: 0.45rem; }
   .ok-tabs .ok-tab { transform: none; }
+  .brief-spec { margin: 1.2rem 0 0; }
+  .out-sq, .out-tick { display: none; }
   .colophon { margin-top: 1.8rem; }
 }
 
@@ -3657,7 +3716,7 @@ body.proof .impline { opacity: 0 !important; }
   .pocket { max-width: none !important; margin: 0 !important; }
   .pkt-rot { transform: none !important; }
   .pkt-rot > svg { display: none !important; }
-  .pf { position: static !important; margin: 4mm 0 !important; width: auto !important; }
+  .pf { position: static !important; margin: 4mm 0 !important; width: auto !important; animation: none !important; opacity: 1 !important; }
   .pocket .outro-links { display: none !important; }
   .ok-stamp { position: static !important; display: inline-block; margin-top: 3mm; }
 }

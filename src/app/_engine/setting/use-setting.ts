@@ -115,7 +115,7 @@ export function useSetting(): void {
       });
     };
     armGroup(".desk-rows .desk-row", 0.3);
-    armGroup(".pocket, .colophon", 0.34);
+    armGroup(".pocket, .brief-spec, .colophon", 0.34);
     /* the imprint's pieces are TOSSED on, not dealt — the chart, the voice
        line, the two credits and the folio each set on their own seeded clock
        (the chart's stroke-by-stroke ink-in is its OWN act, armed separately) */

@@ -4,6 +4,7 @@ import { useRef, type CSSProperties } from "react";
 import { useJobLog } from "@/app/_engine/outro/useJobLog";
 import { useOkSlip } from "@/app/_engine/outro/useOkSlip";
 import { PM_MODULE, PM_RECTS } from "@/app/_engine/outro/pressmark";
+import OutroPocketInk from "./OutroPocketInk";
 
 /**
  * THE OUTRO — THE JOB POCKET (the finished run goes home in its jacket).
@@ -32,42 +33,44 @@ import { PM_MODULE, PM_RECTS } from "@/app/_engine/outro/pressmark";
 function PocketSVG() {
   return (
     <svg viewBox="0 0 620 780" aria-hidden="true">
-      {/* the jacket face (tinted) + inner edge */}
-      <path className="pk-face" d="M14,16 L606,16 L606,764 L14,764 Z" />
-      <path className="pk-fine" d="M14,30 L606,30" />
-      <path className="pk-fine" style={{ opacity: 0.3 }} d="M26,30 L26,764" />
+      {/* the jacket face (tinted; the blank arrives with the set-down —
+          only the PRINT strikes in) + inner edge */}
+      <path pathLength={1} className="pk-face pk-draw" style={{ "--ikd": "0.05s", "--ikdur": "0.8s" } as React.CSSProperties} d="M14,16 L606,16 L606,764 L14,764 Z" />
+      <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "0.3s" } as React.CSSProperties} d="M14,30 L606,30" />
+      <path pathLength={1} className="pk-fine pk-draw" style={{ opacity: 0.3, "--ikd": "0.38s" } as React.CSSProperties} d="M26,30 L26,764" />
       {/* gusset ticks — the pocket has a spine */}
-      <g className="pk-fine" style={{ opacity: 0.45 }}>
+      <g className="pk-fine pk-fade" style={{ "--fop": 0.45, "--ikd": "0.52s" } as React.CSSProperties}>
         <path d="M14,210 L26,220 M14,300 L26,310 M14,390 L26,400 M14,480 L26,490 M14,570 L26,580" />
         <path d="M150,764 L160,752 M260,764 L270,752 M370,764 L380,752 M480,764 L490,752" />
       </g>
-      {/* the string-and-button tie */}
-      <circle className="pk-line" cx="336" cy="44" r="8" />
-      <circle className="pk-dot" cx="336" cy="44" r="2" />
-      <circle className="pk-line" cx="336" cy="96" r="8" />
-      <circle className="pk-dot" cx="336" cy="96" r="2" />
-      <path className="pk-string" d="M329,48 C318,60 354,80 342,92" />
-      <path className="pk-string" d="M343,48 C354,60 318,80 330,92" />
-      <path className="pk-string" d="M336,104 C362,124 390,118 410,136 C418,142 414,148 406,145" />
-      {/* the cancellation — wave bars running into the franking corner */}
-      <g className="pk-fine" style={{ opacity: 0.55 }}>
-        <path d="M382,92 q11,-7 22,0 t22,0 t22,0" />
-        <path d="M394,112 q11,-7 22,0 t22,0" />
-        <path d="M382,132 q11,-7 22,0 t22,0 t22,0" />
+      {/* the string-and-button tie — it TIES ITSELF SHUT, last of the ink */}
+      <circle className="pk-line pk-fade" style={{ "--ikd": "0.95s" } as React.CSSProperties} cx="352" cy="44" r="8" />
+      <circle className="pk-dot pk-fade" style={{ "--ikd": "1.0s" } as React.CSSProperties} cx="352" cy="44" r="2" />
+      <circle className="pk-line pk-fade" style={{ "--ikd": "0.9s" } as React.CSSProperties} cx="352" cy="96" r="8" />
+      <circle className="pk-dot pk-fade" style={{ "--ikd": "0.97s" } as React.CSSProperties} cx="352" cy="96" r="2" />
+      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.1s", "--ikdur": "0.5s" } as React.CSSProperties} d="M345,48 C334,60 370,80 358,92" />
+      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.32s", "--ikdur": "0.5s" } as React.CSSProperties} d="M359,48 C370,60 334,80 346,92" />
+      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.56s", "--ikdur": "0.55s" } as React.CSSProperties} d="M352,104 C378,124 406,118 426,136 C434,142 430,148 422,145" />
+      {/* the cancellation — wave bars strike through the franking corner */}
+      <g style={{ opacity: 0.55 } as React.CSSProperties}>
+        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "1.85s" } as React.CSSProperties} d="M382,92 q11,-7 22,0 t22,0 t22,0" />
+        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "1.93s" } as React.CSSProperties} d="M394,112 q11,-7 22,0 t22,0" />
+        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.02s" } as React.CSSProperties} d="M382,132 q11,-7 22,0 t22,0 t22,0" />
       </g>
-      <text className="pk-txt" x="384" y="156" fontSize="9" letterSpacing="1.5" style={{ opacity: 0.55 }}>POSTAGE PAID · THE DESK</text>
+      <text className="pk-txt pk-fade" x="384" y="156" fontSize="9" letterSpacing="1.5" style={{ "--fop": 0.55, "--ikd": "2.15s" } as React.CSSProperties}>POSTAGE PAID · THE DESK</text>
       {/* the docket corner brackets */}
-      <path className="pk-fine" d="M36,146 L36,126 L58,126" />
-      <path className="pk-fine" d="M584,398 L584,418 L562,418" />
+      <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "0.44s" } as React.CSSProperties} d="M36,146 L36,126 L58,126" />
+      <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "0.5s" } as React.CSSProperties} d="M584,398 L584,418 L562,418" />
       {/* the courtesy line */}
-      <text className="pk-txt pk-end" x="588" y="726" fontSize="9" letterSpacing="1.4" style={{ opacity: 0.5 }}>PLEASE DO NOT BEND</text>
-      <text className="pk-txt pk-end" x="588" y="742" fontSize="9" letterSpacing="1.4" style={{ opacity: 0.5 }}>IT&rsquo;S BEEN THROUGH ENOUGH</text>
-      {/* the red working pass — off register; hover slides it home */}
-      <g className="dev-ghost">
+      <text className="pk-txt pk-end pk-fade" x="588" y="726" fontSize="9" letterSpacing="1.4" style={{ "--fop": 0.5, "--ikd": "2.28s" } as React.CSSProperties}>PLEASE DO NOT BEND</text>
+      <text className="pk-txt pk-end pk-fade" x="588" y="742" fontSize="9" letterSpacing="1.4" style={{ "--fop": 0.5, "--ikd": "2.36s" } as React.CSSProperties}>IT&rsquo;S BEEN THROUGH ENOUGH</text>
+      {/* the red working pass — prints LAST, lands just off register;
+          hover slides it home */}
+      <g className="dev-ghost" style={{ "--ikd": "2.55s" } as React.CSSProperties}>
         <path d="M14,16 L606,16 L606,764 L14,764 Z" />
-        <path d="M329,48 C318,60 354,80 342,92" />
-        <path d="M343,48 C354,60 318,80 330,92" />
-        <path d="M336,104 C362,124 390,118 410,136" />
+        <path d="M345,48 C334,60 370,80 358,92" />
+        <path d="M359,48 C370,60 334,80 346,92" />
+        <path d="M352,104 C378,124 406,118 426,136" />
       </g>
     </svg>
   );
@@ -91,19 +94,29 @@ export default function Outro() {
         </svg>
       </div>
 
+      {/* the spec: what a brief needs, in the docket's own voice — the
+          column the headline opens is measured, not empty */}
+      <div className="brief-spec mono final">
+        <p className="bs-head">A BRIEF, FOR THIS SHOP &mdash;</p>
+        <p className="bs-row"><span className="bs-n">01</span>THE PROBLEM, IN A SENTENCE</p>
+        <p className="bs-row"><span className="bs-n">02</span>THE DEADLINE, HONESTLY</p>
+        <p className="bs-row"><span className="bs-n">03</span>THE BUDGET, ROUGHLY</p>
+        <p className="bs-fine">EVERYTHING ELSE IS OPTIONAL &middot; A PLAIN EMAIL BEATS A DECK</p>
+      </div>
+
       {/* THE JOB POCKET — the rest tilt lives on the inner wrapper
           (set-in ends at transform:none) */}
       <div className="pocket final" id="pocket">
         <div className="pkt-rot">
           <PocketSVG />
 
-          <p className="pf pkt-job mono">JOB N&ordm; 004 &mdash; THE WORKING PROOF</p>
+          <p className="pf pkt-job mono" style={{ "--ikd": "0.35s" } as CSSProperties}>JOB N&ordm; 004 &mdash; THE WORKING PROOF</p>
 
           {/* the docket: you've read the sheet — you're the press-check
               client. initials are machine-set (typed, never handwritten:
               the hand belongs to the mess); the stamps commit on a hold,
               and say so on their face. */}
-          <div className="pf okslip" id="okslip">
+          <div className="pf okslip" id="okslip" style={{ "--ikd": "0.55s" } as CSSProperties}>
             <p className="ok-head mono">PRESS CHECK &mdash; APPROVAL</p>
             <p className="ok-sheet mono">SHEET Nº 001 &middot; WORKING PROOF &middot; <span id="ok-date"></span></p>
             <label className="ok-by mono">CHECKED BY
@@ -120,7 +133,7 @@ export default function Outro() {
           </div>
 
           {/* the franking — the maker's mark does postal duty in the corner */}
-          <figure className="pf pressmark">
+          <figure className="pf pressmark" style={{ "--ikd": "0.78s" } as CSSProperties}>
             <svg className="pm-svg" viewBox="0 0 200 250" role="img" aria-labelledby="pm-title">
               <title id="pm-title">Mark Axelus &mdash; maker's mark</title>
               <path className="pm-brk" d="M26 58 V38 H48"/>
@@ -137,7 +150,7 @@ export default function Outro() {
               </g>
               <g className="pm-reg"><circle cx="162" cy="58" r="4.5"/><path d="M162 50 V66 M154 58 H170"/></g>
               <rect className="pm-acid" x="150" y="150" width="7" height="7"/>
-              <text className="pm-lbl pm-dim pm-r" x="178" y="88">JOB Nº 07</text>
+              <text className="pm-lbl pm-dim pm-r" x="178" y="88">JOB Nº 004</text>
               <text className="pm-lbl pm-dim pm-r" x="178" y="104">DATA // MA</text>
               <text className="pm-lbl pm-name" x="28" y="198">MRK // AXELUS</text>
               <text className="pm-lbl pm-dim" x="28" y="212">WORKING PROOF</text>
@@ -146,14 +159,14 @@ export default function Outro() {
           </figure>
 
           {/* the return address — the headline, made literal */}
-          <div className="pf pkt-addr">
+          <div className="pf pkt-addr" style={{ "--ikd": "0.98s" } as CSSProperties}>
             <p className="pkt-kick mono">RETURN TO &mdash;</p>
             <p className="pkt-name">Mark Axelus</p>
             <p className="pkt-meta mono">AT HIS DESK &middot; VICTORIA BC &middot; NO CLOSING TIME</p>
           </div>
 
           {/* the routing tabs — the doors out, franked onto the face */}
-          <div className="pf outro-links">
+          <div className="pf outro-links" style={{ "--ikd": "1.12s" } as CSSProperties}>
             <a className="olink mono" href="mailto:mrkaxelus@gmail.com">
               <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"><rect x="1.4" y="3.6" width="13.2" height="8.8" rx="1"/><path d="M2 4.7 8 9 14 4.7"/></svg>EMAIL&nbsp;↗
             </a>
@@ -166,7 +179,7 @@ export default function Outro() {
           </div>
 
           {/* the packing slip — the shop witnesses you */}
-          <div className="pf joblog mono" id="joblog" hidden>
+          <div className="pf joblog mono" id="joblog" style={{ "--ikd": "0.1s" } as CSSProperties} hidden>
             <p className="jl-head">THE JOB LOG &mdash;</p>
             <div className="jl-scroll">
               <ul id="jl-lines"></ul>
@@ -176,6 +189,7 @@ export default function Outro() {
           </div>
         </div>
       </div>
+      <OutroPocketInk />
 
       {/* scattered furniture — punctuate the void between type and pocket */}
       <span className="out-sq" aria-hidden="true" />
