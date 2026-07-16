@@ -599,6 +599,13 @@ body.hero-set .plates-decal {
   max-width: 22ch;
   opacity: 0.82;
 }
+.mile-aside {
+  display: block;
+  font-style: italic;
+  font-size: 0.86em;
+  opacity: 0.55;
+  margin-top: 0.18rem;
+}
 .mile-label-gap { opacity: 0.5; }
 .mile-label-gap .mile-year { color: var(--graphite); }
 .gap-fact { opacity: 0.4; }
@@ -644,7 +651,9 @@ body.hero-set .plates-decal {
   position: relative;
   max-width: 1240px;
   margin: 0 auto;
-  min-height: clamp(460px, 44vw, 620px);
+  /* tracks the chart's own height (width-proportional) so the after-hours
+     credit always tucks just under the torn bottom edge at any viewport */
+  min-height: calc(min(61vw, 781px) * 0.718 + 7.2rem);
 }
 
 /* ---- THE CHART: the torn fragment. Neatline edges (top + right) are
@@ -653,7 +662,7 @@ body.hero-set .plates-decal {
    at transform:none). ---- */
 .imp-chart {
   position: absolute;
-  top: -3.4rem;
+  top: 0.5rem;
   right: clamp(-4.5rem, -3vw, -1.5rem);
   width: min(63%, 800px);
   z-index: 1;
@@ -824,6 +833,9 @@ body.hero-set .plates-decal {
   outline: none;
 }
 .imp-ext { font-size: 0.32em; vertical-align: 0.75em; letter-spacing: 0; }
+/* the credit without a url — same ink, no link affordances */
+.imp-oa-still { text-decoration: none; cursor: default; }
+.imp-oa-still:hover { background: none; color: var(--accent); }
 .imp-meta { font-size: 0.62rem; letter-spacing: 0.09em; margin-top: 0.7rem; }
 .imp-bfr {
   font-size: 0.54rem;
@@ -835,7 +847,7 @@ body.hero-set .plates-decal {
 }
 
 /* ---- AFTER HOURS: the standing credit, low on the water ---- */
-.imp-desk { position: absolute; left: 63%; bottom: 3.5%; z-index: 5; }
+.imp-desk { position: absolute; left: 63%; bottom: 2%; z-index: 5; }
 .imp-desk .imp-rot { transform: rotate(1.3deg); transform-origin: left top; }
 .imp-deskname {
   display: inline-block;

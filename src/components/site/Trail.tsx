@@ -37,8 +37,8 @@ export default function Trail() {
           <div className="mile-label"><p className="mile-year mono">2022</p><p className="mile-fact">Picked CS at university. Couldn&rsquo;t tell you why.</p></div>
           <div className="mile-label"><p className="mile-year mono">2023</p><p className="mile-fact">First all-nighter that produced something worth keeping.</p></div>
           <div className="mile-label mile-label-gap"><p className="mile-year mono">2024</p><p className="mile-fact gap-fact">&mdash;</p></div>
-          <div className="mile-label"><p className="mile-year mono">2025</p><p className="mile-fact">Started building AI systems. The stakes turned real.</p></div>
-          <div className="mile-label"><p className="mile-year mono is-now-year">2026</p><p className="mile-fact">You&rsquo;re here, reading this.</p></div>
+          <div className="mile-label"><p className="mile-year mono">2025</p><p className="mile-fact">Started building AI systems. The stakes turned real.<span className="mile-aside">(no idea what I&rsquo;m doing)</span></p></div>
+          <div className="mile-label"><p className="mile-year mono is-now-year">2026</p><p className="mile-fact">You&rsquo;re here, reading this.<span className="mile-aside">(still no idea what I&rsquo;m doing)</span></p></div>
         </div>
       </div>
       <div className="proof-notes" aria-hidden="true">

@@ -27,7 +27,22 @@ import ImprintChartInk from "./ImprintChartInk";
  * machine-set, no hand marks.
  */
 
-/* the engraved marlin — the resident, drawn once. pathLength=1 on every
+/* THE FACTS — the only lines that change when life does. The chart never
+   names the employer (its two stations are the universal fiction: the day
+   shift rides out there, the desk is home port), so a new job, a startup,
+   or no logo at all is an edit HERE and nowhere else. url is optional —
+   without it the credit sets as plain type, no link. */
+const SHIFT01 = {
+  name: "OceanAID",
+  url: "https://oceanaid.ca" as string | null,
+  title: "JUNIOR SOFTWARE ENGINEER \u00b7 VICTORIA BC",
+  kick: "CURRENTLY \u00b7 MAY 2026 \u2014",
+  hours: "09\u201317",
+};
+const BEFORE = "BEFORE \u2014 AI SYSTEMS DEVELOPER \u00b7 UNIV. OF VICTORIA \u00b7 2026";
+
+/* the engraved marlin — the house device (the press's own mark, swimming
+   home waters — employer-agnostic), drawn once. pathLength=1 on every
    stroke so the fish can ink itself in stroke-by-stroke. */
 function MarlinG() {
   return (
@@ -168,7 +183,7 @@ function ChartSVG() {
 
       {/* the resident */}
       <MarlinG />
-      {T(536, 478, 10, 0.5, "0.98s", "MAKAIRA sp. · RESIDENT", undefined, 2.4)}
+      {T(445, 478, 10, 0.5, "0.98s", "MAKAIRA sp. · THE MARK OF THE PRESS", undefined, 2)}
 
       {/* the red working pass — off register; hover slides it home */}
       <g className="dev-ghost ck-fade" style={{ "--fop": 0.4, "--ikd": "1.05s" } as React.CSSProperties}>
@@ -196,7 +211,7 @@ export default function Imprint() {
             {/* station labels — the desk clock lights the RUNNING one;
                 DOM order is the engine contract: day first, night second */}
             <span className="imp-sta imp-sta-oa mono">
-              <span className="shf-row">OCEANAID &middot; 09&ndash;17</span>
+              <span className="shf-row">SHIFT 01 &middot; {SHIFT01.hours}</span>
               <i>DAY STATION</i>
             </span>
             <span className="imp-sta imp-sta-desk mono">
@@ -217,12 +232,16 @@ export default function Imprint() {
 
         {/* CURRENT — the dominant credit, overlapping the torn edge */}
         <div className="imp-cur imp-piece">
-          <p className="imp-kick mono">CURRENTLY &middot; MAY 2026 &mdash;</p>
-          <a className="imp-oa" href="https://oceanaid.ca" target="_blank" rel="noopener">
-            OceanAID<span className="imp-ext mono" aria-hidden="true">&#8202;&#8599;</span>
-          </a>
-          <p className="imp-meta mono">JUNIOR SOFTWARE ENGINEER &middot; VICTORIA BC</p>
-          <p className="imp-bfr mono">BEFORE &mdash; AI SYSTEMS DEVELOPER &middot; UNIV. OF VICTORIA &middot; 2024&ndash;26</p>
+          <p className="imp-kick mono">{SHIFT01.kick}</p>
+          {SHIFT01.url ? (
+            <a className="imp-oa" href={SHIFT01.url} target="_blank" rel="noopener">
+              {SHIFT01.name}<span className="imp-ext mono" aria-hidden="true">&#8202;&#8599;</span>
+            </a>
+          ) : (
+            <span className="imp-oa imp-oa-still">{SHIFT01.name}</span>
+          )}
+          <p className="imp-meta mono">{SHIFT01.title}</p>
+          <p className="imp-bfr mono">{BEFORE}</p>
         </div>
 
         {/* AFTER HOURS — the standing credit, low on the water. The rest
