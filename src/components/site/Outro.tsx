@@ -57,9 +57,9 @@ function TieSVG() {
         <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.45s" } as React.CSSProperties} d="M408,116 q12,-8 24,0 t24,0 t24,0" />
       </g>
       {/* the courtesy line — stamped on the exposed foot, a touch off true */}
-      <g className="pk-fade" transform="rotate(-2 120 742)" style={{ "--fop": 0.5, "--ikd": "2.6s" } as React.CSSProperties}>
-        <text className="pk-txt" x="64" y="742" fontSize="10" letterSpacing="1.6">PLEASE DO NOT BEND</text>
-        <text className="pk-txt" x="64" y="758" fontSize="10" letterSpacing="1.6">IT&rsquo;S BEEN THROUGH ENOUGH</text>
+      <g className="pk-fade" transform="rotate(-2 420 742)" style={{ "--fop": 0.5, "--ikd": "2.6s" } as React.CSSProperties}>
+        <text className="pk-txt" x="398" y="742" fontSize="10" letterSpacing="1.6">PLEASE DO NOT BEND</text>
+        <text className="pk-txt" x="398" y="758" fontSize="10" letterSpacing="1.6">IT&rsquo;S BEEN THROUGH ENOUGH</text>
       </g>
       {/* the red working pass — the tie prints last, just off register */}
       <g className="dev-ghost" style={{ "--ikd": "2.85s" } as React.CSSProperties}>

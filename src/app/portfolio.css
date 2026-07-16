@@ -1418,7 +1418,7 @@ body.proof .op-candid { display: block; }
 .outro {
   position: relative;
   overflow-x: clip;   /* the bundle + its tie bleed right, never widen the ICB */
-  padding: 0 1.4vw 80px;        /* clears the fixed SEE THE MESS corner (~62px tall) so the footer isn't on top of it */
+  padding: 2.6rem 1.4vw 80px;        /* clears the fixed SEE THE MESS corner (~62px tall) so the footer isn't on top of it */
   display: grid;
   /* full-bleed section, CAPPED tracks: [gutter] [voice] [bundle] [gutter]
      — at laptop widths the gutters collapse to ~0 (identical layout); on
@@ -1512,7 +1512,7 @@ body.proof .op-candid { display: block; }
   justify-self: end;
   /* air off the right edge; the gutter track does the heavy lifting on
      wide screens */
-  margin: 0.6rem clamp(1.5rem, 3vw, 3.5rem) 0 0;
+  margin: 3.6rem clamp(1.5rem, 3vw, 3.5rem) 0 0;
 }
 /* the stack: three sheets at their own leans — the pile language. No
    outline wraps the object; the sheets' offset edges and the tie carry it */
@@ -2139,8 +2139,8 @@ body.spec-set .foldline i { animation: tickin 0.4s var(--ease-out) 1.55s both; }
 /* outro coffee counter */
 .d-outro {
   position: absolute;
-  left: 1.4vw;
-  top: 0;
+  right: 1.4vw;
+  top: 0.6rem;
   z-index: 6;
   pointer-events: none;
   text-align: right;
@@ -3161,8 +3161,8 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
 }
 .todo-head { color: var(--pencil); font-size: 0.52rem; margin-bottom: 0.25rem; }
 
-.dd-map { left: 2%; bottom: -0.4rem; width: 180px; }
-.n-map { left: 2%; bottom: -2.6rem; --tilt: -1.5deg; }
+.dd-map { left: 2%; bottom: 2.6rem; width: 180px; }
+.n-map { left: 2%; bottom: 0.6rem; --tilt: -1.5deg; }
 
 /* the passers-by, in the 2am hand — left of the cairn, clear of the tower */
 .n-cairn-a { left: 7%; top: 26%; --tilt: -3deg; font-size: 1.2rem; }
