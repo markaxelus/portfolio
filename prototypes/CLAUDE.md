@@ -119,11 +119,18 @@ signatures (Mark counts these himself):
   make it asymmetrical. That's what the rest of the page has." LESSON (two
   halves): a section must BE one real print-world object — but TYPOGRAPHY
   ALONE IS NOT AN OBJECT on this site. Every living section has a crafted
-  VISUAL ASSET plus a gesture (line/plate/cairn/specimen). Resolved as
-  FIG.2 — THE HARBOUR CHART (v6): an engraved torn chart of Victoria + the
-  strait, two stations lit by the desk clock, the daily passage dashed
-  between, the marlin as RESIDENT (the fish finally motivated — it swims
-  beside the ocean org), ink-in on entry, red pass registers on hover.
+  VISUAL ASSET plus a gesture (line/plate/cairn/specimen). The v6 HARBOUR
+  CHART (engraved strait + marlin) nailed asset+gesture but died on a
+  SECOND law — Mark: the figure's CONTENT was ocean-sector-specific; a sea
+  chart reads "ocean job" whatever the labels say, and dies the day the
+  job changes. Resolved as FIG.2 — THE DESK, SURVEYED (v7, 81bfb32): an
+  architect's plan of the desk itself — the one subject employment can't
+  invalidate. The chair = SHIFT 02 · NIGHT STATION; SHIFT 01 = the commute
+  dashing OFF THE PLAN's edge (any employer/startup is "the station off
+  this sheet"); facts in one SHIFT01 config block; ink-in on entry, red
+  pass registers on hover, live RUNNING lamps. LESSON: the figure must be
+  tied to the DESK or the PLACE, never the employer's industry — and the
+  editable facts live in one config block, never in the artwork.
 
 ---
 
