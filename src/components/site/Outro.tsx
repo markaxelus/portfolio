@@ -5,6 +5,74 @@ import { useJobLog } from "@/app/_engine/outro/useJobLog";
 import { useOkSlip } from "@/app/_engine/outro/useOkSlip";
 import { PM_MODULE, PM_RECTS } from "@/app/_engine/outro/pressmark";
 
+/**
+ * THE OUTRO — THE JOB POCKET (the finished run goes home in its jacket).
+ *
+ * The section's object is the JOB POCKET: the manila jacket every real
+ * print job travels in, with the docket printed on its face. It unifies
+ * everything the outro earned instead of scattering it down a rail:
+ *   · the PRESS CHECK is the docket form (same #okslip machinery — the
+ *     initials field, three hold-to-commit stamp pads, the steel stamp
+ *     that thunks in over the pocket's edge),
+ *   · the MAKER'S MARK is the franking, top corner, cancelled with wave
+ *     bars (POSTAGE PAID · THE DESK),
+ *   · EMAIL / GITHUB / LINKEDIN are the routing tabs on the face,
+ *   · the JOB LOG is the packing slip, lower-left of the face,
+ *   · the RETURN ADDRESS makes the headline literal — RETURN TO — MARK
+ *     AXELUS · AT HIS DESK · VICTORIA BC,
+ *   · the string-and-button tie holds the top edge; the red working pass
+ *     rides off register and slides home on hover (the plate gesture).
+ * "Got a brief? / Write to me." stays the display voice, left; the pocket
+ * sits tilted on the right, grazing past the sheet edge. FINAL layer —
+ * machine-set; the mess argues in the margins as always.
+ */
+
+/* the jacket, engraved: edges + gussets, the string-and-button tie, the
+   cancellation over the franking corner, the courtesy line. One red pass. */
+function PocketSVG() {
+  return (
+    <svg viewBox="0 0 620 780" aria-hidden="true">
+      {/* the jacket face (tinted) + inner edge */}
+      <path className="pk-face" d="M14,16 L606,16 L606,764 L14,764 Z" />
+      <path className="pk-fine" d="M14,30 L606,30" />
+      <path className="pk-fine" style={{ opacity: 0.3 }} d="M26,30 L26,764" />
+      {/* gusset ticks — the pocket has a spine */}
+      <g className="pk-fine" style={{ opacity: 0.45 }}>
+        <path d="M14,210 L26,220 M14,300 L26,310 M14,390 L26,400 M14,480 L26,490 M14,570 L26,580" />
+        <path d="M150,764 L160,752 M260,764 L270,752 M370,764 L380,752 M480,764 L490,752" />
+      </g>
+      {/* the string-and-button tie */}
+      <circle className="pk-line" cx="336" cy="44" r="8" />
+      <circle className="pk-dot" cx="336" cy="44" r="2" />
+      <circle className="pk-line" cx="336" cy="96" r="8" />
+      <circle className="pk-dot" cx="336" cy="96" r="2" />
+      <path className="pk-string" d="M329,48 C318,60 354,80 342,92" />
+      <path className="pk-string" d="M343,48 C354,60 318,80 330,92" />
+      <path className="pk-string" d="M336,104 C362,124 390,118 410,136 C418,142 414,148 406,145" />
+      {/* the cancellation — wave bars running into the franking corner */}
+      <g className="pk-fine" style={{ opacity: 0.55 }}>
+        <path d="M382,92 q11,-7 22,0 t22,0 t22,0" />
+        <path d="M394,112 q11,-7 22,0 t22,0" />
+        <path d="M382,132 q11,-7 22,0 t22,0 t22,0" />
+      </g>
+      <text className="pk-txt" x="384" y="156" fontSize="9" letterSpacing="1.5" style={{ opacity: 0.55 }}>POSTAGE PAID · THE DESK</text>
+      {/* the docket corner brackets */}
+      <path className="pk-fine" d="M36,146 L36,126 L58,126" />
+      <path className="pk-fine" d="M584,398 L584,418 L562,418" />
+      {/* the courtesy line */}
+      <text className="pk-txt pk-end" x="588" y="726" fontSize="9" letterSpacing="1.4" style={{ opacity: 0.5 }}>PLEASE DO NOT BEND</text>
+      <text className="pk-txt pk-end" x="588" y="742" fontSize="9" letterSpacing="1.4" style={{ opacity: 0.5 }}>IT&rsquo;S BEEN THROUGH ENOUGH</text>
+      {/* the red working pass — off register; hover slides it home */}
+      <g className="dev-ghost">
+        <path d="M14,16 L606,16 L606,764 L14,764 Z" />
+        <path d="M329,48 C318,60 354,80 342,92" />
+        <path d="M343,48 C354,60 318,80 330,92" />
+        <path d="M336,104 C362,124 390,118 410,136" />
+      </g>
+    </svg>
+  );
+}
+
 export default function Outro() {
   const rootRef = useRef<HTMLElement>(null);
   // the shop witnesses you (owns api.logAct) — mounted first so the OK slip's
@@ -23,81 +91,95 @@ export default function Outro() {
         </svg>
       </div>
 
-      {/* the ok slip: you've read the sheet — you're the press-check
-           client now. initials are machine-set (typed, never handwritten:
-           the hand belongs to the mess); the stamps commit on a hold,
-           and say so on their face. */}
-      {/* THE PRESS-CHECK PAIR: approve (the slip) | witness (the log), side by side */}
-      <div className="check-pair">
-      <div className="okslip final" id="okslip">
-        <p className="ok-head mono">PRESS CHECK &mdash; APPROVAL</p>
-        <p className="ok-sheet mono">SHEET Nº 001 &middot; WORKING PROOF &middot; <span id="ok-date"></span></p>
-        <label className="ok-by mono">CHECKED BY
-          <input id="ok-initials" type="text" maxLength={4} autoComplete="off"
-                 spellCheck="false" placeholder="&middot;&middot;&middot;&middot;" aria-label="Your initials"/>
-        </label>
-        <div className="ok-tabs">
-          <button className="ok-tab mono" type="button" data-verdict="ok" aria-pressed="false">OK TO PRINT<em>HOLD</em></button>
-          <button className="ok-tab mono" type="button" data-verdict="corr" aria-pressed="false">OK W/ CORRECTIONS<em>HOLD</em></button>
-          <button className="ok-tab mono" type="button" data-verdict="re" aria-pressed="false">REPROOF<em>HOLD</em></button>
-        </div>
-        <p className="ok-fine mono">HOLD A STAMP TO COMMIT &middot; ENTER WORKS TOO &middot; RE-STAMPS NOTED</p>
-        <div className="ok-stamp mono" id="ok-stamp" aria-live="polite"></div>
-      </div>
-      {/* the job log: the shop witnesses you — beside the check now */}
-      <div className="joblog mono final" id="joblog" hidden>
-        <p className="jl-head">THE JOB LOG &mdash;</p>
-        <div className="jl-scroll">
-          <ul id="jl-lines"></ul>
-          <div className="jl-rail" id="jl-rail" aria-hidden="true"><span className="jl-thumb" id="jl-thumb"></span></div>
-        </div>
-        <p className="jl-fine">THIS LOG PRINTS ON YOUR COPY ONLY. SHOP POLICY.</p>
-      </div>
-      </div>{/* /check-pair */}
+      {/* THE JOB POCKET — the rest tilt lives on the inner wrapper
+          (set-in ends at transform:none) */}
+      <div className="pocket final" id="pocket">
+        <div className="pkt-rot">
+          <PocketSVG />
 
-      <div className="outro-rail">
-      <div className="outro-links final">
-        <a className="olink mono" href="mailto:mrkaxelus@gmail.com">
-          <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"><rect x="1.4" y="3.6" width="13.2" height="8.8" rx="1"/><path d="M2 4.7 8 9 14 4.7"/></svg>EMAIL&nbsp;↗
-        </a>
-        <div className="olink-row">
-        <a className="olink mono" href="https://github.com/markaxelus" target="_blank" rel="noopener">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>GITHUB&nbsp;↗
-        </a>
-        <a className="olink mono" href="https://www.linkedin.com/in/markaxelus" target="_blank" rel="noopener">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M14.816 0H1.18C.528 0 0 .516 0 1.153v13.694C0 15.484.528 16 1.18 16h13.635c.652 0 1.185-.516 1.185-1.153V1.153C16 .516 15.468 0 14.816 0ZM4.745 13.635H2.37V6h2.375v7.635ZM3.558 4.955a1.376 1.376 0 1 1 0-2.752 1.376 1.376 0 0 1 0 2.752Zm10.074 8.68h-2.37V9.922c0-.886-.018-2.025-1.234-2.025-1.235 0-1.424.964-1.424 1.96v3.778h-2.37V6H8.51v1.04h.033c.317-.6 1.09-1.233 2.246-1.233 2.4 0 2.843 1.58 2.843 3.637v4.191Z"/></svg>LINKEDIN&nbsp;↗
-        </a>
+          <p className="pf pkt-job mono">JOB N&ordm; 004 &mdash; THE WORKING PROOF</p>
+
+          {/* the docket: you've read the sheet — you're the press-check
+              client. initials are machine-set (typed, never handwritten:
+              the hand belongs to the mess); the stamps commit on a hold,
+              and say so on their face. */}
+          <div className="pf okslip" id="okslip">
+            <p className="ok-head mono">PRESS CHECK &mdash; APPROVAL</p>
+            <p className="ok-sheet mono">SHEET Nº 001 &middot; WORKING PROOF &middot; <span id="ok-date"></span></p>
+            <label className="ok-by mono">CHECKED BY
+              <input id="ok-initials" type="text" maxLength={4} autoComplete="off"
+                     spellCheck="false" placeholder="&middot;&middot;&middot;&middot;" aria-label="Your initials"/>
+            </label>
+            <div className="ok-tabs">
+              <button className="ok-tab mono" type="button" data-verdict="ok" aria-pressed="false">OK TO PRINT<em>HOLD</em></button>
+              <button className="ok-tab mono" type="button" data-verdict="corr" aria-pressed="false">OK W/ CORRECTIONS<em>HOLD</em></button>
+              <button className="ok-tab mono" type="button" data-verdict="re" aria-pressed="false">REPROOF<em>HOLD</em></button>
+            </div>
+            <p className="ok-fine mono">HOLD A STAMP TO COMMIT &middot; ENTER WORKS TOO &middot; RE-STAMPS NOTED</p>
+            <div className="ok-stamp mono" id="ok-stamp" aria-live="polite"></div>
+          </div>
+
+          {/* the franking — the maker's mark does postal duty in the corner */}
+          <figure className="pf pressmark">
+            <svg className="pm-svg" viewBox="0 0 200 250" role="img" aria-labelledby="pm-title">
+              <title id="pm-title">Mark Axelus &mdash; maker's mark</title>
+              <path className="pm-brk" d="M26 58 V38 H48"/>
+              <path className="pm-brk" d="M174 212 V232 H152"/>
+              <g className="pm-ghost" id="pm-ghost" transform="translate(55 69)">
+                {PM_RECTS.map((m) => (
+                  <rect key={"g" + m.key} x={m.x} y={m.y} width={PM_MODULE} height={PM_MODULE} />
+                ))}
+              </g>
+              <g className="pm-code" id="pm-cells" transform="translate(52 66)">
+                {PM_RECTS.map((m) => (
+                  <rect key={"c" + m.key} x={m.x} y={m.y} width={PM_MODULE} height={PM_MODULE} />
+                ))}
+              </g>
+              <g className="pm-reg"><circle cx="162" cy="58" r="4.5"/><path d="M162 50 V66 M154 58 H170"/></g>
+              <rect className="pm-acid" x="150" y="150" width="7" height="7"/>
+              <text className="pm-lbl pm-dim pm-r" x="178" y="88">JOB Nº 07</text>
+              <text className="pm-lbl pm-dim pm-r" x="178" y="104">DATA // MA</text>
+              <text className="pm-lbl pm-name" x="28" y="198">MRK // AXELUS</text>
+              <text className="pm-lbl pm-dim" x="28" y="212">WORKING PROOF</text>
+              <text className="pm-lbl pm-dim pm-r" x="172" y="228">SCANS TRUE &middot; MMXIX</text>
+            </svg>
+          </figure>
+
+          {/* the return address — the headline, made literal */}
+          <div className="pf pkt-addr">
+            <p className="pkt-kick mono">RETURN TO &mdash;</p>
+            <p className="pkt-name">Mark Axelus</p>
+            <p className="pkt-meta mono">AT HIS DESK &middot; VICTORIA BC &middot; NO CLOSING TIME</p>
+          </div>
+
+          {/* the routing tabs — the doors out, franked onto the face */}
+          <div className="pf outro-links">
+            <a className="olink mono" href="mailto:mrkaxelus@gmail.com">
+              <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"><rect x="1.4" y="3.6" width="13.2" height="8.8" rx="1"/><path d="M2 4.7 8 9 14 4.7"/></svg>EMAIL&nbsp;↗
+            </a>
+            <a className="olink mono" href="https://github.com/markaxelus" target="_blank" rel="noopener">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>GITHUB&nbsp;↗
+            </a>
+            <a className="olink mono" href="https://www.linkedin.com/in/markaxelus" target="_blank" rel="noopener">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M14.816 0H1.18C.528 0 0 .516 0 1.153v13.694C0 15.484.528 16 1.18 16h13.635c.652 0 1.185-.516 1.185-1.153V1.153C16 .516 15.468 0 14.816 0ZM4.745 13.635H2.37V6h2.375v7.635ZM3.558 4.955a1.376 1.376 0 1 1 0-2.752 1.376 1.376 0 0 1 0 2.752Zm10.074 8.68h-2.37V9.922c0-.886-.018-2.025-1.234-2.025-1.235 0-1.424.964-1.424 1.96v3.778h-2.37V6H8.51v1.04h.033c.317-.6 1.09-1.233 2.246-1.233 2.4 0 2.843 1.58 2.843 3.637v4.191Z"/></svg>LINKEDIN&nbsp;↗
+            </a>
+          </div>
+
+          {/* the packing slip — the shop witnesses you */}
+          <div className="pf joblog mono" id="joblog" hidden>
+            <p className="jl-head">THE JOB LOG &mdash;</p>
+            <div className="jl-scroll">
+              <ul id="jl-lines"></ul>
+              <div className="jl-rail" id="jl-rail" aria-hidden="true"><span className="jl-thumb" id="jl-thumb"></span></div>
+            </div>
+            <p className="jl-fine">THIS LOG PRINTS ON YOUR COPY ONLY. SHOP POLICY.</p>
+          </div>
         </div>
       </div>
 
-      {/* THE MAKER'S MARK: the approved job-code device — a coarse Data-Matrix-style
-           grid (decorative, gapped chunky modules) with an off-register red pass behind
-           it, off-square brackets, a reg cross + acid tick, techwear labels. modules
-           rendered declaratively (PM_RECTS, deterministic); everything themes with the sheet (day/night). */}
-      <figure className="pressmark final">
-        <svg className="pm-svg" viewBox="0 0 200 250" role="img" aria-labelledby="pm-title">
-          <title id="pm-title">Mark Axelus &mdash; maker's mark</title>
-          <path className="pm-brk" d="M26 58 V38 H48"/>
-          <path className="pm-brk" d="M174 212 V232 H152"/>
-          <g className="pm-ghost" id="pm-ghost" transform="translate(55 69)">
-            {PM_RECTS.map((m) => (
-              <rect key={"g" + m.key} x={m.x} y={m.y} width={PM_MODULE} height={PM_MODULE} />
-            ))}
-          </g>
-          <g className="pm-code" id="pm-cells" transform="translate(52 66)">
-            {PM_RECTS.map((m) => (
-              <rect key={"c" + m.key} x={m.x} y={m.y} width={PM_MODULE} height={PM_MODULE} />
-            ))}
-          </g>
-          <g className="pm-reg"><circle cx="162" cy="58" r="4.5"/><path d="M162 50 V66 M154 58 H170"/></g>
-          <rect className="pm-acid" x="150" y="150" width="7" height="7"/>
-          <text className="pm-lbl pm-dim pm-r" x="178" y="88">JOB Nº 07</text>
-          <text className="pm-lbl pm-dim pm-r" x="178" y="104">DATA // MA</text>
-          <text className="pm-lbl pm-name" x="28" y="198">MRK // AXELUS</text>
-          <text className="pm-lbl pm-dim" x="28" y="212">WORKING PROOF</text>
-          <text className="pm-lbl pm-dim pm-r" x="172" y="228">SCANS TRUE &middot; MMXIX</text>
-        </svg>
-      </figure>
+      {/* scattered furniture — punctuate the void between type and pocket */}
+      <span className="out-sq" aria-hidden="true" />
+      <span className="out-tick" aria-hidden="true" />
 
       {/* the colophon tells the truth: v2 runs on a framework, so the old
           NO FRAMEWORK boast became a lie — the working proof admits it
@@ -105,7 +187,6 @@ export default function Outro() {
       <p className="colophon mono final">SET IN FRAUNCES, EXCON &amp; SPACE MONO ( + TWO PENS )<br/>
         HAND-SET &middot; NO TRACKERS &middot; ONE FRAMEWORK, ADMITTED<br/>
         24PX GRID &middot; 3 INKS &middot; 1 CAT<span id="colo-pulled"></span></p>
-      </div>{/* /outro-rail */}
 
       <div className="proof-notes" aria-hidden="true">
         <span className="note hand-k big-line" style={{ "--d": ".2s" } as CSSProperties}>it just never stops, does it.</span>

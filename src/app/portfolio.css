@@ -1419,9 +1419,9 @@ body.proof .op-candid { display: block; }
   position: relative;
   padding: 0 1.4vw 80px;        /* clears the fixed SEE THE MESS corner (~62px tall) so the footer isn't on top of it */
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(360px, 26vw, 440px);
+  grid-template-columns: minmax(0, 1fr) clamp(430px, 36vw, 560px);
   align-items: start;
-  column-gap: clamp(2rem, 5vw, 5rem);
+  column-gap: clamp(1.6rem, 4vw, 4rem);
   row-gap: 1rem;
 }
 .outro-title {
@@ -1435,13 +1435,12 @@ body.proof .op-candid { display: block; }
 }
 .outro-title a { border-bottom: 2px solid var(--accent); transition: color 0.4s var(--ease-out); }
 .outro-title a:hover { color: var(--accent); }
-/* the doors out — same tab language as the corners: email · github · linkedin */
+/* the doors out — routing tabs franked onto the pocket face */
 .outro-links {
-  grid-column: 2;
   display: flex;
-  gap: 0.6rem;
-  justify-content: flex-end;
-  margin: 0.4rem 0 0.2rem;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.45rem;
 }
 .olink {
   display: inline-flex;
@@ -1466,60 +1465,104 @@ body.proof .op-candid { display: block; }
   outline-offset: 2px;
 }
 .colophon {
-  grid-column: 1 / -1;      /* full-width footer — no longer cramped in the rail */
-  text-align: right;
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+  text-align: left;
   opacity: 0.72;
   font-size: 0.58rem;
+  margin-top: 2.4rem;
 }
 
-/* ---------- the outro right rail: socials · maker's mark · colophon ----------
-   fills the void beside the check. socials stack (email on top), the mark sits
-   below them, the colophon rides the bottom. */
-.outro-rail {
+/* ---------- THE JOB POCKET: the finished run, jacketed for return ------
+   the manila job jacket every real print job travels in, its docket
+   printed on the face. The press check is the docket, the maker's mark is
+   the franking (cancelled with wave bars), the links are routing tabs,
+   the job log is the packing slip, the string-and-button tie holds the
+   top edge. The rest tilt lives on .pkt-rot (set-in ends transform:none);
+   the red pass rides off register and slides home on hover. */
+.pocket {
   grid-column: 2;
   grid-row: 1 / span 2;
-  align-self: stretch;            /* fill the height of title + check ... */
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;    /* ... contacts + mark ride HIGH in the rail */
-  gap: 1rem;
-  min-width: 0;
-}
-.outro-rail .outro-links {
-  flex-direction: column;      /* EMAIL on top, GITHUB + LINKEDIN paired below it */
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin: 70px 0 0;            /* nudged down off the very top — middle ground */
+  position: relative;
+  z-index: 2;
   width: 100%;
-  max-width: 16rem;
+  max-width: 560px;
+  justify-self: end;
+  margin: 0.6rem calc(-1 * clamp(0.6rem, 2vw, 2.4rem)) 0 0;
 }
-.outro-rail .olink { justify-content: flex-start; }
-.olink-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-/* footer sits under the matrix in the rail, anchored to its right edge. it
-   SHRINKS TO FIT its own longest line so each markup line always holds ONE
-   length — nowrap + the widened rail column keep the fluid root scale from
-   growing the long line past its box and re-wrapping it (the tiny hang left at
-   the very narrowest 2-col widths stays inside the gutter, clear of the check).
-   the extra top margin gives the maker's mark a bit of air above the type. */
-.outro-rail .colophon {
-  width: auto;
-  align-self: flex-end;
-  text-align: right;
-  white-space: nowrap;
-  margin-top: calc(2.6rem + 10px);
+.pkt-rot {
+  position: relative;
+  transform: rotate(1.4deg);
+  transform-origin: 30% 20%;
 }
+.pkt-rot > svg { display: block; width: 100%; height: auto; overflow: visible; }
+.pk-face {
+  fill: color-mix(in srgb, var(--ink) 5%, transparent);
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+.pk-line { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; }
+.pk-string { fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-linecap: round; }
+.pk-dot { fill: var(--ink); }
+.pk-fine { fill: none; stroke: var(--ink); stroke-width: 0.9; stroke-linecap: round; }
+.pk-txt { fill: var(--ink); font-family: "Space Mono", ui-monospace, monospace; }
+.pk-end { text-anchor: end; }
+/* the red working pass — off register; hovering the pocket registers it */
+.pocket .dev-ghost {
+  fill: none;
+  opacity: 0.4;
+  stroke: var(--pencil);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  transform: translate(2.5px, 2px);
+  transition: transform 0.45s var(--ease-out);
+}
+.pocket:hover .dev-ghost { transform: translate(0, 0); }
+/* the face's printed matter */
+.pf { position: absolute; }
+.pkt-job { left: 6%; top: 4%; font-size: 0.58rem; letter-spacing: 0.2em; opacity: 0.8; }
+.pkt-addr { left: 6%; top: 60%; }
+.pkt-kick { font-size: 0.54rem; letter-spacing: 0.22em; opacity: 0.55; }
+.pkt-name {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(1.5rem, 2.3vw, 2.05rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  margin-top: 0.3rem;
+}
+.pkt-meta { font-size: 0.56rem; letter-spacing: 0.11em; opacity: 0.65; margin-top: 0.45rem; }
+.pocket .outro-links { right: 7%; top: 59%; }
+.pocket .joblog { left: 6%; bottom: 4.5%; width: 58%; }
+/* the sheet's scattered furniture (same language as the imprint's) */
+.out-sq {
+  position: absolute;
+  left: 44%;
+  top: 42%;
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--acid);
+  opacity: 0.6;
+  transform: rotate(18deg);
+  z-index: 1;
+}
+.out-tick { position: absolute; left: 38%; top: 17%; width: 14px; height: 14px; opacity: 0.4; z-index: 1; }
+.out-tick::before, .out-tick::after { content: ""; position: absolute; background: var(--ink); }
+.out-tick::before { left: 6px; top: 0; width: 1px; height: 14px; }
+.out-tick::after { top: 6px; left: 0; height: 1px; width: 14px; }
 
 /* THE MAKER'S MARK — a real Data Matrix (scan → email), off-square + off-register.
    the code TILE is fixed dark-on-light so it scans in day AND night; the furniture
    (brackets, labels, reg cross, acid tick) themes with the sheet. */
 .pressmark {
-  width: 100%;
-  max-width: 210px;
+  right: 6.5%;
+  top: 4%;
+  width: 23%;
+  margin: 0;
   opacity: 0.92;
-  align-self: flex-end;             /* drifts to the rail's outer edge, away from the socials */
-  margin-right: 0.6rem;
-  transform: rotate(-3deg);         /* struck onto the sheet, not placed in a grid cell */
+  transform: rotate(-3deg);         /* franked onto the jacket, not placed */
   transform-origin: 60% 45%;
 }
 .pm-svg { width: 100%; height: auto; display: block; overflow: visible; }
@@ -2001,7 +2044,7 @@ body.spec-set .foldline i { animation: tickin 0.4s var(--ease-out) 1.55s both; }
 /* outro coffee counter */
 .d-outro {
   position: absolute;
-  right: 1.4vw;
+  left: 1.4vw;
   top: 0;
   z-index: 6;
   pointer-events: none;
@@ -3433,21 +3476,10 @@ body.proof .impline { opacity: 0 !important; }
    ============================================================ */
 
 /* the press-check pair — approve (slip) | witness (log), tight side by side */
-.check-pair {
-  grid-column: 1;
-  grid-row: 2;
-  display: flex;
-  flex-direction: column;      /* the log rides UNDER the check, its ticket tail */
-  align-items: flex-start;
-  gap: 1.3rem;
-  margin-top: 0.75rem;
-  margin-left: clamp(0.5rem, 2vw, 2rem);   /* nudged in off the frame edge */
-}
 .okslip {
-  position: relative;
-  width: min(100%, 30rem);
-  border: 1px solid var(--ink);
-  padding: 1rem 1.2rem 1.1rem;
+  left: 6%;
+  top: 21%;
+  width: 88%;
 }
 .ok-head { letter-spacing: 0.2em; opacity: 0.8; }
 .ok-sheet { opacity: 0.72; font-size: 0.56rem; margin-top: 0.15rem; }
@@ -3473,13 +3505,18 @@ body.proof .impline { opacity: 0 !important; }
 }
 .ok-by input:focus { outline: none; border-bottom-color: var(--accent); }
 .ok-by input::placeholder { color: var(--graphite); }
-.ok-tabs { display: flex; flex-direction: column; gap: 0.45rem; }
+/* three stamp pads across the docket — each a touch off square */
+.ok-tabs { display: flex; gap: 0.55rem; }
+.ok-tabs .ok-tab { flex: 1; }
+.ok-tabs .ok-tab:nth-child(1) { transform: rotate(-0.9deg); }
+.ok-tabs .ok-tab:nth-child(2) { transform: rotate(0.7deg); }
+.ok-tabs .ok-tab:nth-child(3) { transform: rotate(-0.5deg); }
 .ok-tab {
   position: relative;
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
   border: 1px solid var(--hairline);
   background: var(--stone);
   color: var(--ink);
@@ -3539,13 +3576,19 @@ body.proof .impline { opacity: 0 !important; }
 .ok-stamp.thunk { animation: ok-thunk 0.4s var(--ease-thunk) both; }
 
 /* the mess replies beside the slip */
-.n-okr1 { left: 2%; bottom: 30%; --tilt: -2deg; }
-.n-okr2 { left: 7%; bottom: 24%; --tilt: 1.4deg; }
-.n-okr3 { left: 4%; bottom: 18%; --tilt: -1deg; }
+.n-okr1 { left: 42%; top: 26%; --tilt: -2deg; }
+.n-okr2 { left: 46%; top: 33%; --tilt: 1.4deg; }
+.n-okr3 { left: 43%; top: 40%; --tilt: -1deg; }
 
 @media (max-width: 820px) {
   /* the overhanging stamp would widen the pocket proof — tuck it in */
   .ok-stamp { right: 0.2rem; }
+  .outro { display: block; }
+  .pocket { max-width: none; margin: 1.6rem 0 0; }
+  .pkt-rot { transform: rotate(0.8deg); }
+  .ok-tabs { flex-direction: column; gap: 0.45rem; }
+  .ok-tabs .ok-tab { transform: none; }
+  .colophon { margin-top: 1.8rem; }
 }
 
 /* ============================================================
@@ -3555,9 +3598,8 @@ body.proof .impline { opacity: 0 !important; }
    ============================================================ */
 
 .joblog {
-  text-align: left;           /* under the check now, matched to the slip width */
-  width: min(100%, 30rem);
-  opacity: 0.5;
+  text-align: left;
+  opacity: 0.55;
   font-size: 0.55rem;
 }
 .jl-head { letter-spacing: 0.2em; opacity: 0.85; margin-bottom: 0.3rem; }
@@ -3610,6 +3652,14 @@ body.proof .impline { opacity: 0 !important; }
   #jl-lines { max-height: none; overflow: visible; }
   .joblog li.jl-typing::after { display: none; }
   .jl-rail { display: none; }
+  /* the pocket flattens: its printed matter flows, the jacket art goes */
+  .outro { display: block !important; }
+  .pocket { max-width: none !important; margin: 0 !important; }
+  .pkt-rot { transform: none !important; }
+  .pkt-rot > svg { display: none !important; }
+  .pf { position: static !important; margin: 4mm 0 !important; width: auto !important; }
+  .pocket .outro-links { display: none !important; }
+  .ok-stamp { position: static !important; display: inline-block; margin-top: 3mm; }
 }
 
 @media (max-width: 820px) {
