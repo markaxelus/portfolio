@@ -1420,7 +1420,10 @@ body.proof .op-candid { display: block; }
   overflow-x: clip;   /* the bundle + its tie bleed right, never widen the ICB */
   padding: 0 1.4vw 80px;        /* clears the fixed SEE THE MESS corner (~62px tall) so the footer isn't on top of it */
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(430px, 36vw, 560px);
+  /* full-bleed section, CAPPED tracks: [gutter] [voice] [bundle] [gutter]
+     — at laptop widths the gutters collapse to ~0 (identical layout); on
+     wide screens the composition centers instead of pinning right */
+  grid-template-columns: 1fr minmax(0, 44rem) clamp(430px, 36vw, 560px) 1fr;
   align-items: start;
   column-gap: clamp(1.6rem, 4vw, 4rem);
   row-gap: 1rem;
@@ -1466,7 +1469,7 @@ body.proof .op-candid { display: block; }
   outline-offset: 2px;
 }
 .colophon {
-  grid-column: 1;
+  grid-column: 2;
   grid-row: 3;
   align-self: end;
   text-align: left;
@@ -1477,8 +1480,8 @@ body.proof .op-candid { display: block; }
 
 /* the spec — the docket voice answers the headline (A BRIEF, FOR THIS
    SHOP); the column the headline opens is measured, not empty */
-.outro-title { grid-column: 1; grid-row: 1; }
-.brief-spec { grid-column: 1; grid-row: 2; align-self: start; margin: 1.4rem 0 0 0.2rem; max-width: 30rem; }
+.outro-title { grid-column: 2; grid-row: 1; }
+.brief-spec { grid-column: 2; grid-row: 2; align-self: start; margin: 1.4rem 0 0 0.2rem; max-width: 30rem; }
 .bs-head { font-size: 0.6rem; letter-spacing: 0.2em; opacity: 0.8; margin-bottom: 0.55rem; }
 .bs-row {
   display: flex;
@@ -1500,16 +1503,16 @@ body.proof .op-candid { display: block; }
    top edge. The rest tilt lives on .pkt-rot (set-in ends transform:none);
    the red pass rides off register and slides home on hover. */
 .pocket {
-  grid-column: 2;
+  grid-column: 3;
   grid-row: 1 / span 3;
   position: relative;
   z-index: 2;
   width: 100%;
   max-width: 560px;
   justify-self: end;
-  /* the whole object rides well OFF the screen edge — the right air is
-     part of the composition, not a bleed */
-  margin: 0.6rem clamp(3rem, 8vw, 9rem) 0 0;
+  /* air off the right edge; the gutter track does the heavy lifting on
+     wide screens */
+  margin: 0.6rem clamp(1.5rem, 3vw, 3.5rem) 0 0;
 }
 /* the stack: three sheets at their own leans — the pile language. No
    outline wraps the object; the sheets' offset edges and the tie carry it */
