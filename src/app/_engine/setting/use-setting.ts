@@ -116,9 +116,8 @@ export function useSetting(): void {
     };
     armGroup(".desk-rows .desk-row", 0.3);
     armGroup(".check-pair, .outro-links, .colophon", 0.34);
-    /* the imprint's decals are TOSSED on, not dealt — each colophon piece sets
-       on its own seeded clock (the current-role decal, the marlin, the prior
-       role, the voice line, the hand-off) */
+    /* the imprint's pieces are TOSSED on, not dealt — each clause of the
+       statutory line and each margin instrument sets on its own seeded clock */
     armGroup(".imp-piece", 0.34);
 
     /* ---- the hanging sheets: fade in + a DRAFT KICK through the real physics

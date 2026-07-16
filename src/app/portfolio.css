@@ -611,22 +611,18 @@ body.hero-set .plates-decal {
 .n-gap { top: 2%; left: 46%; --tilt: -3deg; }
 .n-2025 { bottom: 6%; right: 6%; --tilt: 2deg; }
 
-/* ---------- the imprint: THE TWO SHIFTS, torn (who's at the desk) ----------
-   no box, no straight seam (a bordered rectangle read as linear): SHIFT 01
-   lives on the OPEN SHEET; SHIFT 02 is a dark slab TORN out of the night
-   office and laid over the page's right side — ragged left edge (clip-path),
-   overhanging the stage top and bottom so nothing lines up into a row. The
-   slab ANTI-FLIPS with the site mode (--slab-*): the other shift is always
-   the one burning against the room. The marlin crosses the tear in two
-   clipped copies (page inks | slab inks). Life: hold-register shear on the
-   voice line, the clock's RUNNING marker on the kickers, the page-awake
-   drift on the red pass. FINAL layer; no hand marks.
-
-   THE TEAR (shared by the slab and both marlin clips — the copies must use
-   the same polygon points or the fish shears at the edge):
-   slab  = polygon(59.2% 0%, 57.4% 11%, 59% 23%, 55.8% 37%, 57.6% 50%,
-           54.3% 63%, 56.4% 77%, 52.9% 92%, 54% 100%, 100% 100%, 100% 0%)
-   page  = same points closed to the LEFT (0% 0% … 0% 100%). */
+/* ---------- the imprint: THE STATUTORY LINE (who's at the desk) ----------
+   an imprint, in the shop's own law, is the one line every printed sheet
+   must carry: who printed it, and where. So the section IS that line — one
+   sentence set large and ragged (the type is the object; no slab, no
+   scraps, no mascot), the facts hung off its clauses as margin instruments
+   the way axis labels hang off the specimen. Composition is weighted, not
+   balanced: the sentence is the left mass, the instrument rail hangs right
+   and staggered, the place name is pushed to the far edge by a measured
+   leader. Life: the desk clock lights the shift that is RUNNING right now
+   (.shf-row), the sentence rides the hold-register (.imp-line shears with
+   scroll, thunks home when still), the pieces set down on seeded clocks
+   (.imp-piece). FINAL layer; no hand marks; prints as flowed black facts. */
 .imprint { position: relative; padding: 4vw 1.4vw 6vw; }
 .imp-frame {
   display: flex;
@@ -640,100 +636,83 @@ body.hero-set .plates-decal {
 .imp-head { opacity: 0.75; }
 .imp-cap { opacity: 0.7; text-align: right; }
 
-/* the open stage — the slab and fish overhang it on purpose */
+/* the stage: sentence column + instrument rail */
 .imp-stage {
-  /* the slab's inks anti-flip: dark shape on the day sheet, light shape in
-     the night office */
-  --slab-bg: #16150F;
-  --slab-ink: #DDDBD4;
-  --slab-red: #F0603F;
+  --dfs: clamp(2.15rem, 4.7vw, 4.15rem); /* the sentence's set size */
   position: relative;
   max-width: 1240px;
   margin: 0 auto;
-  min-height: clamp(430px, 44vw, 640px);
-}
-body.night .imp-stage {
-  --slab-bg: #DDDBD4;
-  --slab-ink: #16150F;
-  --slab-red: #C7361F;
-}
-.imp-rot {
-  transform: rotate(var(--rot, 0deg));
-  transform-origin: var(--origin, left top);
 }
 
-/* ---- the voice line: the sheet's masthead ---- */
-.imp-line {
-  position: absolute;
-  top: clamp(0.4rem, 1.6vw, 1.6rem);
-  left: 0;
-  width: 58%;
-  z-index: 2; /* first in DOM (pocket-sheet flow) — lift over the slab */
-  pointer-events: none;
-}
-.imp-line .imp-rot { padding-left: clamp(0.4rem, 1.6vw, 1.6rem); }
-.imp-line b {
-  display: block;
-  font-family: "Fraunces", Georgia, serif;
-  font-weight: 500;
-  font-size: clamp(1.9rem, 4.4vw, 3.6rem);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-}
-.imp-line .il1 { transform: rotate(-2.2deg); }
-.imp-line .il2 { transform: rotate(1deg); margin-left: 1.1em; }
-.imp-line .il3 {
-  transform: rotate(-1deg);
-  margin-left: 0.3em;
-  text-shadow: 2px 0 0 var(--accent), -2px 0 0 var(--pencil-soft);
+/* the legal fiction, named */
+.imp-req {
+  font-size: 0.56rem;
+  letter-spacing: 0.24em;
+  opacity: 0.55;
+  margin-bottom: clamp(1.2rem, 2.4vw, 2.2rem);
 }
 
-/* ---- SHIFT 01: the day facts, loose on the sheet ---- */
-.imp-day {
-  position: absolute;
-  left: clamp(0.4rem, 1.8vw, 1.8rem);
-  bottom: clamp(1.2rem, 2.6vw, 2.6rem);
-  width: min(46%, 560px);
-}
-.ish-k { font-size: 0.62rem; letter-spacing: 0.22em; opacity: 0.85; }
-.ish-emp {
-  display: inline-block;
+/* ---- the statutory line ---- */
+.imp-line { position: relative; }
+.imp-line .il {
   font-family: "Fraunces", Georgia, serif;
   font-weight: 500;
-  font-size: clamp(2.1rem, 4.6vw, 4rem);
-  line-height: 1.04;
-  letter-spacing: -0.01em;
-  margin: 0.45rem 0 0.6rem;
-}
-.imp-day .ish-emp {
-  color: var(--accent);
-  border-bottom: 3px solid var(--accent);
-  padding: 0 0.1em 3px;
-  margin-left: -0.1em;
-  text-decoration: none;
-  transform: rotate(-0.6deg);
+  font-size: var(--dfs);
+  line-height: 1.08;
+  letter-spacing: -0.012em;
   transform-origin: left bottom;
+}
+/* the compositor's rag — tiny splays echo the hero lockup's measured lean;
+   destinations exact, never re-tuned by motion */
+.imp-line .il1 { transform: rotate(-0.7deg); }
+.imp-line .il2 { margin-left: 0.9em; transform: rotate(0.4deg); }
+.imp-line .il3 { margin-left: 2.1em; transform: rotate(-0.35deg); }
+.imp-line .il4 { margin-left: 0.35em; transform: rotate(0.5deg); }
+.imp-line .il5 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+  margin-top: 0.1em;
+  transform: rotate(-0.3deg);
+}
+/* the place is pushed to the far edge by a measured leader — the void is
+   measured, not empty */
+.imp-lead { flex: 1; border-top: 1px solid var(--hairline); align-self: center; }
+
+/* the one link — the day press, in the working accent. Underline is a
+   text-decoration (paint, not box): a border grew the inline box past its
+   line box and struck through the next line on the tight print setting */
+.imp-oa {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.1em;
+  padding: 0 0.06em;
   transition:
     background-color 0.25s var(--ease-out),
     color 0.25s var(--ease-out);
 }
-.imp-day .ish-emp:hover,
-.imp-day .ish-emp:focus-visible {
+.imp-oa:hover,
+.imp-oa:focus-visible {
   background: var(--accent);
   color: var(--stone);
   outline: none;
 }
-.ish-ext { font-size: 0.42em; vertical-align: 0.6em; letter-spacing: 0; }
-.ish-t { font-size: 0.66rem; letter-spacing: 0.08em; margin-top: 0.1rem; }
-.ish-d { font-size: 0.6rem; letter-spacing: 0.08em; opacity: 0.65; margin-top: 0.35rem; }
-.ish-prev {
-  font-size: 0.56rem;
-  letter-spacing: 0.06em;
-  opacity: 0.6;
-  margin-top: 1.5rem;
-  transform: rotate(-0.9deg);
-  transform-origin: left top;
+.imp-ext { font-size: 0.34em; vertical-align: 0.72em; letter-spacing: 0; }
+
+/* ---- the instrument rail: the facts, hung off their clauses ---- */
+.imp-ann { position: relative; }
+.imp-ann::before {
+  /* the tick — a hairline reaching back toward the clause it annotates */
+  content: "";
+  position: absolute;
+  left: calc(-1 * clamp(2rem, 4.4vw, 4.4rem));
+  top: 0.5em;
+  width: clamp(1.4rem, 3.4vw, 3.4rem);
+  border-top: 1px solid var(--hairline);
 }
+.ia-k { font-size: 0.6rem; letter-spacing: 0.2em; opacity: 0.85; }
+.ia-v { font-size: 0.56rem; letter-spacing: 0.1em; opacity: 0.62; margin-top: 0.35rem; }
 
 /* the desk clock marks the shift that is RUNNING right now (machine state →
    the acid, like [RUN.M]); live info, so it never prints */
@@ -745,238 +724,68 @@ body.night .imp-stage {
   white-space: nowrap;
 }
 
-/* ---- SHIFT 02: the slab torn out of the night office ---- */
-/* the slab and the marlin share ONE box so the tear clips register;
-   it overhangs the stage bottom hard and the top gently (the section
-   caption above must stay clear). The tear's foot SWEEPS LEFT (41.5%)
-   under the stage and the bottom edge is torn too — no straight line
-   survives on the shape. */
-.imp-slab, .imp-marlin {
-  position: absolute;
-  inset: -0.9rem clamp(-3rem, -3vw, -1rem) -2.6rem 0;
+/* ---- the fine print + the folio ---- */
+.imp-foot { margin-top: clamp(1.8rem, 3vw, 2.8rem); }
+.imp-foot p { font-size: 0.56rem; letter-spacing: 0.1em; opacity: 0.55; }
+.imp-foot p + p { margin-top: 0.4rem; }
+.imp-fol {
+  margin-top: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  opacity: 0.6;
 }
-/* the tear: many small nicks with a drift, not sawteeth (big zigzags read
-   as lightning bolts at wide viewports — Mark's screenshot). The foot still
-   sweeps hard left; the bottom edge is gently torn. Entering the mess
-   RE-TEARS it (same point count, jittered — clip-path interpolates), so the
-   cut is never quite the same page twice. */
-.imp-slab {
-  background: var(--slab-bg);
-  color: var(--slab-ink);
-  clip-path: polygon(58.8% 0%, 57.9% 6%, 58.6% 13%, 57.2% 21%, 57.9% 28%, 56.8% 36%, 57.4% 43%, 56.2% 50%, 56.8% 57%, 55.4% 64%, 54.2% 71%, 52.6% 78%, 50.9% 85%, 48.6% 91%, 46.2% 96%, 44% 100%, 52% 98.6%, 63% 99.5%, 74% 98.3%, 86% 99.4%, 100% 98.8%, 100% 0%);
-  transition: clip-path 0.8s var(--ease-out);
-}
-body.proof .imp-slab {
-  clip-path: polygon(59.4% 0%, 57.3% 6%, 58.9% 13%, 56.6% 21%, 58.3% 28%, 56.2% 36%, 57.8% 43%, 55.7% 50%, 57.2% 57%, 55% 64%, 53.8% 71%, 53.1% 78%, 50.2% 85%, 49% 91%, 45.6% 96%, 44.6% 100%, 51.4% 98.9%, 63.6% 99.2%, 73.4% 98.6%, 86.6% 99.1%, 100% 98.5%, 100% 0%);
-}
-/* stillness thunks the slab home with the type (hold-register writes its
-   lag via the `translate` property; the settle window lets it ease back) */
-body.reg-settling .imp-slab {
-  transition:
-    clip-path 0.8s var(--ease-out),
-    translate 0.4s var(--ease-out);
-}
-@media (prefers-reduced-motion: reduce) {
-  .imp-slab { transition: none; }
-}
-.imp-night-c {
-  position: absolute;
-  left: 63%;
-  top: 46%;
-  right: clamp(1.6rem, 4vw, 4rem);
-}
-.imp-night-c .ish-emp { color: var(--slab-ink); transform: rotate(-1.1deg); transform-origin: left bottom; }
-.ish-tonight {
-  position: absolute;
-  left: 63%;
-  bottom: 3rem;
-  font-size: 0.56rem;
-  letter-spacing: 0.18em;
-  opacity: 0.5;
-  transform: rotate(-0.8deg);
-  transform-origin: left bottom;
-}
-.imp-slab .imp-regx { position: absolute; right: 9%; top: 13%; width: 16px; height: 16px; opacity: 0.5; }
-.imp-slab .imp-regx::before, .imp-slab .imp-regx::after { content: ""; position: absolute; background: var(--slab-ink); }
-.imp-slab .imp-regx::before { left: 7px; top: 0; width: 1px; height: 16px; }
-.imp-slab .imp-regx::after { top: 7px; left: 0; height: 1px; width: 16px; }
-.imp-slab .imp-sq { position: absolute; right: 15%; bottom: 16%; width: 6px; height: 6px; border: 1px solid var(--acid); opacity: 0.6; transform: rotate(16deg); }
+.imp-reg { width: 17px; height: 17px; }
+.imp-reg .rk { stroke: var(--ink); stroke-width: 1; }
+.imp-reg .rr { fill: none; stroke: var(--ink); stroke-width: 1; opacity: 0.6; }
+.imp-fol-t { font-size: 0.52rem; letter-spacing: 0.22em; }
 
-/* ---- the marlin crosses the tear (page inks | slab inks) ----
-   REGISTRATION BY CONSTRUCTION: the page copy is UNCLIPPED and painted
-   UNDER the opaque slab; the night copy lives INSIDE the slab, cut by the
-   slab's own polygon. One polygon owns the cut — the two-clip drift that
-   split the fish on wide viewports cannot happen. The copies share the
-   slab's exact box, so their fish coordinates are identical. */
-.imp-marlin { text-align: left; pointer-events: none; }
-.imp-stage .m-copy {
-  position: absolute;
-  inset: 0;
-  padding-top: clamp(2.4rem, 5vw, 4.6rem);
-  padding-left: calc(56% - clamp(140px, 15vw, 200px));
-  pointer-events: none;
-}
-.imp-stage .m-copy svg {
-  width: clamp(250px, 29vw, 440px);
-  height: auto;
-  overflow: visible;
-  transform: rotate(-7deg);
-  transition: transform 0.5s var(--ease-out);
-}
-/* the hotspot: the only pointer surface — the fish's own water. Hovering it
-   slides the red pass into register AND the fish noses deeper into the day
-   side (both copies move identically; the cut stays put, so the fish swims
-   THROUGH the tear). */
-.m-hot {
-  position: absolute;
-  left: calc(56% - clamp(140px, 15vw, 200px));
-  top: clamp(2.4rem, 5vw, 4.6rem);
-  width: clamp(250px, 29vw, 440px);
-  aspect-ratio: 220 / 120;
-  pointer-events: auto;
-}
-.imp-stage:has(.m-hot:hover) .m-copy svg {
-  transform: rotate(-7deg) translateX(-9px);
-}
-.im-cap {
-  position: absolute;
-  left: calc(56% + clamp(6rem, 10vw, 10rem));
-  top: calc(clamp(2.4rem, 5vw, 4.6rem) + clamp(250px, 29vw, 440px) * 0.44);
-  font-size: 0.52rem;
-  letter-spacing: 0.18em;
-  color: var(--slab-ink);
-  opacity: 0.55;
+/* the open sheet: sentence left, rail right — weighted, not balanced */
+@media (min-width: 821px) {
+  .imp-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(220px, 23vw, 310px);
+    column-gap: clamp(2.4rem, 5vw, 5rem);
+  }
+  .imp-req { grid-column: 1 / -1; }
+  .imp-line { grid-column: 1; }
+  .imp-rail {
+    grid-column: 2;
+    /* the rail hangs off the working clauses (lines 3-4), not the top —
+       staggered, so nothing lines up into a row */
+    padding-top: calc(var(--dfs) * 1.08 * 2 + 0.5rem);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(1.4rem, 2.6vw, 2.6rem);
+  }
+  .imp-ann + .imp-ann { margin-left: clamp(0.8rem, 1.6vw, 1.6rem); }
+  .imp-foot,
+  .imp-fol { grid-column: 1; }
 }
 
-/* the page copy prints in the sheet's own inks (they flip with the mode) */
-.m-day .dev-body, .m-day .dev-tail, .m-day .dev-fin, .m-day .dev-gill {
-  fill: none; stroke: var(--ink); stroke-width: 1.6;
-  stroke-linecap: round; stroke-linejoin: round;
-}
-.m-day .dev-hatch { fill: none; stroke: var(--accent); stroke-width: 1.3; stroke-linecap: round; }
-.m-day .dev-lat { fill: none; stroke: var(--ink); stroke-width: 0.9; opacity: 0.4; }
-.m-day .dev-eye { fill: var(--ink); }
-.m-day .dev-wave { fill: none; stroke: var(--ink); stroke-width: 1; opacity: 0.35; }
-.m-day .dev-ghost { stroke: var(--pencil); }
-/* ...and the slab copy in the slab's anti-flipped inks (acid hatch) */
-.m-night .dev-body, .m-night .dev-tail, .m-night .dev-fin, .m-night .dev-gill {
-  fill: none; stroke: var(--slab-ink); stroke-width: 1.6;
-  stroke-linecap: round; stroke-linejoin: round;
-}
-.m-night .dev-hatch { fill: none; stroke: var(--acid); stroke-width: 1.3; stroke-linecap: round; }
-.m-night .dev-lat { fill: none; stroke: var(--slab-ink); stroke-width: 0.9; opacity: 0.4; }
-.m-night .dev-eye { fill: var(--slab-ink); }
-.m-night .dev-wave { fill: none; stroke: var(--slab-ink); stroke-width: 1; opacity: 0.35; }
-.m-night .dev-ghost { stroke: var(--slab-red); }
-/* the red pass rides off register; hovering the fish slides it home; the
-   page-awake drift creeps it further out, then eases back. Both copies'
-   ghosts move together (same rules, same values). */
-.imp-stage .dev-ghost {
-  fill: none;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0.4;
-  transform: translate(2.5px, 2px);
-  transition: transform 0.45s var(--ease-out);
-}
-.imp-stage .dev-ghost.adrift { transform: translate(5px, 3.8px); }
-.imp-stage:has(.m-hot:hover) .dev-ghost,
-.imp-stage:has(.m-hot:hover) .dev-ghost.adrift { transform: translate(0, 0); }
-
-/* ---- the scrap: a chip of the night that broke off when the slab was
-   torn, fallen onto the sheet low and LEFT — the counterweight that keeps
-   the composition off balance. Anti-flips with the slab. ---- */
-.imp-scrap {
-  position: absolute;
-  left: 24%;
-  bottom: -1.9rem;
-  width: clamp(70px, 9vw, 122px);
-  height: clamp(30px, 3.6vw, 48px);
-  background: var(--slab-bg);
-  clip-path: polygon(4% 38%, 30% 6%, 62% 18%, 100% 2%, 88% 62%, 96% 100%, 40% 88%, 12% 96%, 0% 64%);
-  transform: rotate(-7deg);
-}
-/* the second chip flew UP — it sits over the section's frame rule, so the
-   composition breaks the section boundary, not just the stage */
-.imp-scrap2 {
-  position: absolute;
-  left: 38%;
-  top: -2.9rem;
-  width: clamp(38px, 4.4vw, 60px);
-  height: clamp(16px, 1.9vw, 26px);
-  background: var(--slab-bg);
-  clip-path: polygon(0% 55%, 22% 10%, 55% 28%, 82% 0%, 100% 48%, 84% 100%, 46% 78%, 14% 92%);
-  transform: rotate(11deg);
-}
-
-/* ---- the tear, named (runs down the page side of the ragged edge) ---- */
-.imp-seam {
-  position: absolute;
-  left: 50.2%;
-  top: 44%;
-  bottom: 2%;
-  opacity: 0.45;
-  writing-mode: vertical-rl;
-  font-size: 0.5rem;
-  letter-spacing: 0.28em;
-  white-space: nowrap;
-}
-
-/* the hand-off down into the work (clears the slab's bottom overhang) */
-.imp-kick { --rot: -1.5deg; max-width: 1240px; margin: 3.4rem auto 0; }
-.imp-kick .imp-rot { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--accent); }
-
-/* the pocket sheet: the composition unwinds — voice, day facts, then the
-   slab as a full-width dark block (the tear stays bold), the fish in page
-   inks below it */
+/* the pocket sheet: the sentence flows, the instruments stack under it */
 @media (max-width: 820px) {
   .imp-frame { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
   .imp-cap { text-align: left; }
-  .imp-stage { min-height: 0; }
-  .imp-line { position: static; width: auto; pointer-events: none; padding: 0.4rem 0 1.2rem; }
-  .imp-line .imp-rot { padding-left: 0; }
-  .imp-line b { transform: none !important; margin-left: 0 !important; }
-  .imp-day { position: static; width: auto; padding: 0 0 1.6rem; }
-  .imp-day .ish-emp { font-size: clamp(1.9rem, 8.8vw, 2.6rem); transform: none; }
-  .ish-prev { transform: none; }
-  .imp-slab {
-    position: static;
-    clip-path: polygon(0% 8%, 6% 3%, 18% 7%, 33% 2%, 47% 6%, 62% 1%, 76% 6%, 90% 2%, 100% 7%, 100% 100%, 0% 100%);
-    padding: 2.4rem 1.2rem 1.6rem;
+  .imp-stage { --dfs: clamp(1.7rem, 7.6vw, 2.4rem); }
+  .imp-line .il { margin-left: 0 !important; transform: none; }
+  .imp-rail { margin-top: 1.8rem; display: grid; gap: 1.1rem; }
+  .imp-ann {
+    border-top: 1px solid var(--hairline);
+    padding-top: 0.8rem;
   }
-  .imp-night-c { position: static; }
-  .imp-night-c .ish-emp { font-size: clamp(1.9rem, 8.8vw, 2.6rem); transform: none; }
-  .ish-tonight { position: static; margin-top: 1.5rem; transform: none; }
-  .imp-marlin { position: static; padding: 1rem 0 0.4rem; }
-  .imp-marlin .m-copy { position: static; padding: 0; }
-  .imp-marlin .m-copy svg { width: min(72vw, 300px); transform: rotate(-4deg); }
-  .imp-slab .m-night, .m-hot, .im-cap { display: none; }
-  .imp-seam, .imp-kick, .imp-scrap, .imp-scrap2 { display: none; }
+  .imp-ann::before { content: none; }
 }
 
-/* the proof: the two shifts print as flowed facts — the slab drops its ink
-   field, the crossing copies collapse to one, live/screen furniture goes */
+/* the proof: the statutory line prints as set — that is the whole point;
+   live lamps and screen furniture go */
 @media print {
-  .imp-stage { min-height: 0 !important; }
-  .imp-line { position: static !important; width: auto !important; padding: 4mm 4mm 0 !important; }
-  .imp-line b { transform: none !important; margin-left: 0 !important; text-shadow: none !important; }
-  .imp-day { position: static !important; width: auto !important; padding: 4mm !important; }
-  .imp-slab {
-    position: static !important;
-    clip-path: none !important;
-    background: none !important;
-    color: #000 !important;
-    padding: 4mm !important;
-  }
-  .imp-night-c { position: static !important; }
-  .imp-night-c .ish-emp { color: #000 !important; transform: none !important; }
-  .ish-tonight { position: static !important; transform: none !important; }
-  .imp-marlin, .imp-seam, .imp-kick, .imp-regx, .imp-sq, .imp-scrap,
-  .imp-scrap2, .imp-slab .m-night, .im-cap { display: none !important; }
-  .imp-day .ish-emp { color: #000 !important; border-color: #000 !important; transform: none !important; }
-  .ish-prev { transform: none !important; }
-  .imp-rot { transform: none !important; }
+  .imp-line .il { transform: none !important; text-shadow: none !important; }
+  .imp-oa { color: #000 !important; }
+  .shf-row.shf-on::after { content: none !important; }
+  .imp-lead { border-color: #000 !important; }
+  .imp-fol { display: none !important; }
 }
 
 /* ---------- at the desk ---------- */

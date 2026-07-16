@@ -1,66 +1,24 @@
 /**
- * THE IMPRINT — THE TWO SHIFTS, torn. The colophon seam between the trail
- * (how I got here) and the work (what I made). No box, no straight seam
- * (Mark: the bordered rectangle read as linear): SHIFT 01 lives on the OPEN
- * SHEET — the voice line as masthead, OceanAID large in accent, the junior
- * title, the UVic line — and SHIFT 02 is a dark SLAB TORN out of the night
- * office and laid onto the page, its left edge a ragged tear (clip-path
- * polygon), overhanging the stage top and bottom so nothing lines up into a
- * row. The slab anti-flips with the site mode (--slab-* vars): by day it is
- * the dark shape on the light sheet, in the night office it burns light in
- * the dark room — the other shift is always the one glowing.
+ * THE IMPRINT — the statutory line.
  *
- * The engraved marlin CROSSES THE TEAR: two identical copies share the
- * slab's exact box and clip to the same polygon pair, so the fish changes
- * ink mid-stroke — page inks (token, mode-flipping) before the tear, slab
- * inks (anti-flipping, acid hatch) after it.
+ * In the shop's own law an imprint is not a section, it is a REQUIREMENT:
+ * every printed sheet must carry one line naming its printer and where it
+ * was printed. That is exactly what this seam has to say (who's at the desk
+ * · and where), so the section IS that line — one sentence, set large and
+ * ragged: "Set, printed & kept by one person, days at OceanAID, nights at
+ * his own desk, Victoria BC." The facts hang off its clauses as the shop's
+ * margin instruments (shift windows, the title, the prior press, the
+ * printer named) the way axis labels hang off the specimen. No slab, no
+ * scraps, no mascot — the type is the object.
  *
- * Life: the voice line rides the hold-register (shears with scroll; the
- * punch line keeps its permanent knock), the desk clock marks the RUNNING
- * shift on the kickers (.shf-row/.shf-on, EngineProvider tick), the
- * marlin's red pass drifts as a page-awake act and slides home on hover.
- * The seeded set-in arrival arms `.imp-piece` (armGroup). FINAL layer only:
- * no hand marks. Pocket sheet flows it; the proof prints flowed facts.
+ * Life (concept-motivated): the desk clock lights the clause that is TRUE
+ * right now — ● RUNNING rides SHIFT 01 (09–17) or SHIFT 02 (23–06) on the
+ * two .shf-row markers (EngineProvider tick, DOM order = day then night);
+ * the sentence rides the hold-register (.imp-line shears with scroll,
+ * thunks home when still); the pieces are tossed on by the seeded set-in
+ * (.imp-piece, use-setting). FINAL layer — machine-set, no hand marks.
+ * Prints as flowed black facts (a statutory line that prints is the point).
  */
-
-/* the engraved marlin, drawn once — body/sail/tail linework + hatch + the
-   red working pass. Rendered twice (page inks / slab inks) and clipped at
-   the tear so the fish changes colour where it crosses. */
-function MarlinSVG() {
-  return (
-    <svg viewBox="0 0 220 120">
-      <g className="dev-ghost">
-        <path d="M72,48 C94,41 126,38 160,44 C166,45 170,46 173,48 C170,50 166,52 160,53 C128,60 96,62 84,58 C78,56 73,53 72,51 Z" />
-        <path d="M86,44 C90,26 98,14 108,12 C124,10 140,22 152,42" />
-        <path d="M170,44 C182,34 196,24 206,14 M206,14 C192,30 186,40 184,48 C186,56 192,68 206,86 M170,52 C182,62 196,74 206,86" />
-      </g>
-      <path
-        className="dev-body"
-        d="M72,48 C94,41 126,38 160,44 C166,45 170,46 173,48 C170,50 166,52 160,53 C128,60 96,62 84,58 C78,56 73,53 72,51 Z"
-      />
-      <path className="dev-body" d="M72,48.5 L10,57 L72,51.5" />
-      <path className="dev-body" d="M86,44 C90,26 98,14 108,12 C124,10 140,22 152,42" />
-      <g className="dev-hatch">
-        <path d="M94,40 L98,24" />
-        <path d="M102,38 L108,17" />
-        <path d="M110,37 L118,15" />
-        <path d="M119,37 L128,17" />
-        <path d="M128,38 L138,22" />
-        <path d="M137,39 L146,28" />
-      </g>
-      <path className="dev-tail" d="M170,44 C182,34 196,24 206,14" />
-      <path className="dev-tail" d="M206,14 C192,30 186,40 184,48 C186,56 192,68 206,86" />
-      <path className="dev-tail" d="M170,52 C182,62 196,74 206,86" />
-      <path className="dev-fin" d="M92,54 C102,64 112,70 120,72" />
-      <path className="dev-gill" d="M88,45 C85,50 85,55 88,59" />
-      <path className="dev-lat" d="M78,51 C110,52 140,51 168,49" />
-      <circle className="dev-eye" cx="80" cy="47" r="2.2" />
-      <path className="dev-wave" d="M26,100 q9,-7 18,0 t18,0 t18,0" />
-      <path className="dev-wave" d="M130,106 q9,-7 18,0 t18,0" />
-    </svg>
-  );
-}
-
 export default function Imprint() {
   return (
     <section className="imprint" id="imprint">
@@ -69,72 +27,69 @@ export default function Imprint() {
         <p className="imp-cap mono">WHO&rsquo;S AT THE DESK &middot; AND WHERE</p>
       </div>
 
-      <div className="imp-stage">
-        {/* the voice line — the open sheet's masthead. FIRST in DOM so the
-            pocket sheet flows it on top; z-lifted over the slab. */}
-        <div className="imp-piece imp-line final">
-          <div className="imp-rot">
-            <b className="il1">Still one person,</b>
-            <b className="il2">one desk.</b>
-            <b className="il3">Now with a day job.</b>
-          </div>
-        </div>
+      <div className="imp-stage final">
+        {/* the legal fiction, named — the sheet declares its own maker */}
+        <p className="imp-req mono imp-piece">
+          AS REQUIRED ON EVERY PRINTED SHEET:
+        </p>
 
-        {/* SHIFT 01 — no panel, no box: the day facts sit on the sheet */}
-        <div className="imp-piece imp-day final">
-          <p className="ish-k shf-row mono">SHIFT 01 &middot; 09:00 → 17:00</p>
-          <a className="ish-emp" href="https://oceanaid.ca" target="_blank" rel="noopener">
-            OceanAID<span className="ish-ext mono" aria-hidden="true">&nbsp;↗</span>
-          </a>
-          <p className="ish-t mono">JUNIOR SOFTWARE ENGINEER</p>
-          <p className="ish-d mono">MAY 2026 → NOW &middot; VICTORIA BC</p>
-          <p className="ish-prev mono">
-            BEFORE ▸ UNIVERSITY OF VICTORIA &middot; AI SYSTEMS DEVELOPER &middot; OCT 2025 → MAY 2026
+        {/* the statutory line — hold-register wrapper (.imp-line takes .regel) */}
+        <div className="imp-line">
+          <p className="il il1 imp-piece">Set, printed &amp; kept</p>
+          <p className="il il2 imp-piece">by one person,</p>
+          <p className="il il3 imp-piece">
+            days at{" "}
+            <a
+              className="imp-oa"
+              href="https://oceanaid.ca"
+              target="_blank"
+              rel="noopener"
+            >
+              OceanAID<span className="imp-ext mono" aria-hidden="true">&#8202;&#8599;</span>
+            </a>
+            ,
+          </p>
+          <p className="il il4 imp-piece">nights at his own desk,</p>
+          <p className="il il5 imp-piece">
+            <span className="imp-lead" aria-hidden="true" />
+            Victoria&nbsp;BC.
           </p>
         </div>
 
-        {/* MAKAIRA sp. — the PAGE copy of the fish, unclipped, painted UNDER
-            the slab (the opaque slab covers everything past the tear, so the
-            crossing can never misregister: one polygon owns the cut). The
-            hotspot (.m-hot) is the only thing here that takes the pointer —
-            the field itself must never block the OceanAID link. */}
-        <div className="imp-piece imp-marlin final" aria-hidden="true">
-          <div className="m-copy m-day"><MarlinSVG /></div>
-          <span className="m-hot" />
-        </div>
-
-        {/* SHIFT 02 — the slab torn out of the night office, a soft ragged
-            tear sweeping left at its foot. The NIGHT copy of the fish lives
-            INSIDE it: the slab's own clip cuts fish and shape together. */}
-        <div className="imp-piece imp-slab final">
-          <div className="m-copy m-night" aria-hidden="true"><MarlinSVG /></div>
-          <span className="im-cap mono" aria-hidden="true">MAKAIRA sp. &middot; CROSSES THE TEAR NIGHTLY</span>
-          <div className="imp-night-c">
-            <p className="ish-k shf-row mono">SHIFT 02 &middot; 23:00 → ?</p>
-            <span className="ish-emp">My desk.</span>
-            <p className="ish-t mono">OWNER &middot; OPERATOR &middot; JANITOR</p>
-            <p className="ish-d mono">EST. 2022 → NO CLOSING TIME</p>
+        {/* the margin instruments — the facts, hung off their clauses;
+            .shf-row order is the engine contract: day first, night second */}
+        <div className="imp-rail">
+          <div className="imp-ann mono imp-piece">
+            <p className="ia-k">
+              <span className="shf-row">SHIFT 01 &middot; WEEKDAYS 09&ndash;17</span>
+            </p>
+            <p className="ia-v">JUNIOR SOFTWARE ENGINEER</p>
+            <p className="ia-v">SINCE MAY 2026</p>
           </div>
-          <p className="ish-tonight mono">TONIGHT ▸ THIS PAGE, AGAIN</p>
-          <span className="imp-regx" aria-hidden="true" />
-          <span className="imp-sq" aria-hidden="true" />
+          <div className="imp-ann mono imp-piece">
+            <p className="ia-k">
+              <span className="shf-row">SHIFT 02 &middot; 23&ndash;06, MOSTLY</span>
+            </p>
+            <p className="ia-v">OWNER &middot; OPERATOR &middot; JANITOR</p>
+            <p className="ia-v">EST. 2022 &middot; NO CLOSING TIME</p>
+          </div>
         </div>
 
-        {/* scraps of the night, broken off in the tearing: one fallen
-            low-left (the counterweight), one small chip flung up over the
-            section rule — asymmetry that breaks the section boundary */}
-        <span className="imp-piece imp-scrap final" aria-hidden="true" />
-        <span className="imp-piece imp-scrap2 final" aria-hidden="true" />
+        {/* the fine print — the prior press + the printer, named */}
+        <div className="imp-foot mono imp-piece">
+          <p>BEFORE &middot; AI SYSTEMS DEVELOPER &middot; UNIVERSITY OF VICTORIA &middot; 2024&ndash;26</p>
+          <p>THE PRINTER &middot; M. AXELUS &middot; ONE PERSON, BOTH SHIFTS</p>
+        </div>
 
-        {/* the tear, named */}
-        <span className="imp-seam mono final" aria-hidden="true">
-          THE TEAR &middot; ONE PERSON, BOTH SIDES
-        </span>
-      </div>
-
-      {/* the hand-off down into the work */}
-      <div className="imp-piece imp-kick final" aria-hidden="true">
-        <div className="imp-rot mono">PULLED FROM THE RUN ↓</div>
+        {/* the folio — edition mark */}
+        <div className="imp-fol mono imp-piece" aria-hidden="true">
+          <svg className="imp-reg" viewBox="0 0 26 26">
+            <circle className="rr" cx="13" cy="13" r="7" />
+            <line className="rk" x1="13" y1="0" x2="13" y2="26" />
+            <line className="rk" x1="0" y1="13" x2="26" y2="13" />
+          </svg>
+          <span className="imp-fol-t">ED. N&ordm; 4 &middot; 2026</span>
+        </div>
       </div>
     </section>
   );
