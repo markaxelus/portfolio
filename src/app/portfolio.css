@@ -682,7 +682,11 @@ body.hero-set .plates-decal {
 .imp-chart .ck-hatch path, .imp-chart path.ck-hatch { fill: none; stroke: var(--ink); stroke-width: 0.9; opacity: 0.5; }
 .imp-chart .ck-rhumb path { fill: none; stroke: var(--ink); stroke-width: 0.8; }
 .imp-chart .ck-rhumbx { fill: none; stroke: var(--ink); stroke-width: 0.8; opacity: 0.4; }
-.imp-chart .ck-route { fill: none; stroke: var(--ink); stroke-width: 1.1; }
+.imp-chart .ck-route { fill: none; stroke: var(--ink); stroke-width: 1.1; opacity: 0.75; }
+/* the commute's reveal mask — a white stroke that draws ahead of the
+   dashes (direction set per figure via --mdir: the reveal always travels
+   FROM the desk toward the day station) */
+.imp-chart .ck-routemask { fill: none; stroke: #fff; stroke-width: 7; stroke-linecap: round; }
 .imp-chart .ck-dot circle { fill: var(--ink); }
 .imp-chart .ck-solid { fill: var(--ink); stroke: none; }
 .imp-chart .ck-txt {
@@ -710,6 +714,7 @@ body.hero-set .plates-decal {
    home (the operator-plate gesture); the page-awake act creeps it out */
 .imp-chart .dev-ghost {
   fill: none;
+  opacity: 0.4;
   stroke: var(--pencil);
   stroke-width: 1.5;
   stroke-linecap: round;
@@ -726,30 +731,85 @@ body.hero-set .plates-decal {
    irregular clocks (--ikd per stroke — tossed on, never a metronome). ---- */
 @keyframes imp-ink { to { stroke-dashoffset: 0; } }
 @keyframes imp-fade { to { opacity: var(--fop, 1); } }
+/* the stations are STAMPED, not drawn — the seat gesture (drop, a breath
+   of overpress, settle), the same law as every arrival of matter */
+@keyframes imp-stamp {
+  0%   { opacity: 0; transform: translateY(-7px) scale(1.14); }
+  55%  { opacity: 1; transform: translateY(1.6px) scale(1.02); }
+  100% { opacity: 1; transform: none; }
+}
+/* the red working pass is its own PRINTING — it comes down last and
+   lands just off register (its rest; hover still slides it home) */
+@keyframes imp-redpass {
+  0%   { opacity: 0; transform: translate(2.5px, -6px); }
+  55%  { opacity: 0.4; transform: translate(2.5px, 2.9px); }
+  100% { opacity: 0.4; transform: translate(2.5px, 2px); }
+}
+/* the RUNNING lamp powers up — an instrument flicker, then steady */
+@keyframes imp-lamp {
+  0% { opacity: 0; }
+  18% { opacity: 1; }
+  36% { opacity: 0; }
+  58% { opacity: 1; }
+  76% { opacity: 0; }
+  100% { opacity: 1; }
+}
+/* the credit pulls itself into register (the press-check, echoed once) */
+@keyframes imp-register {
+  0% {
+    text-shadow:
+      3px 0 0 var(--pencil-soft),
+      -3px 0 0 color-mix(in srgb, var(--ink) 40%, transparent);
+  }
+  100% { text-shadow: 0 0 0 transparent, 0 0 0 transparent; }
+}
 .imp-chart .ck-fade { opacity: var(--fop, 1); }
+.imp-chart .ck-stamp { transform-box: fill-box; transform-origin: center; }
 .imp-chart.ink-armed .ck-draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.imp-chart.ink-armed .ck-routemask { stroke-dasharray: 1; stroke-dashoffset: var(--mdir, 1); }
+.imp-chart.ink-armed .ck-stamp { opacity: 0; }
+.imp-chart.ink-armed:not(.inked) .dev-ghost { opacity: 0; }
 .imp-chart.ink-armed .ck-fade,
 .imp-chart.ink-armed .imp-sta,
 .imp-chart.ink-armed .imp-slug { opacity: 0; }
-.imp-chart.inked .ck-draw {
-  animation: imp-ink 0.85s var(--ease-out) both;
+.imp-chart.inked .ck-draw,
+.imp-chart.inked .ck-routemask {
+  animation: imp-ink var(--ikdur, 0.85s) var(--ease-out) both;
   animation-delay: var(--ikd, 0s);
 }
+.imp-chart.inked .ck-stamp {
+  animation: imp-stamp 0.36s var(--ease-out) both;
+  animation-delay: var(--ikd, 1.4s);
+}
+.imp-chart.inked .dev-ghost {
+  /* backwards, never forwards — a filled frame would override the hover
+     transition; the 100% frame simply lands on the rest values */
+  animation: imp-redpass 0.6s var(--ease-out) backwards;
+  animation-delay: var(--ikd, 2.9s);
+}
+.imp-chart.inked .shf-row.shf-on::after {
+  animation: imp-lamp 0.7s steps(1, end) 2.45s backwards;
+}
+.imp-cur.set-go .imp-oa { animation: imp-register 0.8s var(--ease-out) 0.55s backwards; }
 .imp-chart.inked .ck-fade,
 .imp-chart.inked .imp-sta,
 .imp-chart.inked .imp-slug {
   animation: imp-fade 0.5s var(--ease-out) both;
   animation-delay: var(--ikd, 0s);
 }
-.imp-chart.inked .imp-sta-oa { --ikd: 0.62s; }
-.imp-chart.inked .imp-sta-desk { --ikd: 0.72s; }
-.imp-chart.inked .imp-slug { --ikd: 0.9s; }
+.imp-chart.inked .imp-sta-oa { --ikd: 1.85s; }
+.imp-chart.inked .imp-sta-desk { --ikd: 1.62s; }
+.imp-chart.inked .imp-slug { --ikd: 2.5s; }
 @media (prefers-reduced-motion: reduce) {
   .imp-chart.ink-armed .ck-draw { stroke-dasharray: none; stroke-dashoffset: 0; }
+  .imp-chart.ink-armed .ck-routemask { stroke-dasharray: none; stroke-dashoffset: 0; }
+  .imp-chart.ink-armed .ck-stamp { opacity: 1; }
+  .imp-chart.ink-armed:not(.inked) .dev-ghost { opacity: 0.4; }
   .imp-chart.ink-armed .ck-fade,
   .imp-chart.ink-armed .imp-sta,
   .imp-chart.ink-armed .imp-slug { opacity: var(--fop, 1); }
   .imp-chart .chart-marlin, .imp-chart .dev-ghost { transition: none; }
+  .imp-cur.set-go .imp-oa { animation: none; }
 }
 
 /* ---- the stations: live labels over the plate. DOM order is the engine
@@ -938,6 +998,9 @@ body.night .imp-deskname { color: var(--acid); }
   .imp-chart { position: static !important; width: 100% !important; margin: 4mm 0 !important; }
   .imp-chart-rot { transform: none !important; background: none !important; clip-path: none !important; }
   .imp-chart .ck-draw { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; animation: none !important; }
+  .imp-chart .ck-routemask { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; animation: none !important; }
+  .imp-chart .ck-stamp { opacity: 1 !important; animation: none !important; transform: none !important; }
+  .imp-cur .imp-oa { animation: none !important; text-shadow: none !important; }
   .imp-chart .ck-fade, .imp-sta, .imp-slug { animation: none !important; opacity: var(--fop, 1) !important; }
   .imp-chart .dev-ghost { display: none !important; }
   .shf-row.shf-on::after { content: none !important; }
