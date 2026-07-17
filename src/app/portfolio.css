@@ -1162,8 +1162,10 @@ body.proof .op-candid { display: block; }
 /* the maker's mark gets fact-checked (the 2am pen tested it, obviously) —
    the note reads from under the franking's overhung corner; the arrow
    points back up at the mark */
-.n-pm { right: 3.5%; top: 37%; bottom: auto; text-align: left; --tilt: 1.6deg; }
-.dd-pm-arrow { width: 66px; height: 32px; right: 10%; top: 32.5%; bottom: auto; --tilt: 0deg; }
+/* left-anchored: the bundle column is capped, so a right-% anchor drifts
+   off the mark on wide screens; left-% tracks the QR at every width */
+.n-pm { left: 80.5%; right: auto; top: 37%; bottom: auto; text-align: left; --tilt: 1.6deg; }
+.dd-pm-arrow { width: 66px; height: 32px; left: 85.5%; right: auto; top: 32.5%; bottom: auto; --tilt: 0deg; }
 .dd-pm-arrow .draw { stroke: var(--graphite); }
 
 /* some doodles in pencil, some in pen */
@@ -1447,10 +1449,13 @@ body.proof .op-candid { display: block; }
   overflow-x: clip;   /* the bundle + its tie bleed right, never widen the ICB */
   padding: 2.6rem 1.4vw 80px;        /* clears the fixed SEE THE MESS corner (~62px tall) so the footer isn't on top of it */
   display: grid;
-  /* full-bleed section, CAPPED tracks: [gutter] [voice] [bundle] [gutter]
-     — at laptop widths the gutters collapse to ~0 (identical layout); on
-     wide screens the composition centers instead of pinning right */
-  grid-template-columns: 1fr minmax(0, 44rem) clamp(430px, 36vw, 560px) 1fr;
+  /* full-bleed section, CAPPED tracks: [voice] [bundle] [gutter] — the
+     voice column keys to the house rail (1.4vw padding) like every other
+     section's first text pin; the bundle track stays capped and the right
+     gutter absorbs wide screens. (A leading 1fr gutter used to centre the
+     composition — it was the only section whose primary text left the
+     rail, and it read as drift, not design.) */
+  grid-template-columns: minmax(0, 44rem) clamp(430px, 36vw, 560px) 1fr;
   align-items: start;
   column-gap: clamp(1.6rem, 4vw, 4rem);
   row-gap: 1rem;
@@ -1496,7 +1501,7 @@ body.proof .op-candid { display: block; }
   outline-offset: 2px;
 }
 .colophon {
-  grid-column: 2;
+  grid-column: 1;
   grid-row: 3;
   align-self: end;
   text-align: left;
@@ -1507,8 +1512,8 @@ body.proof .op-candid { display: block; }
 
 /* the spec — the docket voice answers the headline (A BRIEF, FOR THIS
    SHOP); the column the headline opens is measured, not empty */
-.outro-title { grid-column: 2; grid-row: 1; }
-.brief-spec { grid-column: 2; grid-row: 2; align-self: start; margin: 1.4rem 0 0 0.2rem; max-width: 30rem; }
+.outro-title { grid-column: 1; grid-row: 1; }
+.brief-spec { grid-column: 1; grid-row: 2; align-self: start; margin: 1.4rem 0 0 0.2rem; max-width: 30rem; }
 .bs-head { font-size: 0.6rem; letter-spacing: 0.2em; opacity: 0.8; margin-bottom: 0.55rem; }
 .bs-row {
   display: flex;
@@ -1530,7 +1535,7 @@ body.proof .op-candid { display: block; }
    top edge. The rest tilt lives on .pkt-rot (set-in ends transform:none);
    the red pass rides off register and slides home on hover. */
 .pocket {
-  grid-column: 3;
+  grid-column: 2;
   grid-row: 1 / span 3;
   position: relative;
   z-index: 2;
