@@ -44,6 +44,10 @@ export default function Yard() {
         </svg>
         <span className="note hand-k n-cairn-c" style={{ "--d": ".72s" } as CSSProperties}>go on. leave one.</span>
 
+        {/* the shop remembers your stone (cairn-stones-v2 is local, like
+            everything here) — use-mess sets body.has-stone on mess-enter */}
+        <span className="note hand-b n-yours" style={{ "--d": ".95s" } as CSSProperties}>one of these is yours.<br/>i know which one.</span>
+
         {/* the failed sketch: he tried to draw the cairn, scribbled it out.
              (it topples. of course it wouldn't sit still for a portrait.) */}
         <svg className="note scrawl dd-tries" style={{ "--d": ".42s" } as CSSProperties} viewBox="0 0 120 76" aria-hidden="true">

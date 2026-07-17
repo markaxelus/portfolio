@@ -50,6 +50,14 @@ export default function Trail() {
         <span className="note hand-b n-gap" style={{ "--d": ".6s" } as CSSProperties}>the gap in 2024? we don&rsquo;t talk about 2024.</span>
         <span className="note hand-k n-2025" style={{ "--d": ".7s" } as CSSProperties}>an actual salary. wild.</span>
 
+        {/* 2024's stone, blacked out — the one thing the honest layer
+            conspicuously hides. the joke compounds the gap note above. */}
+        <svg className="note scrawl dd-redact" style={{ "--d": ".72s" } as CSSProperties} viewBox="0 0 70 40" aria-hidden="true">
+          <path className="draw" pathLength="1" d="M8,20 C14,9 27,6 35,13 C45,4 58,10 61,20 C66,28 57,35 45,34 C34,39 18,37 12,30 C5,28 4,24 8,20" fill="none"/>
+          <path className="draw" pathLength="1" d="M9,26 L58,11 M11,31 L61,17 M14,35 L59,23 M8,21 L52,8" fill="none"/>
+        </svg>
+        <span className="note hand-b n-redact" style={{ "--d": ".84s" } as CSSProperties}>(redacted.)</span>
+
         <svg className="note scrawl dd-ttt" style={{ "--d": ".85s" } as CSSProperties} viewBox="0 0 90 90" aria-hidden="true">
           <path className="draw" pathLength="1" d="M33,8 L30,82 M62,6 L60,84 M6,32 L84,30 M8,62 L82,60" fill="none"/>
           <path className="draw" pathLength="1" d="M12,12 L26,26 M26,12 L12,26 M40,40 L54,54 M54,40 L40,54 M68,66 L82,80 M82,66 L68,80" fill="none"/>

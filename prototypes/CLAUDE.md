@@ -1429,6 +1429,44 @@ signatures (Mark counts these himself):
     still drops `.proof-notes`; `tsc --noEmit` clean. (jest's two Hero
     suites were already failing-empty before this pass — untouched.)
 
+33. (branch `staging`, July 16) **THE NIGHT PROOFREADER — side B stops
+    decorating and starts KNOWING things.** Mark: *"anything else to
+    elevate the Side B page… make a persona for urself if u need to."* The
+    persona: the shop's night proofreader — real proof-mark vocabulary,
+    marks that carry knowledge, not more doodles. Five additions:
+    - **Proofreader's marks on the PROOF, not just the margins:** a STET on
+      the drafts ledger ("code, design & nerve" gets dotted re-underline +
+      "stet?" / "no." — the pen wavered, then didn't), and a CARET on the
+      outro headline — "Got a ^decent brief?", insertion floating in the
+      display type's interline. LESSON RECORDED: carets need interline —
+      the first attempt on the dense mono bio smeared across the line
+      above and read as a bug; display type is the only valid target.
+    - **The version ghosts:** three thumbnail sketches under THIS SITE, SO
+      FAR — v1 all symmetry, v2 all volume (thicker strokes), and v3's
+      final stroke NEVER FINISHES (`.vg3-stop` holds stroke-dashoffset at
+      0.35) — the sketch dies at 90% because v3 did.
+    - **The 2024 redaction:** a blacked-out scribble in the trail's label
+      column where 2024's fact would print + "(redacted.)" — the one thing
+      the honest layer conspicuously hides. (First placement collided with
+      the 53% mile-note band; the label column under the year is the void.)
+    - **The clock testifies (live):** the imprint's sleep Q&A gains "(it's
+      {deskTime} right now. case in point.)" — rides the EXISTING
+      `body.late-desk` 23–06 window (EngineProvider's 30s tick now also
+      fills `#imp-now`; do NOT invent a parallel night class, one clock
+      owns the hour). Same gate n-uplate always used.
+    - **The shop remembers your stone:** mess-enter reads the local cairn
+      (`cairn-stones-v2`); if you've left one, `body.has-stone` prints
+      "one of these is yours. i know which one." in the yard — and the
+      visitor's own stone is literally on screen when it does.
+    All ride the existing .note machinery (observer, --d, --tilt, wet ink);
+    gated notes set their body classes BEFORE watchNotes so the observer
+    sees final display states. Print block gains `.pm-ins, .pm-caret`
+    (they live inside the H2, not under .proof-notes — printing in proof
+    mode would have printed them). Verified headless: gates both ways
+    (day: all hidden; forced late-desk + seeded stone: all print, live
+    text correct), shots at 1512/1280/1150, 390 hides everything new,
+    zero x-overflow, zero console errors, tsc clean.
+
 ## 8. Ideas discussed but not built (fair game later)
 
 - Project detail pages, each as its own proof sheet / case study.

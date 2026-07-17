@@ -79,7 +79,9 @@ export default function Hero() {
           <span className="drafts-head mono">REJECTED &mdash;</span>
           <span className="hand-b struck">pixels &amp; feelings</span>
           <span className="hand-b struck">code, design &amp; coffee</span>
-          <span className="hand-b struck">code, design &amp; nerve</span>
+          {/* the proofreader wavered on this one: stet dots under the
+              strike, the question, the answer */}
+          <span className="hand-b struck st-line">code, design &amp; nerve<em className="stet hand-k" aria-hidden="true">stet?</em><em className="stet-no hand-b" aria-hidden="true">no.</em></span>
           <span className="hand-b struck">from the desk of mark &amp;</span>
           <span className="hand-k">mark &amp; my desk &nbsp;&#10003; <em>(finally)</em></span>
         </div>
@@ -118,6 +120,15 @@ export default function Hero() {
           <span className="hand-k struck">v3 &middot; died at 90%</span>
           <span className="hand-k">v4 &middot; you&rsquo;re on it</span>
           <span className="hand-b">(define &ldquo;done&rdquo;)</span>
+        </div>
+
+        {/* the ledger's evidence — the dead versions, sketched from memory:
+            v1 all symmetry, v2 all volume, v3's sketch stops drawing where
+            v3 stopped (the .vg3-stop stroke never finishes) */}
+        <div className="note vghosts" style={{ "--d": ".58s" } as CSSProperties}>
+          <svg className="scrawl vg" viewBox="0 0 56 42"><path className="draw" pathLength="1" d="M4,5 H52 V37 H4 Z" fill="none"/><path className="draw" pathLength="1" d="M20,14 H36 M16,20 H40 M22,26 H34" fill="none" opacity=".55"/></svg>
+          <svg className="scrawl vg vg2" viewBox="0 0 56 42"><path className="draw" pathLength="1" d="M2,36 L15,5 L28,36 M8,25 H22" fill="none"/><path className="draw" pathLength="1" d="M33,5 V36 M33,5 H51 M33,20 H47 M33,36 H51" fill="none"/></svg>
+          <svg className="scrawl vg" viewBox="0 0 56 42"><path className="draw" pathLength="1" d="M4,8 H36 M4,15 H30" fill="none"/><path className="draw" pathLength="1" d="M4,24 H24 V36 H4 Z" fill="none"/><path className="draw vg3-stop" pathLength="1" d="M30,24 H52 V36 H30" fill="none"/></svg>
         </div>
 
         {/* the arrow from "do not scale" up at the thing that got scaled anyway */}

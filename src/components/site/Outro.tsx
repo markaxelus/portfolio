@@ -86,7 +86,9 @@ export default function Outro() {
   return (
     <section className="outro" ref={rootRef}>
       <span className="d-outro spec final decode" tabIndex={0}><span className="c1">094&#10042; &nbsp;00//WC</span><span className="c2">coffees this quarter. and counting.</span></span>
-      <h2 className="outro-title final">Got a brief?<br/><a href="mailto:mrkaxelus@gmail.com" id="write-link">Write to me.</a></h2>
+      {/* the proofreader raises the bar on the way out: caret under the
+          headline, insertion in the air above it (mess only) */}
+      <h2 className="outro-title final">Got a <span className="pmark">brief?<svg className="note scrawl pm-caret" style={{ "--d": ".5s" } as CSSProperties} viewBox="0 0 16 10" aria-hidden="true"><path className="draw" pathLength="1" d="M1,9 L8,1 L15,9" fill="none"/></svg><em className="note pm-ins hand-k" style={{ "--d": ".62s" } as CSSProperties} aria-hidden="true">decent</em></span><br/><a href="mailto:mrkaxelus@gmail.com" id="write-link">Write to me.</a></h2>
       <div className="amark scrawl" id="amark-write" aria-hidden="true">
         <svg viewBox="0 0 200 90" preserveAspectRatio="none">
           <path className="draw" pathLength="1" d="M100,8 C158,4 194,22 192,46 C190,74 148,86 92,84 C42,82 8,68 10,44 C12,20 52,10 106,10" fill="none"/>

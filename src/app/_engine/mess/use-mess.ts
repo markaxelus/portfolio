@@ -337,6 +337,19 @@ export function useMess(): void {
 
     /* the setProof(on) cascade, split into enter/exit (main.js 1525-1554) */
     function messEnter(): void {
+      /* the margin knows you (set BEFORE watchNotes so the observer sees
+         the gated note in its final display state): the cairn is
+         localStorage; if you've left a stone, the yard margin says so.
+         (the night-shift notes ride the EXISTING late-desk clock class —
+         EngineProvider owns that window, same as n-uplate always has.) */
+      try {
+        const c = JSON.parse(localStorage.getItem("cairn-stones-v2") || "null") as {
+          stack?: unknown[];
+          ground?: unknown[];
+        } | null;
+        if (c && ((c.stack && c.stack.length) || (c.ground && c.ground.length)))
+          document.body.classList.add("has-stone");
+      } catch {}
       /* the reveal lets go so .final can dim, then everything strikes — you
          can't annotate unprinted paper */
       api.current.disarmSetting?.();
@@ -354,6 +367,7 @@ export function useMess(): void {
       catLife(true);
     }
     function messExit(): void {
+      document.body.classList.remove("has-stone");
       unwatchNotes();
       clearWet();
       catLife(false);

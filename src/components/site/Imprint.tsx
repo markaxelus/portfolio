@@ -410,6 +410,9 @@ export default function Imprint() {
       <div className="proof-notes" aria-hidden="true">
         <span className="note hand-k n-imp-sleep-q" style={{ "--d": ".3s" } as React.CSSProperties}>when do you sleep?</span>
         <span className="note hand-b n-imp-sleep-a" style={{ "--d": ".55s" } as React.CSSProperties}>17&ndash;23. allegedly.</span>
+        {/* the clock testifies — shown only when it's actually the night
+            shift (rides body.late-desk; the engine clock fills #imp-now) */}
+        <span className="note hand-b n-imp-live" style={{ "--d": "1.05s" } as React.CSSProperties}>(it&rsquo;s <span id="imp-now" suppressHydrationWarning /> right now. case in point.)</span>
         {harbour ? (
           <>
             <span className="note hand-k n-imp-row" style={{ "--d": ".75s" } as React.CSSProperties}>rowed it once. never again.</span>
