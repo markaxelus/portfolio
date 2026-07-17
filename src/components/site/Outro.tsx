@@ -232,8 +232,10 @@ export default function Outro() {
 
         {/* the maker's mark gets fact-checked, obviously */}
         <span className="note hand-b n-pm" style={{ "--d": ".9s" } as CSSProperties}>it scans. tested it at 3am.<br/>it just says my name.</span>
+        {/* the arrow aims up-left at the franking — the note reads from
+            below the mark's corner since the bundle recomposition */}
         <svg className="note scrawl dd-pm-arrow" style={{ "--d": "1.02s" } as CSSProperties} viewBox="0 0 70 34" aria-hidden="true">
-          <path className="draw" pathLength="1" d="M4,28 C24,26 44,18 62,8 M62,8 l-11,1 M62,8 l-3,10" fill="none"/>
+          <path className="draw" pathLength="1" d="M62,28 C44,22 26,14 8,5 M8,5 l11,-1 M8,5 l3,10" fill="none"/>
         </svg>
 
         <svg className="note scrawl dd-rip" style={{ "--d": "1.1s" } as CSSProperties} viewBox="0 0 150 70" aria-hidden="true">

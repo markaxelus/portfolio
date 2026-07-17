@@ -33,6 +33,7 @@ export default function Yard() {
           <path className="draw" pathLength="1" d="M40,29 h18 m-6,-4 l6,4 l-6,4 M98,29 h18 m-6,-4 l6,4 l-6,4 M156,30 h10 m-5,-4 l5,4 l-5,4" fill="none"/>
         </svg>
         <span className="note hand-k n-map" style={{ "--d": ".85s" } as CSSProperties}>type &rarr; work &rarr; stones &rarr; you. that&rsquo;s the whole site.</span>
+        <span className="note hand-b n-map2" style={{ "--d": "1.05s" } as CSSProperties}>(now with a detour past the day job.)</span>
 
         {/* the passers-by, at 2am: the cairn topples and we stack again
              (the nerve theme, in the hand) — and the count is read, not just kept */}

@@ -8,12 +8,18 @@ import { clamp } from "@/lib/math";
 /**
  * THE THOUGHT-THREAD — THE RE-READ (mess only).
  *
- * A VERBATIM port of prototypes/main.js lines 149–416: the seeded two-pen
- * re-read line that routes note-to-note through the real scrawl positions,
- * circles what matters, ties a hesitation knot, throws one dead-end spur and
+ * A port of prototypes/main.js lines 149–416: the seeded two-pen re-read
+ * line that routes note-to-note through the real scrawl positions, circles
+ * what matters, ties a hesitation knot, throws one dead-end spur and
  * scratches it out, changes pens (red #th-a → graphite #th-b) at the record,
  * and lands as an arrow on "Write to me." A tip-dot rides the head of the
  * stroke — the line is being written NOW, not revealed.
+ *
+ * Two waypoints were added past the prototype (July 16, side B catches up to
+ * v2's page): the pen circles the imprint's MARLIN on its way down (the new
+ * section gets re-read, not transited), and swings past the failed cairn
+ * sketch so the transit never crosses the tower. Everything else — seeds,
+ * speeds, samples — is still verbatim.
  *
  * Operates on the EXISTING #thread SVG (owned by page.tsx) by id. Renders
  * nothing itself. Every constant, seed (mulberry32(7)), lerp factor (.16),
@@ -139,10 +145,16 @@ export function useThoughtThread(): void {
         nosc = pageRect(".n-noscale"),
         y2022 = pageRect(".n-gap") /* the trail-gap scrawl (2024 now) */,
         ttt = pageRect(".dd-ttt"),
+        /* the imprint's resident — the re-read circles the house fish
+           (harbour figure only; the plan figure just gets transited) */
+        marlin = pageRect(".chart-marlin"),
         argue = pageRect(".argue"),
         coffee = pageRect(".coffee"),
         vinyl = pageRect(".dd-vinyl"),
         todo = pageRect(".todo"),
+        /* the failed cairn sketch — the pen swings LEFT of the tower on its
+           way out (the yard keeps its margins; the thread respects them) */
+        tries = pageRect(".dd-tries"),
         rip = pageRect(".dd-rip"),
         write = pageRect("#write-link");
 
@@ -211,6 +223,10 @@ export function useThoughtThread(): void {
         jitterTo(ttt.left - 26, ttt.y);
         loop(ttt, 26, 22);
       }
+      if (marlin) {
+        jitterTo(marlin.left - 30, marlin.y);
+        loop(marlin, 16, 12);
+      }
       spurFrom = pts[pts.length - 1].slice();
       if (coffee) {
         jitterTo(coffee.left - 18, coffee.y);
@@ -224,6 +240,7 @@ export function useThoughtThread(): void {
         jitterTo(todo.left - 24, todo.y);
         loop(todo, 20, 16);
       }
+      if (tries) jitterTo(tries.x, tries.bottom + 16);
       if (rip) jitterTo(rip.x, rip.top - 18);
       if (write) jitterTo(write.x - write.w * 0.2, write.top - 26);
       else jitterTo(W * 0.3, H - 240);

@@ -618,6 +618,22 @@ body.hero-set .plates-decal {
 .n-gap { top: 2%; left: 46%; --tilt: -3deg; }
 .n-2025 { bottom: 6%; right: 6%; --tilt: 2deg; }
 
+/* mess scrawls on the imprint (proof layer only) — the pens fact-check the
+   plate's officialdom. Shared pair reads the shift clocks in the left void;
+   the figure-specific notes sit in the chart's open water (harbour) or on
+   the plan's floor (plan). */
+/* the shift-clock Q&A sits under the credit block — the two jobs just
+   listed are the setup, the margin does the arithmetic */
+.n-imp-sleep-q { left: 12%; top: 74%; --tilt: -2deg; }
+.n-imp-sleep-a { left: 18.5%; top: 79.5%; --tilt: 1.5deg; }
+/* beside the commute's middle reach, half on the torn edge */
+.n-imp-row { left: 42.5%; top: 45%; --tilt: -1.6deg; }
+.n-imp-fish-a { right: 31%; top: 49%; text-align: right; --tilt: 1.5deg; }
+.n-imp-fish-b { right: 29.5%; top: 54%; text-align: right; --tilt: -2deg; }
+.dd-imp-fish { width: 54px; height: 26px; right: 26%; top: 51%; --tilt: 0deg; }
+.n-imp-box { right: 24%; top: 62%; text-align: right; --tilt: 2deg; }
+.n-imp-radius { left: 47%; top: 27%; --tilt: -1.5deg; }
+
 /* ---------- the imprint: FIG.2 — THE DESK, SURVEYED (who's at the desk) ---
    the section's object is a torn fragment of an ENGRAVED PLAN — the desk
    drawn from above like an architect's survey: hatched walls, the desk at
@@ -1125,19 +1141,21 @@ body.proof .op-candid { display: block; }
 .n-pentest { bottom: 6%; left: 4.5%; font-size: 1.15rem; --tilt: 2deg; }
 .dd-spiral { width: 44px; height: 44px; top: 38%; left: 3%; --tilt: 0deg; }
 .n-time1 { top: 30%; left: 2.5%; font-size: 1.15rem; --tilt: -4deg; }
-.n-redo { top: 55%; left: 2%; max-width: 11rem; font-size: 1.15rem; --tilt: 3deg; }
+.n-redo { top: 43%; left: 2%; max-width: 11rem; font-size: 1.15rem; --tilt: 3deg; }
 /* the day log runs down the margin OUT OF ORDER — midnight above morning.
    nothing at this desk happens in a straight line. */
 .n-time2 { top: 67%; left: 2.2%; font-size: 1.05rem; --tilt: 2deg; }
 .n-time3 { top: 72%; left: 3.4%; font-size: 1.12rem; --tilt: -3deg; }
 .dd-burst { width: 30px; height: 30px; top: 71.2%; left: 1.2%; --tilt: 8deg; }
 .dd-zzz { width: 38px; height: 38px; top: -148px; right: calc(9% - 22px); --tilt: 6deg; }
-/* the moon cleared out when the EMAIL tab moved in under it */
-.dd-moon { width: 44px; height: 40px; top: 6%; right: 34%; --tilt: -6deg; }
+/* the moon keeps to the open canvas left of the bundle now */
+.dd-moon { width: 44px; height: 40px; top: 4.5%; right: auto; left: 40%; --tilt: -6deg; }
 .dd-plane { width: 74px; height: 50px; bottom: 24%; right: 36%; --tilt: -4deg; }
-/* the maker's mark gets fact-checked (the 2am pen tested it, obviously) */
-.n-pm { right: 30%; top: 9%; bottom: auto; text-align: right; --tilt: 1.6deg; }
-.dd-pm-arrow { width: 66px; height: 32px; right: 25.5%; top: 7.5%; bottom: auto; --tilt: 0deg; }
+/* the maker's mark gets fact-checked (the 2am pen tested it, obviously) —
+   the note reads from under the franking's overhung corner; the arrow
+   points back up at the mark */
+.n-pm { right: 3.5%; top: 37%; bottom: auto; text-align: left; --tilt: 1.6deg; }
+.dd-pm-arrow { width: 66px; height: 32px; right: 10%; top: 32.5%; bottom: auto; --tilt: 0deg; }
 .dd-pm-arrow .draw { stroke: var(--graphite); }
 
 /* some doodles in pencil, some in pen */
@@ -1160,7 +1178,8 @@ body.proof .op-candid { display: block; }
   font-size: 1.5rem;
   --tilt: -1deg;
 }
-.n-outro { left: 1.4vw; bottom: 4.5vw; --tilt: -1.6deg; }
+/* below the colophon's last line, not across it */
+.n-outro { left: 1.4vw; bottom: 2.4vw; --tilt: -1.6deg; }
 
 /* ---------- project index ---------- */
 /* ============================================================
@@ -2285,15 +2304,17 @@ body:not(.proof) .note { transition-delay: 0s; }
 .anchor-bio .hand-b { position: absolute; right: calc(100% + 2rem); top: 30%; width: 11.5rem; text-align: right; }
 
 /* index marginalia */
+/* the ring sits in the head's gap — the fixed stamp owns the top-right
+   corner at section-top scroll, so the stain keeps clear of it */
 .coffee {
   width: 130px;
   height: 122px;
-  top: -1.5rem;
-  right: 12%;
+  top: 0.4rem;
+  right: 31%;
   --tilt: 0deg;
 }
 .coffee .draw { stroke: rgba(128, 84, 40, 0.5); stroke-width: 3.2; }
-.n-coffee { top: 4.2rem; right: calc(12% - 3.4rem); --tilt: 2deg; }
+.n-coffee { top: 8.8rem; right: auto; left: 58.5%; --tilt: 2deg; }
 
 /* the pen's aside hangs off the sheet's lower corner now */
 .row-note {
@@ -2305,9 +2326,14 @@ body:not(.proof) .note { transition-delay: 0s; }
   z-index: 5;
 }
 .row:nth-of-type(odd) .row-note { --tilt: 1.4deg; right: auto; left: -0.8rem; text-align: left; }
+/* sheet 01's aside slides right — the fixed paint-chips note owns the
+   bottom-left corner it used to land on at section-top scroll. Anchored
+   off the sheet's right edge: a left offset would shrink-to-fit the note
+   against the row box and wrap it one word per line. */
+#p-01 .row-note { left: auto; right: -9rem; text-align: left; }
 
 /* outro marginalia */
-.n-outro { left: 1.4vw; bottom: 4.5vw; --tilt: -1.6deg; }
+.n-outro { left: 1.4vw; bottom: 2.4vw; --tilt: -1.6deg; }
 
 /* the machine layer steps back while the hand talks */
 .proof .d-cluster, .proof .d-scatter, .proof .d-cross,
@@ -2557,7 +2583,9 @@ body.pointer-seen .cursor { opacity: 1; }
   .n-gap, .n-2025, .n-desk, .n-cat, .n-time1, .n-redo, .n-tally,
   .dd-spiral, .dd-cup, .dd-tally, .dd-moon, .dd-plane, .dd-zzz,
   .versions, .dd-nsarrow, .n-time2, .n-time3, .dd-burst, .n-cmath,
-  .dd-pentest, .n-pentest, .dd-tries, .n-tries, .n-pm, .dd-pm-arrow { display: none; }
+  .dd-pentest, .n-pentest, .dd-tries, .n-tries, .n-pm, .dd-pm-arrow,
+  .n-imp-sleep-q, .n-imp-sleep-a, .n-imp-row, .n-imp-fish-a,
+  .n-imp-fish-b, .dd-imp-fish, .n-imp-box, .n-imp-radius { display: none; }
   .drafts { max-width: 12rem; right: 2%; }
   .cat { width: 92px; height: 76px; top: -75px; right: 4%; }
 }
@@ -3116,7 +3144,7 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
 .vinyl-spin { transform-box: fill-box; transform-origin: 50% 50%; }
 .proof .dd-vinyl.seen .vinyl-spin { animation: vinyl-spin 7s linear infinite; }
 @keyframes vinyl-spin { to { transform: rotate(360deg); } }
-.dd-notes { left: 15%; top: 8%; width: 56px; }
+.dd-notes { left: 26%; top: 6%; width: 56px; } /* clear of the fixed 2vw note */
 .n-vinyl { left: 5%; top: 66%; --tilt: -2deg; }
 
 /* the gauge */
@@ -3133,11 +3161,14 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
   --tilt: -2deg;
 }
 
-.dd-ttt { right: 8%; top: -3.4rem; width: 74px; }
-.n-ttt { right: 3%; top: 2.2rem; --tilt: 2deg; }
+/* the tic-tac-toe keeps company with the 2024 gap note — inboard of the
+   fixed stamp column, below the ticker seam */
+.dd-ttt { right: 27%; top: 2.6rem; width: 74px; }
+.n-ttt { right: 26.5%; top: 9.2rem; --tilt: 2deg; }
 
 .argue {
-  top: 30%;
+  /* below the wire's right run — the cat sits up there now */
+  top: 47%;
   right: 3%;
   display: flex;
   flex-direction: column;
@@ -3164,6 +3195,8 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
 
 .dd-map { left: 2%; bottom: 2.6rem; width: 180px; }
 .n-map { left: 2%; bottom: 0.6rem; --tilt: -1.5deg; }
+/* the 2am pen amends the map — the site grew a section since it was drawn */
+.n-map2 { left: 37%; bottom: 0.2rem; --tilt: 1.4deg; }
 
 /* the passers-by, in the 2am hand — left of the cairn, clear of the tower */
 .n-cairn-a { left: 7%; top: 26%; --tilt: -3deg; font-size: 1.2rem; }
@@ -3180,7 +3213,7 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
 .n-rip { right: auto; left: 44%; bottom: 2.5%; --tilt: 2deg; text-align: center; }
 
 @media (max-width: 820px) {
-  .dd-ttt, .n-ttt, .argue, .dd-map, .n-map,
+  .dd-ttt, .n-ttt, .argue, .dd-map, .n-map, .n-map2,
   .dd-vinyl, .dd-notes, .n-vinyl, .dd-mood, .n-mood { display: none; }
   /* the pocket sheet keeps one cairn aside — the thematic one — and drops
      the rest so nothing crowds the tower or the header */

@@ -1388,6 +1388,47 @@ signatures (Mark counts these himself):
     retire the reel and let the & arrive by seat/impression (one motion law),
     keeping `sndSlam`; Mark decides.
 
+32. (branch `staging`, July 16) **SIDE B CATCHES UP TO v2 — the mess learns
+    the imprint, and the crowded corners breathe.** Mark: *"update the side B
+    page, we've changed a lot on the main page… if there's too much going on
+    on 1 side u can remove stuff just make it fit the concept of 'a mess'."*
+    - **The imprint gets its margins (it had none):** the shift-clock Q&A
+      under the credit ("when do you sleep?" / "17–23. allegedly."), the
+      commute commitment ("rowed it once. never again." in the strait), and
+      the house-fish fact-check ("no marlin up here." / "my chart. she
+      stays." + arrow at the fish) — figure-gated in Imprint.tsx, so the
+      FIGURE switch swaps the argument (plan gets the cat-box + coffee-radius
+      notes instead). All hidden ≤1100px with the other delicate notes.
+    - **The thought-thread re-reads the new page:** two waypoints past the
+      verbatim port — it LOOPS THE MARLIN between the trail and the index
+      (the new section gets read, not transited), and swings past the failed
+      cairn sketch so the yard transit no longer crosses the tower. Seeds,
+      speeds, samples untouched; the spur now launches from the marlin loop.
+    - **The pileups resolved by moving, not deleting:** the index coffee ring
+      + "3am was involved." out of the fixed STILL-NOT-DONE stamp's corner
+      (top-centre gap now — x-bands can never meet); argue down to 47% (it
+      printed "ship it." on the cat); n-redo up to 43% (off the chips-note
+      corner); trail's tic-tac-toe inboard to keep company with the 2024 gap
+      note (was under the ticker + stamp); desk ♪♪ off the fixed 2vw note.
+    - **The outro fact-check re-aimed:** the bundle recomposition had left
+      "it scans. tested it at 3am." pointing at the STAMP — the note now
+      reads from under the franking's overhung corner, arrow up-left at the
+      QR (positions computed from measured rects, not eyeballed %); the moon
+      moved to open canvas at left 40%; "you read my margins" dropped below
+      the colophon's PULLED-OVER line.
+    - **The yard map amended, not redrawn:** the 2am pen adds "(now with a
+      detour past the day job.)" after "type → work → stones → you."
+    - GOTCHA RECORDED: an absolutely-positioned `.row-note` given `left:`
+      inside its row shrink-to-fits against the row box (available = box −
+      left) and wraps one word per line — anchor from `right:` instead
+      (#p-01's aside, moved off the fixed paint-chips corner).
+    Verified headless (scratchpad `sideb-shots.js` + `sideb-verify.js`):
+    all seven sections shot in mess at 1512 + imprint/index/outro at 1280,
+    night imprint inked, 390 hides the new notes, zero x-overflow at all
+    three widths, zero console errors, thread builds (spur present), print
+    still drops `.proof-notes`; `tsc --noEmit` clean. (jest's two Hero
+    suites were already failing-empty before this pass — untouched.)
+
 ## 8. Ideas discussed but not built (fair game later)
 
 - Project detail pages, each as its own proof sheet / case study.
