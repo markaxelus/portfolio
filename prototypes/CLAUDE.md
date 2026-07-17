@@ -1496,6 +1496,56 @@ signatures (Mark counts these himself):
     the signature build; loader, sound, mobile parity, scroll feel, find-
     side-B, submission craft).
 
+35. (branch `staging`, July 17) **THE LOUPE RESOLVES REAL DOTS — SOTD plan P2,
+    the signature mechanic.** Under the glass the plate stops being vector:
+    the magnified region re-renders as its three ink passes screened at press
+    angles (key 45° · accent 15° · red 75° — the true rosette a printer's
+    loupe exists to check). Built first per the plan (riskiest); the loupe's
+    hover/yield/tap gestures (§7 #27) are untouched — only what the glass
+    SHOWS changed.
+    - **The separation** (`halftone.ts` + `plateSepURI` in plates.ts): the
+      sep-source SVG (the plate minus its FAKE 9px screen + grain — the real
+      screens replace the vector hint) rasterizes at 800×1000 and every pixel
+      unmixes into per-ink coverage in OPTICAL DENSITY space (Beer–Lambert:
+      log makes overprint linear, so a 3-ink non-negative solve reconstructs
+      the artwork exactly when the dots multiply back down). Chunked 40 rows
+      per macro-task; cached per plate+accent; the other plates warm in idle
+      time after the first build.
+    - **The screens:** grid ANCHORED TO THE ARTWORK (panning translates the
+      rosette, never re-seeds it), round dots r = P·√cov·(0.5642 + 0.19·cov)
+      — the exact equal-area dot plus press gain so solids CLOSE (without the
+      join term the dark field reads as a checkerboard of paper pinholes);
+      key runs a finer ruling (5.2px vs 7px) as real print does; dot passes
+      clip to the plate edge (ink trims clean, never scallops).
+    - **Type is never screened** (`plateTextURI`): the proof slug + margin
+      micro-notes blit SOLID over the dots at full paper strength — a
+      knockout under a loupe reads as clean paper letters ("IF YOU CAN READ
+      THIS YOU FOUND THE LOUPE" is now the payoff it always claimed to be).
+      The worn tints belong to the unmagnified tile only. LESSON: the
+      screened field is BRIGHTER than the smooth art (real loupe physics —
+      paper shows between dots), so tint-opacity type drowns; print answers
+      with solid type, not softer screens.
+    - **The resolve:** the smooth CSS zoom shows instantly; when the sep
+      lands the canvas fades in 220ms with a focus-pull (dots settle from
+      1.22× — the loupe finding focus). A chip click while the glass is down
+      re-separates + refocuses in place. `.loupe-etch` on the rim:
+      "×2.2 — K45° · A15° · R75°".
+    - **THE TILE (perf law):** steady-state panning pays two BLITS, not
+      arcs — dots render into an oversized (window+2·128px) offscreen tile,
+      double-buffered, built SIX STAGED FRAMES (each screen in halves) and
+      swapped whole; a fresh build triggers 84px before the window reaches
+      the tile edge. Focus/outrun frames paint direct. Measured headless:
+      +3.7ms avg over the page's own baseline, worst frame = baseline worst
+      (the dots own no spikes); 26/26 across day/night/chip-reink/retina,
+      zero console errors; gestures re-verified (yield to swing, tap opens
+      viewer, Esc, lift). Headless is software-raster pessimism — FEEL
+      (focus timing, dot pitch) still wants Mark's real browser per §5.
+    - GOTCHA RECORDED: the line sheets' hover-zoom scales from the TOP edge
+      (summonLoupe's face math: x centred, y top-anchored) — test aim maps
+      pointer(art) = c + w·((aX/800)·Z − (Z−1)/2 − 0.5)… i.e. the y offset
+      carries a +Z shift; aiming with centre-scaled math lands ~100 art px
+      high.
+
 ## 8. Ideas discussed but not built (fair game later)
 
 - Project detail pages, each as its own proof sheet / case study.

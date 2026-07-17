@@ -2,6 +2,15 @@
 
 import { useEffect, useRef } from "react";
 import { useEngine } from "@/app/_engine/engine-context";
+import { ACCENTS, PROJECTS, plateSepURI, plateTextURI } from "@/lib/plates";
+import {
+  ART_H,
+  ART_W,
+  buildSeparation,
+  HalftoneTiler,
+  renderHalftoneWindow,
+  type Separation,
+} from "@/app/_engine/line/halftone";
 
 /**
  * THE GLASS IS THE CURSOR (CLAUDE.md §27) — the line loupe, ported VERBATIM
@@ -27,14 +36,77 @@ import { useEngine } from "@/app/_engine/engine-context";
  * The line drag does NOT preventDefault its pointerdown (see useLine), so compat
  * mouse events are never suppressed — `engine.mouse.current` stays live and this
  * hook reads it directly; it never writes the pointer feed.
+ *
+ * THE GLASS RESOLVES REAL DOTS (SOTD plan P2): under the glass the plate is
+ * re-rendered as its three ink screens (halftone.ts) on the `#loupe-dots`
+ * canvas — key 45°, accent 15°, red 75°, the true rosette. The separation is
+ * built async per plate+accent (cached; the rest warm in idle time); until it
+ * lands the smooth CSS zoom shows, and the canvas fades in with a short
+ * focus-pull — the loupe finding focus. A chip click while the glass is down
+ * re-separates and refocuses in place.
  */
 
 const LOUPE_M = 2.2;
 const LOUPE_R = 92;
+const LOUPE_D = LOUPE_R * 2;
+const FOCUS_MS = 240; /* the resolve — dots settle from a breath oversize */
 
 type Face = { x: number; y: number; w: number; h: number };
 type HoverItem = { i: number; faceEl: HTMLElement; row: HTMLElement };
 type LoupeItem = HoverItem & { face: Face };
+
+/* ---- the separation shop (module-level: survives re-arms, shared) ----
+   one build per plate+accent, cached as its promise; after the first build
+   lands, the remaining plates warm in idle time so plate 02 resolves
+   instantly by the time anyone reaches it. */
+const sepCache = new Map<string, Promise<Separation>>();
+
+function ensureSep(i: number, accentI: number): Promise<Separation> {
+  const key = i + ":" + accentI;
+  let p = sepCache.get(key);
+  if (!p) {
+    /* the plates always print in the luminous (night) accent — the sep too */
+    const accent = ACCENTS[accentI].night;
+    p = buildSeparation(plateSepURI(PROJECTS[i], accent), accent);
+    sepCache.set(key, p);
+    p.catch(() => sepCache.delete(key));
+    if (sepCache.size > 8) {
+      const oldest = sepCache.keys().next().value;
+      if (oldest && oldest !== key) sepCache.delete(oldest);
+    }
+  }
+  return p;
+}
+
+/* the type pass images (accent-free, one per plate) */
+const textImgCache = new Map<number, Promise<HTMLImageElement>>();
+function ensureTextImg(i: number): Promise<HTMLImageElement> {
+  let p = textImgCache.get(i);
+  if (!p) {
+    p = new Promise((res, rej) => {
+      const img = new Image();
+      img.onload = () => res(img);
+      img.onerror = () => rej(new Error("text layer failed to load"));
+      img.src = plateTextURI(PROJECTS[i]);
+    });
+    textImgCache.set(i, p);
+    p.catch(() => textImgCache.delete(i));
+  }
+  return p;
+}
+
+let warmed = -1;
+function warmPlates(accentI: number): void {
+  if (warmed === accentI) return;
+  warmed = accentI;
+  const idle: (cb: () => void) => void =
+    typeof window.requestIdleCallback === "function"
+      ? (cb) => window.requestIdleCallback(cb)
+      : (cb) => window.setTimeout(cb, 400);
+  idle(() => {
+    for (let i = 0; i < PROJECTS.length; i++) void ensureSep(i, accentI).catch(() => {});
+  });
+}
 
 export function useLineGlass(): void {
   const engine = useEngine();
@@ -51,6 +123,21 @@ export function useLineGlass(): void {
      effect below (so a chip click while the glass is down finds the plate). */
   const itemRef = useRef<LoupeItem | null>(null);
 
+  /* the current accent (mirror — the sep build + dot inks must read the live
+     value inside effects that don't re-arm on accent change) */
+  const accentIRef = useRef(engine.accentI);
+  accentIRef.current = engine.accentI;
+
+  /* the resolved separation for the down glass + its async-guard generation
+     (a lift or a re-ink mid-build must drop the stale result) */
+  const sepRef = useRef<Separation | null>(null);
+  const sepGenRef = useRef(0);
+  const dotsT0Ref = useRef(0);
+  /* the pre-rasterized type pass for the down glass (whole plate at S, crisp) */
+  const textRef = useRef<{ src: CanvasImageSource; w: number; h: number } | null>(null);
+  /* the tile cache — steady-state panning blits, it never re-arcs (perf law) */
+  const tilerRef = useRef<HalftoneTiler | null>(null);
+
   /* which plates have been logged this session (once each, survives re-arm) */
   const loupedRef = useRef<Record<number, true>>({});
 
@@ -62,6 +149,8 @@ export function useLineGlass(): void {
     const loupeEl = document.getElementById("loupe");
     if (!loupeEl) return; /* nothing to show the glass in */
     const cursorEl = document.getElementById("cursor");
+    const dotsEl = document.getElementById("loupe-dots") as HTMLCanvasElement | null;
+    const dctx = dotsEl ? dotsEl.getContext("2d") : null;
 
     const m = mouse.current; /* the live pointer feed (mutated in place) */
 
@@ -70,6 +159,7 @@ export function useLineGlass(): void {
     let lastLoupeTf = "";
     let lastLoupeBs = "";
     let lastLoupeBp = "";
+    let lastDotKey = "";
 
     /* the ephemeral pan loop — started on summon, cancelled on drop.
        reads engine.mouse.current + the cached face; pure math, no gBCR. */
@@ -111,6 +201,32 @@ export function useLineGlass(): void {
         lastLoupeBp = bp;
         loupeEl!.style.backgroundPosition = bp;
       }
+      /* the dots: re-screen the window when the pan moved or the focus pull
+         is still settling (quarter-px quantized — identical frames write
+         nothing; the grid is glued to the artwork, so panning translates
+         the rosette, never re-seeds it) */
+      const sep = sepRef.current;
+      if (sep && dctx) {
+        const t = performance.now() - dotsT0Ref.current;
+        const eased = t >= FOCUS_MS ? 0 : Math.pow(1 - t / FOCUS_MS, 3);
+        const focus = 1 + 0.22 * eased;
+        const offX = LOUPE_R - ix * LOUPE_M;
+        const offY = LOUPE_R - iy * LOUPE_M;
+        const dk =
+          ((offX * 4) | 0) + ":" + ((offY * 4) | 0) + ":" + ((focus * 200) | 0);
+        if (dk !== lastDotKey) {
+          lastDotKey = dk;
+          renderHalftoneWindow(dctx, sep, {
+            size: LOUPE_D,
+            accent: ACCENTS[accentIRef.current].night,
+            S: scv * LOUPE_M,
+            offX,
+            offY,
+            focus,
+            text: textRef.current,
+          }, tilerRef.current);
+        }
+      }
     }
 
     let lineHoverEl: HTMLElement | null = null; /* the .row-thumb under the pointer */
@@ -123,6 +239,11 @@ export function useLineGlass(): void {
       itemRef.current = null;
       loupeEl!.classList.remove("on");
       if (cursorEl) cursorEl.classList.remove("is-loupe");
+      sepRef.current = null;
+      textRef.current = null;
+      tilerRef.current = null;
+      sepGenRef.current++;
+      if (dotsEl) dotsEl.classList.remove("dots-on");
       cancelAnimationFrame(panRaf);
       panRaf = 0;
     }
@@ -149,6 +270,52 @@ export function useLineGlass(): void {
         api.current.logAct?.(
           "loupe down on plate 0" + (hit.i + 1) + ". the dots check out.",
         );
+      }
+      /* the dots: size the backing store for this screen, then build (or
+         reuse) the separation. The smooth zoom shows until the dots are
+         ready — the resolve reads as the loupe finding focus. */
+      sepRef.current = null;
+      textRef.current = null;
+      const gen = ++sepGenRef.current;
+      if (dotsEl && dctx) {
+        dotsEl.classList.remove("dots-on");
+        delete dotsEl.dataset.textDown;
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        if (dotsEl.width !== LOUPE_D * dpr) {
+          dotsEl.width = LOUPE_D * dpr;
+          dotsEl.height = LOUPE_D * dpr;
+        }
+        dctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        tilerRef.current = new HalftoneTiler(LOUPE_D, dpr);
+        /* the type pass: rasterize the whole plate's text layer at this
+           summon's scale (DPR-crisp) — small type is never screened */
+        const S = Math.max(face.w / ART_W, face.h / ART_H) * LOUPE_M;
+        void ensureTextImg(hit.i)
+          .then((img) => {
+            if (gen !== sepGenRef.current) return;
+            const tw = Math.round(ART_W * S);
+            const th = Math.round(ART_H * S);
+            const cv = document.createElement("canvas");
+            cv.width = tw * dpr;
+            cv.height = th * dpr;
+            const c2 = cv.getContext("2d");
+            if (!c2) return;
+            c2.drawImage(img, 0, 0, cv.width, cv.height);
+            textRef.current = { src: cv, w: tw, h: th };
+            dotsEl.dataset.textDown = "1"; /* harness-visible marker */
+            lastDotKey = ""; /* repaint with the type down */
+          })
+          .catch(() => {});
+        void ensureSep(hit.i, accentIRef.current)
+          .then((sep) => {
+            if (gen !== sepGenRef.current) return; /* lifted or re-inked meanwhile */
+            sepRef.current = sep;
+            dotsT0Ref.current = performance.now();
+            lastDotKey = "";
+            dotsEl.classList.add("dots-on");
+            warmPlates(accentIRef.current);
+          })
+          .catch(() => {}); /* no dots — the smooth zoom stands, gracefully */
       }
       /* force the first pan frame to paint (fresh crop for the new plate) */
       lastLoupeTf = "";
@@ -249,6 +416,10 @@ export function useLineGlass(): void {
         loupeEl!.classList.remove("on");
         if (cursorEl) cursorEl.classList.remove("is-loupe");
       }
+      sepRef.current = null;
+      textRef.current = null;
+      sepGenRef.current++;
+      if (dotsEl) dotsEl.classList.remove("dots-on");
       indexEl.removeEventListener("pointerover", onPointerOver);
       indexEl.removeEventListener("pointerout", onPointerOut);
       indexEl.removeEventListener("pointerdown", onPointerDown);
@@ -258,7 +429,9 @@ export function useLineGlass(): void {
     };
   }, [reduced, stillMode, trailEnabled, api, mouse]);
 
-  /* ---- re-ink the glass in place if the plates change while it is down ---- */
+  /* ---- re-ink the glass in place if the plates change while it is down ----
+     the smooth underlay swaps instantly; the dots hide, re-separate in the
+     new accent, and refocus — the glass re-finding focus on the fresh ink. */
   useEffect(() => {
     const it = itemRef.current;
     if (!it) return;
@@ -266,5 +439,17 @@ export function useLineGlass(): void {
     if (loupeEl && engine.plates[it.i]) {
       loupeEl.style.backgroundImage = engine.plates[it.i];
     }
-  }, [engine.plates]);
+    const dotsEl = document.getElementById("loupe-dots");
+    sepRef.current = null;
+    const gen = ++sepGenRef.current;
+    if (dotsEl) dotsEl.classList.remove("dots-on");
+    void ensureSep(it.i, engine.accentI)
+      .then((sep) => {
+        if (gen !== sepGenRef.current || itemRef.current?.i !== it.i) return;
+        sepRef.current = sep;
+        dotsT0Ref.current = performance.now();
+        if (dotsEl) dotsEl.classList.add("dots-on");
+      })
+      .catch(() => {});
+  }, [engine.plates, engine.accentI]);
 }

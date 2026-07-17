@@ -44,6 +44,12 @@ true loupe on the web. Contained to one component, concept-perfect, and
 it is the 10-second clip that gets shared. This is the differentiator;
 build it first because it is also the riskiest.
 **Effort:** 1–2 weeks. **Moves:** design + creativity + dev award.
+**STATUS (July 17): BUILT on `staging`** — true 3-ink separations in
+density space, screens at 45/15/75°, solid type pass, tile-cached blit
+panning, focus-pull resolve; 26/26 headless, zero console errors
+(prototypes/CLAUDE.md §7 #35). Awaiting Mark's real-browser feel-check
+(dot pitch, focus timing); the operator-plate extension (the PHOTO
+resolving into dots — the phone clip) is the queued follow-up.
 
 ### P3 — Sound behind the existing [S] toggle
 Stamp thunks, paper slide between sections, teletype ticker, pen

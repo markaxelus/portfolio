@@ -173,8 +173,13 @@ export default function Home() {
         </div>
       </div>
 
-      {/* the printer's loupe (press and hold a plate) */}
-      <div className="loupe" id="loupe" aria-hidden="true" />
+      {/* the printer's loupe — under the glass the plate resolves into its
+          real ink screens (halftone.ts); the canvas fades in over the smooth
+          zoom when the separation is ready, like the glass finding focus */}
+      <div className="loupe" id="loupe" aria-hidden="true">
+        <canvas className="loupe-dots" id="loupe-dots" width={184} height={184} />
+        <span className="loupe-etch">×2.2 — K45° · A15° · R75°</span>
+      </div>
 
       {/* custom cursor */}
       <div className="cursor" id="cursor" aria-hidden="true">

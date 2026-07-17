@@ -2912,6 +2912,36 @@ body.has-cursor .loupe { display: block; }
 .loupe.on { opacity: 1; }
 .cursor.is-loupe { opacity: 0 !important; }
 
+/* SOTD P2 — the glass resolves REAL dots: the canvas re-renders the magnified
+   region as the plate's three ink screens (key 45° / accent 15° / red 75°,
+   halftone.ts). It sits over the smooth CSS zoom and fades in when the
+   separation is built — the loupe finding focus. */
+.loupe-dots {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.22s var(--ease-out);
+}
+.loupe-dots.dots-on { opacity: 1; }
+
+/* the magnification etched on the rim, instrument voice */
+.loupe-etch {
+  position: absolute;
+  left: 50%;
+  bottom: 13px;
+  transform: translateX(-50%);
+  font-family: "Space Mono", monospace;
+  font-size: 7px;
+  letter-spacing: 1.4px;
+  white-space: nowrap;
+  color: #fff;
+  opacity: 0.5;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+}
+
 /* --- 3. the plate pull: shift-drag the headline and the red/blue
    passes come off register, following the hand; thunk back on release --- */
 .hero-title.plates-return { transition: text-shadow 0.55s var(--ease-thunk); }
