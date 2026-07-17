@@ -1546,6 +1546,51 @@ signatures (Mark counts these himself):
       carries a +Z shift; aiming with centre-scaled math lands ~100 art px
       high.
 
+36. (branch `loader-trailer`, July 17) **THE FIRST PULL — the loader becomes
+    the trailer (SOTD plan P1).** The make-ready is re-storyboarded as a
+    title sequence where every frame is the press working; the entire change
+    lives in `public/loader-lockup-mock.html` — the parent seam
+    (use-loader.ts: `__ampFly` cede, `mr-lockup-done`, the 9s failsafe, skip
+    events) is UNTOUCHED, as is the hard-won flight/bake 1:1 landing.
+    - **THE FEED:** a real sheet (a full-viewport element scaled to the bed,
+      `--bed-scale` 0.42 / 0.6 mobile) glides in blank and lands at the held
+      lean — the LEAN moved from the lockup to the SHEET (the whole sheet is
+      locked off-centre and holds level). It prints in the LIVE page's
+      colours, read from the parent at play (`sheetColors`: bg, hero ink,
+      accent, --pencil) — day/night/accent true from the first frame, so the
+      final reveal is stone-on-stone and the old body.page colour flips died.
+    - **THE PASSES:** the words arrive as INK — three rolls: KEY (Mark / my
+      desk + the sheet's crop marks), ACCENT (the & + the blue ghost), THE
+      WORKING RED (the red ghost). Each pass sweeps one `.roller` impression
+      edge across the sheet (LINEAR — a cylinder is a machine; the taste rule
+      sanctions it) and every element clip-wipes on with delay/duration
+      SLICED from the roller's sweep (`passStart` measures once per pass,
+      event-driven, never in a loop) so its reveal edge rides the roller
+      exactly. The reg-hunt (setReg ghosts/cross/plate) runs continuously
+      through all of it — the connective tissue that keeps it un-stepped.
+    - **REGISTER:** unchanged beats (100% fonts-gated, passes slam home,
+      ease-thunk teeter → level, HELD) but the SHEET levels now; `bakePrint`
+      bakes the open clips inline so the flight's `animation="none"` can
+      never blank a flown word (found by reasoning, not by bug).
+    - **THE PULL:** the sheet grows to the full viewport (transform → none,
+      0.9s) — the printed thing literally becomes the page; `body.pulling`
+      leaves the bed instruments behind on the press (they floated over the
+      paper in the first cut — screenshot caught HELD sitting on the
+      headline). Then the untouched relax/cede/bake flight lands the words
+      on the live hero. Register→relax went 700ms → 1200ms; total ≈ +0.5s.
+    - The counter is live gauge + phase label (`#mklbl`: FEEDING → PASS 1/3
+      · KEY DOWN → … → MAKE-READY · COMPLETE → THE FIRST PULL); instruments
+      recomposed around the bed (counter/tonebar 64%, plate 79%/56%, slugs
+      to the bottom rail, htpatch 30vh). Mobile: bed 0.6, counter clear of
+      the sheet, measure hidden. Reduced motion ships `body.printed` (the
+      finished sheet, full size, zero motion).
+    Verified headless 19/19 (scratchpad `verify-firstpull.js`): storyboard
+    states in order (feed → passes in order → register 100/OK → pull to
+    100% viewport), embedded `?loader` flight lands the real hero + & seats
+    + reel cleaned, reduced ships printed, mobile 390 no overflow, zero
+    console errors everywhere. FEEL (feed weight, pass rhythm, pull ease)
+    needs Mark's real browser per §5.
+
 ## 8. Ideas discussed but not built (fair game later)
 
 - Project detail pages, each as its own proof sheet / case study.

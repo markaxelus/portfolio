@@ -12,15 +12,30 @@
 <link href="https://api.fontshare.com/v2/css?f[]=excon@400,700&display=swap" rel="stylesheet">
 <style>
   /* ============================================================
-     THE LOCKUP — the load as an ASYMMETRIC event.
-     The site's word is "asymmetricness." So the first frame is
-     not a centred convergence — it's a lockup: the headline's
-     weight slams in OFF-CENTRE, leans (will it topple?), the
-     passes come into register, and it THUNKS and holds LEVEL.
-     Off-balance load, holds level = nerve. The cairn topples;
-     the lockup holds. Then it floods to stone and it already IS
-     the (asymmetric) hero — the load becomes the page.
-     Autoplays; REPLAY top-right. Reduced motion ships the page.
+     THE FIRST PULL — the loader is the trailer (SOTD plan P1).
+     The storyboard, like a title sequence — every frame is the
+     press working:
+       1. THE FEED    — a real sheet (already in the live page's
+                        colours) glides onto the bed at the held
+                        lean, blank. The lamp tracks it in.
+       2. THE PASSES  — the words arrive as INK, three passes
+                        rolled on by an impression edge: KEY
+                        (Mark / my desk), ACCENT (the & + the
+                        blue pass), then THE WORKING RED — each a
+                        continuous machine roll (linear — it's a
+                        cylinder) while the counter climbs and
+                        the passes hunt for register.
+       3. REGISTER    — 100%, the passes slam home, the sheet
+                        teeters level and HOLDS. Off-balance
+                        load, holds level = nerve.
+       4. THE PULL    — the sheet grows to fill the viewport:
+                        the printed thing becomes the page.
+       5. THE RELAX   — (unchanged, hard-won) the words FLIP 1:1
+                        into the live hero, the & cedes to the
+                        flight reel, the booth dissolves stone-
+                        on-stone. The hero IS the printed result.
+     Autoplays; REPLAY top-right (standalone). Reduced motion
+     ships the printed page. Any input skips (parent seam).
      ============================================================ */
   :root {
     --booth: #0C0B08;
@@ -37,6 +52,13 @@
     --bg: var(--booth);
     --fg: var(--stone);
     --lean: -4.6deg;          /* the held lean during make-ready */
+    /* the sheet prints in the LIVE page's colours (read from the parent at
+       play, so day/night/accent are true from the first frame) */
+    --sheet-bg: #DDDBD4;
+    --sheet-ink: #16150F;
+    --sheet-accent: #2A2AF0;
+    --sheet-red: #C7361F;
+    --bed-scale: 0.42;        /* the sheet on the bed, before the pull */
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
@@ -141,7 +163,7 @@
      the eye tracks the count while it loads, so it sits near centre — loading
      still FEELS centred while the composition stays weighted left. */
   .make {
-    position: fixed; z-index: 8; left: 55%; top: 50%; transform: translateY(-50%);
+    position: fixed; z-index: 8; left: 64%; top: 50%; transform: translateY(-50%);
     font-family: var(--mono); opacity: 0; text-align: left;
     transition: opacity 0.5s var(--ease-out), transform 0.6s var(--ease-out);
   }
@@ -158,7 +180,7 @@
   /* the ink/tone bar under the counter — real mass, part of the make-ready
      (stays as hero furniture, so the right never goes empty again) */
   .tonebar {
-    position: fixed; z-index: 8; left: 55%; top: calc(50% + 98px);
+    position: fixed; z-index: 8; left: 64%; top: calc(50% + 98px);
     display: flex; gap: 4px; align-items: center; opacity: 0;
     transition: opacity 0.5s var(--ease-out);
   }
@@ -181,7 +203,7 @@
 
   /* techwear slugs scattered into the void (persist as hero decals) */
   .slugs {
-    position: fixed; z-index: 8; right: clamp(1.1rem, 6vw, 6rem); top: 58vh;
+    position: fixed; z-index: 8; right: clamp(1.1rem, 6vw, 6rem); bottom: 7vh;
     text-align: right; font-family: var(--mono); font-size: 10px;
     letter-spacing: 0.2em; line-height: 2.25; opacity: 0;
     transition: opacity 0.6s var(--ease-out);
@@ -223,34 +245,94 @@
   .bk.bl { border-bottom-width: 1.4px; border-left-width: 1.4px; }
   .bk.br { border-bottom-width: 1.4px; border-right-width: 1.4px; }
 
-  /* ============ THE LOCKUP — the headline as weighted, off-centre type ============ */
-  .stage { position: fixed; inset: 0; z-index: 5; pointer-events: none; }
+  /* ============ THE SHEET — the stock on the bed; it becomes the page ============
+     A full-viewport element scaled down to the bed (transform-only, so the
+     pull to full size is pure compositor). The LEAN lives here now — the whole
+     sheet is locked off-centre and holds level at register. Feeds in blank;
+     the passes print the words onto it. */
+  .sheet {
+    position: fixed; inset: 0; z-index: 5; pointer-events: none;
+    background: var(--sheet-bg);
+    overflow: hidden;
+    transform-origin: 30% 62%;
+    transform: translate(76vw, -10vh) rotate(3.4deg) scale(var(--bed-scale));
+    opacity: 0;
+    box-shadow: 0 26px 80px rgba(0,0,0,0.55), 0 3px 10px rgba(0,0,0,0.4);
+  }
+  body.lit .sheet {
+    animation: sheetfeed 0.95s cubic-bezier(0.23, 1, 0.32, 1) 0.15s both;
+  }
+  @keyframes sheetfeed {
+    0%   { opacity: 0; transform: translate(76vw, -10vh) rotate(3.4deg) scale(var(--bed-scale)); }
+    14%  { opacity: 1; }
+    100% { opacity: 1; transform: translate(0, 0) rotate(var(--lean)) scale(var(--bed-scale)); }
+  }
+  body.page .sheet { box-shadow: none; }
+  /* reduced motion / no-js safety: the printed sheet, full size */
+  body.printed .sheet { animation: none; opacity: 1; transform: none; box-shadow: none; }
+
+  /* the sheet's own crop marks — printed with the KEY pass, cleared at relax
+     (the live page owns the real frame furniture) */
+  .sheet-marks { position: absolute; inset: 0; opacity: 0.55; }
+  .cm { position: absolute; width: 14px; height: 14px; border: 0 solid var(--sheet-ink); }
+  .cm.tl { left: 2.2vw; top: 2.2vw; border-top-width: 1px; border-left-width: 1px; }
+  .cm.tr { right: 2.2vw; top: 2.2vw; border-top-width: 1px; border-right-width: 1px; }
+  .cm.bl { left: 2.2vw; bottom: 2.2vw; border-bottom-width: 1px; border-left-width: 1px; }
+  .cm.br { right: 2.2vw; bottom: 2.2vw; border-bottom-width: 1px; border-right-width: 1px; }
+  .cm { clip-path: inset(-6% 103% -6% -3%); }
+  body.printed .cm { clip-path: none; animation: none; }
+  body.relaxing .sheet-marks { opacity: 0 !important; transition: opacity 0.4s var(--ease-out) !important; }
+
+  /* the impression edge — the roller line that lays each pass down. One per
+     pass; each sweeps the whole sheet once (JS arms the sweep inline). */
+  .roller {
+    position: absolute; top: -4%; bottom: -4%; left: -1.5%; width: 3px; opacity: 0;
+    background: linear-gradient(180deg, transparent, rgba(22,21,15,0.30) 18%, rgba(22,21,15,0.30) 82%, transparent);
+  }
+  @keyframes rollsweep {
+    0%   { opacity: 0; transform: translateX(0); }
+    6%   { opacity: 1; }
+    94%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(103vw); }
+  }
+
+  /* ============ THE LOCKUP — the type, printed on the sheet ============ */
+  .stage { position: absolute; inset: 0; pointer-events: none; }
   .lockup {
     position: absolute; left: clamp(1.1rem, 7vw, 8rem); bottom: 27vh;
     transform-origin: 7% 88%;               /* pivot at the heavy base */
-    transform: rotate(var(--lean));
     /* no will-change: a promoted layer caches a mid-flight texture of the words
        (the amp, which also shifts lavender→blue, leaves a stale coloured ghost) */
   }
   .line {
-    display: block; color: var(--fg); line-height: 0.86; letter-spacing: -0.03em;
+    display: block; color: var(--sheet-ink); line-height: 0.86; letter-spacing: -0.03em;
     font-weight: 460; white-space: nowrap;
-    opacity: 0; transform: translateY(-14px);
   }
-  body.lit .line { animation: lockdrop 0.55s var(--ease-out) forwards;
-    animation-delay: calc(var(--i) * 0.11s + 0.12s); }
-  @keyframes lockdrop { to { opacity: 1; transform: translateY(0); } }
+  /* unprinted type: clipped to nothing until its pass rolls it on. The wipe
+     timing is set INLINE by passStart() so each word's reveal edge rides the
+     roller exactly (delay/duration sliced from the roller's sheet sweep).
+     LINEAR on purpose — a cylinder is a machine (the taste rule allows it). */
+  .l-mark, .l-amp, .l-desk .ink-face, .l-desk .ghost {
+    clip-path: inset(-6% 103% -6% -3%);
+  }
+  @keyframes passroll { to { clip-path: inset(-6% -3% -6% -3%); } }
+  /* printed (reduced motion / degenerate paths): everything simply on */
+  body.printed .l-mark, body.printed .l-amp,
+  body.printed .l-desk .ink-face, body.printed .l-desk .ghost {
+    clip-path: none; animation: none;
+  }
   /* the staircase — irregular indents (hand-composed, not a ruler diagonal) */
   /* V3 lockup: Excon words + a roman Fraunces & — matches the real hero so the
      flying letterforms ARE the hero's (the flight scales, the bake lands 1:1). */
   .l-mark   { --i: 0; margin-left: 6.2vw;  font-size: clamp(2rem, 5vw, 3.7rem);
               font-family: "Excon", sans-serif; font-weight: 700; text-transform: uppercase; }
   .l-amp    { --i: 1; margin-left: 3.2vw;  font-size: clamp(2.8rem, 7vw, 5.4rem); margin-top: -0.02em;
-              font-family: "Fraunces", serif; font-style: normal; color: var(--accent-lum);
+              font-family: "Fraunces", serif; font-style: normal; color: var(--sheet-accent);
               font-variation-settings: "opsz" 144, "wght" 470; }
   .l-desk   { --i: 2; margin-left: 0;      font-size: clamp(2.2rem, 6.6vw, 5.2rem); margin-top: -0.02em;
               font-family: "Excon", sans-serif; font-weight: 700; text-transform: uppercase; }
-  body.page .l-amp { color: var(--accent); }
+  /* (no body.page colour flip — the sheet prints in the live colours from
+     the first pass, so the flood has nothing left to change) */
   /* the parent's flight reel took the & at the relax — our amp yields the same
      frame (visibility, not opacity: an atomic swap, never a fade-out) */
   body.ceded .l-amp { visibility: hidden; }
@@ -320,7 +402,7 @@
   /* the LIT PLATE: the work itself, being made ready. Baked (a print stays a
      print in any mode); its red pass is off-register and comes true on resolve */
   .plate {
-    position: fixed; z-index: 6; left: 67%; top: 46%; width: clamp(148px, 17vw, 222px);
+    position: fixed; z-index: 6; left: 79%; top: 56%; width: clamp(148px, 17vw, 222px);
     transform: rotate(-1.6deg); opacity: 0;
     transition: opacity 0.6s var(--ease-out) 0.15s, transform 0.9s var(--ease-out);
     filter: drop-shadow(0 12px 24px rgba(0,0,0,0.45));
@@ -333,7 +415,7 @@
 
   /* the proof slug, rotated up the plate's edge */
   .pslug {
-    position: fixed; z-index: 6; left: 65.4%; top: 46%; transform: rotate(-90deg);
+    position: fixed; z-index: 6; left: 77.4%; top: 56%; transform: rotate(-90deg);
     transform-origin: left top; font-family: var(--mono); font-size: 8.5px;
     letter-spacing: 0.26em; color: var(--fg); opacity: 0; white-space: nowrap;
     transition: opacity 0.6s var(--ease-out);
@@ -359,7 +441,7 @@
 
   /* a halftone screen patch, lower-right — print texture as an object */
   .htpatch {
-    position: fixed; z-index: 3; right: clamp(1.1rem, 6vw, 6rem); top: 49vh;
+    position: fixed; z-index: 3; right: clamp(1.1rem, 6vw, 6rem); top: 30vh;
     width: 46px; height: 46px; opacity: 0; transition: opacity 0.6s var(--ease-out);
     background-image: radial-gradient(currentColor 1.1px, transparent 1.3px);
     background-size: 6px 6px;
@@ -451,9 +533,8 @@
     position: absolute; left: 0; top: 0; white-space: nowrap; pointer-events: none;
     opacity: 0.9;
   }
-  .l-desk .ghost.red  { color: var(--pencil); }
-  .l-desk .ghost.blue { color: var(--accent-lum); }
-  body.page .l-desk .ghost.blue { color: var(--accent); }
+  .l-desk .ghost.red  { color: var(--sheet-red); }
+  .l-desk .ghost.blue { color: var(--sheet-accent); }
   .l-desk .ink-face { position: relative; }   /* the key pass sits on top of its ghosts */
 
   /* engineering-drawing dimension line, clamped under the word */
@@ -499,6 +580,18 @@
   body.registered .make .err.ok { animation: okhit 0.4s var(--ease-thunk); transform-origin: left center; }
   @keyframes okhit { 0% { transform: scale(1.18); } 60% { transform: scale(0.98); } 100% { transform: scale(1); } }
 
+  /* THE PULL leaves the bed behind — as the sheet grows into the page, the
+     bed instruments stay on the press, not on the print. The counter + tone
+     bar (the operator's gauge) ride until the relax clears everything. */
+  body.pulling .held, body.pulling .wll, body.pulling .slugs, body.pulling .plate,
+  body.pulling .pslug, body.pulling .spec-cluster, body.pulling .htpatch,
+  body.pulling .mk, body.pulling .star, body.pulling .cross, body.pulling .axis,
+  body.pulling .hazard, body.pulling .edge-strip, body.pulling .measure,
+  body.pulling .grip {
+    opacity: 0 !important;
+    transition: opacity 0.35s var(--ease-out) !important;
+  }
+
   /* embedded as the real page's loader (in an iframe): hide the mock's own chrome */
   body.embed .replay, body.embed .cap { display: none !important; }
 
@@ -531,9 +624,10 @@
 
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
   @media (max-width: 640px) {
-    :root { --lean: -3.6deg; }
-    .make { left: 8%; top: auto; bottom: 17vh; transform: none; }
-    .tonebar, .wll, .plate, .pslug, .spec-cluster, .htpatch, .mk { display: none; }
+    :root { --lean: -3.6deg; --bed-scale: 0.6; }
+    .sheet { transform-origin: 50% 46%; }
+    .make { left: 8%; top: auto; bottom: 9vh; transform: none; }
+    .tonebar, .wll, .plate, .pslug, .spec-cluster, .htpatch, .mk, .measure { display: none; }
     .star { left: 72%; top: 12%; }
     .slugs { top: auto; bottom: 24vh; right: 6vw; font-size: 9px; }
     .bio { display: none; }
@@ -573,9 +667,9 @@
 
   <!-- the make-ready counter: the bright anchor near the axis -->
   <div class="make" aria-hidden="true">
-    <span class="lbl">MAKE-READY &middot; LOCKUP</span>
+    <span class="lbl" id="mklbl">MAKE-READY &middot; THE FIRST PULL</span>
     <span class="num"><span id="num">00</span><em>%</em></span>
-    <span class="err" id="err">SETTING THE FORME</span>
+    <span class="err" id="err">FEEDING THE SHEET</span>
   </div>
 
   <!-- the ink/tone bar under the counter -->
@@ -657,13 +751,22 @@
   <i class="bk tl" id="bk-tl"></i><i class="bk tr" id="bk-tr"></i>
   <i class="bk bl" id="bk-bl"></i><i class="bk br" id="bk-br"></i>
 
-  <!-- THE LOCKUP: the headline, weighted off-centre -->
-  <div class="stage" aria-hidden="true">
-    <div class="lockup" id="lockup">
-      <span class="line l-mark">Mark</span>
-      <span class="line l-amp">&amp;</span>
-      <span class="line l-desk" id="keystone"><span class="ghost red">my desk</span><span class="ghost blue">my desk</span><span class="ink-face">my desk</span></span>
+  <!-- THE SHEET: the stock on the bed. Feeds in blank; the passes print the
+       lockup onto it; the pull grows it into the page. -->
+  <div class="sheet" id="sheet" aria-hidden="true">
+    <div class="sheet-marks">
+      <i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
     </div>
+    <div class="stage" aria-hidden="true">
+      <div class="lockup" id="lockup">
+        <span class="line l-mark">Mark</span>
+        <span class="line l-amp">&amp;</span>
+        <span class="line l-desk" id="keystone"><span class="ghost red">my desk</span><span class="ghost blue">my desk</span><span class="ink-face">my desk</span></span>
+      </div>
+    </div>
+    <i class="roller" id="roller-1"></i>
+    <i class="roller" id="roller-2"></i>
+    <i class="roller" id="roller-3"></i>
   </div>
 
   <!-- page furniture (arrives with the flood) -->
@@ -686,8 +789,13 @@
   var body   = document.body;
   var numEl  = document.getElementById("num");
   var errEl  = document.getElementById("err");
+  var mklbl  = document.getElementById("mklbl");
   var keystone = document.getElementById("keystone");
   var lockup = document.getElementById("lockup");
+  var sheetEl = document.getElementById("sheet");
+  var rollers = [document.getElementById("roller-1"),
+                 document.getElementById("roller-2"),
+                 document.getElementById("roller-3")];
   var crossR = document.querySelector(".cross .rd");
   var crossB = document.querySelector(".cross .bl");
   var plateR = document.querySelector(".plate-red");
@@ -723,7 +831,7 @@
   /* measure the ACTUAL centres — the tour's stations. zero-rects (a station
      hidden at this breakpoint, e.g. the plate on mobile) stay null so the
      viewport fallbacks take over instead of aiming the lamp at 0,0 */
-  var wordC = null, countC = null, plateC = null, formeC = null;
+  var wordC = null, countC = null, plateC = null, formeC = null, sheetC = null;
   function centreOf(el){
     if (!el) return null;
     var r = el.getBoundingClientRect();
@@ -734,6 +842,7 @@
     countC = centreOf(document.querySelector(".make"));
     plateC = centreOf(document.querySelector(".plate"));
     formeC = centreOf(document.querySelector(".l-mark"));   /* the forme: the upper lockup */
+    sheetC = centreOf(sheetEl);                             /* the stock on the bed */
   }
 
   var BASE_LEAN = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--lean")) || -4.6;
@@ -741,6 +850,82 @@
   var CLIMB  = 3550;           /* make-ready duration before the good pull (slower — it breathes) */
   var MORPH_MS = 920;          /* the flight: the lockup relaxes into the real hero */
   var ampCeded = false;        /* the parent's flight reel took the & (set at relax) */
+  var FEED_DELAY = 150, FEED_MS = 950;     /* the sheet onto the bed */
+  var PULL_WAIT = 240, PULL_MS = 900;      /* register → the sheet grows to the page */
+  var fedDone = false;                     /* the feed animation has handed the sheet to JS */
+
+  /* the sheet prints in the LIVE page's colours from the very first pass —
+     read them once per play (day/night/accent all true; standalone keeps
+     the defaults). the flood then has nothing left to change. */
+  function sheetColors(){
+    var bg = "#DDDBD4", ink = "#16150F", acc = "#2A2AF0", red = "#C7361F";
+    if (embed){
+      try {
+        var pd = parent.document;
+        var pcs = getComputedStyle(pd.body);
+        if (pcs.backgroundColor && pcs.backgroundColor !== "rgba(0, 0, 0, 0)") bg = pcs.backgroundColor;
+        var ph = pd.getElementById("hero-title");
+        if (ph) ink = getComputedStyle(ph).color;
+        var pa = pd.querySelector("#amp .ch");
+        if (pa) acc = getComputedStyle(pa).color;
+        var pr = pcs.getPropertyValue("--pencil");
+        if (pr && pr.trim()) red = pr.trim();
+      } catch (e) {}
+    }
+    body.style.setProperty("--sheet-bg", bg);
+    body.style.setProperty("--sheet-ink", ink);
+    body.style.setProperty("--sheet-accent", acc);
+    body.style.setProperty("--sheet-red", red);
+  }
+
+  /* the feed animation ends → JS takes the sheet's transform (held lean on the
+     bed) so the breathing sway + the register level-out can write it inline */
+  sheetEl.addEventListener("animationend", function(e){
+    if (e.animationName !== "sheetfeed") return;
+    sheetEl.style.animation = "none";
+    sheetEl.style.opacity = "1";
+    sheetEl.style.transform = "rotate(" + BASE_LEAN + "deg) scale(var(--bed-scale))";
+    fedDone = true;
+  });
+
+  /* ---------- THE PASSES — ink rolled on by the impression edge ----------
+     each pass sweeps ONE roller across the whole sheet (linear — a cylinder
+     is a machine); every element of that pass wipes on with a delay/duration
+     sliced from the roller's sweep, so its reveal edge rides the roller
+     exactly. measures once per pass start (event-driven, never in a loop). */
+  function passEls(n){
+    if (n === 1) return [].slice.call(document.querySelectorAll(".l-mark, .l-desk .ink-face, .cm"));
+    if (n === 2) return [].slice.call(document.querySelectorAll(".l-amp, .l-desk .ghost.blue"));
+    return [].slice.call(document.querySelectorAll(".l-desk .ghost.red"));
+  }
+  var PASS_LBL = ["PASS 1/3 &middot; KEY DOWN", "PASS 2/3 &middot; ACCENT DOWN", "PASS 3/3 &middot; THE WORKING RED"];
+  function passStart(n){
+    body.classList.add("p" + n);
+    if (mklbl) mklbl.innerHTML = PASS_LBL[n - 1];
+    var R_MS = n === 1 ? 820 : (n === 2 ? 780 : 700);
+    var roller = rollers[n - 1];
+    if (roller) roller.style.animation = "rollsweep " + R_MS + "ms linear both";
+    var sr = sheetEl.getBoundingClientRect();
+    if (!(sr.width > 0)) return;
+    passEls(n).forEach(function(el){
+      var r = el.getBoundingClientRect();
+      var d  = Math.max(0, (r.left - sr.left) / sr.width) * R_MS;
+      var du = Math.max(90, ((r.right - r.left) / sr.width) * R_MS);
+      el.style.animation = "passroll " + du.toFixed(0) + "ms linear " + d.toFixed(0) + "ms both";
+    });
+  }
+  /* after register every pass is printed for good — bake the open clips inline
+     so the flight's `animation = "none"` can never blank a flown word */
+  function bakePrint(){
+    [1, 2, 3].forEach(function(n){
+      passEls(n).forEach(function(el){
+        el.style.animation = "none";
+        el.style.clipPath = "none";
+      });
+      var roller = rollers[n - 1];
+      if (roller) roller.style.animation = "none";
+    });
+  }
 
   var timers = [], rafId = null, fontsReady = false, registered = false;
   function at(ms, fn){ timers.push(setTimeout(fn, ms)); }
@@ -759,9 +944,9 @@
     if (plateR) plateR.setAttribute("transform", "translate("+(off*0.6).toFixed(2)+","+(off*0.34).toFixed(2)+")");
   }
 
-  /* seat the brackets around the leaning lockup (the size that was right) */
+  /* seat the brackets around the sheet on the bed (they are its trim frame) */
   function hugBrackets(){
-    var r = lockup.getBoundingClientRect(), pad = 26, bk = 64;
+    var r = sheetEl.getBoundingClientRect(), pad = 26, bk = 64;
     var pts = {
       "bk-tl":[r.left-pad, r.top-pad], "bk-tr":[r.right+pad-bk, r.top-pad],
       "bk-bl":[r.left-pad, r.bottom+pad-bk], "bk-br":[r.right+pad-bk, r.bottom+pad-bk]
@@ -786,12 +971,15 @@
     /* the passes HUNT for register — a decaying vibration on the way in */
     var jitter = (1-e) * 2.6 * Math.sin((now - climbStart) * 0.028);
     setReg((1-e)*MAXOFF + jitter);
-    errEl.textContent = e<0.34 ? "REG +1.5 mm — OFF" : (e<0.72 ? "REG +0.7 mm" : "REG +0.2 mm — CLOSE");
+    errEl.textContent = e<0.16 ? "FEEDING — 120 GSM" :
+      (e<0.34 ? "REG +1.5 mm — OFF" : (e<0.72 ? "REG +0.7 mm" : "REG +0.2 mm — CLOSE"));
 
-    /* the held lean, with a slow breathing sway — a heavy thing kept in tension */
-    if (!registered){
+    /* the held lean, with a slow breathing sway — a heavy thing kept in
+       tension. The SHEET carries it now; the feed animation owns the
+       transform until it hands off (fedDone). */
+    if (!registered && fedDone){
       var sway = Math.sin((now - climbStart)/820) * 0.7;
-      lockup.style.transform = "rotate("+(BASE_LEAN + sway)+"deg)";
+      sheetEl.style.transform = "rotate("+(BASE_LEAN + sway)+"deg) scale(var(--bed-scale))";
     }
 
     /* THE INSPECTION TOUR — the operator walks the lamp across the job:
@@ -800,10 +988,10 @@
        with it, and the iris closes. brisk between stations (the lerp arcs
        through them, never parking), heavy on the final settle. */
     var st, leg;
-    if      (e < 0.10){ st = plateC || [0.74*spW, 0.48*spH]; leg = 0; }
-    else if (e < 0.26){ st = countC || [0.55*spW, 0.50*spH]; leg = 1; }
-    else if (e < 0.46){ st = formeC || wordC || [0.22*spW, 0.50*spH]; leg = 2; }
-    else              { st = wordC  || [0.22*spW, 0.62*spH]; leg = 3; }
+    if      (e < 0.16){ st = sheetC || [0.38*spW, 0.57*spH]; leg = 0; }   /* the feed */
+    else if (e < 0.30){ st = countC || [0.66*spW, 0.50*spH]; leg = 1; }
+    else if (e < 0.52){ st = formeC || wordC || [0.24*spW, 0.55*spH]; leg = 2; }
+    else              { st = wordC  || [0.24*spW, 0.62*spH]; leg = 3; }
     var k = leg < 3 ? 0.085 : 0.058;
     spx = lerp(spx, st[0], k); spy = lerp(spy, st[1], k); writeSpot(now);
 
@@ -830,11 +1018,23 @@
     numEl.textContent = "100";
     setReg(0);
     errEl.textContent = "IN REGISTER — OK TO RUN"; errEl.classList.add("ok");
-    /* the teeter → the hold: swings past level (ease-thunk overshoots) and sets true — snappier now */
-    lockup.style.transition = "transform 0.5s var(--ease-thunk)";
-    lockup.style.transform = "rotate(0deg)";
+    if (mklbl) mklbl.innerHTML = "MAKE-READY &middot; COMPLETE";
+    bakePrint();   /* the passes are down for good — the flight can never blank them */
+    /* the teeter → the hold: the SHEET swings past level (ease-thunk
+       overshoots) and sets true — off-balance load, holds level */
+    sheetEl.style.transition = "transform 0.5s var(--ease-thunk)";
+    sheetEl.style.transform = "rotate(0deg) scale(var(--bed-scale))";
     body.classList.add("registered");
-    at(700, relaxToHero);   /* the light irises down onto the word FIRST, then the words fly */
+    /* THE PULL — the printed sheet grows to fill the viewport: the printed
+       thing becomes the page. Then the words fly (sheet transform is none,
+       so the flight math is in untransformed space, exactly as before). */
+    at(PULL_WAIT, function(){
+      if (mklbl) mklbl.innerHTML = "THE FIRST PULL";
+      body.classList.add("pulling");   /* the bed instruments stay on the press */
+      sheetEl.style.transition = "transform " + PULL_MS + "ms var(--ease-out)";
+      sheetEl.style.transform = "none";
+    });
+    at(PULL_WAIT + PULL_MS + 60, relaxToHero);
   }
 
   function toPage(){
@@ -1017,16 +1217,26 @@
 
   function play(){
     clearAll();
-    registered = false; framed = false; ampCeded = false;
-    ["lit","registered","page","framed","set","relaxing","ceded"].forEach(function(c){ body.classList.remove(c); });
+    registered = false; framed = false; ampCeded = false; fedDone = false;
+    ["lit","registered","page","framed","set","relaxing","ceded","p1","p2","p3","printed","pulling"]
+      .forEach(function(c){ body.classList.remove(c); });
     body.style.setProperty("--bg", "var(--booth)");
     body.style.setProperty("--fg", "var(--stone)");
+    sheetColors();   /* the sheet prints in the live page's colours */
     errEl.classList.remove("ok");
-    lockup.style.transition = "none";
-    lockup.style.transform = "rotate("+BASE_LEAN+"deg)";
-    numEl.textContent = "00"; errEl.textContent = "SETTING THE FORME";
+    numEl.textContent = "00"; errEl.textContent = "FEEDING THE SHEET";
+    if (mklbl) mklbl.innerHTML = "MAKE-READY &middot; THE FIRST PULL";
     setReg(MAXOFF);
-    /* clear any flight transforms from a prior run, then restart the line drop-in */
+    /* the sheet back onto the feed ramp */
+    sheetEl.style.transition = "none";
+    sheetEl.style.animation = "";
+    sheetEl.style.transform = "";
+    sheetEl.style.opacity = "";
+    /* clear pass state (clips, rollers) from a prior run */
+    rollers.forEach(function(r){ if (r) r.style.animation = ""; });
+    [1,2,3].forEach(function(n){ passEls(n).forEach(function(el){
+      el.style.animation = ""; el.style.clipPath = ""; }); });
+    /* clear any flight transforms from a prior run */
     var nf0 = document.querySelector(".l-desk .ink-face");
     if (nf0){ nf0.style.transition = "none"; nf0.style.fontVariationSettings = ""; }
     var lines = lockup.querySelectorAll(".line");
@@ -1038,24 +1248,40 @@
       l.style.letterSpacing = ""; l.style.textTransform = ""; });
     void lockup.offsetWidth;
     lines.forEach(function(l){ l.style.animation = ""; l.style.transition = ""; });
+    sheetEl.style.transition = "";
 
     if (reduce){
       fontsReady = true; registered = true;
       body.classList.add("lit");
+      body.classList.add("printed");   /* the finished sheet, full size, no motion */
       numEl.textContent = "100"; errEl.textContent = "IN REGISTER — OK TO RUN"; errEl.classList.add("ok");
-      setReg(0); lockup.style.transform = "rotate(0deg)";
+      if (mklbl) mklbl.innerHTML = "MAKE-READY &middot; COMPLETE";
+      setReg(0);
       hugBrackets(); toPage();
       return;
     }
 
     regAt = 0; if (sdark) sdark.style.setProperty("--sr", "300px");   /* reset the iris */
-    spW = innerWidth; spH = innerHeight; wordC = null; countC = null; plateC = null; formeC = null;
-    var pl0 = centreOf(document.querySelector(".plate"));   /* null when hidden (mobile) — not 0,0 */
-    spx = pl0 ? pl0[0] : 0.74*spW; spy = pl0 ? pl0[1] : 0.48*spH;
+    spW = innerWidth; spH = innerHeight;
+    wordC = null; countC = null; plateC = null; formeC = null; sheetC = null;
+    spx = 0.72*spW; spy = 0.20*spH;   /* the lamp waits where the stock comes in */
     writeSpot();
     cornerBrackets();   /* the frame waits at the viewport corners, hidden, until it lands with the light */
     at(60, function(){ body.classList.add("lit"); });
     at(1100, measureSpots);            /* the real word + counter centres, once settled */
+    /* the feed hand-off failsafe (a hidden tab can eat animationend) */
+    at(FEED_DELAY + FEED_MS + 320, function(){
+      if (!fedDone){
+        sheetEl.style.animation = "none";
+        sheetEl.style.opacity = "1";
+        sheetEl.style.transform = "rotate(" + BASE_LEAN + "deg) scale(var(--bed-scale))";
+        fedDone = true;
+      }
+    });
+    /* THE PASSES — scheduled inside the climb; each is a continuous roll */
+    at(FEED_DELAY + FEED_MS + 80, function(){ passStart(1); });
+    at(2050, function(){ passStart(2); });
+    at(2800, function(){ passStart(3); });
     climbStart = performance.now();
     rafId = requestAnimationFrame(frame);
   }
