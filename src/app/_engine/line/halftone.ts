@@ -39,10 +39,12 @@ const ANG_K = 45;
 const ANG_A = 15;
 const ANG_R = 75;
 
-/* round dot with press gain: r = P·√cov·(0.5642 + JOIN·cov). The 0.5642 term
-   is the exact equal-area dot; the JOIN term is dot gain that closes the
-   diagonal pinholes at full coverage (r→0.754P ≥ P/√2) so solids print
-   SOLID — without it the whole dark field reads as a checkerboard of paper */
+/* round dot with press gain: r = P·√cov·(0.5642 + JOIN·cov³). The 0.5642
+   term is the exact equal-area dot; the JOIN term is dot gain that closes
+   the diagonal pinholes at full coverage (r→0.754P ≥ P/√2) so solids print
+   SOLID — without it the whole dark field reads as a checkerboard of paper.
+   Gain rides cov³ so it only fattens the deep shadows: mid-tone dots stay
+   slim and separate (linear gain read as "overlapping" — Mark, July 17) */
 const DOT_A = 0.5642;
 const DOT_JOIN = 0.19;
 
@@ -180,9 +182,15 @@ export async function buildSeparation(uri: string, accent: string): Promise<Sepa
 
 /* ---------------- the screened window ---------------- */
 
-/** bilinear coverage sample, 0..1, zero outside the sheet */
+/** bilinear coverage sample, 0..1, EDGE-EXTENDED beyond the sheet — boundary
+ *  dots must sample full ink so the plate edge prints as a solid row that the
+ *  clip cuts clean; sampling zero outside shrank edge dots irregularly and
+ *  the 45° grid turned the trim into a sawtooth */
 function sample(map: Uint8ClampedArray, w: number, h: number, x: number, y: number): number {
-  if (x < 0 || y < 0 || x > w - 1 || y > h - 1) return 0;
+  if (x < 0) x = 0;
+  else if (x > w - 1) x = w - 1;
+  if (y < 0) y = 0;
+  else if (y > h - 1) y = h - 1;
   const x0 = x | 0;
   const y0 = y | 0;
   const x1 = x0 < w - 1 ? x0 + 1 : x0;
@@ -304,7 +312,7 @@ function paintScreen(
       if (wx < -pad || wx > size + pad || wy < bandTop || wy >= bandBot) continue;
       const cov = sample(sep[sc.map], sep.w, sep.h, ax / S, ay / S);
       if (cov < 0.015) continue;
-      const r = P * Math.sqrt(cov) * (DOT_A + DOT_JOIN * cov) * focus;
+      const r = P * Math.sqrt(cov) * (DOT_A + DOT_JOIN * cov * cov * cov) * focus;
       ctx.moveTo(wx + r, wy);
       ctx.arc(wx, wy, r, 0, Math.PI * 2);
     }
