@@ -41,31 +41,35 @@ function TieSVG() {
   return (
     <svg className="bd-tie" viewBox="0 0 600 820" preserveAspectRatio="none" aria-hidden="true">
       {/* the two runs — near-straight, wrapping corner to corner; they
-          cross in the docket's quiet lower-right */}
-      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.28s", "--ikdur": "0.6s" } as React.CSSProperties} d="M64,58 C218,302 372,546 526,790" />
-      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.56s", "--ikdur": "0.6s" } as React.CSSProperties} d="M556,50 C494,297 431,543 369,790" />
+          cross in the docket's quiet lower-right. Endpoints sit ON the
+          sheet edges (start: the back sheet's crown/side, end: the packing
+          slip's foot) so the string never floats in air or stops short */}
+      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.28s", "--ikdur": "0.6s" } as React.CSSProperties} d="M107,12 C242,339 378,605 513,809" />
+      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.56s", "--ikdur": "0.6s" } as React.CSSProperties} d="M562,38 C495,297 429,557 362,816" />
       {/* the button + the figure-8 knot at the crossing */}
-      <circle className="pk-line pk-fade" style={{ "--ikd": "1.12s" } as React.CSSProperties} cx="414" cy="612" r="9" />
-      <circle className="pk-dot pk-fade" style={{ "--ikd": "1.18s" } as React.CSSProperties} cx="414" cy="612" r="2.2" />
-      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.86s", "--ikdur": "0.45s" } as React.CSSProperties} d="M405,605 C392,620 432,624 423,604 C416,592 398,598 402,612" />
+      <circle className="pk-line pk-fade" style={{ "--ikd": "1.12s" } as React.CSSProperties} cx="414" cy="615" r="9" />
+      <circle className="pk-dot pk-fade" style={{ "--ikd": "1.18s" } as React.CSSProperties} cx="414" cy="615" r="2.2" />
+      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.86s", "--ikdur": "0.45s" } as React.CSSProperties} d="M405,608 C392,623 432,627 423,607 C416,595 398,601 402,615" />
       {/* the loose tail — the knot never quite finished */}
-      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "2.06s", "--ikdur": "0.5s" } as React.CSSProperties} d="M420,622 C446,660 431,690 459,720 C469,728 477,724 471,715" />
+      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "2.06s", "--ikdur": "0.5s" } as React.CSSProperties} d="M420,625 C446,662 431,692 459,721 C469,729 477,725 471,717" />
       {/* the cancellation — wave bars into the franking corner */}
       <g style={{ opacity: 0.55 } as React.CSSProperties}>
-        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.28s" } as React.CSSProperties} d="M408,72 q12,-8 24,0 t24,0 t24,0" />
-        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.36s" } as React.CSSProperties} d="M422,94 q12,-8 24,0 t24,0" />
-        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.45s" } as React.CSSProperties} d="M408,116 q12,-8 24,0 t24,0 t24,0" />
+        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.28s" } as React.CSSProperties} d="M408,82 q12,-8 24,0 t24,0 t24,0" />
+        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.36s" } as React.CSSProperties} d="M422,104 q12,-8 24,0 t24,0" />
+        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.45s" } as React.CSSProperties} d="M408,126 q12,-8 24,0 t24,0 t24,0" />
       </g>
-      {/* the courtesy line — stamped on the exposed foot, a touch off true */}
-      <g className="pk-fade" transform="rotate(-2 420 742)" style={{ "--fop": 0.5, "--ikd": "2.6s" } as React.CSSProperties}>
-        <text className="pk-txt" x="398" y="742" fontSize="10" letterSpacing="1.6">PLEASE DO NOT BEND</text>
-        <text className="pk-txt" x="398" y="758" fontSize="10" letterSpacing="1.6">IT&rsquo;S BEEN THROUGH ENOUGH</text>
+      {/* the courtesy line — stamped on the exposed foot, a touch off true;
+          set narrow so the stamp stays on the sheet at every desktop width */}
+      <g className="pk-fade" transform="rotate(-2 420 743)" style={{ "--fop": 0.5, "--ikd": "2.6s" } as React.CSSProperties}>
+        <text className="pk-txt" x="401" y="743" fontSize="10" letterSpacing="1.6">PLEASE DO NOT BEND</text>
+        <text className="pk-txt" x="401" y="759" fontSize="10" letterSpacing="1.6">IT&rsquo;S BEEN THROUGH</text>
+        <text className="pk-txt" x="401" y="775" fontSize="10" letterSpacing="1.6">ENOUGH</text>
       </g>
       {/* the red working pass — the tie prints last, just off register */}
       <g className="dev-ghost" style={{ "--ikd": "2.85s" } as React.CSSProperties}>
-        <path d="M64,58 C218,302 372,546 526,790" />
-        <path d="M556,50 C494,297 431,543 369,790" />
-        <circle cx="414" cy="612" r="9" fill="none" />
+        <path d="M107,12 C242,339 378,605 513,809" />
+        <path d="M562,38 C495,297 429,557 362,816" />
+        <circle cx="414" cy="615" r="9" fill="none" />
       </g>
     </svg>
   );

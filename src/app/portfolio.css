@@ -1529,7 +1529,7 @@ body.proof .op-candid { display: block; }
   position: absolute;
   top: 22px;
   right: 16px;
-  bottom: -138px;
+  bottom: -150px;
   left: -14px;
   transform: rotate(-1.9deg);
   background: color-mix(in srgb, var(--ink) 2.5%, var(--stone));
@@ -1548,10 +1548,10 @@ body.proof .op-candid { display: block; }
   /* replaced elements resolve auto size from intrinsic ratio, not the
      bottom inset — the stretch must be explicit */
   position: absolute;
-  top: -26px;
+  top: -34px;
   left: -26px;
   width: calc(100% + 52px);
-  height: calc(100% + 176px);
+  height: calc(100% + 184px);
   z-index: 4;
   pointer-events: none;
 }
@@ -1629,7 +1629,8 @@ body.proof .op-candid { display: block; }
 .bd-tabs .olink:nth-child(3) { margin-left: -20px; }
 /* the packing slip lives on the exposed foot of the sheet beneath */
 .pocket .joblog { position: absolute; left: 1.2rem; right: 30%; bottom: 0.7rem; }
-.pocket #jl-lines { max-height: 5.2rem; }
+/* capped so the log's head keeps clear air under the docket's bottom edge */
+.pocket #jl-lines { max-height: 4.5rem; }
 /* the sheet's scattered furniture (same language as the imprint's) */
 .out-sq {
   position: absolute;
