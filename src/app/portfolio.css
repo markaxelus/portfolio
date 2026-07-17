@@ -673,11 +673,15 @@ body.hero-set .plates-decal {
 
 .imp-stage {
   position: relative;
-  max-width: 1240px;
+  /* REM caps, not px: the root font-size climbs to 20px on big screens, so
+     a px-frozen stage lets the rem-set voice type outgrow its lanes (the
+     1920px collision of A NOTE ON THE MAKER × CURRENTLY). In rem the whole
+     composition scales as one piece. 69rem == the old 1240px at laptop rem. */
+  max-width: 69rem;
   margin: 0 auto;
   /* tracks the chart's own height (width-proportional) so the after-hours
      credit always tucks just under the torn bottom edge at any viewport */
-  min-height: calc(min(61vw, 781px) * 0.718 + 7.2rem);
+  min-height: calc(min(61vw, 43.2rem) * 0.718 + 7.2rem);
 }
 
 /* ---- THE CHART: the torn fragment. Neatline edges (top + right) are
@@ -688,7 +692,7 @@ body.hero-set .plates-decal {
   position: absolute;
   top: 0.5rem;
   right: clamp(-4.5rem, -3vw, -1.5rem);
-  width: min(63%, 800px);
+  width: min(63%, 44.5rem); /* rem cap — scales with the stage */
   z-index: 1;
 }
 .imp-chart-rot {
@@ -1041,8 +1045,11 @@ body.night .imp-deskname { color: var(--acid); }
 @media (min-width: 821px) {
   .desk {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(200px, 20vw, 280px);
+    /* the ledger rules cap so they don't stretch absurdly on wide screens;
+       space-between keeps the operator's plate pinned to the right margin */
+    grid-template-columns: minmax(0, 60rem) clamp(200px, 20vw, 280px);
     gap: 0 5vw;
+    justify-content: space-between;
     align-items: start;
   }
   .desk-head { grid-column: 1 / -1; }
@@ -1449,13 +1456,16 @@ body.proof .op-candid { display: block; }
   overflow-x: clip;   /* the bundle + its tie bleed right, never widen the ICB */
   padding: 2.6rem 1.4vw 80px;        /* clears the fixed SEE THE MESS corner (~62px tall) so the footer isn't on top of it */
   display: grid;
-  /* full-bleed section, CAPPED tracks: [voice] [bundle] [gutter] — the
-     voice column keys to the house rail (1.4vw padding) like every other
-     section's first text pin; the bundle track stays capped and the right
-     gutter absorbs wide screens. (A leading 1fr gutter used to centre the
-     composition — it was the only section whose primary text left the
-     rail, and it read as drift, not design.) */
-  grid-template-columns: minmax(0, 44rem) clamp(430px, 36vw, 560px) 1fr;
+  /* full-bleed section, CAPPED tracks: [voice] [gutter] [bundle] [margin]
+     — the voice column keys to the house rail (1.4vw padding) like every
+     other section's first text pin; on wide screens the middle gutter
+     opens and the bundle glides toward a capped right margin, so the
+     composition spans the sheet the way the desk does. The margin track
+     is 0 up to ~1556px, so laptop geometry (and the tuned mess-note
+     positions) is untouched. */
+  grid-template-columns:
+    minmax(0, 44rem) 1fr clamp(430px, 36vw, 560px)
+    clamp(0px, calc((100vw - 1556px) * 0.35), 12rem);
   align-items: start;
   column-gap: clamp(1.6rem, 4vw, 4rem);
   row-gap: 1rem;
@@ -1535,7 +1545,7 @@ body.proof .op-candid { display: block; }
    top edge. The rest tilt lives on .pkt-rot (set-in ends transform:none);
    the red pass rides off register and slides home on hover. */
 .pocket {
-  grid-column: 2;
+  grid-column: 3;
   grid-row: 1 / span 3;
   position: relative;
   z-index: 2;
@@ -2169,11 +2179,12 @@ body.spec-set .foldline i { animation: tickin 0.4s var(--ease-out) 1.55s both; }
   text-align: right;
 }
 
-/* outro coffee counter */
+/* outro coffee counter — sits below the fixed [N]/[S] switch stack so the
+   two never print over each other at end-of-page scroll */
 .d-outro {
   position: absolute;
   right: 1.4vw;
-  top: 0.6rem;
+  top: 5.2rem;
   z-index: 6;
   pointer-events: none;
   text-align: right;
@@ -2681,6 +2692,7 @@ body.pointer-seen .cursor { opacity: 1; }
   .corner.tl, .corner.bl { left: calc(var(--frame) + 3vw); }
   .corner.tr, .corner.br { right: calc(var(--frame) + 3vw); }
   .outro { grid-template-columns: 1fr; }
+  .pocket { grid-column: 1; }
   .outro-rail { grid-column: 1; grid-row: auto; }
   .check-pair { margin-left: 0; }
   .pressmark { max-width: 200px; }

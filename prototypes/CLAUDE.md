@@ -1467,6 +1467,35 @@ signatures (Mark counts these himself):
     text correct), shots at 1512/1280/1150, 390 hides everything new,
     zero x-overflow, zero console errors, tsc clean.
 
+34. (branch `staging`, July 17) **THE WIDE-SCREEN PASS — px-frozen frames
+    vs the growing rem.** Mark: *"fix styling on larger screen, the layout
+    is broken especially with the brief & imprint section but do a pass."*
+    ROOT CAUSE RECORDED: the root font-size climbs with the viewport
+    (clamp(16px, 0.667vw + 8px, 20px)) but the imprint stage capped in PX
+    (1240px / 781px / 800px) — so rem-set display type kept growing inside
+    a frozen frame until "Now with a day job." wrapped and A NOTE ON THE
+    MAKER printed over CURRENTLY · MAY 2026 (visible ≥ ~1700px). Fix:
+    convert the stage caps to REM (69rem / 43.2rem / 44.5rem) so the whole
+    composition scales as one piece. LAW: any px-capped container that
+    holds rem-set type will break on big screens — cap in rem.
+    - Outro wide: tracks became [voice][1fr][bundle][margin] where the
+      margin track is clamp(0px, (100vw−1556px)·0.35, 12rem) — zero at
+      laptop widths (1512 geometry byte-identical, QR at [1204,113], all
+      tuned mess notes hold) and the bundle glides toward a capped right
+      margin on wide screens, so the composition spans the sheet like the
+      desk. Mobile got an explicit `.pocket { grid-column: 1 }` (it was
+      silently auto-placing into an implicit column).
+    - Desk: the ledger rules capped at 60rem + justify-content:
+      space-between keeps the plate pinned right (rules no longer stretch
+      1470px with 400px of text).
+    - d-outro (the coffee counter) dropped to top 5.2rem — it printed over
+      the fixed [N]/[S] switch stack at end-of-page scroll.
+    Verified headless at 1280/1512/1920/2560/390: zero x-overflow, rails
+    hold (52/45/60/20), imprint composes at all five, tsc clean. Also
+    docs/sotd-plan.md added — the ranked SOTD plan (loupe-as-halftone is
+    the signature build; loader, sound, mobile parity, scroll feel, find-
+    side-B, submission craft).
+
 ## 8. Ideas discussed but not built (fair game later)
 
 - Project detail pages, each as its own proof sheet / case study.
