@@ -563,20 +563,27 @@ body.hero-set .plates-decal {
 .terrain-ground .tick { stroke: var(--hairline); stroke-width: 1; }
 .terrain-ground .gap-ghost { stroke: var(--graphite); stroke-width: 1.2; stroke-dasharray: 3 4; fill: none; opacity: 0.6; }
 
-/* the stones sit on the ground; the measured line runs through their bases */
+/* the stones sit on the ground; the measured line runs through their bases.
+   SAME tracks + gap as .terrain-labels (a mismatched gap shifted the two
+   grids off register), and the stones sit FLUSH-LEFT like the legend — the
+   survey tick then drops from the stone straight onto its year instead of
+   into the blank air right of it (Mark: "the line isn't connected to
+   anything and the date is offset"). Stone sizes in rem (mac basis) so
+   they hold their weight against the type on monitors. */
 .terrain-stones {
   position: relative;
   z-index: 1;
   display: grid;
   grid-template-columns: 1.15fr 1.05fr 0.66fr 0.82fr 1fr 1.2fr;
+  gap: 0 1.1rem;
   align-items: end;
-  height: 118px;
+  height: 6.7rem;
 }
-.stone-slot { display: flex; justify-content: center; align-items: flex-end; }
+.stone-slot { display: flex; justify-content: flex-start; align-items: flex-end; }
 .mile-stone {
   display: block;
-  width: calc(58px * var(--sz, 1));
-  height: calc(33px * var(--sz, 1));
+  width: calc(3.3rem * var(--sz, 1));
+  height: calc(1.875rem * var(--sz, 1));
   transform: translateY(calc(var(--lift, 0) * 1px));
 }
 .mile-stone path { stroke: var(--ink); stroke-width: 1.5; fill: var(--stone-deep); }
@@ -585,9 +592,11 @@ body.hero-set .plates-decal {
 .gap-tick {
   display: block;
   width: 1px;
-  height: 22px;
+  height: 1.25rem;
   background: repeating-linear-gradient(var(--graphite) 0 3px, transparent 3px 6px);
   opacity: 0.65;
+  /* the ghost dash hangs where a stone's centre would sit — over the year */
+  margin-left: 1.5rem;
 }
 
 /* the legend — years + facts, aligned under their stones by the same grid */
@@ -1658,6 +1667,35 @@ body.proof .op-candid { display: block; }
   pointer-events: none;
 }
 .bd-tie path, .bd-tie circle { vector-effect: non-scaling-stroke; }
+/* THE WAX SEAL — poured over the tie's knot (a sealed parcel: the string
+   can't be untied without breaking the wax), the house & pressed as the
+   die. The OUTER element owns the position — the knot sits at (414,615)
+   of the tie's 600×820 box, and the calc maps that fraction through the
+   tie's own overhangs — plus the rest rotation; the INNER die takes the
+   stamp-down animation so the seat can never clobber the transform. */
+.bd-seal {
+  position: absolute;
+  left: calc(-1.5rem + (100% + 3rem) * 0.69);
+  top: calc(-1.95rem + (100% + 10.5rem) * 0.75);
+  width: 4.6rem;
+  z-index: 5;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(-6deg);
+}
+.bd-seal-die { display: block; width: 100%; height: auto; overflow: visible; }
+.seal-wax { fill: var(--pencil); }
+.seal-drip { fill: var(--pencil); opacity: 0.9; }
+.seal-ring { fill: none; stroke: var(--stone); stroke-width: 1.6; opacity: 0.55; }
+.seal-amp {
+  fill: var(--stone);
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 46px;
+  /* the house & — opsz+wght ONLY, never SOFT/WONK (the amp gotcha) */
+  font-variation-settings: "opsz" 144, "wght" 470;
+  text-anchor: middle;
+  dominant-baseline: central;
+  opacity: 0.92;
+}
 .pk-line { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; }
 .pk-string { fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-linecap: round; }
 .pk-dot { fill: var(--ink); }
@@ -1697,10 +1735,15 @@ body.proof .op-candid { display: block; }
   animation: imp-redpass 0.6s var(--ease-out) backwards;
   animation-delay: var(--ikd, 2.55s);
 }
+/* the wax is poured LAST — after the knot ties (2.06s) and the red pass
+   lands (2.85s); the seat is the stamp gesture, same law as the stations */
+.pocket.ink-armed .bd-seal-die { opacity: 0; }
+.pocket.inked .bd-seal-die { animation: imp-stamp 0.42s var(--ease-out) 3.1s both; }
 @media (prefers-reduced-motion: reduce) {
   .pocket.ink-armed .pk-draw { stroke-dasharray: none; stroke-dashoffset: 0; }
   .pocket.ink-armed .pk-fade,
   .pocket.ink-armed .pf { opacity: var(--fop, 1); }
+  .pocket.ink-armed .bd-seal-die { opacity: 1; animation: none !important; }
   .pocket.ink-armed:not(.inked) .dev-ghost { opacity: 0.4; }
 }
 /* the docket's printed matter — flowed on the top sheet */
@@ -2745,7 +2788,7 @@ body.pointer-seen .cursor { opacity: 1; }
   /* the figure compacts: stones stay a row on a hairline ground, the
      legend drops to two readable columns */
   .terrain-ground { display: none; }
-  .terrain-stones { height: 80px; border-bottom: 1px solid var(--ink); }
+  .terrain-stones { height: 5rem; border-bottom: 1px solid var(--ink); }
   .terrain-labels { grid-template-columns: 1fr 1fr; gap: 1.7rem 1.2rem; margin-top: 1.8rem; }
   .mile-label-gap { display: none; }
   .trail-frame { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
@@ -3915,7 +3958,7 @@ body.proof .impline { opacity: 0 !important; }
   /* the bundle flattens: the back sheet and the tie go, the two working
      sheets stack as bordered panels with flowing matter */
   .bd { margin: 1rem 0 0; }
-  .bd-tie, .bd-s1 { display: none; }
+  .bd-tie, .bd-s1, .bd-seal { display: none; }
   .bd-s3 { margin-left: 0; transform: rotate(0.7deg); padding: 1rem 1rem 1.2rem; }
   .bd-s2 { position: static; inset: auto; transform: rotate(-0.5deg); margin-top: 1rem; padding: 0.9rem 1rem; }
   .pocket .joblog { position: static; }
@@ -3959,21 +4002,10 @@ body.proof .impline { opacity: 0 !important; }
    a hairline margin + an ink carriage js-synced to scroll (inks up on hover/drag).
    shown only while the log overflows (.has-scroll). */
 .jl-scroll { position: relative; }
-.jl-scroll.has-scroll #jl-lines { padding-right: 14px; }   /* clear the rail */
-.jl-rail {
-  position: absolute; top: 0; right: 0; bottom: 0; width: 9px;
-  border-left: 1px solid var(--hairline);
-  background: radial-gradient(circle, var(--hairline) 0 1px, transparent 1.5px) center top / 9px 8px repeat-y;
-  opacity: 0; pointer-events: none; transition: opacity 0.25s var(--ease-out);
-}
-.jl-scroll.has-scroll .jl-rail { opacity: 1; pointer-events: auto; }
-.jl-thumb {
-  position: absolute; left: 2px; right: 1px; top: 0; min-height: 16px;
-  background: var(--ink); cursor: grab; touch-action: none;
-  transition: background-color 0.2s var(--ease-out);
-}
-.jl-rail:hover .jl-thumb, .jl-thumb.drag { background: var(--accent); }
-.jl-thumb.drag { cursor: grabbing; }
+/* the tractor-feed rail is RETIRED (Mark: hide the scrollbar) — the log
+   scrolls clean with no visible bar (native ones are already suppressed
+   above). The rail/thumb DOM + JS sync stay wired for a cheap revive. */
+.jl-rail { display: none; }
 .joblog li { padding: 0.08rem 0; }
 .joblog li.jl-div { opacity: 0.55; letter-spacing: 0.3em; padding: 0.3rem 0 0.2rem; }
 /* the ticket printer's caret — blinks only while a line is being written */
@@ -3994,7 +4026,7 @@ body.proof .impline { opacity: 0 !important; }
   .outro { display: block !important; }
   .pocket { max-width: none !important; margin: 0 !important; }
   .bd { margin: 0 !important; }
-  .bd-tie, .bd-s1 { display: none !important; }
+  .bd-tie, .bd-s1, .bd-seal { display: none !important; }
   .bd-sheet { position: static !important; inset: auto !important; transform: none !important; background: none !important; border: none !important; margin: 0 !important; padding: 0 !important; }
   .pf { position: static !important; margin: 4mm 0 !important; width: auto !important; animation: none !important; opacity: 1 !important; }
   .bd-sheet { animation: none !important; opacity: 1 !important; }

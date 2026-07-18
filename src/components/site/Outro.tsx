@@ -197,6 +197,22 @@ export default function Outro() {
           </div>
 
           <TieSVG />
+
+          {/* THE WAX SEAL — poured over the knot, the way a real parcel is
+              sealed so the string can't be untied quietly. The die is the
+              house & pressed into the shop's red; it lands LAST, after the
+              string ties itself shut (choreography in portfolio.css). */}
+          <div className="bd-seal" aria-hidden="true">
+            <svg className="bd-seal-die" viewBox="0 0 120 120">
+              {/* the pour: an irregular puddle, one drip off the low edge */}
+              <path className="seal-wax" d="M60,9 C82,7 103,20 108,40 C113,59 106,82 88,94 C71,105 45,107 28,96 C12,86 6,66 10,47 C14,27 34,11 60,9 Z"/>
+              <path className="seal-drip" d="M97,88 C104,94 108,102 106,110 C104,116 96,116 94,109 C92,102 93,94 97,88 Z"/>
+              {/* the die's impression ring */}
+              <circle className="seal-ring" cx="59" cy="55" r="36"/>
+              {/* the device: the house &, pressed into the wax */}
+              <text className="seal-amp" x="59" y="55">&amp;</text>
+            </svg>
+          </div>
         </div>
       </div>
       <OutroPocketInk />
