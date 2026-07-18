@@ -54,6 +54,15 @@ html {
      this lifts the small text without bloating the headline. */
   font-size: clamp(16px, 0.667vw + 8px, 20px);
 }
+/* past QHD the sheet keeps widening; the root keeps pace so the rem-capped
+   stages (the imprint's 69rem, the bundle, the ledger) scale as one piece
+   instead of stranding as a frozen island in the middle of a 2560 sheet.
+   1.0417vw == 20px at exactly 1920, so the curve picks up where the clamp
+   stops — nothing at or below 1920 moves. 28px (~2690) is the hard stop so
+   ultrawides don't get poster type. */
+@media (min-width: 1921px) {
+  html { font-size: min(1.0417vw, 28px); }
+}
 
 body {
   background: var(--stone);
@@ -1047,7 +1056,9 @@ body.night .imp-deskname { color: var(--acid); }
     display: grid;
     /* the ledger rules cap so they don't stretch absurdly on wide screens;
        space-between keeps the operator's plate pinned to the right margin */
-    grid-template-columns: minmax(0, 60rem) clamp(200px, 20vw, 280px);
+    /* the plate's cap rides the root past QHD (14rem == 280px at the 20px
+       root) so it scales with the sheet instead of stranding at 11vw */
+    grid-template-columns: minmax(0, 60rem) clamp(200px, 20vw, max(280px, 14rem));
     gap: 0 5vw;
     justify-content: space-between;
     align-items: start;
@@ -1464,7 +1475,7 @@ body.proof .op-candid { display: block; }
      is 0 up to ~1556px, so laptop geometry (and the tuned mess-note
      positions) is untouched. */
   grid-template-columns:
-    minmax(0, 44rem) 1fr clamp(430px, 36vw, 560px)
+    minmax(0, 44rem) 1fr clamp(430px, 36vw, max(560px, 28rem))
     clamp(0px, calc((100vw - 1556px) * 0.35), 12rem);
   align-items: start;
   column-gap: clamp(1.6rem, 4vw, 4rem);
@@ -1550,7 +1561,9 @@ body.proof .op-candid { display: block; }
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 560px;
+  /* 28rem == 560px at the 20px root; past 1920 the root climbs, so the
+     bundle grows with the sheet instead of shrinking to a 22vw afterthought */
+  max-width: max(560px, 28rem);
   justify-self: end;
   /* air off the right edge; the gutter track does the heavy lifting on
      wide screens */
