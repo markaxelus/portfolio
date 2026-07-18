@@ -691,8 +691,10 @@ body.hero-set .plates-decal {
      composition as a centered island once monitors outgrew it. */
   /* tracks the chart's own height (width-proportional) so the after-hours
      credit always tucks just under the torn bottom edge at any viewport;
-     the rem term mirrors the chart's own 59rem stop (root-freeze zone) */
-  min-height: calc(min(61vw, 57rem) * 0.718 + 7.2rem);
+     the rem term mirrors the chart's own 48rem cap (×61/63, +1rem of air
+     so the credit clears the tear in the capped zone like it does on
+     laptops) */
+  min-height: calc(min(61vw, 47.5rem) * 0.718 + 7.2rem);
 }
 
 /* ---- THE CHART: the torn fragment. Neatline edges (top + right) are
@@ -703,9 +705,11 @@ body.hero-set .plates-decal {
   position: absolute;
   top: 0.5rem;
   right: clamp(-4.5rem, -3vw, -1.5rem);
-  /* 63% of the full-bleed stage — the laptop share at every width; the
-     59rem stop only exists past the root's own freeze (~2700px sheets) */
-  width: min(63%, 59rem);
+  /* 63% of the full-bleed stage on laptops; from ~1440 up the 48rem cap
+     eases the share down to ~50vw (Mark: full 63% reads WAY too large on
+     a big monitor), locking there once the root scales linearly (1920+).
+     Still right-pinned, still bleeding off the sheet edge. */
+  width: min(63%, 48rem);
   z-index: 1;
 }
 .imp-chart-rot {
