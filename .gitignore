@@ -42,3 +42,6 @@ next-env.d.ts
 
 
 .swcprototypes/*.ai
+
+# verify-harness screenshot output (regenerated per run)
+scripts/shot-*.png
