@@ -126,7 +126,7 @@ export function useOkSlip(rootRef: RefObject<HTMLElement | null>): void {
           String(tab.dataset.verdict === okState!.v),
         );
       });
-      if (okInput && !okInput.value && okState.ini !== "—")
+      if (okInput && !okInput.value && okState.ini !== "-" && okState.ini !== "—")
         okInput.value = okState.ini;
       /* the mess gets its reply */
       if (okReply1) okReply1.textContent = m.r1;
@@ -141,7 +141,7 @@ export function useOkSlip(rootRef: RefObject<HTMLElement | null>): void {
         (okInput?.value || "")
           .replace(/[^\w.\-]/g, "")
           .toUpperCase()
-          .slice(0, 4) || "—";
+          .slice(0, 4) || "-";
       okState = {
         v: verdict,
         ini: ini,
@@ -156,7 +156,7 @@ export function useOkSlip(rootRef: RefObject<HTMLElement | null>): void {
       api.current.logAct?.(
         "sheet stamped: " +
           OK_META[verdict].face.toLowerCase() +
-          " — “" +
+          " · “" +
           ini +
           "”.",
       );

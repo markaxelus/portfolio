@@ -10,19 +10,19 @@ export default function WorkIndex() {
   return (
     <section className="index" id="index" ref={rootRef}>
       <p className="index-head mono final">SELECTED WORK / 2024&ndash;2025</p>
-      <p className="index-sub mono final">THE RUN, ON THE LINE &mdash; BRUSH A SHEET &middot; IT HOLDS &middot; CLICK &mdash; PULL ITS PROOF</p>
+      <p className="index-sub mono final">THE RUN, ON THE LINE &middot; BRUSH A SHEET &middot; IT HOLDS &middot; CLICK &middot; PULL ITS PROOF</p>
 
       {/* the wire + hardware (cleats, turnbuckle, pulleys, drop-cords) */}
       <svg className="line-wire" id="line-wire" aria-hidden="true"></svg>
 
       {/* the instrument reads the line */}
-      <span className="line-wll mono final" id="line-wll" aria-hidden="true">[W.L.L.] 04 SHEETS &mdash; <em>HOLDS</em></span>
+      <span className="line-wll mono final" id="line-wll" aria-hidden="true">[W.L.L.] 04 SHEETS &middot; <em>HOLDS</em></span>
 
       {/* the dock: the run so far, delivered */}
       <div className="line-dock final" id="line-dock" aria-hidden="true">
         <div className="dock-table"></div>
         <div className="dock-stack"><i></i><i></i><i></i><i></i></div>
-        <span className="dock-tally mono">DELIVERED SINCE 2019 &middot; ON THE LINE &mdash; 004 &middot; <em>NONE HAVE FALLEN</em></span>
+        <span className="dock-tally mono">DELIVERED SINCE 2019 &middot; ON THE LINE &middot; 004 &middot; <em>NONE HAVE FALLEN</em></span>
       </div>
 
       {/* coffee ring, sorry */}
@@ -32,15 +32,15 @@ export default function WorkIndex() {
           <path className="draw" pathLength="1" d="M80,22 C114,20 138,44 136,74 C134,108 108,130 78,128 C46,126 24,104 26,72 C28,42 50,24 80,22 Z" fill="none" opacity=".55"/>
         </svg>
         <span className="note hand-b n-coffee" style={{ "--d": ".26s" } as CSSProperties}>3am was involved.</span>
-        <span className="note hand-b n-time1" style={{ "--d": ".4s" } as CSSProperties}>01:47 &mdash; still here.</span>
+        <span className="note hand-b n-time1" style={{ "--d": ".4s" } as CSSProperties}>01:47 - still here.</span>
         <svg className="note scrawl dd-spiral" style={{ "--d": ".5s" } as CSSProperties} viewBox="0 0 50 50" aria-hidden="true">
           <path className="draw" pathLength="1" d="M25,25 C29,21 33,26 29,30 C23,36 15,29 20,21 C26,11 39,16 38,28 C37,41 22,46 13,37" fill="none"/>
         </svg>
-        <span className="note hand-k n-redo" style={{ "--d": ".6s" } as CSSProperties}>redo this whole section? <em>&mdash; no. &mdash; maybe.</em></span>
+        <span className="note hand-k n-redo" style={{ "--d": ".6s" } as CSSProperties}>redo this whole section? <em>- no. - maybe.</em></span>
 
         {/* the day log, out of order — nothing here happens in a straight line */}
-        <span className="note hand-b n-time2" style={{ "--d": ".44s" } as CSSProperties}>23:58 &mdash; fixed the kerning.</span>
-        <span className="note hand-k n-time3" style={{ "--d": ".58s" } as CSSProperties}>09:12 &mdash; it wasn&rsquo;t fixed.</span>
+        <span className="note hand-b n-time2" style={{ "--d": ".44s" } as CSSProperties}>23:58 - fixed the kerning.</span>
+        <span className="note hand-k n-time3" style={{ "--d": ".58s" } as CSSProperties}>09:12 - it wasn&rsquo;t fixed.</span>
         <svg className="note scrawl dd-burst" style={{ "--d": ".66s" } as CSSProperties} viewBox="0 0 40 40" aria-hidden="true">
           <path className="draw" pathLength="1" d="M20,5 L20,35 M7,12 L33,28 M33,12 L7,28" fill="none"/>
         </svg>
@@ -70,7 +70,7 @@ export default function WorkIndex() {
           <span className="row-title">Uveec</span>
           <span className="row-meta mono">FRONT-END &middot; 2024<span className="row-ref">REF//UVE-24</span></span>
         </span>
-        <span className="row-desc mono final">Rebuilt the UVic Environmental Engineering Club&rsquo;s site &mdash; dynamic teams, mobile-first, maintainable.</span>
+        <span className="row-desc mono final">Rebuilt the UVic Environmental Engineering Club&rsquo;s site: dynamic teams, mobile-first, maintainable.</span>
         <span className="note hand-k row-note" style={{ "--d": ".18s" } as CSSProperties} aria-hidden="true">inherited a hardcoded teams page.<br/>made it edit itself.</span>
       </a>
 
@@ -83,7 +83,7 @@ export default function WorkIndex() {
           <span className="row-title">Relay</span>
           <span className="row-meta mono">FULL-STACK &middot; ONGOING<span className="row-ref">REF//RLY-25</span></span>
         </span>
-        <span className="row-desc mono final">A project-management app built for real collaboration &mdash; real-time updates, drag-and-drop, Postgres + Prisma.</span>
+        <span className="row-desc mono final">A project-management app built for real collaboration: real-time updates, drag-and-drop, Postgres + Prisma.</span>
         <span className="note hand-b row-note" style={{ "--d": ".24s" } as CSSProperties} aria-hidden="true">fought the websocket re-renders.<br/>won, eventually.</span>
       </a>
 
@@ -96,7 +96,7 @@ export default function WorkIndex() {
           <span className="row-title">Portfolio</span>
           <span className="row-meta mono">UI/UX &middot; 2025<span className="row-ref">REF//PRT-25</span></span>
         </span>
-        <span className="row-desc mono final">This very site &mdash; static-fast, hand-tuned motion, built and rebuilt to a very high bar.</span>
+        <span className="row-desc mono final">This very site: static-fast, hand-tuned motion, built and rebuilt to a very high bar.</span>
         <span className="note hand-k row-note" style={{ "--d": ".30s" } as CSSProperties} aria-hidden="true">the fourth version this year.<br/>you&rsquo;re on it.</span>
         <svg className="note num-ring scrawl" style={{ "--d": ".42s" } as CSSProperties} viewBox="0 0 84 58" aria-hidden="true">
           <path className="draw" pathLength="1" d="M42,6 C66,4 80,14 78,28 C76,44 58,53 38,52 C18,51 5,42 7,27 C9,12 24,7 46,7" fill="none"/>
@@ -113,7 +113,7 @@ export default function WorkIndex() {
           <span className="row-title">Synapse</span>
           <span className="row-meta mono">AI &middot; 2024<span className="row-ref">REF//SYN-24</span></span>
         </span>
-        <span className="row-desc mono final">NwHacks &mdash; PDFs become editable diagrams. GPT-4 + serverless, under five seconds.</span>
+        <span className="row-desc mono final">NwHacks: PDFs become editable diagrams. GPT-4 + serverless, under five seconds.</span>
         <span className="note hand-b row-note" style={{ "--d": ".36s" } as CSSProperties} aria-hidden="true">10MB pdf, cold lambda, five seconds.<br/>somehow.</span>
       </a>
 

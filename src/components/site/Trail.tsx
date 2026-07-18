@@ -9,7 +9,7 @@ export default function Trail() {
   return (
     <section className="trail" id="trail" ref={rootRef}>
       <div className="trail-frame final">
-        <p className="trail-head mono">FIG.1 &mdash; THE TRAIL SO FAR</p>
+        <p className="trail-head mono">FIG.1 &middot; THE TRAIL SO FAR</p>
         <p className="trail-cap mono">ONE STONE PER YEAR THAT MATTERED &middot; 2019&ndash;2026 &middot; NOT TO SCALE</p>
       </div>
       <div className="terrain final" id="terrain">
@@ -36,7 +36,7 @@ export default function Trail() {
           <div className="mile-label"><p className="mile-year mono">2019</p><p className="mile-fact">High school. Not one line of code yet.</p></div>
           <div className="mile-label"><p className="mile-year mono">2022</p><p className="mile-fact">Picked CS at university. Couldn&rsquo;t tell you why.</p></div>
           <div className="mile-label"><p className="mile-year mono">2023</p><p className="mile-fact">First all-nighter that produced something worth keeping.</p></div>
-          <div className="mile-label mile-label-gap"><p className="mile-year mono">2024</p><p className="mile-fact gap-fact">&mdash;</p></div>
+          <div className="mile-label mile-label-gap"><p className="mile-year mono">2024</p><p className="mile-fact gap-fact">&middot;</p></div>
           <div className="mile-label"><p className="mile-year mono">2025</p><p className="mile-fact">Started building AI systems. The stakes turned real.<span className="mile-aside">(no idea what I&rsquo;m doing)</span></p></div>
           <div className="mile-label"><p className="mile-year mono is-now-year">2026</p><p className="mile-fact">You&rsquo;re here, reading this.<span className="mile-aside">(still no idea what I&rsquo;m doing)</span></p></div>
         </div>

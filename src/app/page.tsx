@@ -97,13 +97,13 @@ export default function Home() {
 
       {/* the impression line */}
       <div className="impline" id="impline" aria-hidden="true">
-        <i className="mono">IMPRESSION LINE &mdash; THE SHEET PRINTS AS READ</i>
+        <i className="mono">IMPRESSION LINE &middot; THE SHEET PRINTS AS READ</i>
       </div>
 
       {/* corner navigation */}
       <a className="corner tl mono" href="#top">MARK AXELUS</a>
       <a className="corner tr mono" href="mailto:mrkaxelus@gmail.com">CONTACT ↗</a>
-      <a className="corner bl mono" href="#top">&copy;2026 &mdash; ALL MINE<span id="clock" suppressHydrationWarning /></a>
+      <a className="corner bl mono" href="#top">&copy;2026 &middot; ALL MINE<span id="clock" suppressHydrationWarning /></a>
       <ProofToggle />
 
       {/* underdrawing: grid + margin guides (mess mode) */}
@@ -118,7 +118,7 @@ export default function Home() {
         </svg>
         <span className="note hand-b n-night" style={{ "--d": ".52s" } as CSSProperties}>for the 2am people ↗</span>
         <div className="stamp" id="stamp">
-          <span className="stamp-line1">MARK AXELUS &mdash; WORKING PROOF</span>
+          <span className="stamp-line1">MARK AXELUS &middot; WORKING PROOF</span>
           <span className="stamp-line2">STILL NOT DONE</span>
           <span className="stamp-line3 mono">AT MY DESK &middot; <span id="stamp-date" suppressHydrationWarning /></span>
         </div>
@@ -178,7 +178,7 @@ export default function Home() {
           zoom when the separation is ready, like the glass finding focus */}
       <div className="loupe" id="loupe" aria-hidden="true">
         <canvas className="loupe-dots" id="loupe-dots" width={184} height={184} />
-        <span className="loupe-etch">×2.2 — K45° · A15° · R75°</span>
+        <span className="loupe-etch">×2.2 · K45° · A15° · R75°</span>
       </div>
 
       {/* custom cursor */}

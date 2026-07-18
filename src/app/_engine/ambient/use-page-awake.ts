@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useEngine } from "@/app/_engine/engine-context";
 
 /* the mutter alphabet: caps, digits, and a few print sorts (main.js 3798) */
-const MUTTER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/·—□";
+const MUTTER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/·□";
 
 /**
  * THE PAGE IS AWAKE — ported VERBATIM from prototypes/main.js (3785-3853).

@@ -98,7 +98,7 @@ export default function Outro() {
       {/* the spec: what a brief needs, in the docket's own voice — the
           column the headline opens is measured, not empty */}
       <div className="brief-spec mono final">
-        <p className="bs-head">A BRIEF, FOR THIS SHOP &mdash;</p>
+        <p className="bs-head">A BRIEF, FOR THIS SHOP:</p>
         <p className="bs-row"><span className="bs-n">01</span>THE PROBLEM, IN A SENTENCE</p>
         <p className="bs-row"><span className="bs-n">02</span>THE DEADLINE, HONESTLY</p>
         <p className="bs-row"><span className="bs-n">03</span>THE BUDGET, ROUGHLY</p>
@@ -116,7 +116,7 @@ export default function Outro() {
           {/* the packing slip sheet — exposed along the bundle's foot */}
           <div className="bd-sheet bd-s2 pk-fade" style={{ "--ikd": "0.2s" } as CSSProperties}>
             <div className="pf joblog mono" id="joblog" style={{ "--ikd": "0.1s" } as CSSProperties} hidden>
-              <p className="jl-head">THE JOB LOG &mdash;</p>
+              <p className="jl-head">THE JOB LOG:</p>
               <div className="jl-scroll">
                 <ul id="jl-lines"></ul>
                 <div className="jl-rail" id="jl-rail" aria-hidden="true"><span className="jl-thumb" id="jl-thumb"></span></div>
@@ -140,14 +140,14 @@ export default function Outro() {
 
           {/* THE DOCKET — the top sheet; its matter flows */}
           <div className="bd-sheet bd-s3 pk-fade" style={{ "--ikd": "0.35s" } as CSSProperties}>
-            <p className="pf pkt-job mono" style={{ "--ikd": "0.5s" } as CSSProperties}>JOB N&ordm; 004 &mdash; THE WORKING PROOF</p>
+            <p className="pf pkt-job mono" style={{ "--ikd": "0.5s" } as CSSProperties}>JOB N&ordm; 004 &middot; THE WORKING PROOF</p>
 
             {/* the docket form: you've read the sheet — you're the press-check
                 client. initials are machine-set (typed, never handwritten:
                 the hand belongs to the mess); the stamps commit on a hold,
                 and say so on their face. */}
             <div className="pf okslip" id="okslip" style={{ "--ikd": "0.62s" } as CSSProperties}>
-              <p className="ok-head mono">PRESS CHECK &mdash; APPROVAL</p>
+              <p className="ok-head mono">PRESS CHECK &middot; APPROVAL</p>
               <p className="ok-sheet mono">SHEET Nº 001 &middot; WORKING PROOF &middot; <span id="ok-date"></span></p>
               <label className="ok-by mono">CHECKED BY
                 <input id="ok-initials" type="text" maxLength={4} autoComplete="off"
@@ -164,7 +164,7 @@ export default function Outro() {
 
             {/* the return address — the headline, made literal */}
             <div className="pf pkt-addr" style={{ "--ikd": "0.8s" } as CSSProperties}>
-              <p className="pkt-kick mono">RETURN TO &mdash;</p>
+              <p className="pkt-kick mono">RETURN TO:</p>
               <p className="pkt-name">Mark Axelus</p>
               <p className="pkt-meta mono">AT HIS DESK &middot; VICTORIA BC &middot; NO CLOSING TIME</p>
             </div>
@@ -172,7 +172,7 @@ export default function Outro() {
             {/* the franking — the maker's mark overhangs the docket corner */}
             <figure className="pf pressmark" style={{ "--ikd": "0.9s" } as CSSProperties}>
               <svg className="pm-svg" viewBox="0 0 200 250" role="img" aria-labelledby="pm-title">
-                <title id="pm-title">Mark Axelus &mdash; maker's mark</title>
+                <title id="pm-title">Mark Axelus, maker's mark</title>
                 <path className="pm-brk" d="M26 58 V38 H48"/>
                 <path className="pm-brk" d="M174 212 V232 H152"/>
                 <g className="pm-ghost" id="pm-ghost" transform="translate(55 69)">
@@ -214,7 +214,7 @@ export default function Outro() {
 
       <div className="proof-notes" aria-hidden="true">
         <span className="note hand-k big-line" style={{ "--d": ".2s" } as CSSProperties}>it just never stops, does it.</span>
-        <span className="note hand-b big-reply" style={{ "--d": ".45s" } as CSSProperties}>you love it though. &mdash; 2am me</span>
+        <span className="note hand-b big-reply" style={{ "--d": ".45s" } as CSSProperties}>you love it though. - 2am me</span>
         <svg className="note scrawl dd-moon" style={{ "--d": ".6s" } as CSSProperties} viewBox="0 0 48 44" aria-hidden="true">
           <path className="draw" pathLength="1" d="M30,6 C16,10 14,30 28,36 C18,38 8,30 10,18 C12,8 22,4 30,6" fill="none"/>
           <path className="draw" pathLength="1" d="M40,12 L40,20 M36,16 L44,16" fill="none" opacity=".7"/>
@@ -224,7 +224,7 @@ export default function Outro() {
           <path className="draw" pathLength="1" d="M8,42 L70,10 M70,10 L38,36 M38,36 L34,48 L30,37 M30,37 L8,42" fill="none"/>
           <path className="draw" pathLength="1" d="M4,50 C14,48 20,50 26,46" fill="none" opacity=".5"/>
         </svg>
-        <span className="note hand-k n-outro" style={{ "--d": ".85s" } as CSSProperties}>you read my margins &mdash; mention the stones when you write.</span>
+        <span className="note hand-k n-outro" style={{ "--d": ".85s" } as CSSProperties}>you read my margins. mention the stones when you write.</span>
         <span className="note hand-b n-uplate" style={{ "--d": ".95s" } as CSSProperties}>you&rsquo;re up late too?</span>
 
         {/* the mess argues with the verdict (text set by main.js) */}

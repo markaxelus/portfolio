@@ -4112,7 +4112,7 @@ body.proof .impline { opacity: 0 !important; }
   .outro-links { display: block; text-align: right; }
   .olink { border: 0; padding: 0; background: none; }
   .olink svg { display: none; }
-  .olink::after { content: " — " attr(href); }
+  .olink::after { content: " · " attr(href); }
 
   /* the ok slip prints — it's part of the proof — minus the screen
      instructions; a committed stamp prints in black like everything */

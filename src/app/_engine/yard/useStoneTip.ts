@@ -5,7 +5,7 @@ import { useEffect, type RefObject } from "react";
 /**
  * "Who left this one, and when" — ported VERBATIM from prototypes/main.js
  * (3377–3408). A delegated pointerover/out on #pile shows the fixed #stone-tip
- * over the hovered stone: the house foundation reads "THE HOUSE STACK — MINE";
+ * over the hovered stone: the house foundation reads "THE HOUSE STACK · MINE";
  * a visitor stone reads "Nº 023 — 3 DAYS AGO" (+ " · SIGNAL STONE" on the 9ths).
  *
  * The single getBoundingClientRect read lives in the pointerover handler (an
@@ -34,12 +34,12 @@ export function useStoneTip(pileRef: RefObject<SVGGElement | null>): void {
       const p = e.target as SVGElement | null;
       if (!p || p.tagName !== "path") return;
       if (p.classList.contains("house")) {
-        tipEl.textContent = "THE HOUSE STACK — MINE";
+        tipEl.textContent = "THE HOUSE STACK · MINE";
       } else if (p.classList.contains("passer")) {
         tipEl.textContent = "PASSED THROUGH · LEFT NO NOTE";
       } else if (p.dataset.n) {
         let label = "Nº " + String(p.dataset.n).padStart(3, "0");
-        if (p.dataset.t) label += " — " + stoneAge(+p.dataset.t);
+        if (p.dataset.t) label += " · " + stoneAge(+p.dataset.t);
         if (p.classList.contains("signal")) label += " · SIGNAL STONE";
         tipEl.textContent = label;
       } else return;

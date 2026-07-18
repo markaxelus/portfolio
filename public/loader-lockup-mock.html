@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>THE LOCKUP — asymmetric make-ready (mock)</title>
+<title>THE LOCKUP · asymmetric make-ready (mock)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- EXACT same Fraunces axes/URL as index.html (incl. WONK) — a different subset
@@ -676,7 +676,7 @@
   </div>
 
   <!-- page furniture (arrives with the flood) -->
-  <p class="eyebrow" aria-hidden="true">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</p>
+  <p class="eyebrow" aria-hidden="true">( ONE-PERSON PRACTICE &middot; <em>EST. 2019</em> )</p>
   <aside class="bio mono" aria-hidden="true">
     <span class="rule"></span>
     I&rsquo;m Mark. I design and build interfaces that hold their nerve. I work slowly, ship rarely, and put everything on the page.
@@ -688,7 +688,7 @@
     <span><b>LOCKED OFF-CENTRE</b> &middot; <em>HOLDS LEVEL</em> &middot; D50 5000K</span>
   </div>
 
-  <span class="cap">LOAD — <b>THE LOCKUP</b> &middot; the weight sits off-centre, and holds level</span>
+  <span class="cap">LOAD · <b>THE LOCKUP</b> &middot; the weight sits off-centre, and holds level</span>
   <button class="replay" id="replay" type="button"><span>&#8630; REPLAY</span></button>
 
 <script>
@@ -795,7 +795,7 @@
     /* the passes HUNT for register — a decaying vibration on the way in */
     var jitter = (1-e) * 2.6 * Math.sin((now - climbStart) * 0.028);
     setReg((1-e)*MAXOFF + jitter);
-    errEl.textContent = e<0.34 ? "REG +1.5 mm — OFF" : (e<0.72 ? "REG +0.7 mm" : "REG +0.2 mm — CLOSE");
+    errEl.textContent = e<0.34 ? "REG +1.5 mm · OFF" : (e<0.72 ? "REG +0.7 mm" : "REG +0.2 mm · CLOSE");
 
     /* the held lean, with a slow breathing sway — a heavy thing kept in tension */
     if (!registered){
@@ -838,7 +838,7 @@
     regAt = performance.now();        /* the light starts shrinking from here */
     numEl.textContent = "100";
     setReg(0);
-    errEl.textContent = "IN REGISTER — OK TO RUN"; errEl.classList.add("ok");
+    errEl.textContent = "IN REGISTER · OK TO RUN"; errEl.classList.add("ok");
     /* the teeter → the hold: swings past level (ease-thunk overshoots) and sets true — snappier now */
     lockup.style.transition = "transform 0.5s var(--ease-thunk)";
     lockup.style.transform = "rotate(0deg)";
@@ -1051,7 +1051,7 @@
     if (reduce){
       fontsReady = true; registered = true;
       body.classList.add("lit");
-      numEl.textContent = "100"; errEl.textContent = "IN REGISTER — OK TO RUN"; errEl.classList.add("ok");
+      numEl.textContent = "100"; errEl.textContent = "IN REGISTER · OK TO RUN"; errEl.classList.add("ok");
       setReg(0); lockup.style.transform = "rotate(0deg)";
       hugBrackets(); toPage();
       return;

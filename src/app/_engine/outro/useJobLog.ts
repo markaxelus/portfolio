@@ -65,7 +65,7 @@ export function useJobLog(rootRef: RefObject<HTMLElement | null>): void {
     } catch {}
 
     const liText = (en: LogEntry): string =>
-      en.d ? en.s : en.t! + " — " + en.s; // non-dividers always carry a time
+      en.d ? en.s : en.t! + " · " + en.s; // non-dividers always carry a time
     /* newest line sits on TOP — keep it in view by pinning to the start */
     const scrollLogTop = (): void => {
       if (logLinesEl) {
@@ -145,7 +145,7 @@ export function useJobLog(rootRef: RefObject<HTMLElement | null>): void {
           } catch {}
           logEntries.push({
             d: 1,
-            s: "— reading nº " + String(v).padStart(3, "0") + " —",
+            s: "· reading nº " + String(v).padStart(3, "0") + " ·",
           });
         }
       }

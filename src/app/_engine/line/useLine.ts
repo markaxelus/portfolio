@@ -526,11 +526,11 @@ export function useLine(rootRef: RefObject<HTMLElement | null>): void {
             wll.innerHTML =
               "[W.L.L.] LOAD +" +
               Math.round(Math.abs(it.u) * 1.3) +
-              "% — <em>HELD</em>";
+              "% · <em>HELD</em>";
             wll.classList.add("blip");
             clearTimeout(wllT);
             wllT = setTimeout(function () {
-              wll.innerHTML = "[W.L.L.] 04 SHEETS — <em>HOLDS</em>";
+              wll.innerHTML = "[W.L.L.] 04 SHEETS · <em>HOLDS</em>";
               wll.classList.remove("blip");
             }, 1700);
           }
@@ -608,11 +608,11 @@ export function useLine(rootRef: RefObject<HTMLElement | null>): void {
         if (!wllBlipped && lineWllEl) {
           const wll = lineWllEl; /* non-null capture for the revert timer */
           wllBlipped = true;
-          wll.innerHTML = "[W.L.L.] TAKING THE LOAD — <em>HELD</em>";
+          wll.innerHTML = "[W.L.L.] TAKING THE LOAD · <em>HELD</em>";
           wll.classList.add("blip");
           clearTimeout(wllT);
           wllT = setTimeout(function () {
-            wll.innerHTML = "[W.L.L.] 04 SHEETS — <em>HOLDS</em>";
+            wll.innerHTML = "[W.L.L.] 04 SHEETS · <em>HOLDS</em>";
             wll.classList.remove("blip");
           }, 1700);
         }

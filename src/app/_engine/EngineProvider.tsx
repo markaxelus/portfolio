@@ -286,7 +286,7 @@ export default function EngineProvider({ children }: { children: React.ReactNode
     const impNow = document.getElementById("imp-now");
     const tick = () => {
       const now = new Date();
-      if (clockEl) clockEl.textContent = " — " + deskTime(now) + " AT MY DESK";
+      if (clockEl) clockEl.textContent = " · " + deskTime(now) + " AT MY DESK";
       /* the imprint's night-shift margin line quotes the clock (mess +
          late-desk only; by day the span sits hidden, the write is cheap) */
       if (impNow) impNow.textContent = deskTime(now);

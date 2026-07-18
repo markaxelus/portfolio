@@ -13,7 +13,7 @@ export function useTabTitle(): void {
     const baseTitle = document.title;
     const onVis = () => {
       document.title = document.hidden
-        ? "— come back, the kerning isn’t done"
+        ? "come back, the kerning isn’t done"
         : baseTitle;
     };
     document.addEventListener("visibilitychange", onVis);

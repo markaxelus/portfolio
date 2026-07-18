@@ -36,10 +36,10 @@ const SHIFT01 = {
   name: "OceanAID",
   url: "https://oceanaid.ca" as string | null,
   title: "JUNIOR SOFTWARE ENGINEER · VICTORIA BC",
-  kick: "CURRENTLY · MAY 2026 —",
+  kick: "CURRENTLY · MAY 2026",
   hours: "09–17",
 };
-const BEFORE = "BEFORE — AI SYSTEMS DEVELOPER · UNIV. OF VICTORIA · 2025–26";
+const BEFORE = "BEFORE · AI SYSTEMS DEVELOPER · UNIV. OF VICTORIA · 2025–26";
 
 /* the plates' shared annotation setter */
 const T = (x: number, y: number, s: number, o: number, d: string, txt: string, rot?: number, ls?: number) => (
@@ -108,7 +108,7 @@ function ChartSVG() {
 
       {/* the cartouche */}
       <path pathLength={1} className="ck-fine ck-draw" style={{ "--ikd": "0.38s" } as React.CSSProperties} d="M26,26 L268,26" />
-      {T(26, 46, 12, 0.85, "0.55s", "FIG.2 — THE TWO STATIONS", undefined, 2.6)}
+      {T(26, 46, 12, 0.85, "0.55s", "FIG.2 · THE TWO STATIONS", undefined, 2.6)}
       {T(26, 61, 8.5, 0.55, "0.71s", "HARBOUR & STRAIT · SURVEYED DAILY · NOT TO SCALE", undefined, 1.6)}
 
       {/* the coast — engraver's line + shore hatching */}
@@ -223,7 +223,7 @@ function PlanSVG() {
 
       {/* the cartouche */}
       <path pathLength={1} className="ck-fine ck-draw" style={{ "--ikd": "0.38s" } as React.CSSProperties} d="M26,26 L282,26" />
-      {T(26, 46, 12, 0.85, "0.55s", "FIG.2 — THE DESK, SURVEYED", undefined, 2.6)}
+      {T(26, 46, 12, 0.85, "0.55s", "FIG.2 · THE DESK, SURVEYED", undefined, 2.6)}
       {T(26, 61, 8.5, 0.55, "0.71s", "PLAN VIEW · SCALE 1:1 · DRAWN AT VICTORIA BC", undefined, 1.6)}
 
       {/* the walls — double line + section hatching; the door gap low-left */}
@@ -383,7 +383,7 @@ export default function Imprint() {
             tilt lives on the inner wrapper: set-in ends at transform:none */}
         <div className="imp-desk imp-piece">
           <div className="imp-rot">
-            <p className="imp-kick imp-kick-desk mono">AFTER HOURS &middot; EST. 2022 &mdash;</p>
+            <p className="imp-kick imp-kick-desk mono">AFTER HOURS &middot; EST. 2022</p>
             <span className="imp-deskname">My desk.</span>
             <p className="imp-meta mono">OWNER &middot; OPERATOR &middot; JANITOR &middot; NO CLOSING TIME</p>
           </div>

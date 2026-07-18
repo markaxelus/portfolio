@@ -13,7 +13,7 @@ export default function Hero() {
     <section className="hero" id="hero" ref={rootRef}>
       {/* the specimen: his favourite glyph, at every optical size */}
       <div className="specimen final" aria-hidden="true">
-        <span className="spec-head mono">SPECIMEN &mdash; FRAUNCES VF &middot; OPSZ 9&rarr;144</span>
+        <span className="spec-head mono">SPECIMEN &middot; FRAUNCES VF &middot; OPSZ 9&rarr;144</span>
         <span className="spec-amp s1" style={{ "--o": "9", "--w": "420" } as CSSProperties}>&amp;<i className="mono">9 &middot; 420</i></span>
         <span className="spec-amp s2" style={{ "--o": "24", "--w": "450" } as CSSProperties}>&amp;<i className="mono">24 &middot; 450</i></span>
         <span className="spec-amp s3" style={{ "--o": "56", "--w": "480" } as CSSProperties}>&amp;<i className="mono">56 &middot; 480</i></span>
@@ -42,7 +42,7 @@ export default function Hero() {
       <span className="d-cross final" aria-hidden="true"></span>
       <span className="d-run spec final"><span className="decode" tabIndex={0}><span className="c1">[RUN.M] MESS LAYER ARMED</span><span className="c2">press M. you&rsquo;ll see.</span></span> <span className="blink" aria-hidden="true"></span></span>
 
-      <p className="eyebrow mono final">( ONE-PERSON PRACTICE &mdash; <em>EST. 2019</em> )</p>
+      <p className="eyebrow mono final">( ONE-PERSON PRACTICE &middot; <em>EST. 2019</em> )</p>
       <h1 className="hero-title final v3" id="hero-title" ref={titleRef}>
         <span className="amp" id="amp" data-ink="">{inkChars("&")}</span>
         <span className="v3-words">
@@ -58,10 +58,10 @@ export default function Hero() {
       </aside>
 
       {/* loose type: the case is open */}
-      <button className="spec loose-decal" id="type-decal" type="button">[!] LOOSE TYPE &mdash; GRAB A LETTER</button>
+      <button className="spec loose-decal" id="type-decal" type="button">[!] LOOSE TYPE &middot; GRAB A LETTER</button>
 
       {/* the plate pull, named on the sheet (click = one demo pull) */}
-      <button className="spec plates-decal" id="plates-decal" type="button">[&#8679;] PLATES &mdash; SHIFT-DRAG, OFF REGISTER</button>
+      <button className="spec plates-decal" id="plates-decal" type="button">[&#8679;] PLATES &middot; SHIFT-DRAG, OFF REGISTER</button>
 
       {/* the hand (mess layer, anchored to the type — underlines "desk") */}
       <div className="amark scrawl" id="amark-desk" aria-hidden="true">
@@ -73,10 +73,10 @@ export default function Hero() {
 
       {/* hero marginalia */}
       <div className="proof-notes" aria-hidden="true">
-        <span className="note hand-k n-eyebrow" style={{ "--d": ".16s" } as CSSProperties}>since 2019 &mdash; feels longer</span>
+        <span className="note hand-k n-eyebrow" style={{ "--d": ".16s" } as CSSProperties}>since 2019. feels longer</span>
 
         <div className="note drafts" style={{ "--d": ".22s" } as CSSProperties}>
-          <span className="drafts-head mono">REJECTED &mdash;</span>
+          <span className="drafts-head mono">REJECTED:</span>
           <span className="hand-b struck">pixels &amp; feelings</span>
           <span className="hand-b struck">code, design &amp; coffee</span>
           {/* the proofreader wavered on this one: stet dots under the
@@ -114,7 +114,7 @@ export default function Hero() {
         {/* the version ledger: the bio admits there were three before this one.
              the margins remember how each of them actually went. */}
         <div className="note versions" style={{ "--d": ".48s" } as CSSProperties}>
-          <span className="vers-head mono">THIS SITE, SO FAR &mdash;</span>
+          <span className="vers-head mono">THIS SITE, SO FAR:</span>
           <span className="hand-k struck">v1 &middot; too safe</span>
           <span className="hand-k struck">v2 &middot; too loud</span>
           <span className="hand-k struck">v3 &middot; died at 90%</span>

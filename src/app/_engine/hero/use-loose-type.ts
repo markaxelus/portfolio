@@ -165,7 +165,7 @@ export function useLooseType(
         timers.delete(t2);
       }, 750);
       timers.add(t2);
-      if (typeDecal) typeDecal.textContent = "[!] LOOSE TYPE — GRAB A LETTER";
+      if (typeDecal) typeDecal.textContent = "[!] LOOSE TYPE · GRAB A LETTER";
       logAct("the case reset. every sort back home.");
     }
 

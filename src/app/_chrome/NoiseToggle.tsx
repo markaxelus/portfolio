@@ -12,7 +12,7 @@ export default function NoiseToggle() {
       aria-pressed={noiseOn}
       onClick={() => setNoise(!noiseOn)}
     >
-      [S] PRESS NOISE &mdash; {noiseOn ? "ON" : "OFF"}
+      [S] PRESS NOISE &middot; {noiseOn ? "ON" : "OFF"}
     </button>
   );
 }

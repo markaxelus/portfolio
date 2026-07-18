@@ -29,7 +29,7 @@ export function deskStatus(now: Date): string {
   const h = deskHour(now);
   return h >= 8 && h < 19
     ? "I AM PROBABLY AT THE DESK"
-    : "THE DESK SLEEPS — WRITE ANYWAY";
+    : "THE DESK SLEEPS. WRITE ANYWAY";
 }
 
 /** the jobline / stamp date, e.g. "14 JUL 2026" */

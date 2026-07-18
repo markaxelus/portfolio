@@ -12,7 +12,7 @@ import { getGlobalVisits } from "@/lib/visits";
  * grows on the studio's own foundation (OURS, never falls), develops a seeded
  * lean (leanStep) and past LEAN_LIMIT / STACK_CAP it TOPPLES — the stacked
  * stones fall to the ground row (accelerating heavy fall + tumble, e*e easing,
- * never a bounce) and the count flashes "THE STACK FELL — WE STACK AGAIN".
+ * never a bounce) and the count flashes "THE STACK FELL. WE STACK AGAIN".
  *
  * Every stone is one <g>-per-stone (positioned group + inner anim group +
  * origin-centred blob) so the topple is pure transform writes — ZERO layout
@@ -320,12 +320,12 @@ export function useCairn({ groundRef, pileRef, countRef }: CairnRefs): void {
         groundStones.length +
         passerStones.length;
       const verb = mqFine.matches ? "CLICK" : "TAP";
-      countEl!.textContent = total + " STONES — " + verb + " TO LEAVE YOURS";
+      countEl!.textContent = total + " STONES · " + verb + " TO LEAVE YOURS";
     }
 
     let fellT: ReturnType<typeof setTimeout> | null = null;
     function showFellLine() {
-      countEl!.textContent = "THE STACK FELL — WE STACK AGAIN";
+      countEl!.textContent = "THE STACK FELL. WE STACK AGAIN";
       if (fellT) clearTimeout(fellT);
       fellT = setTimeout(updateCount, 2600);
     }

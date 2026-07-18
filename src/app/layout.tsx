@@ -5,7 +5,7 @@ const FAVICON =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23DDDBD4'/%3E%3Cellipse cx='8' cy='12.2' rx='5.4' ry='2.2' fill='%2316150F'/%3E%3Cellipse cx='8' cy='8.6' rx='3.9' ry='1.9' fill='%2316150F'/%3E%3Cellipse cx='8' cy='5.4' rx='2.5' ry='1.6' fill='%232A2AF0'/%3E%3C/svg%3E";
 
 export const metadata: Metadata = {
-  title: "Mark Axelus — My Desk",
+  title: "Mark Axelus · My Desk",
   description:
     "Mark Axelus is a one-person practice, from my desk. Code, design & interfaces that hold their nerve.",
   keywords: [
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   robots: "index, follow",
   icons: { icon: FAVICON },
   openGraph: {
-    title: "Mark Axelus — My Desk",
+    title: "Mark Axelus · My Desk",
     description:
       "Mark Axelus is a one-person practice, from my desk. Code, design & interfaces that hold their nerve.",
     url: "https://markaxelus.com",

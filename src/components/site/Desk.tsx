@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 export default function Desk() {
   return (
     <section className="desk" id="desk">
-      <p className="desk-head mono final">AT THE DESK &mdash; RIGHT NOW-ISH</p>
+      <p className="desk-head mono final">AT THE DESK &middot; RIGHT NOW-ISH</p>
       <div className="desk-rows">
         <div className="desk-row final"><span className="mono desk-k">BUILDING</span><span className="desk-v">This site. Again.</span></div>
         <div className="desk-row final"><span className="mono desk-k">READING</span><span className="desk-v">The Shape of Design, again</span></div>
@@ -16,7 +16,7 @@ export default function Desk() {
            the mess holds the unscreened original, taped over it. */}
       <figure className="op" id="op" aria-label="Portrait of Mark Axelus, printed as a halftone plate">
         <svg className="op-print final" viewBox="0 0 800 1000" role="img"
-             aria-label="Mark Axelus &mdash; one ink and one red pass">
+             aria-label="Mark Axelus, one ink and one red pass">
           <defs>
             <filter id="op-duo" colorInterpolationFilters="sRGB">
               <feColorMatrix type="saturate" values="0"/>
@@ -48,10 +48,10 @@ export default function Desk() {
           </g>
           <rect width="800" height="1000" fill="url(#op-ht)" opacity="0.12"/>
           <g transform="rotate(-90 44 500)"><text x="44" y="500" textAnchor="middle"
-              fontFamily="monospace" fontSize="17" letterSpacing="5" fill="#16150F" opacity="0.55">M.A. &#8212; THE OPERATOR &#183; PROOF 00/04 &#183; NOT FOR PRODUCTION</text></g>
+              fontFamily="monospace" fontSize="17" letterSpacing="5" fill="#16150F" opacity="0.55">M.A. &#183; THE OPERATOR &#183; PROOF 00/04 &#183; NOT FOR PRODUCTION</text></g>
           <rect width="800" height="1000" filter="url(#op-gr)" opacity="0.12"/>
         </svg>
-        <figcaption className="op-cap mono final">THE OPERATOR &mdash; M. AXELUS<br/>ONE INK + ONE RED PASS<br/>NOT RETOUCHED</figcaption>
+        <figcaption className="op-cap mono final">THE OPERATOR &middot; M. AXELUS<br/>ONE INK + ONE RED PASS<br/>NOT RETOUCHED</figcaption>
         <div className="op-candid" aria-hidden="true">
           <img src="/operator.jpg" alt="" loading="lazy"/>
           <span className="note hand-k n-opc" style={{ "--d": ".9s" } as CSSProperties}>me, apparently.</span>
@@ -81,7 +81,7 @@ export default function Desk() {
         <span className="note hand-k n-pentest" style={{ "--d": ".98s" } as CSSProperties}>new pen. testing, testing. it&rsquo;s fine.</span>
 
         <div className="note todo" style={{ "--d": ".66s" } as CSSProperties}>
-          <span className="todo-head mono">TODAY &mdash;</span>
+          <span className="todo-head mono">TODAY:</span>
           <span className="hand-k struck">fix the kerning</span>
           <span className="hand-k struck">invoice meridian</span>
           <span className="hand-k struck">reply to emails</span>
