@@ -628,28 +628,51 @@ body.hero-set .plates-decal {
 .n-2025 { bottom: 6%; right: 6%; --tilt: 2deg; }
 /* 2024's fact, blacked out — sits in the label column where the fact
    line would print (the ledger shows a dash; the mess shows why) */
-.dd-redact { left: 51%; top: 52.5%; width: 64px; --tilt: 2deg; }
+.dd-redact { left: 51%; top: 52.5%; width: 3.65rem; --tilt: 2deg; }
 .n-redact { left: 51.5%; top: 60.5%; --tilt: -2deg; }
 
 /* mess scrawls on the imprint (proof layer only) — the pens fact-check the
-   plate's officialdom. Shared pair reads the shift clocks in the left void;
-   the figure-specific notes sit in the chart's open water (harbour) or on
-   the plan's floor (plan). */
-/* the shift-clock Q&A sits under the credit block — the two jobs just
-   listed are the setup, the margin does the arithmetic */
-.n-imp-sleep-q { left: 12%; top: 74%; --tilt: -2deg; }
-.n-imp-sleep-a { left: 18.5%; top: 79.5%; --tilt: 1.5deg; }
+   plate's officialdom. The notes used to ride %-of-section anchors while
+   the chart itself is rem-capped and right-pinned — so past ~1200 they
+   drifted off the objects they annotate (worst on monitors: the fish
+   arrow ended 200px+ from the marlin). Now they live in a SHADOW STAGE:
+   an overlay inside .proof-notes that re-states the stage/chart geometry
+   (the stage is .final, so notes can't nest inside it without dimming),
+   and every note is a fraction OF THE CHART or a rem offset OFF THE
+   CREDIT — the same relation at every width.
+   KEEP IN STEP with .imp-stage (top offset = section padding + .imp-frame
+   height + its margin; height = the stage's min-height) and .imp-chart
+   (top/right/width verbatim; aspect-ratio = the plates' 780×560 viewBox). */
+.proof-notes .imp-shadow {
+  position: absolute;
+  left: 1.4vw;
+  right: 1.4vw;
+  top: calc(4vw + 4.1625rem + 1px);
+  height: calc(min(61vw, 43rem) * 0.718 + 7.2rem);
+}
+.imp-shadow-chart {
+  position: absolute;
+  top: 0.5rem;
+  right: clamp(-3vw, 30vw - 25rem, 4rem);
+  width: min(63%, 42rem);
+  aspect-ratio: 780 / 560;
+}
+.imp-shadow .note, .imp-shadow-chart .note { position: absolute; }
+/* the shift-clock Q&A sits under the credit block (5% + 46% = the
+   credit's own stage anchors; the rem offsets clear its capped type) */
+.n-imp-sleep-q { left: calc(5% + 4.4rem); top: calc(46% + 12.4rem); --tilt: -2deg; }
+.n-imp-sleep-a { left: calc(5% + 9.5rem); top: calc(46% + 15.3rem); --tilt: 1.5deg; }
 /* the clock testifies — prints only during the late-desk window (23–06),
    same gate as the outro's "you're up late too?" */
-.n-imp-live { display: none; left: 15%; top: 85.5%; --tilt: -1.8deg; }
+.n-imp-live { display: none; left: calc(5% + 5.5rem); top: calc(46% + 18.6rem); --tilt: -1.8deg; }
 .late-desk .n-imp-live { display: block; }
-/* beside the commute's middle reach, half on the torn edge */
-.n-imp-row { left: 42.5%; top: 45%; --tilt: -1.6deg; }
-.n-imp-fish-a { right: 31%; top: 49%; text-align: right; --tilt: 1.5deg; }
-.n-imp-fish-b { right: 29.5%; top: 54%; text-align: right; --tilt: -2deg; }
-.dd-imp-fish { width: 54px; height: 26px; right: 26%; top: 51%; --tilt: 0deg; }
-.n-imp-box { right: 24%; top: 62%; text-align: right; --tilt: 2deg; }
-.n-imp-radius { left: 47%; top: 27%; --tilt: -1.5deg; }
+/* chart-relative: beside the commute's middle reach, half on the torn edge */
+.n-imp-row { left: -5.8%; top: 49.3%; --tilt: -1.6deg; }
+.n-imp-fish-a { right: 56.3%; top: 56.3%; text-align: right; --tilt: 1.5deg; }
+.n-imp-fish-b { right: 53.3%; top: 64.4%; text-align: right; --tilt: -2deg; }
+.dd-imp-fish { width: 3.1rem; height: 1.5rem; left: 45.7%; top: 60.1%; --tilt: 0deg; }
+.n-imp-box { right: 12%; top: 68%; text-align: right; --tilt: 2deg; }
+.n-imp-radius { left: 8%; top: 20%; --tilt: -1.5deg; }
 
 /* ---------- the imprint: FIG.2 — THE DESK, SURVEYED (who's at the desk) ---
    the section's object is a torn fragment of an ENGRAVED PLAN — the desk
@@ -1167,34 +1190,41 @@ body.proof .op-candid { display: block; }
   .op { max-width: 320px; margin-top: 2.2rem; }
 }
 
-/* doodles — they just exist */
-.dd-cup { width: 54px; height: 62px; bottom: 8%; right: 22%; --tilt: 4deg; }
-.dd-tally { width: 90px; height: 30px; bottom: 12%; right: 12%; --tilt: -2deg; }
-.n-tally { bottom: 4%; right: 11%; font-size: 1.1rem; --tilt: -3deg; }
+/* doodles — they just exist. Sizes in rem (mac-root basis) so the hand
+   scales with the sheet's own type law; the tally's replies share ITS
+   anchor (12% + rem offsets) instead of their own drifting percentages. */
+.dd-cup { width: 3.1rem; height: 3.5rem; bottom: 8%; right: 22%; --tilt: 4deg; }
+.dd-tally { width: 5.1rem; height: 1.7rem; bottom: 12%; right: 12%; --tilt: -2deg; }
+.n-tally { bottom: calc(12% - 2.7rem); right: calc(12% - 0.8rem); font-size: 1.1rem; --tilt: -3deg; }
 /* he lost count in march. then recounted anyway. twice. */
-.n-cmath { bottom: 0.2%; right: 5.5%; font-size: 1.15rem; --tilt: 2deg; }
+.n-cmath { bottom: calc(12% - 3.9rem); right: calc(12% - 5.1rem); font-size: 1.15rem; --tilt: 2deg; }
 /* the pen test: the corner where the red pen got scribbled back to life */
-.dd-pentest { width: 92px; height: 54px; bottom: 12%; left: 5%; --tilt: -3deg; }
-.n-pentest { bottom: 6%; left: 4.5%; font-size: 1.15rem; --tilt: 2deg; }
-.dd-spiral { width: 44px; height: 44px; top: 38%; left: 3%; --tilt: 0deg; }
+.dd-pentest { width: 5.2rem; height: 3.05rem; bottom: 12%; left: 5%; --tilt: -3deg; }
+.n-pentest { bottom: calc(12% - 2rem); left: calc(5% - 0.4rem); font-size: 1.15rem; --tilt: 2deg; }
+.dd-spiral { width: 2.5rem; height: 2.5rem; top: 38%; left: 3%; --tilt: 0deg; }
 .n-time1 { top: 30%; left: 2.5%; font-size: 1.15rem; --tilt: -4deg; }
 .n-redo { top: 43%; left: 2%; max-width: 11rem; font-size: 1.15rem; --tilt: 3deg; }
 /* the day log runs down the margin OUT OF ORDER — midnight above morning.
    nothing at this desk happens in a straight line. */
 .n-time2 { top: 67%; left: 2.2%; font-size: 1.05rem; --tilt: 2deg; }
 .n-time3 { top: 72%; left: 3.4%; font-size: 1.12rem; --tilt: -3deg; }
-.dd-burst { width: 30px; height: 30px; top: 71.2%; left: 1.2%; --tilt: 8deg; }
-.dd-zzz { width: 38px; height: 38px; top: -148px; right: calc(9% - 22px); --tilt: 6deg; }
+.dd-burst { width: 1.7rem; height: 1.7rem; top: 71.2%; left: 1.2%; --tilt: 8deg; }
+/* the zzz floats above-right of the sleeping cat. position:absolute was
+   MISSING — it sat in the index's flow at the left margin, ~1000px from
+   the cat it belongs to */
+.dd-zzz { position: absolute; width: 2.15rem; height: 2.15rem; top: -8.4rem; right: calc(9% - 1.25rem); --tilt: 6deg; }
 /* the moon keeps to the open canvas left of the bundle now */
-.dd-moon { width: 44px; height: 40px; top: 4.5%; right: auto; left: 40%; --tilt: -6deg; }
-.dd-plane { width: 74px; height: 50px; bottom: 24%; right: 36%; --tilt: -4deg; }
+.dd-moon { width: 2.5rem; height: 2.3rem; top: 4.5%; right: auto; left: 40%; --tilt: -6deg; }
+.dd-plane { width: 4.2rem; height: 2.85rem; bottom: 24%; right: 36%; --tilt: -4deg; }
 /* the maker's mark gets fact-checked (the 2am pen tested it, obviously) —
    the note reads from under the franking's overhung corner; the arrow
-   points back up at the mark */
-/* left-anchored: the bundle column is capped, so a right-% anchor drifts
-   off the mark on wide screens; left-% tracks the QR at every width */
-.n-pm { left: 80.5%; right: auto; top: 37%; bottom: auto; text-align: left; --tilt: 1.6deg; }
-.dd-pm-arrow { width: 66px; height: 32px; left: 85.5%; right: auto; top: 32.5%; bottom: auto; --tilt: 0deg; }
+   points back up at the mark. Anchored off --pkt-right + rem tops (the
+   pocket's own units), so the pair hugs the QR at every width — the old
+   left-% anchor left it floating mid-sheet on monitors. Tops mirror the
+   franking's seat: pocket top 6.2rem (section pad + margin) + the mark's
+   ~9.8rem tall box. */
+.n-pm { left: auto; right: calc(var(--pkt-right) - 4.5rem); top: 16.6rem; bottom: auto; text-align: left; --tilt: 1.6deg; }
+.dd-pm-arrow { width: 3.75rem; height: 1.8rem; left: auto; right: calc(var(--pkt-right) + 0.75rem); top: 14.8rem; bottom: auto; --tilt: 0deg; }
 .dd-pm-arrow .draw { stroke: var(--graphite); }
 
 /* some doodles in pencil, some in pen */
@@ -1476,6 +1506,11 @@ body.proof .op-candid { display: block; }
 .outro {
   position: relative;
   overflow-x: clip;   /* the bundle + its tie bleed right, never widen the ICB */
+  /* the pocket's right inset from the section's border box: section
+     padding + the grid's gutter gap + the pocket's own margin. The mess
+     anchors ride this var so they track the right-pinned bundle at every
+     width — KEEP IN STEP with the grid + .pocket margins below. */
+  --pkt-right: calc(1.4vw + clamp(1.6rem, 4vw, 4rem) + clamp(1.5rem, 3vw, 3.5rem));
   padding: 2.6rem 1.4vw 80px;        /* clears the fixed SEE THE MESS corner (~62px tall) so the footer isn't on top of it */
   display: grid;
   /* full-bleed section: [voice] [gutter] [bundle] [edge] — the voice
@@ -1582,19 +1617,22 @@ body.proof .op-candid { display: block; }
    outline wraps the object; the sheets' offset edges and the tie carry it */
 .bd { position: relative; margin: 1.4rem 0 10rem; }
 .bd-sheet { border: 1px solid var(--hairline); }
+/* sheet offsets in rem (mac-root basis): the bundle's internal composition
+   — peeking edges, tab reveal, tie overhang — scales with the root law
+   instead of freezing in px while the 36vw pocket grows on monitors */
 .bd-s1 {
   position: absolute;
-  inset: -18px -20px 60px 34px;
+  inset: -1rem -1.15rem 3.4rem 1.95rem;
   transform: rotate(2.4deg);
   background: color-mix(in srgb, var(--ink) 7%, var(--stone));
   z-index: 0;
 }
 .bd-s2 {
   position: absolute;
-  top: 22px;
-  right: 16px;
-  bottom: -150px;
-  left: -14px;
+  top: 1.25rem;
+  right: 0.9rem;
+  bottom: -8.5rem;
+  left: -0.8rem;
   transform: rotate(-1.9deg);
   background: color-mix(in srgb, var(--ink) 2.5%, var(--stone));
   z-index: 1;
@@ -1605,17 +1643,17 @@ body.proof .op-candid { display: block; }
   transform: rotate(1deg);
   background: color-mix(in srgb, var(--ink) 4.5%, var(--stone));
   padding: 1.15rem 1.35rem 1.9rem;
-  margin-left: 84px; /* the tabs poke out from between the sheets here */
+  margin-left: 4.8rem; /* the tabs poke out from between the sheets here */
 }
 /* the tie rides OVER everything (nonuniform scale; strokes hold width) */
 .bd-tie {
   /* replaced elements resolve auto size from intrinsic ratio, not the
      bottom inset — the stretch must be explicit */
   position: absolute;
-  top: -34px;
-  left: -26px;
-  width: calc(100% + 52px);
-  height: calc(100% + 184px);
+  top: -1.95rem;
+  left: -1.5rem;
+  width: calc(100% + 3rem);
+  height: calc(100% + 10.5rem);
   z-index: 4;
   pointer-events: none;
 }
@@ -1689,8 +1727,8 @@ body.proof .op-candid { display: block; }
   align-items: flex-start;
   gap: 0.5rem;
 }
-.bd-tabs .olink:nth-child(2) { margin-left: -10px; }
-.bd-tabs .olink:nth-child(3) { margin-left: -20px; }
+.bd-tabs .olink:nth-child(2) { margin-left: -0.6rem; }
+.bd-tabs .olink:nth-child(3) { margin-left: -1.15rem; }
 /* the packing slip lives on the exposed foot of the sheet beneath */
 .pocket .joblog { position: absolute; left: 1.2rem; right: 30%; bottom: 0.7rem; }
 /* capped so the log's head keeps clear air under the docket's bottom edge */
@@ -1716,10 +1754,13 @@ body.proof .op-candid { display: block; }
    the code TILE is fixed dark-on-light so it scans in day AND night; the furniture
    (brackets, labels, reg cross, acid tick) themes with the sheet. */
 .pressmark {
+  /* rem-sized (converted at the mac reference root, 17.6px): a px-fixed
+     franking read stamp-of-a-different-job on monitors while the 36vw
+     bundle grew around it. The DataMatrix stays crisp — it's SVG. */
   position: absolute;
-  top: -26px;
-  right: -16px;
-  width: 132px;
+  top: -1.5rem;
+  right: -0.9rem;
+  width: 7.5rem;
   margin: 0;
   opacity: 0.92;
   transform: rotate(-4deg);         /* franked over the sheet edge, not placed */
@@ -2321,7 +2362,7 @@ body:not(.proof) .note { transition-delay: 0s; }
    filed under the list. v3's last stroke never completes: it died at 90%,
    the sketch honours that (the dash draw stops at 0.35). */
 .vghosts { right: 6.5%; top: 73%; display: flex; gap: 0.55rem; --tilt: -1.2deg; }
-.vghosts .vg { width: 52px; height: 40px; }
+.vghosts .vg { width: 3rem; height: 2.3rem; }
 .vghosts .vg2 .draw { stroke-width: 3.1; }
 .proof .vghosts.seen .vg3-stop { stroke-dashoffset: 0.35; }
 
@@ -2364,8 +2405,8 @@ body:not(.proof) .note { transition-delay: 0s; }
 
 /* the arrow from "do not scale" up at the & that got scaled anyway */
 .dd-nsarrow {
-  width: 58px;
-  height: 50px;
+  width: 3.3rem;
+  height: 2.85rem;
   left: calc(var(--frame) + 17vw);
   bottom: calc(6vh + 2.4rem);
   --tilt: 0deg;
@@ -2398,14 +2439,15 @@ body:not(.proof) .note { transition-delay: 0s; }
 /* the ring sits in the head's gap — the fixed stamp owns the top-right
    corner at section-top scroll, so the stain keeps clear of it */
 .coffee {
-  width: 130px;
-  height: 122px;
+  width: 7.4rem;
+  height: 6.9rem;
   top: 0.4rem;
   right: 31%;
   --tilt: 0deg;
 }
 .coffee .draw { stroke: rgba(128, 84, 40, 0.5); stroke-width: 3.2; }
-.n-coffee { top: 8.8rem; right: auto; left: 58.5%; --tilt: 2deg; }
+/* the aside shares the ring's 31% anchor so they never separate */
+.n-coffee { top: 8.8rem; left: auto; right: calc(31% - 0.6rem); --tilt: 2deg; }
 
 /* the pen's aside hangs off the sheet's lower corner now */
 .row-note {
@@ -2463,10 +2505,10 @@ body:not(.proof) .note { transition-delay: 0s; }
 /* the cat — scratched in quickly, then she just sits there */
 .cat {
   position: absolute;
-  top: -97px;
+  top: -5.5rem;
   right: 9%;
-  width: 118px;
-  height: 98px;
+  width: 6.7rem;
+  height: 5.6rem;
   z-index: 5;
   --tilt: 0deg;
 }
@@ -2480,7 +2522,7 @@ body:not(.proof) .note { transition-delay: 0s; }
 }
 .n-cat {
   position: absolute;
-  top: -52px;
+  top: -3rem;
   right: calc(9% + 8.5rem);
   text-align: right;
   white-space: nowrap;
@@ -2493,11 +2535,11 @@ body:not(.proof) .note { transition-delay: 0s; }
    anchors up from the sheet's bottom edge, not below it.) */
 .num-ring {
   position: absolute;
-  left: -14px;
+  left: -0.8rem;
   bottom: 4.5rem;
   top: auto;
-  width: 72px;
-  height: 46px;
+  width: 4.1rem;
+  height: 2.6rem;
   z-index: 5;
 }
 .n-fav {
@@ -2682,7 +2724,7 @@ body.pointer-seen .cursor { opacity: 1; }
   /* the late-desk gate outranks the list — re-hide the clock line here */
   .late-desk .n-imp-live { display: none; }
   .drafts { max-width: 12rem; right: 2%; }
-  .cat { width: 92px; height: 76px; top: -75px; right: 4%; }
+  .cat { width: 5.2rem; height: 4.3rem; top: -4.25rem; right: 4%; }
 }
 
 /* ---------- small screens ---------- */
@@ -2740,11 +2782,15 @@ body.pointer-seen .cursor { opacity: 1; }
   }
   .proof .stamp { transform: translateX(-50%) rotate(6deg) scale(1); }
   /* two hero scrawls collide with the stacked mobile bio / run off-edge —
-     the do-not-scale note goes, the knows-note re-anchors above the stamp */
+     the do-not-scale note goes, the knows-note re-anchors above the stamp.
+     .proof-fixed scope: the base .n-knows rule lives LATER in the file
+     (mess additions) — an equal-specificity mobile override loses and the
+     note ends up pinned top AND bottom, a screen-tall box over the stamp.
+     The 10rem clearance is the stamp's own height plus a breath. */
   .n-noscale { display: none; }
-  .n-knows {
+  .proof-fixed .n-knows {
     top: auto;
-    bottom: calc(var(--frame) + 15vw + 3.4rem);
+    bottom: calc(var(--frame) + 15vw + 10rem);
     left: 5vw;
     right: auto;
     max-width: 72vw;
@@ -3266,15 +3312,17 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
 }
 
 /* the record spins for as long as the mess is open */
-.dd-vinyl { left: 4%; top: 22%; width: 128px; }
+.dd-vinyl { left: 4%; top: 22%; width: 7.3rem; }
 .vinyl-spin { transform-box: fill-box; transform-origin: 50% 50%; }
 .proof .dd-vinyl.seen .vinyl-spin { animation: vinyl-spin 7s linear infinite; }
 @keyframes vinyl-spin { to { transform: rotate(360deg); } }
-.dd-notes { left: 26%; top: 6%; width: 56px; } /* clear of the fixed 2vw note */
-.n-vinyl { left: 5%; top: 66%; --tilt: -2deg; }
+.dd-notes { left: 26%; top: 6%; width: 3.2rem; } /* clear of the fixed 2vw note */
+/* "side B. again." keeps its measured drop below the record (rem, not a
+   second % that spreads apart from the doodle's on tall sheets) */
+.n-vinyl { left: calc(4% + 0.8rem); top: calc(22% + 14.2rem); --tilt: -2deg; }
 
 /* the gauge */
-.dd-mood { left: 3%; bottom: 4%; width: 104px; }
+.dd-mood { left: 3%; bottom: 4%; width: 5.9rem; }
 .n-mood { left: 12%; bottom: 3%; --tilt: 1.5deg; }
 
 .n-noscale { bottom: 6vh; left: calc(var(--frame) + 3vw); --tilt: -1deg; }
@@ -3289,7 +3337,7 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
 
 /* the tic-tac-toe keeps company with the 2024 gap note — inboard of the
    fixed stamp column, below the ticker seam */
-.dd-ttt { right: 27%; top: 2.6rem; width: 74px; }
+.dd-ttt { right: 27%; top: 2.6rem; width: 4.2rem; }
 .n-ttt { right: 26.5%; top: 9.2rem; --tilt: 2deg; }
 
 .argue {
@@ -3319,32 +3367,44 @@ body.night.proof { --stone: #1A160E; --stone-deep: #272117; }
 }
 .todo-head { color: var(--pencil); font-size: 0.52rem; margin-bottom: 0.25rem; }
 
-.dd-map { left: 2%; bottom: 2.6rem; width: 180px; }
+.dd-map { left: 2%; bottom: 2.6rem; width: 10.2rem; }
 .n-map { left: 2%; bottom: 0.6rem; --tilt: -1.5deg; }
 /* the 2am pen amends the map — the site grew a section since it was drawn */
-.n-map2 { left: 37%; bottom: 0.2rem; --tilt: 1.4deg; }
+.n-map2 { left: calc(2% + 27.4rem); bottom: 0.2rem; --tilt: 1.4deg; }
 
 /* the passers-by, in the 2am hand — left of the cairn, clear of the tower */
 .n-cairn-a { left: 7%; top: 26%; --tilt: -3deg; font-size: 1.2rem; }
 .n-cairn-b { left: 8%; top: 46%; --tilt: 2deg; font-size: 1.1rem; }
-.dd-cairn-arrow { left: 23%; top: 60%; width: 70px; }
-.n-cairn-c { left: 20%; top: 68%; --tilt: -2deg; }
+/* the invitation tracks the TOWER, not the sheet: 50% is the pile's own
+   centre (the yard svg is centred), the vw term is its half-width (the
+   drawing scales with the svg), the rem terms are the arrow's reach —
+   the old flat 23% left the arrow pointing at open paper on monitors */
+.dd-cairn-arrow { left: calc(50% - (100% - 2.8vw) * 0.042 - 17.9rem); top: 60%; width: 4rem; }
+.n-cairn-c { left: calc(50% - (100% - 2.8vw) * 0.042 - 20.3rem); top: 68%; --tilt: -2deg; }
 /* the failed cairn sketch, scribbled out — it wouldn't sit still.
    lives LEFT of the tower: the right band belongs to the fixed
    stamp/knows-note column at most scroll positions. */
-.dd-tries { left: 27%; top: 28%; width: 118px; height: 76px; --tilt: 3deg; }
-.n-tries { left: 35%; top: 35%; text-align: left; --tilt: -2deg; }
+.dd-tries { left: 27%; top: 28%; width: 6.7rem; height: 4.3rem; --tilt: 3deg; }
+.n-tries { left: calc(27% + 6.3rem); top: 35%; text-align: left; --tilt: -2deg; }
 /* the shop remembers your stone — printed only once you've left one
    (use-mess reads the local cairn and sets body.has-stone) */
 .n-yours { display: none; left: 60%; top: 48%; --tilt: 1.6deg; }
 .has-stone .n-yours { display: block; }
 
-.dd-rip { right: auto; left: 45%; bottom: 8%; width: 130px; }
+.dd-rip { right: auto; left: 45%; bottom: 8%; width: 7.4rem; }
 .n-rip { right: auto; left: 44%; bottom: 2.5%; --tilt: 2deg; text-align: center; }
 
 @media (max-width: 820px) {
   .dd-ttt, .n-ttt, .argue, .dd-map, .n-map, .n-map2,
   .dd-vinyl, .dd-notes, .n-vinyl, .dd-mood, .n-mood { display: none; }
+  /* the todo card lands ON the desk ledger's own text in the stacked
+     flow, and the slip replies have no stable anchor once the outro
+     unstacks — both are desktop delights; the pocket keeps the stamp */
+  .todo, .n-okr1, .n-okr2, .n-okr3 { display: none; }
+  /* "me, apparently." reads from the photo's left on desktop — off-canvas
+     on a phone; write it ON the photo's lower corner instead (clear of
+     the plate caption underneath) */
+  .op-candid .n-opc { right: auto; left: 6%; bottom: 1.1rem; }
   .has-stone .n-yours { display: none; }
   /* the pocket sheet keeps one cairn aside — the thematic one — and drops
      the rest so nothing crowds the tower or the header */
@@ -3835,10 +3895,17 @@ body.proof .impline { opacity: 0 !important; }
 }
 .ok-stamp.thunk { animation: ok-thunk 0.4s var(--ease-thunk) both; }
 
-/* the mess replies beside the slip */
-.n-okr1 { left: 42%; top: 26%; --tilt: -2deg; }
-.n-okr2 { left: 46%; top: 33%; --tilt: 1.4deg; }
-.n-okr3 { left: 43%; top: 40%; --tilt: -1deg; }
+/* the mess replies beside the slip — right-anchored just off the bundle's
+   left edge (--pkt-right + the pocket's clamped width), tops in rem from
+   the docket's seat, so the argument stays beside the slip at any width */
+.n-okr1, .n-okr2, .n-okr3 {
+  left: auto;
+  right: calc(var(--pkt-right) + clamp(430px, 36vw, 46rem) + 1.5rem);
+  text-align: right;
+}
+.n-okr1 { top: 10.1rem; --tilt: -2deg; }
+.n-okr2 { top: 12.6rem; --tilt: 1.4deg; }
+.n-okr3 { top: 15.1rem; --tilt: -1deg; }
 
 @media (max-width: 820px) {
   /* the overhanging stamp would widen the pocket proof — tuck it in */

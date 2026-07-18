@@ -408,26 +408,33 @@ export default function Imprint() {
           officialdom. Shared notes read the shift clocks; the rest are
           figure-specific, so the FIGURE switch swaps the argument too. */}
       <div className="proof-notes" aria-hidden="true">
-        <span className="note hand-k n-imp-sleep-q" style={{ "--d": ".3s" } as React.CSSProperties}>when do you sleep?</span>
-        <span className="note hand-b n-imp-sleep-a" style={{ "--d": ".55s" } as React.CSSProperties}>17&ndash;23. allegedly.</span>
-        {/* the clock testifies — shown only when it's actually the night
-            shift (rides body.late-desk; the engine clock fills #imp-now) */}
-        <span className="note hand-b n-imp-live" style={{ "--d": "1.05s" } as React.CSSProperties}>(it&rsquo;s <span id="imp-now" suppressHydrationWarning /> right now. case in point.)</span>
-        {harbour ? (
-          <>
-            <span className="note hand-k n-imp-row" style={{ "--d": ".75s" } as React.CSSProperties}>rowed it once. never again.</span>
-            <span className="note hand-b n-imp-fish-a" style={{ "--d": ".62s" } as React.CSSProperties}>no marlin up here.</span>
-            <span className="note hand-k n-imp-fish-b" style={{ "--d": ".85s" } as React.CSSProperties}>my chart. she stays.</span>
-            <svg className="note scrawl dd-imp-fish" style={{ "--d": ".95s" } as React.CSSProperties} viewBox="0 0 54 26" aria-hidden="true">
-              <path className="draw" pathLength="1" d="M4,18 C18,16 32,13 46,10 M46,10 l-9,-1 M46,10 l-5,7" fill="none"/>
-            </svg>
-          </>
-        ) : (
-          <>
-            <span className="note hand-b n-imp-box" style={{ "--d": ".7s" } as React.CSSProperties}>her box. load-bearing.<br/>do not stack.</span>
-            <span className="note hand-k n-imp-radius" style={{ "--d": ".82s" } as React.CSSProperties}>the coffee radius is real. measured.</span>
-          </>
-        )}
+        {/* the shadow stage: the stage/chart geometry, re-stated, so the
+            notes track the objects they annotate at EVERY width (the real
+            stage is .final and would dim them — see portfolio.css) */}
+        <div className="imp-shadow">
+          <span className="note hand-k n-imp-sleep-q" style={{ "--d": ".3s" } as React.CSSProperties}>when do you sleep?</span>
+          <span className="note hand-b n-imp-sleep-a" style={{ "--d": ".55s" } as React.CSSProperties}>17&ndash;23. allegedly.</span>
+          {/* the clock testifies — shown only when it's actually the night
+              shift (rides body.late-desk; the engine clock fills #imp-now) */}
+          <span className="note hand-b n-imp-live" style={{ "--d": "1.05s" } as React.CSSProperties}>(it&rsquo;s <span id="imp-now" suppressHydrationWarning /> right now. case in point.)</span>
+          <div className="imp-shadow-chart">
+            {harbour ? (
+              <>
+                <span className="note hand-k n-imp-row" style={{ "--d": ".75s" } as React.CSSProperties}>rowed it once. never again.</span>
+                <span className="note hand-b n-imp-fish-a" style={{ "--d": ".62s" } as React.CSSProperties}>no marlin up here.</span>
+                <span className="note hand-k n-imp-fish-b" style={{ "--d": ".85s" } as React.CSSProperties}>my chart. she stays.</span>
+                <svg className="note scrawl dd-imp-fish" style={{ "--d": ".95s" } as React.CSSProperties} viewBox="0 0 54 26" aria-hidden="true">
+                  <path className="draw" pathLength="1" d="M4,18 C18,16 32,13 46,10 M46,10 l-9,-1 M46,10 l-5,7" fill="none"/>
+                </svg>
+              </>
+            ) : (
+              <>
+                <span className="note hand-b n-imp-box" style={{ "--d": ".7s" } as React.CSSProperties}>her box. load-bearing.<br/>do not stack.</span>
+                <span className="note hand-k n-imp-radius" style={{ "--d": ".82s" } as React.CSSProperties}>the coffee radius is real. measured.</span>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
       <ImprintChartInk />
