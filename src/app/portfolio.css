@@ -691,10 +691,10 @@ body.hero-set .plates-decal {
      composition as a centered island once monitors outgrew it. */
   /* tracks the chart's own height (width-proportional) so the after-hours
      credit always tucks just under the torn bottom edge at any viewport;
-     the rem term mirrors the chart's own 48rem cap (×61/63, +1rem of air
+     the rem term mirrors the chart's own 42rem cap (×61/63, +~2rem of air
      so the credit clears the tear in the capped zone like it does on
      laptops) */
-  min-height: calc(min(61vw, 47.5rem) * 0.718 + 7.2rem);
+  min-height: calc(min(61vw, 43rem) * 0.718 + 7.2rem);
 }
 
 /* ---- THE CHART: the torn fragment. Neatline edges (top + right) are
@@ -704,12 +704,15 @@ body.hero-set .plates-decal {
 .imp-chart {
   position: absolute;
   top: 0.5rem;
-  right: clamp(-4.5rem, -3vw, -1.5rem);
-  /* 63% of the full-bleed stage on laptops; from ~1440 up the 48rem cap
-     eases the share down to ~50vw (Mark: full 63% reads WAY too large on
-     a big monitor), locking there once the root scales linearly (1920+).
-     Still right-pinned, still bleeding off the sheet edge. */
-  width: min(63%, 48rem);
+  /* the tear grazes past the sheet edge on laptops (the pinned-fragment
+     gesture), but on a monitor that read as jammed against the right —
+     so from ~1450 the chart steps back off the edge and settles at ~4vw
+     of air once the root scales linearly (1920+). Small screens keep
+     today's graze exactly (the -3vw floor). */
+  right: clamp(-3vw, 30vw - 25rem, 4rem);
+  /* ~54vw on laptops; the 42rem cap eases the plate down to ~44vw on big
+     monitors (Mark, on 1440p: 50vw still too large, twice dialed) */
+  width: min(63%, 42rem);
   z-index: 1;
 }
 .imp-chart-rot {
