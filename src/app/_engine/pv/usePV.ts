@@ -32,7 +32,7 @@ import { CASES } from "@/lib/cases";
  */
 export function usePV(rootRef: RefObject<HTMLElement | null>): void {
   const engine = useEngine();
-  const { api, plates, accentI, proofOn, setProof, stillMode } = engine;
+  const { api, plates, accentI, proofOn, setProof } = engine;
 
   const idxRef = useRef(-1);
   const proofRef = useRef(proofOn);
@@ -49,6 +49,9 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
     const pvEl = rootRef.current;
     if (!pvEl) return;
     const apiC = api.current;
+    /* the still law is read off the ground truth (use-setting's rule) —
+       the ctx flag can lag this effect on first paint */
+    const stillNow = /[?&]still(\b|=)/.test(window.location.search);
 
     const rowFor = (i: number): HTMLElement | null =>
       document.getElementById("p-0" + (i + 1));
@@ -63,18 +66,39 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
       const desc = row?.querySelector(".row-desc")?.textContent ?? "";
       const next = (i + 1) % PROJECTS.length;
       const nextTitle = rowFor(next)?.querySelector(".row-title")?.textContent ?? "";
+      /* the proofreader's insertion rides INSIDE the nerve (the pmark
+         gesture from the outro headline: caret under, pen above) */
+      const nerve = c.nerve.replace(
+        c.ins.find,
+        '<span class="pmark">' + c.ins.find +
+          '<svg class="note scrawl pm-caret" style="--d:.5s" viewBox="0 0 16 10" aria-hidden="true"><path class="draw" pathLength="1" d="M1,9 L8,1 L15,9" fill="none"/></svg>' +
+          '<em class="note pm-ins ' + c.ins.pen + '" style="--d:.62s" aria-hidden="true">' + c.ins.text + "</em></span>",
+      );
+      /* the sheet assembles in press order (imp-stamp per block, --pvd
+         cascade); ?still ships it seated (no pv-arm), reduced motion is
+         disarmed in CSS */
+      const st = (d: string): string => ' pv-st" style="--pvd:' + d + '"';
       return (
-        '<div class="pv-sheet">' +
-          '<span class="pv-num" aria-hidden="true">' + p.num + "</span>" +
+        '<div class="pv-sheet' + (stillNow ? "" : " pv-arm") + '">' +
+          /* the trim: two opposing brackets (the pressmark's own grammar —
+             never four corners, a full box reads as a container) + the
+             registration cross top-center */
+          '<span class="pv-crop c-tl" aria-hidden="true"></span>' +
+          '<span class="pv-crop c-br" aria-hidden="true"></span>' +
+          '<svg class="pv-reg" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="4.2"/><path d="M9 1v16M1 9h16"/></svg>' +
+          '<span class="pv-num' + st(".02s") + ' aria-hidden="true">' + p.num + "</span>" +
           '<button class="pv-close mono" id="pv-close" type="button">CLOSE &#10005; <em>ESC</em></button>' +
           '<button class="pv-messbtn mono" id="pv-mess" type="button"></button>' +
           '<header class="pv-head">' +
-            '<p class="pv-kicker mono">PROOF SHEET N&ordm; 0' + (i + 2) + " &middot; " + ref + " &middot; " + kind + "</p>" +
-            '<h2 class="pv-title">' + title + "</h2>" +
-            '<p class="pv-lede">' + desc + "</p>" +
+            '<p class="pv-kicker mono' + st(".06s") + ">PROOF SHEET N&ordm; 0" + (i + 2) + " &middot; " + ref + " &middot; " + kind + "</p>" +
+            /* the ink bar — the control strip a real proof carries */
+            '<div class="pv-bar mono' + st(".12s") + ' aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><span>PASS ORDER &middot; INK / ACCENT / RED</span></div>' +
+            '<h2 class="pv-title' + st(".16s") + ">" + title + "</h2>" +
+            '<p class="pv-lede' + st(".24s") + ">" + desc + "</p>" +
           "</header>" +
           '<div class="pv-grid">' +
-            '<aside class="pv-meta mono">' +
+            '<aside class="pv-meta mono' + st(".32s") + ">" +
+              '<p class="pv-dhead">DOCKET:</p>' +
               "<div><span>CLIENT</span>" + c.client + "</div>" +
               "<div><span>ROLE</span>" + c.role + "</div>" +
               "<div><span>STACK</span>" + c.stack + "</div>" +
@@ -82,24 +106,44 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
               "<div><span>MADE</span><ul>" + c.made.map((m) => "<li>" + m + "</li>").join("") + "</ul></div>" +
             "</aside>" +
             '<div class="pv-body">' +
-              '<figure class="pv-plate"></figure>' +
-              '<h3 class="mono">THE BRIEF</h3><p>' + c.brief + "</p>" +
-              '<h3 class="mono">THE NERVE</h3><p>' + c.nerve + "</p>" +
-              '<div class="pv-duo"><figure></figure><figure></figure></div>' +
-              '<ul class="pv-stats">' +
-                c.outcome.map((o) => "<li><b>" + o[0] + '</b><span class="mono">' + o[1] + "</span></li>").join("") +
+              '<figure class="pv-plate' + st(".4s") + ">" +
+                /* side B: the pen reads the plate from under its foot */
+                '<span class="note ' + c.plateNote.pen + ' pv-pnote" style="--d:.3s">' + c.plateNote.text + "</span>" +
+                '<svg class="note scrawl pv-parr" style="--d:.42s" viewBox="0 0 40 26" aria-hidden="true"><path class="draw" pathLength="1" d="M6,24 C14,20 24,12 31,5 M25,6 L32,3 L30,11" fill="none"/></svg>' +
+              "</figure>" +
+              '<p class="pv-cap mono' + st(".46s") + ">PLATE " + p.num + " &middot; THREE INKS &middot; " + p.motif.toUpperCase() + " MOTIF &middot; 800&times;1000</p>" +
+              '<h3 class="mono' + st(".52s") + '>THE BRIEF:</h3><p class="' + st(".56s").slice(1) + ">" + c.brief + "</p>" +
+              /* THE RUN — the process, station by station, docket voice */
+              '<div class="pv-run' + st(".62s") + ">" +
+                '<p class="pv-run-head mono">THE RUN:</p>' +
+                c.run.map((r, k) =>
+                  '<p class="pv-run-row mono"><span class="pv-run-n">0' + (k + 1) + '</span><span class="pv-run-st">' + r[0] + '</span><span class="pv-run-line">' + r[1] + "</span></p>",
+                ).join("") +
+              "</div>" +
+              '<h3 class="mono' + st(".7s") + '>THE NERVE:</h3><p class="' + st(".74s").slice(1) + ">" + nerve + "</p>" +
+              '<div class="pv-duo' + st(".8s") + "><figure></figure><figure></figure></div>" +
+              '<ul class="pv-stats' + st(".86s") + ">" +
+                c.outcome.map((o, k) =>
+                  "<li><b>" + o[0] + '</b><span class="mono">' + o[1] + "</span>" +
+                    (k === c.statRing.i
+                      ? /* side B: the red hand rings ITS figure, note under */
+                        '<svg class="note scrawl pv-ring" style="--d:.2s" viewBox="0 0 84 58" aria-hidden="true"><path class="draw" pathLength="1" d="M42,6 C66,4 80,14 78,28 C76,44 58,53 38,52 C18,51 5,42 7,27 C9,12 24,7 46,7" fill="none"/></svg>' +
+                        '<span class="note ' + c.statRing.note.pen + ' pv-snote" style="--d:.34s">' + c.statRing.note.text + "</span>"
+                      : "") +
+                  "</li>",
+                ).join("") +
               "</ul>" +
-              '<blockquote class="pv-quote">' + c.quote + '<footer class="mono">' + c.attr + "</footer></blockquote>" +
+              '<blockquote class="pv-quote' + st(".92s") + ">" + c.quote + '<footer class="mono">' + c.attr + "</footer>" +
+                /* side B: the two hands argue at the quote's shoulder */
+                '<div class="note argue pv-argue" style="--d:.3s">' +
+                  c.argue.map((a) => '<span class="' + a.pen + '">' + a.text + "</span>").join("") +
+                "</div>" +
+              "</blockquote>" +
             "</div>" +
           "</div>" +
-          '<a class="pv-next" id="pv-next" href="#p-0' + (next + 1) + '" data-next="' + next + '">' +
+          '<a class="pv-next' + st(".98s") + ' id="pv-next" href="#p-0' + (next + 1) + '" data-next="' + next + '">' +
             '<span class="mono">NEXT PROOF &middot; 0' + (next + 1) + "</span><b>" + nextTitle + " &rarr;</b></a>" +
-          '<span class="pv-jobline mono" aria-hidden="true">SHEET N&ordm; 0' + (i + 2) + " &middot; " + title.toUpperCase() + " &middot; MARK AXELUS &middot; WORKING PROOF</span>" +
-          '<div class="proof-notes pv-notes" aria-hidden="true">' +
-            c.notes.map((n, k) =>
-              '<span class="note ' + n.pen + " " + n.pos + '" style="--d:.' + (2 + k * 3) + 's">' + n.text + "</span>",
-            ).join("") +
-          "</div>" +
+          '<span class="pv-jobline mono' + st("1.04s") + ' aria-hidden="true">SHEET N&ordm; 0' + (i + 2) + " &middot; " + title.toUpperCase() + " &middot; MARK AXELUS &middot; WORKING PROOF</span>" +
         "</div>"
       );
     }
@@ -121,7 +165,7 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
          awake mess observes its own margins (same seen law, same margin) */
       if (!proofRef.current || !pvEl) return;
       const notes = Array.prototype.slice.call(pvEl.querySelectorAll(".note")) as Element[];
-      if (stillMode) {
+      if (stillNow) {
         notes.forEach((el) => el.classList.add("seen"));
         return;
       }
@@ -140,6 +184,7 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
       notesObsRef.current = obs;
     }
 
+    let armT: ReturnType<typeof setTimeout> | undefined;
     function openProject(i: number): void {
       if (!pvEl || !(i >= 0 && i < PROJECTS.length)) return;
       notesObsRef.current?.disconnect();
@@ -148,6 +193,16 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
       }
       idxRef.current = i;
       pvEl.innerHTML = buildPV(i);
+      /* the press lets go once the last block seats — imp-stamp's fill
+         holds opacity:1, which would pin the ghost numeral (rest ≈ .14)
+         and deafen the proof-mode dims; releasing the arm hands every
+         block back to the cascade through its own transitions */
+      clearTimeout(armT);
+      if (!stillNow) {
+        armT = setTimeout(() => {
+          pvEl.querySelector(".pv-sheet")?.classList.remove("pv-arm");
+        }, 1650);
+      }
       inkArt(i);
       document.body.classList.add("pv-open");
       document.documentElement.classList.add("pv-open");
@@ -172,6 +227,7 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
     function closeProject(): void {
       if (idxRef.current < 0 || !pvEl) return;
       idxRef.current = -1;
+      clearTimeout(armT);
       notesObsRef.current?.disconnect();
       notesObsRef.current = null;
       document.body.classList.remove("pv-open");
@@ -201,6 +257,7 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
 
     return () => {
       window.removeEventListener("hashchange", onHash);
+      clearTimeout(armT);
       notesObsRef.current?.disconnect();
       notesObsRef.current = null;
       if (idxRef.current >= 0) {

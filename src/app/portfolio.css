@@ -3344,10 +3344,63 @@ html.pv-open { overflow: hidden; }
 .proof .pv-messbtn { color: var(--pencil); border-color: var(--pencil); }
 
 /* the mess annotates the case too */
-.pv-notes { z-index: 5; }
-.n-pv1 { top: 12rem; right: 6vw; --tilt: -2deg; }
-.n-pv2 { top: 30rem; left: 16rem; --tilt: 1.5deg; }
-.n-pv3 { bottom: 15rem; left: 42%; --tilt: -1.5deg; }
+/* ---- the sheet's press furniture (side A) ---- */
+/* the trim: two opposing brackets (pm-brk grammar — never four corners,
+   a full box reads as a container) + the registration cross, top-center */
+.pv-crop { position: absolute; width: 1.05rem; height: 1.05rem; pointer-events: none; opacity: 0.6; }
+.pv-crop.c-tl { top: 0.85rem; left: 0.85rem; border-top: 1px solid var(--hairline); border-left: 1px solid var(--hairline); }
+.pv-crop.c-br { bottom: 0.85rem; right: 0.85rem; border-bottom: 1px solid var(--hairline); border-right: 1px solid var(--hairline); }
+.pv-reg { position: absolute; top: 0.7rem; left: 50%; transform: translateX(-50%); width: 15px; height: 15px; stroke: var(--hairline); stroke-width: 1; fill: none; opacity: 0.8; }
+/* the ink bar — the control strip a real proof carries: three inks in
+   three tints each, in pass order */
+.pv-bar { display: flex; align-items: center; gap: 2px; margin: 1.2rem 0 1.7rem; }
+.pv-bar i { width: 1.35rem; height: 0.5rem; }
+.pv-bar i:nth-of-type(1) { background: var(--ink); }
+.pv-bar i:nth-of-type(2) { background: color-mix(in srgb, var(--ink) 70%, var(--stone)); }
+.pv-bar i:nth-of-type(3) { background: color-mix(in srgb, var(--ink) 40%, var(--stone)); }
+.pv-bar i:nth-of-type(4) { background: var(--accent); }
+.pv-bar i:nth-of-type(5) { background: color-mix(in srgb, var(--accent) 70%, var(--stone)); }
+.pv-bar i:nth-of-type(6) { background: color-mix(in srgb, var(--accent) 40%, var(--stone)); }
+.pv-bar i:nth-of-type(7) { background: var(--pencil); }
+.pv-bar i:nth-of-type(8) { background: color-mix(in srgb, var(--pencil) 70%, var(--stone)); }
+.pv-bar i:nth-of-type(9) { background: color-mix(in srgb, var(--pencil) 40%, var(--stone)); }
+.pv-bar span { margin-left: 0.85rem; font-size: 0.52rem; letter-spacing: 0.18em; opacity: 0.55; }
+.pv-dhead { font-size: 0.54rem; letter-spacing: 0.22em; opacity: 0.55; margin-bottom: 1rem; }
+.pv-body p.pv-cap { font-size: 0.55rem; letter-spacing: 0.16em; opacity: 0.6; margin: 0.7rem 0 2.4rem; line-height: 1.5; transition: opacity 0.45s var(--ease-out); }
+/* THE RUN — the process, station by station, in the docket's numbered
+   voice (the brief-spec's own pattern, sheet-scale) */
+.pv-run { margin: 2.6rem 0 0.8rem; border-top: 1px solid var(--hairline); }
+.pv-run-head { font-size: 0.56rem; letter-spacing: 0.2em; opacity: 0.6; padding: 0.75rem 0 0.4rem; }
+.pv-run-row { display: grid; grid-template-columns: 2rem 11.5rem 1fr; gap: 0 1.1rem; padding: 0.6rem 0; border-top: 1px dashed var(--hairline); font-size: 0.62rem; letter-spacing: 0.08em; line-height: 1.65; }
+.pv-run-n { color: var(--pencil); }
+.pv-run-st { letter-spacing: 0.15em; }
+.pv-run-line { color: var(--graphite); }
+/* the sheet STAMPS itself together in press order (the arrival law —
+   matter is seated, never faded); ?still ships seated (no .pv-arm) */
+.pv-arm .pv-st { animation: imp-stamp 0.42s var(--ease-out) both; animation-delay: var(--pvd, 0s); }
+@media (prefers-reduced-motion: reduce) {
+  .pv-arm .pv-st { animation: none !important; }
+}
+/* ---- side B, anchored (the anchor law: a note rides its OBJECT) ---- */
+.pv-plate { position: relative; }
+.pv-pnote { position: absolute; right: 0.4rem; bottom: -2rem; font-size: 0.86rem; --tilt: -1.2deg; }
+.pv-parr { position: absolute; right: -1.9rem; bottom: -1.1rem; width: 2rem; }
+.pv-stats li { position: relative; }
+.pv-ring { position: absolute; left: -1.05rem; top: -0.9rem; width: 6.6rem; height: 4.5rem; }
+.pv-snote { position: absolute; left: 0.1rem; top: calc(100% + 0.1rem); font-size: 0.82rem; white-space: nowrap; --tilt: 1.2deg; }
+.pv-quote { position: relative; }
+/* the hands argue OFF the quote's foot — below it, right, so the pens
+   never sit on the set type (outweighs .argue's index-context position) */
+.pv-quote .pv-argue { position: absolute; right: 0; left: auto; top: calc(100% + 0.4rem); bottom: auto; }
+.pv-body .pm-ins { font-size: 1.02rem; bottom: calc(100% - 0.3em); }
+@media (max-width: 820px) {
+  .pv-quote .pv-argue { position: static; margin-top: 1.2rem; }
+  .pv-run-row { grid-template-columns: 1.6rem 1fr; }
+  .pv-run-line { grid-column: 2; }
+  .pv-pnote { position: static; display: inline-block; margin-top: 0.5rem; }
+  .pv-parr { display: none; }
+  .pv-snote { position: static; display: inline-block; margin-top: 0.4rem; white-space: normal; }
+}
 
 @media (max-width: 820px) {
   .pv-grid { grid-template-columns: 1fr; gap: 2rem; }

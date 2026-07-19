@@ -23,7 +23,15 @@ const { chromium } = require(PW);
     kicker: document.querySelector(".pv-kicker")?.textContent,
     client: document.querySelector(".pv-meta div")?.textContent,
     stats: document.querySelectorAll(".pv-stats li").length,
-    notes: document.querySelectorAll(".pv-notes .note").length,
+    runRows: document.querySelectorAll(".pv-run-row").length,
+    bar: document.querySelectorAll(".pv-bar i").length,
+    crops: document.querySelectorAll(".pv-crop").length,
+    reg: !!document.querySelector(".pv-reg"),
+    cap: !!document.querySelector(".pv-cap"),
+    sideB: document.querySelectorAll("#pv .note").length,
+    ring: !!document.querySelector(".pv-stats li .pv-ring"),
+    ins: !!document.querySelector(".pv-body .pmark .pm-ins"),
+    stillSeated: !document.querySelector(".pv-sheet.pv-arm"),
     plateInked: (document.querySelector(".pv-plate")?.style.backgroundImage || "").length > 50,
     duoInked: [...document.querySelectorAll(".pv-duo figure")].every((f) => (f.style.backgroundImage || "").length > 50),
   }));
@@ -73,7 +81,7 @@ const { chromium } = require(PW);
   await p.waitForTimeout(700);
   const mess = await p.evaluate(() => ({
     btn: document.getElementById("pv-mess")?.textContent,
-    seen: document.querySelectorAll(".pv-notes .note.seen").length,
+    seen: document.querySelectorAll("#pv .note.seen").length,
   }));
   console.log("mess:", JSON.stringify(mess));
   await p.screenshot({ path: "scripts/shot-pv-uveec-mess-night.png", fullPage: false });
@@ -100,6 +108,7 @@ const { chromium } = require(PW);
     open: document.body.classList.contains("pv-open"),
     title: document.querySelector(".pv-title")?.textContent,
     hash: location.hash,
+    stamped: !!document.querySelector(".pv-sheet.pv-arm"),
   }));
   console.log("live-tap:", JSON.stringify(live));
   await p2.close();
