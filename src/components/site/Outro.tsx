@@ -11,8 +11,8 @@ import OutroPocketInk from "./OutroPocketInk";
  *
  * The section's object is a TIED BUNDLE of sheets — the way a real shop
  * hands a finished job over: a loose stack at varied small leans (the
- * site's own pile language), string crossed diagonally over everything,
- * knotted at the button. No jacket, no box — the container law holds
+ * site's own pile language), string banded around it both ways, wax
+ * poured over the crossing. No jacket, no box — the container law holds
  * (a full rectangle outline reads as a box and dies; the STRING is what
  * says \u201cdelivered\u201d, never the outline):
  *   · the TOP SHEET is the docket — JOB Nº header, the PRESS CHECK form
@@ -33,43 +33,54 @@ import OutroPocketInk from "./OutroPocketInk";
  * FINAL layer — machine-set; the mess argues in the margins as always.
  */
 
-/* the tie, drawn OVER the stack: two string runs crossing at the button,
-   the loose tail, the cancellation waves into the franking corner, the
-   courtesy line stamped along the run. Strokes keep width under the
-   nonuniform scale (vector-effect); one red pass rides the tie. */
+/* the tie, drawn OVER the stack: a parcel banding — one band around the
+   stack each way, crossing where the wax seats — plus the loose tail,
+   the cancellation waves into the franking corner, the courtesy line
+   stamped along the run. Each band runs edge to edge and STOPS there
+   (it continues around the back); each casts a cord shadow so it sits
+   ON the sheet the way the wax does. Strokes keep width under the
+   nonuniform scale (vector-effect) — which BANS the dash draw-in here
+   (chromium computes dashes in screen px under non-scaling-stroke, and
+   a "hidden" dashed strand ghosts as dots), so every strand REVEALS by
+   clip sweep instead: pk-run-x runs left→right, pk-run-y top→bottom.
+   One red pass rides the tie. No button, no knot — the SEAL is the
+   closure. */
 function TieSVG() {
   return (
     <svg className="bd-tie" viewBox="0 0 600 820" preserveAspectRatio="none" aria-hidden="true">
-      {/* the two runs — near-straight, wrapping corner to corner; they
-          cross in the docket's quiet lower-right. Endpoints sit ON the
-          sheet edges (start: the back sheet's crown/side, end: the packing
-          slip's foot) so the string never floats in air or stops short */}
-      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.28s", "--ikdur": "0.6s" } as React.CSSProperties} d="M107,12 C242,339 378,605 513,809" />
-      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.56s", "--ikdur": "0.6s" } as React.CSSProperties} d="M562,38 C495,297 429,557 362,816" />
-      {/* the button + the figure-8 knot at the crossing */}
-      <circle className="pk-line pk-fade" style={{ "--ikd": "1.12s" } as React.CSSProperties} cx="414" cy="615" r="9" />
-      <circle className="pk-dot pk-fade" style={{ "--ikd": "1.18s" } as React.CSSProperties} cx="414" cy="615" r="2.2" />
-      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "1.86s", "--ikdur": "0.45s" } as React.CSSProperties} d="M405,608 C392,623 432,627 423,607 C416,595 398,601 402,615" />
-      {/* the loose tail — the knot never quite finished */}
-      <path pathLength={1} className="pk-string pk-draw" style={{ "--ikd": "2.06s", "--ikdur": "0.5s" } as React.CSSProperties} d="M420,625 C446,662 431,692 459,721 C469,729 477,725 471,717" />
+      {/* the two bands, each drawn with its shadow twin (the shadow inks
+          in step). Endpoints sit ON the measured sheet silhouette (crown
+          y≈29 at the band's x, foot y≈812, flanks x≈16/559 at the band's
+          y — tips tucked 1-3 units inside, never floating) so each band
+          reads as turning the edge. Both pass EXACTLY through (414,615) —
+          the seal's calc hangs off that point — and their bows KINK there:
+          the wax pins the string, so the angle is allowed to change under
+          it and nowhere else. */}
+      <path className="pk-cord pk-run-y" style={{ "--ikd": "1.28s", "--ikdur": "0.6s" } as React.CSSProperties} d="M426,32 C434,220 424,470 414,615 C407,673 403,760 401,810" transform="translate(1.4 1.9)" />
+      <path className="pk-cord pk-run-x" style={{ "--ikd": "1.56s", "--ikdur": "0.6s" } as React.CSSProperties} d="M17,596 C150,611 330,618 414,615 C472,620 528,626 559,629" transform="translate(1.4 1.9)" />
+      <path className="pk-string pk-run-y" style={{ "--ikd": "1.28s", "--ikdur": "0.6s" } as React.CSSProperties} d="M426,32 C434,220 424,470 414,615 C407,673 403,760 401,810" />
+      <path className="pk-string pk-run-x" style={{ "--ikd": "1.56s", "--ikdur": "0.6s" } as React.CSSProperties} d="M17,596 C150,611 330,618 414,615 C472,620 528,626 559,629" />
+      {/* the loose tail — the string's cut end, left out from under the
+          wax (the seal lands ON the crossing; the end still shows) */}
+      <path className="pk-string pk-run-y" style={{ "--ikd": "1.86s", "--ikdur": "0.5s" } as React.CSSProperties} d="M420,625 C446,662 431,692 459,721 C469,729 477,725 471,717" />
       {/* the cancellation — wave bars into the franking corner */}
       <g style={{ opacity: 0.55 } as React.CSSProperties}>
-        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.28s" } as React.CSSProperties} d="M408,82 q12,-8 24,0 t24,0 t24,0" />
-        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.36s" } as React.CSSProperties} d="M422,104 q12,-8 24,0 t24,0" />
-        <path pathLength={1} className="pk-fine pk-draw" style={{ "--ikd": "2.45s" } as React.CSSProperties} d="M408,126 q12,-8 24,0 t24,0 t24,0" />
+        <path className="pk-fine pk-run-x" style={{ "--ikd": "2.28s" } as React.CSSProperties} d="M408,82 q12,-8 24,0 t24,0 t24,0" />
+        <path className="pk-fine pk-run-x" style={{ "--ikd": "2.36s" } as React.CSSProperties} d="M422,104 q12,-8 24,0 t24,0" />
+        <path className="pk-fine pk-run-x" style={{ "--ikd": "2.45s" } as React.CSSProperties} d="M408,126 q12,-8 24,0 t24,0 t24,0" />
       </g>
       {/* the courtesy line — stamped on the exposed foot, a touch off true;
-          set narrow so the stamp stays on the sheet at every desktop width */}
+          set narrow so the stamp stays on the sheet at every desktop width,
+          and starting clear of the vertical band's run (x≈402 down here) */}
       <g className="pk-fade" transform="rotate(-2 420 743)" style={{ "--fop": 0.5, "--ikd": "2.6s" } as React.CSSProperties}>
-        <text className="pk-txt" x="401" y="743" fontSize="10" letterSpacing="1.6">PLEASE DO NOT BEND</text>
-        <text className="pk-txt" x="401" y="759" fontSize="10" letterSpacing="1.6">IT&rsquo;S BEEN THROUGH</text>
-        <text className="pk-txt" x="401" y="775" fontSize="10" letterSpacing="1.6">ENOUGH</text>
+        <text className="pk-txt" x="408" y="743" fontSize="10" letterSpacing="1.6">PLEASE DO NOT BEND</text>
+        <text className="pk-txt" x="408" y="759" fontSize="10" letterSpacing="1.6">IT&rsquo;S BEEN THROUGH</text>
+        <text className="pk-txt" x="408" y="775" fontSize="10" letterSpacing="1.6">ENOUGH</text>
       </g>
       {/* the red working pass — the tie prints last, just off register */}
       <g className="dev-ghost" style={{ "--ikd": "2.85s" } as React.CSSProperties}>
-        <path d="M107,12 C242,339 378,605 513,809" />
-        <path d="M562,38 C495,297 429,557 362,816" />
-        <circle cx="414" cy="615" r="9" fill="none" />
+        <path d="M426,32 C434,220 424,470 414,615 C407,673 403,760 401,810" />
+        <path d="M17,596 C150,611 330,618 414,615 C472,620 528,626 559,629" />
       </g>
     </svg>
   );
@@ -198,19 +209,72 @@ export default function Outro() {
 
           <TieSVG />
 
-          {/* THE WAX SEAL — poured over the knot, the way a real parcel is
-              sealed so the string can't be untied quietly. The die is the
-              house & pressed into the shop's red; it lands LAST, after the
-              string ties itself shut (choreography in portfolio.css). */}
+          {/* THE WAX SEAL — poured over the string crossing, the way a real
+              parcel is sealed so it can't be untied quietly. Modelled, not
+              flat: one light (upper-left) agreed on by every gradient — the
+              pour banks into a rolled rim, the die steps the field DOWN,
+              the house & rises where the engraving let the wax up. It lands
+              LAST, after the tie (choreography in portfolio.css). */}
           <div className="bd-seal" aria-hidden="true">
             <svg className="bd-seal-die" viewBox="0 0 120 120">
-              {/* the pour: an irregular puddle, one drip off the low edge */}
-              <path className="seal-wax" d="M60,9 C82,7 103,20 108,40 C113,59 106,82 88,94 C71,105 45,107 28,96 C12,86 6,66 10,47 C14,27 34,11 60,9 Z"/>
-              <path className="seal-drip" d="M97,88 C104,94 108,102 106,110 C104,116 96,116 94,109 C92,102 93,94 97,88 Z"/>
-              {/* the die's impression ring */}
-              <circle className="seal-ring" cx="59" cy="55" r="36"/>
-              {/* the device: the house &, pressed into the wax */}
-              <text className="seal-amp" x="59" y="55">&amp;</text>
+              <defs>
+                <linearGradient id="wax-body" x1="0.2" y1="0.08" x2="0.86" y2="0.98">
+                  <stop offset="0" className="wx-st-hi"/>
+                  <stop offset="0.42" className="wx-st-mid"/>
+                  <stop offset="1" className="wx-st-lo"/>
+                </linearGradient>
+                <linearGradient id="wax-field" x1="0.22" y1="0.12" x2="0.8" y2="0.95">
+                  <stop offset="0" className="wx-st-fdk"/>
+                  <stop offset="1" className="wx-st-fmd"/>
+                </linearGradient>
+                <linearGradient id="wax-dripg" x1="0.35" y1="0" x2="0.6" y2="1">
+                  <stop offset="0" className="wx-st-mid"/>
+                  <stop offset="1" className="wx-st-lo"/>
+                </linearGradient>
+                <clipPath id="wax-clip-body">
+                  <path d="M60,10 C71.6,10 84.3,10.8 92.8,17.9 C100.2,24.1 101.3,35.3 103.9,45.2 C106.6,55.1 110.4,64.7 107,74.1 C103.5,83.6 93.5,87.2 85.2,93 C77,98.8 69.6,106 60,106 C49.1,106 39.2,99.6 30.4,92.2 C22.8,85.8 13.2,79.3 10.7,70.2 C8.3,61.1 13.3,50.8 16.8,41.3 C20.3,31.7 22.9,21.9 31.3,16 C39.7,10.2 49.9,10 60,10 Z"/>
+                </clipPath>
+                <clipPath id="wax-clip-field"><circle cx="59.5" cy="56" r="33.5"/></clipPath>
+                <filter id="wax-b1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.3"/></filter>
+                <filter id="wax-b2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.3"/></filter>
+                <filter id="wax-b3" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3.2"/></filter>
+              </defs>
+              {/* the drip — squeezed off the low edge, tucked UNDER the pour */}
+              <path className="seal-drip" fill="url(#wax-dripg)" d="M83,90 C89,94.5 95.5,100.5 97.6,108 C99.1,113.8 96.3,118.3 92.4,117.6 C88.7,116.9 86.3,112.6 86.8,106.6 C87.2,101.4 85.6,95.8 82.2,92.2 Z"/>
+              {/* the pour: one irregular puddle */}
+              <path className="seal-wax" fill="url(#wax-body)" d="M60,10 C71.6,10 84.3,10.8 92.8,17.9 C100.2,24.1 101.3,35.3 103.9,45.2 C106.6,55.1 110.4,64.7 107,74.1 C103.5,83.6 93.5,87.2 85.2,93 C77,98.8 69.6,106 60,106 C49.1,106 39.2,99.6 30.4,92.2 C22.8,85.8 13.2,79.3 10.7,70.2 C8.3,61.1 13.3,50.8 16.8,41.3 C20.3,31.7 22.9,21.9 31.3,16 C39.7,10.2 49.9,10 60,10 Z"/>
+              {/* rim modelling, kept inside the pour: crest catches the
+                  light up-left, banks into shade down-right */}
+              <g clipPath="url(#wax-clip-body)">
+                <path className="wx-shade" filter="url(#wax-b2)" strokeWidth="8" d="M103.3,60.8 A43.5,43.5 0 0 1 45.1,97.9"/>
+                <path className="wx-light" filter="url(#wax-b1)" strokeWidth="6.5" opacity="0.55" d="M18.1,49.6 A42.5,42.5 0 0 1 81.3,20.2"/>
+                <path className="wx-ridge" filter="url(#wax-b1)" strokeWidth="1.6" d="M27.1,76 A38,38 0 0 1 25.6,40.9"/>
+              </g>
+              {/* the die's pressed field — a step DOWN from the rim: darker,
+                  rim-shadowed at the top, its far lip catching light */}
+              <circle className="seal-bed" cx="59.5" cy="56" r="33.5" fill="url(#wax-field)"/>
+              <g clipPath="url(#wax-clip-field)">
+                <path className="wx-shade" filter="url(#wax-b2)" strokeWidth="5" opacity="0.42" d="M29.5,50.7 A30.5,30.5 0 0 1 74.8,29.6"/>
+                <path className="wx-light" filter="url(#wax-b1)" strokeWidth="3.2" opacity="0.35" d="M87.6,69.1 A31,31 0 0 1 51.5,85.9"/>
+                <path className="wx-sheen" filter="url(#wax-b3)" strokeWidth="7" d="M32,42 C45,32 70,30 84,40"/>
+                <path className="wx-swirl" filter="url(#wax-b3)" strokeWidth="6" d="M34,66 C48,74 68,74 82,64"/>
+              </g>
+              {/* the groove the die's shoulder leaves — shadow wall, lit lip */}
+              <circle className="wx-groove-d" cx="59.5" cy="56" r="33.5"/>
+              <circle className="wx-groove-l" cx="60.4" cy="57" r="33.5"/>
+              {/* the device: the house &, raised in the wax — shadow falls
+                  down-right of the relief, light rides its upper edges */}
+              <text className="seal-amp wx-amp-sh" x="60.9" y="57.7">&amp;</text>
+              <text className="seal-amp wx-amp-hi" x="58.4" y="54.8">&amp;</text>
+              <text className="seal-amp wx-amp-top" x="59.5" y="56.2">&amp;</text>
+              {/* gloss + flaws: two speculars on the crest, one on the drip,
+                  pinholes where the pour caught air */}
+              <ellipse className="wx-spec" filter="url(#wax-b1)" cx="30" cy="27" rx="3.4" ry="1.7" transform="rotate(-38 30 27)"/>
+              <ellipse className="wx-spec" filter="url(#wax-b1)" cx="47" cy="16.5" rx="2" ry="1" transform="rotate(-14 47 16.5)" opacity="0.4"/>
+              <ellipse className="wx-spec" filter="url(#wax-b1)" cx="92.5" cy="108" rx="1.2" ry="2.6" transform="rotate(9 92.5 108)" opacity="0.35"/>
+              <circle className="wx-pit" cx="95" cy="44" r="1.1"/>
+              <circle className="wx-pit" cx="80.5" cy="88.5" r="0.9" opacity="0.22"/>
+              <circle className="wx-pit" cx="23.5" cy="61" r="1" opacity="0.24"/>
             </svg>
           </div>
         </div>

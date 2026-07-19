@@ -810,6 +810,12 @@ body.hero-set .plates-decal {
    .ink-armed strips strokes + labels, .inked pulls them on seeded-ish
    irregular clocks (--ikd per stroke — tossed on, never a metronome). ---- */
 @keyframes imp-ink { to { stroke-dashoffset: 0; } }
+/* the tie's strands can't dash-draw: non-scaling-stroke makes chromium
+   compute dashes in SCREEN px (pathLength ignored), so a "hidden" dashed
+   strand renders as a faint dotted ghost. The bands REVEAL instead — a
+   clip sweeping along the run; pads stay generous so caps never shave. */
+@keyframes imp-run-x { to { clip-path: inset(-40% -4% -40% -4%); } }
+@keyframes imp-run-y { to { clip-path: inset(-4% -40% -4% -40%); } }
 @keyframes imp-fade { to { opacity: var(--fop, 1); } }
 /* the stations are STAMPED, not drawn — the seat gesture (drop, a breath
    of overpress, settle), the same law as every arrival of matter */
@@ -1666,13 +1672,15 @@ body.proof .op-candid { display: block; }
   z-index: 4;
   pointer-events: none;
 }
-.bd-tie path, .bd-tie circle { vector-effect: non-scaling-stroke; }
-/* THE WAX SEAL — poured over the tie's knot (a sealed parcel: the string
-   can't be untied without breaking the wax), the house & pressed as the
-   die. The OUTER element owns the position — the knot sits at (414,615)
-   of the tie's 600×820 box, and the calc maps that fraction through the
-   tie's own overhangs — plus the rest rotation; the INNER die takes the
-   stamp-down animation so the seat can never clobber the transform. */
+.bd-tie path { vector-effect: non-scaling-stroke; }
+/* THE WAX SEAL — poured over the string crossing (a sealed parcel: the
+   string can't be untied without breaking the wax), the house & as the
+   die. The OUTER element owns the position — the crossing sits at
+   (414,615) of the tie's 600×820 box, and the calc maps that fraction
+   through the tie's own overhangs — plus the rest rotation; the INNER
+   die takes the stamp-down animation so the seat can never clobber the
+   transform. The wax is MODELLED off the shop's red — every shade is a
+   color-mix of --pencil, so the night office re-pours it by itself. */
 .bd-seal {
   position: absolute;
   left: calc(-1.5rem + (100% + 3rem) * 0.69);
@@ -1681,24 +1689,54 @@ body.proof .op-candid { display: block; }
   z-index: 5;
   pointer-events: none;
   transform: translate(-50%, -50%) rotate(-6deg);
+  --wax-hi:    color-mix(in srgb, var(--pencil) 62%, #ffc7a6);
+  --wax-mid:   color-mix(in srgb, var(--pencil) 88%, #64120a);
+  --wax-lo:    color-mix(in srgb, var(--pencil) 52%, #3c0b05);
+  --wax-deep:  color-mix(in srgb, var(--pencil) 30%, #260703);
+  --wax-light: color-mix(in srgb, var(--pencil) 40%, #ffdcc2);
+  --wax-field: color-mix(in srgb, var(--pencil) 76%, #4a0e06);
+  --wax-field2:color-mix(in srgb, var(--pencil) 92%, #8a2110);
 }
-.bd-seal-die { display: block; width: 100%; height: auto; overflow: visible; }
-.seal-wax { fill: var(--pencil); }
-.seal-drip { fill: var(--pencil); opacity: 0.9; }
-.seal-ring { fill: none; stroke: var(--stone); stroke-width: 1.6; opacity: 0.55; }
+.bd-seal-die {
+  display: block; width: 100%; height: auto; overflow: visible;
+  /* the wax sits ON the sheet — contact shadow tight, cast shadow soft */
+  filter: drop-shadow(0.6px 1px 0.9px rgba(24, 7, 3, 0.34))
+          drop-shadow(2.4px 3.6px 3px rgba(24, 7, 3, 0.2));
+}
+/* gradient stops (SVG paint can't color-mix; the stops read the props) */
+.wx-st-hi  { stop-color: var(--wax-hi); }
+.wx-st-mid { stop-color: var(--wax-mid); }
+.wx-st-lo  { stop-color: var(--wax-lo); }
+.wx-st-fdk { stop-color: var(--wax-field); }
+.wx-st-fmd { stop-color: var(--wax-field2); }
+/* the pour + drip: gradient-filled, a thin dark contour to hold the edge */
+.seal-wax  { stroke: var(--wax-deep); stroke-width: 0.8; stroke-opacity: 0.35; }
+.seal-drip { stroke: var(--wax-deep); stroke-width: 0.7; stroke-opacity: 0.3; }
+/* the modelling strokes (arcs, blurred in the SVG's own filters) */
+.wx-shade  { fill: none; stroke: var(--wax-deep);  stroke-linecap: round; opacity: 0.5; }
+.wx-light  { fill: none; stroke: var(--wax-light); stroke-linecap: round; }
+.wx-ridge  { fill: none; stroke: var(--wax-hi);    stroke-linecap: round; opacity: 0.28; }
+.wx-sheen  { fill: none; stroke: #fff;             stroke-linecap: round; opacity: 0.11; }
+.wx-swirl  { fill: none; stroke: var(--wax-deep);  stroke-linecap: round; opacity: 0.1; }
+.wx-groove-d { fill: none; stroke: var(--wax-deep);  stroke-width: 1.6; opacity: 0.5; }
+.wx-groove-l { fill: none; stroke: var(--wax-light); stroke-width: 1.2; opacity: 0.45; }
 .seal-amp {
-  fill: var(--stone);
   font-family: "Fraunces", Georgia, serif;
-  font-size: 46px;
+  font-size: 49px;
   /* the house & — opsz+wght ONLY, never SOFT/WONK (the amp gotcha) */
   font-variation-settings: "opsz" 144, "wght" 470;
   text-anchor: middle;
   dominant-baseline: central;
-  opacity: 0.92;
 }
-.pk-line { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; }
-.pk-string { fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-linecap: round; }
-.pk-dot { fill: var(--ink); }
+.wx-amp-sh  { fill: var(--wax-deep);  opacity: 0.5; }
+.wx-amp-hi  { fill: var(--wax-light); opacity: 0.62; }
+.wx-amp-top { fill: color-mix(in srgb, var(--pencil) 84%, #ffb28c); }
+.wx-spec { fill: #fff; opacity: 0.5; }
+.wx-pit  { fill: var(--wax-deep); opacity: 0.3; }
+.pk-string { fill: none; stroke: var(--ink); stroke-width: 1.35; stroke-linecap: round; }
+/* the cord's shadow — a dark twin under each band (offset in the SVG, so
+   it scales with the bundle); always dark, both offices, like any shadow */
+.pk-cord { fill: none; stroke: rgba(24, 7, 3, 0.16); stroke-width: 2.6; stroke-linecap: round; }
 .pk-fine { fill: none; stroke: var(--ink); stroke-width: 0.9; stroke-linecap: round; }
 .pk-txt { fill: var(--ink); font-family: "Space Mono", ui-monospace, monospace; }
 .pk-end { text-anchor: end; }
@@ -1718,12 +1756,20 @@ body.proof .op-candid { display: block; }
    itself, the face prints, the franking cancels, the string TIES ITSELF
    SHUT, the red pass lands (imp-* keyframes shared with the imprint) */
 .pocket .pk-fade { opacity: var(--fop, 1); }
-.pocket.ink-armed .pk-draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
+/* the strands hide behind a full-sweep clip, then the reveal runs it out
+   along the band (x = left→right, y = top→bottom) — the dash law is
+   BANNED here (see the imp-run note at the keyframes) */
+.pocket.ink-armed .pk-run-x { clip-path: inset(-40% 100% -40% -4%); }
+.pocket.ink-armed .pk-run-y { clip-path: inset(-4% -40% 100% -40%); }
 .pocket.ink-armed .pk-fade,
 .pocket.ink-armed .pf { opacity: 0; }
 .pocket.ink-armed:not(.inked) .dev-ghost { opacity: 0; }
-.pocket.inked .pk-draw {
-  animation: imp-ink var(--ikdur, 0.6s) var(--ease-out) both;
+.pocket.inked .pk-run-x {
+  animation: imp-run-x var(--ikdur, 0.6s) var(--ease-out) both;
+  animation-delay: var(--ikd, 0s);
+}
+.pocket.inked .pk-run-y {
+  animation: imp-run-y var(--ikdur, 0.6s) var(--ease-out) both;
   animation-delay: var(--ikd, 0s);
 }
 .pocket.inked .pk-fade,
@@ -1740,7 +1786,8 @@ body.proof .op-candid { display: block; }
 .pocket.ink-armed .bd-seal-die { opacity: 0; }
 .pocket.inked .bd-seal-die { animation: imp-stamp 0.42s var(--ease-out) 3.1s both; }
 @media (prefers-reduced-motion: reduce) {
-  .pocket.ink-armed .pk-draw { stroke-dasharray: none; stroke-dashoffset: 0; }
+  .pocket.ink-armed .pk-run-x,
+  .pocket.ink-armed .pk-run-y { clip-path: none; animation: none !important; }
   .pocket.ink-armed .pk-fade,
   .pocket.ink-armed .pf { opacity: var(--fop, 1); }
   .pocket.ink-armed .bd-seal-die { opacity: 1; animation: none !important; }

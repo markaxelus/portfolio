@@ -45,3 +45,4 @@ next-env.d.ts
 
 # verify-harness screenshot output (regenerated per run)
 scripts/shot-*.png
+scripts/sweep-*.png
