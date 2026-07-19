@@ -126,6 +126,26 @@ export function plateSepURI(p: Project, accent: string): string {
   return "data:image/svg+xml;utf8," + encodeURIComponent(plateSVG(p, accent, true));
 }
 
+/** The specimen close-ups for the project viewer — two generated details
+ *  per project, same inks (ported VERBATIM from prototypes/main.js
+ *  detailURI): 01 is the motif under magnification, 02 is the registration
+ *  view (the red working pass deliberately off under the accent). */
+export function detailURI(p: Project, v: 0 | 1, accent: string): string {
+  const inner =
+    v === 0
+      ? '<g transform="translate(-260 -160) scale(2.1)" opacity="0.9">' + motifSVG(p.motif, accent) + "</g>"
+      : '<g transform="translate(10 7)" opacity="0.35">' + motifSVG(p.motif, PLATE_RED) + "</g>" +
+        '<g opacity="0.92">' + motifSVG(p.motif, accent) + "</g>";
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">' +
+    '<rect width="1200" height="760" fill="' + PLATE_INK + '"/>' +
+    '<g transform="translate(200 -60)">' + inner + "</g>" +
+    '<text x="30" y="736" font-family="monospace" font-size="15" letter-spacing="4" fill="#DDDBD4" opacity="0.7">DETAIL 0' +
+    (v + 1) + " &#183; PLATE " + p.num + " &#183; NOT FOR PRODUCTION</text>" +
+    "</svg>";
+  return 'url("data:image/svg+xml;utf8,' + encodeURIComponent(svg) + '")';
+}
+
 /** The type pass for the halftone loupe: ONLY the proof slug + the margin
  *  micro-notes, on transparency. Real print never screens small type — the
  *  glass draws this solid over the dots so the notes stay razor-legible

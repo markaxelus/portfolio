@@ -309,6 +309,11 @@ export default function EngineProvider({ children }: { children: React.ReactNode
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        /* the sheet closes before the mess does (main.js key order) */
+        if (document.body.classList.contains("pv-open")) {
+          apiRef.current.closeProject?.();
+          return;
+        }
         if (proofRef.current) setProofOn(false);
         return;
       }

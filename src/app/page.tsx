@@ -21,6 +21,7 @@ import MessLayer from "./_engine/mess/MessLayer";
 import TheSetting from "./_engine/setting/TheSetting";
 import LineGlass from "./_engine/line/LineGlass";
 import Loader from "./_engine/loader/Loader";
+import ProjectViewer from "./_engine/pv/ProjectViewer";
 
 /**
  * Mark Axelus — My Desk
@@ -164,7 +165,7 @@ export default function Home() {
       <div className="stone-tip mono" id="stone-tip" aria-hidden="true" />
 
       {/* project viewer: each project is its own proof sheet (built by the engine) */}
-      <section className="pv" id="pv" role="dialog" aria-modal="true" aria-label="Project proof sheet" />
+      <ProjectViewer />
 
       {/* signature: cursor-trailing reveal */}
       <div className="reveal" aria-hidden="true">
