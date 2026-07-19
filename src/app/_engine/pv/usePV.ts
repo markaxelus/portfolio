@@ -87,11 +87,13 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
       );
       /* the fold assembles in press order at open (.pv-st, --pvd
          cascade); everything below the fold is scroll-armed instead
-         (.pv-sc — its IO stamps it when the scroll brings it up);
-         ?still ships every block seated (no pv-arm), reduced motion is
+         (.pv-sc — its IO stamps it when the scroll brings it up, and
+         the IO owns the delay: open-visible blocks continue the fold's
+         cascade, scrolled-to blocks stamp near-immediately); ?still
+         ships every block seated (no pv-arm), reduced motion is
          disarmed in CSS */
       const st = (d: string): string => ' pv-st" style="--pvd:' + d + '"';
-      const sc = (d: string): string => ' pv-sc" style="--pvd:' + d + '"';
+      const sc = (): string => ' pv-sc"';
       return (
         '<div class="pv-sheet' + (stillNow ? "" : " pv-arm") + '">' +
           /* the trim: two opposing brackets (the pressmark's own grammar —
@@ -137,9 +139,9 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
                 '<svg class="note scrawl pv-parr" style="--d:.42s" viewBox="0 0 40 26" aria-hidden="true"><path class="draw" pathLength="1" d="M6,24 C14,20 24,12 31,5 M25,6 L32,3 L30,11" fill="none"/></svg>' +
               "</figure>" +
               '<p class="pv-cap mono' + st(".46s") + ">PLATE " + p.num + " &middot; THREE INKS &middot; " + p.motif.toUpperCase() + " MOTIF &middot; 800&times;1000</p>" +
-              '<h3 class="mono' + sc(".52s") + '>THE BRIEF:</h3><p class="' + sc(".6s").slice(1) + ">" + c.brief + "</p>" +
+              '<h3 class="mono' + sc() + '>THE BRIEF:</h3><p class="' + sc().slice(1) + ">" + c.brief + "</p>" +
               /* THE RUN — the process, station by station, docket voice */
-              '<div class="pv-run' + sc(".68s") + ">" +
+              '<div class="pv-run' + sc() + ">" +
                 '<p class="pv-run-head mono">THE RUN:</p>' +
                 c.run.map((r, k) =>
                   '<p class="pv-run-row mono"><span class="pv-run-n">0' + (k + 1) + '</span><span class="pv-run-st">' + r[0] + '</span><span class="pv-run-line">' + r[1] + "</span></p>",
@@ -148,10 +150,10 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
               /* THE STET — the one call that stood; the heading teaches
                  the word in the instrument voice (the hero struck the
                  nerve tagline; the proofreader's verdict replaces it) */
-              '<h3 class="mono' + sc(".76s") + '>THE STET: <span class="pv-gloss">LET IT STAND</span></h3>' +
-              '<p class="pv-stet ' + sc(".82s").slice(1) + ">" + stet + "</p>" +
-              '<div class="pv-duo' + sc(".88s") + "><figure></figure><figure></figure></div>" +
-              '<ul class="pv-stats' + sc(".94s") + ">" +
+              '<h3 class="mono' + sc() + '>THE STET: <span class="pv-gloss">LET IT STAND</span></h3>' +
+              '<p class="pv-stet ' + sc().slice(1) + ">" + stet + "</p>" +
+              '<div class="pv-duo' + sc() + "><figure></figure><figure></figure></div>" +
+              '<ul class="pv-stats' + sc() + ">" +
                 c.outcome.map((o, k) =>
                   "<li><b>" + o[0] + '</b><span class="mono">' + o[1] + "</span>" +
                     (k === c.statRing.i
@@ -162,7 +164,7 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
                   "</li>",
                 ).join("") +
               "</ul>" +
-              '<blockquote class="pv-quote' + sc("1s") + ">" + c.quote + '<footer class="mono">' + c.attr + "</footer>" +
+              '<blockquote class="pv-quote' + sc() + ">" + c.quote + '<footer class="mono">' + c.attr + "</footer>" +
                 /* side B: the two hands argue at the quote's shoulder */
                 '<div class="note argue pv-argue" style="--d:.3s">' +
                   c.argue.map((a) => '<span class="' + a.pen + '">' + a.text + "</span>").join("") +
@@ -173,12 +175,12 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
           /* NEXT PROOF — the handoff is a press pass: the ink rolls
              across on hover, the arrow advances, and the NEXT sheet's
              own plate rides up like the next job on the wire */
-          '<a class="pv-next' + sc("1.06s") + ' id="pv-next" href="#p-0' + (next + 1) + '" data-next="' + next + '">' +
+          '<a class="pv-next' + sc() + ' id="pv-next" href="#p-0' + (next + 1) + '" data-next="' + next + '">' +
             '<span class="pv-next-ink" aria-hidden="true"></span>' +
             '<span class="pv-next-plate" aria-hidden="true"></span>' +
             '<span class="mono">NEXT PROOF &middot; 0' + (next + 1) + "</span>" +
             "<b>" + nextTitle + '<i class="pv-next-arr" aria-hidden="true">&rarr;</i></b></a>' +
-          '<span class="pv-jobline mono' + sc("1.12s") + ' aria-hidden="true">SHEET N&ordm; 0' + (i + 2) + " &middot; " + title.toUpperCase() + " &middot; MARK AXELUS &middot; WORKING PROOF</span>" +
+          '<span class="pv-jobline mono' + sc() + ' aria-hidden="true">SHEET N&ordm; 0' + (i + 2) + " &middot; " + title.toUpperCase() + " &middot; MARK AXELUS &middot; WORKING PROOF</span>" +
         "</div>"
       );
     }
@@ -199,10 +201,12 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
     }
 
     /* the arrival law, below the fold: each .pv-sc stamps when the
-       scroll brings it onto the sheet. The IO's first delivery keeps the
-       authored press cascade (whatever the open frame already shows);
-       every later batch takes a short local stagger so a block never
-       waits out a delay written for the open. */
+       scroll brings it onto the sheet. ONE RUN, NEVER TWO: the IO's
+       first delivery (whatever the open frame already shows) is timed
+       to CONTINUE the fold cascade (the fold's last stamp seats ~0.88s;
+       these pick up right behind it), so a tall screen reads a single
+       press run instead of settle → pause → settle again. Later batches
+       take a short local stagger — a scrolled-to block never waits. */
     function watchScrollBlocks(): void {
       if (stillNow || !pvEl) return;
       const blocks = Array.prototype.slice.call(pvEl.querySelectorAll(".pv-sc")) as HTMLElement[];
@@ -216,7 +220,10 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
           entries.forEach((en) => {
             if (!en.isIntersecting) return;
             const el = en.target as HTMLElement;
-            if (!atOpen) el.style.setProperty("--pvd", (k * 0.09).toFixed(2) + "s");
+            el.style.setProperty(
+              "--pvd",
+              ((atOpen ? 0.48 + k * 0.08 : k * 0.09)).toFixed(2) + "s",
+            );
             k++;
             el.classList.add("pv-in");
             obs.unobserve(el);

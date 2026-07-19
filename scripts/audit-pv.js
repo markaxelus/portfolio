@@ -138,6 +138,24 @@ const { chromium } = require(PW);
   }));
   console.log("ghost-rest:", JSON.stringify(ghost));
 
+  /* -- one run, never two: by ~2.1s the sheet is fully at rest (no
+        straggler pv animations), and the page behind holds still (the
+        smooth glide is dead under pv-open) -- */
+  await p2.waitForTimeout(800);
+  const oneRun = await p2.evaluate(() => ({
+    stillAnimating: document
+      .getElementById("pv")
+      .getAnimations({ subtree: true })
+      .filter(
+        (a) =>
+          a.playState === "running" &&
+          a.animationName &&
+          a.animationName.indexOf("pv") === 0,
+      ).length,
+    scrollBehaviorUnderPv: getComputedStyle(document.documentElement).scrollBehavior,
+  }));
+  console.log("one-run:", JSON.stringify(oneRun));
+
   /* -- the scroll law: riding to the foot stamps every below-fold block -- */
   const sc0 = await p2.evaluate(() => ({
     total: document.querySelectorAll(".pv-sc").length,
@@ -165,6 +183,32 @@ const { chromium } = require(PW);
   console.log("next-hover:", JSON.stringify(hov));
   await p2.screenshot({ path: "scripts/shot-pv-next-hover.png", fullPage: false });
   await p2.close();
+
+  /* -- the tall-monitor law: blocks visible AT OPEN continue the fold's
+        cascade (--pvd >= .48s, one press run), never a second wave -- */
+  const p3 = await b.newPage({ viewport: { width: 2560, height: 1440 } });
+  p3.on("pageerror", (e) => errors.push(String(e)));
+  await p3.goto("http://localhost:3000/", { waitUntil: "networkidle" });
+  await p3.evaluate(() => {
+    document.documentElement.classList.remove("mr-hold");
+    document.getElementById("makeready")?.remove();
+    return document.fonts ? document.fonts.ready : null;
+  });
+  await p3.waitForTimeout(400);
+  await p3.evaluate(() => { location.hash = "#p-01"; });
+  await p3.waitForTimeout(500);
+  const tall = await p3.evaluate(() => {
+    const delays = [...document.querySelectorAll(".pv-sc.pv-in")].map((el) =>
+      parseFloat(el.style.getPropertyValue("--pvd")),
+    );
+    return {
+      openVisible: delays.length,
+      allContinueFold: delays.every((d) => d >= 0.48),
+      delays,
+    };
+  });
+  console.log("tall-open:", JSON.stringify(tall));
+  await p3.close();
   await b.close();
   console.log("pageerrors:", JSON.stringify(errors));
   console.log("done");

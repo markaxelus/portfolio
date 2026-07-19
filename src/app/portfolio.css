@@ -3233,7 +3233,12 @@ body.has-cursor .loupe { display: block; }
   transition: opacity 0.3s var(--ease-out);
 }
 .pv-open .pv { opacity: 1; pointer-events: auto; }
-html.pv-open { overflow: hidden; }
+/* while a sheet is up the page behind must HOLD STILL: overflow locks the
+   user out, and scroll-behavior:auto kills the ~1s smooth glide the native
+   anchor scroll (deep link / back button → #p-0N) was running BEHIND the
+   overlay — it fought the open animation for compositor time and dragged
+   the settle out into a visible second shift */
+html.pv-open { overflow: hidden; scroll-behavior: auto; }
 .pv-open .reveal, .pv-open .idle-line { display: none !important; }
 
 .pv-sheet {
