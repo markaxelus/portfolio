@@ -61,6 +61,17 @@ export default function RootLayout({
               "(function(){try{document.documentElement.classList.add('js');var q=location.search;if(/[?&]still(\\b|=)/.test(q))return;if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(/[?&]loader(\\b|=)/.test(q)||sessionStorage.getItem('ma-press-check')==null)document.documentElement.classList.add('mr-hold');}catch(e){}})();",
           }}
         />
+        {/* THE TYPE CASES are self-hosted (portfolio.css @font-face →
+            /public/fonts): no third-party CSS blocks first paint. Preload
+            only the faces above the fold — the lockup (Excon 700), the
+            display serif (Fraunces roman), the instrument mono. The rest
+            (italic, pens, mono 700) load on demand via unicode-range/style
+            matching. */}
+        <link rel="preload" href="/fonts/excon-700.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/fraunces-100-900-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/space-mono-400-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {/* the make-ready loader iframe (first visit only) still pulls its
+            OWN copies from Google/Fontshare — keep its handshakes warm */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -71,20 +82,6 @@ export default function RootLayout({
           rel="preconnect"
           href="https://api.fontshare.com"
           crossOrigin="anonymous"
-        />
-        {/* Fraunces (display), Space Mono, Caveat + Zeyada (the two pens) */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=Space+Mono:wght@400;700&family=Zeyada&display=swap"
-          rel="stylesheet"
-        />
-        {/* Author (headline words) + Excon (uppercase lockup) */}
-        <link
-          href="https://api.fontshare.com/v2/css?f[]=author@400,700&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="https://api.fontshare.com/v2/css?f[]=excon@400,700&display=swap"
-          rel="stylesheet"
         />
       </head>
       <body>{children}</body>
