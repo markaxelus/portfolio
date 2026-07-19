@@ -122,8 +122,12 @@ export default function EngineProvider({ children }: { children: React.ReactNode
     };
   }, []);
 
-  // --- pointer feed + the always-on cursor / reveal frame (frame() 975–1076) ---
+  // --- pointer feed + the cursor / reveal frame (frame() 975–1076) ---
+  // Armed ONLY for fine pointers: on touch devices there is no dot, no
+  // reveal plate, and no reason to hold a 60fps rAF open — the old
+  // always-on loop kept every phone's compositor awake doing nothing.
   useEffect(() => {
+    if (!trailEnabled) return;
     const m = mouseRef.current;
     m.x = window.innerWidth / 2;
     m.y = window.innerHeight / 2;
@@ -208,7 +212,8 @@ export default function EngineProvider({ children }: { children: React.ReactNode
       document.removeEventListener("mouseover", onOver);
       cancelAnimationFrame(raf);
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trailEnabled]);
 
   // --- scroll engine: prog → #scroll-pct + cairn indicator + subscribers (onScroll 1888) ---
   useEffect(() => {

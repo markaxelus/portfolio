@@ -69,6 +69,10 @@ export function useHoldRegister(): void {
 
     function regEnabled() {
       return (
+        /* fine pointers only: the instrument's language is "stillness
+           thunks it true" — a thumb has no stillness, and the per-scroll
+           text-shadow writes were pure paint churn on phones */
+        mqFine.matches &&
         !reduced() &&
         !stillMode &&
         !document.body.classList.contains("proof") &&

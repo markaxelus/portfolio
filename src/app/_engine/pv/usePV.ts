@@ -12,12 +12,22 @@ import { CASES } from "@/lib/cases";
  * because this owner exists); the engine composes the sheet INTO the empty
  * #pv shell — awwwards case-study anatomy in the shop's language: kicker,
  * title, lede off the row itself (the row stays the single source of the
- * public identity), the meta rail, the plate hero, THE BRIEF / THE NERVE,
- * the specimen duo, outcome figures, a quote off the shop's own paper, and
- * the giant NEXT PROOF handoff. CASE copy lives in src/lib/cases.ts — the
- * four real jobs, not the prototype's fiction.
+ * public identity), the meta rail (with DELIVERED: only what is verifiably
+ * off press), the plate hero, THE BRIEF / THE RUN / THE STET, the specimen
+ * duo, outcome figures, a quote off the shop's own paper, and the giant
+ * NEXT PROOF handoff (the next sheet's own plate rides its hover). CASE
+ * copy lives in src/lib/cases.ts — the four real jobs, not the
+ * prototype's fiction.
  *
  * Laws honored here:
+ *  · the arrival law, scroll-armed: the fold stamps in press order at
+ *    open (.pv-st); everything below stamps when the scroll brings it
+ *    into view (.pv-sc, own IO on the sheet — the first batch keeps the
+ *    press cascade, later batches take a short local stagger, exactly
+ *    the main page's per-viewport rule). A stamp ENDS on its rest values
+ *    and hands itself back on animationend (.pv-set), so no fill ever
+ *    pins matter bright: the ghost numeral settles AT its rest ink
+ *    instead of stamping to full and snapping down.
  *  · deep links: /#p-01..04 opens the sheet directly; back button closes;
  *    the row hrefs stay graceful no-js fallbacks (they're real anchors).
  *  · the accent re-inks the open sheet (plate + duo) the moment the chips
@@ -39,6 +49,7 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
   const platesRef = useRef(plates);
   const accentRef = useRef(accentI);
   const notesObsRef = useRef<IntersectionObserver | null>(null);
+  const scObsRef = useRef<IntersectionObserver | null>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
   proofRef.current = proofOn;
   platesRef.current = plates;
@@ -66,18 +77,21 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
       const desc = row?.querySelector(".row-desc")?.textContent ?? "";
       const next = (i + 1) % PROJECTS.length;
       const nextTitle = rowFor(next)?.querySelector(".row-title")?.textContent ?? "";
-      /* the proofreader's insertion rides INSIDE the nerve (the pmark
+      /* the proofreader's insertion rides INSIDE the stet (the pmark
          gesture from the outro headline: caret under, pen above) */
-      const nerve = c.nerve.replace(
+      const stet = c.stet.replace(
         c.ins.find,
         '<span class="pmark">' + c.ins.find +
           '<svg class="note scrawl pm-caret" style="--d:.5s" viewBox="0 0 16 10" aria-hidden="true"><path class="draw" pathLength="1" d="M1,9 L8,1 L15,9" fill="none"/></svg>' +
           '<em class="note pm-ins ' + c.ins.pen + '" style="--d:.62s" aria-hidden="true">' + c.ins.text + "</em></span>",
       );
-      /* the sheet assembles in press order (imp-stamp per block, --pvd
-         cascade); ?still ships it seated (no pv-arm), reduced motion is
+      /* the fold assembles in press order at open (.pv-st, --pvd
+         cascade); everything below the fold is scroll-armed instead
+         (.pv-sc — its IO stamps it when the scroll brings it up);
+         ?still ships every block seated (no pv-arm), reduced motion is
          disarmed in CSS */
       const st = (d: string): string => ' pv-st" style="--pvd:' + d + '"';
+      const sc = (d: string): string => ' pv-sc" style="--pvd:' + d + '"';
       return (
         '<div class="pv-sheet' + (stillNow ? "" : " pv-arm") + '">' +
           /* the trim: two opposing brackets (the pressmark's own grammar —
@@ -104,6 +118,17 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
               "<div><span>STACK</span>" + c.stack + "</div>" +
               "<div><span>WHEN</span>" + c.when + "</div>" +
               "<div><span>MADE</span><ul>" + c.made.map((m) => "<li>" + m + "</li>").join("") + "</ul></div>" +
+              /* only what is verifiably off press gets a row; a claim
+                 without an address prints as set type, never a dead link */
+              (c.delivered.length
+                ? '<div><span>DELIVERED</span><ul class="pv-links">' +
+                  c.delivered.map((d) =>
+                    d.href
+                      ? '<li><a href="' + d.href + '" target="_blank" rel="noopener">' + d.t + " &nearr;</a></li>"
+                      : "<li><em>" + d.t + "</em></li>",
+                  ).join("") +
+                  "</ul></div>"
+                : "") +
             "</aside>" +
             '<div class="pv-body">' +
               '<figure class="pv-plate' + st(".4s") + ">" +
@@ -112,17 +137,21 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
                 '<svg class="note scrawl pv-parr" style="--d:.42s" viewBox="0 0 40 26" aria-hidden="true"><path class="draw" pathLength="1" d="M6,24 C14,20 24,12 31,5 M25,6 L32,3 L30,11" fill="none"/></svg>' +
               "</figure>" +
               '<p class="pv-cap mono' + st(".46s") + ">PLATE " + p.num + " &middot; THREE INKS &middot; " + p.motif.toUpperCase() + " MOTIF &middot; 800&times;1000</p>" +
-              '<h3 class="mono' + st(".52s") + '>THE BRIEF:</h3><p class="' + st(".56s").slice(1) + ">" + c.brief + "</p>" +
+              '<h3 class="mono' + sc(".52s") + '>THE BRIEF:</h3><p class="' + sc(".6s").slice(1) + ">" + c.brief + "</p>" +
               /* THE RUN — the process, station by station, docket voice */
-              '<div class="pv-run' + st(".62s") + ">" +
+              '<div class="pv-run' + sc(".68s") + ">" +
                 '<p class="pv-run-head mono">THE RUN:</p>' +
                 c.run.map((r, k) =>
                   '<p class="pv-run-row mono"><span class="pv-run-n">0' + (k + 1) + '</span><span class="pv-run-st">' + r[0] + '</span><span class="pv-run-line">' + r[1] + "</span></p>",
                 ).join("") +
               "</div>" +
-              '<h3 class="mono' + st(".7s") + '>THE NERVE:</h3><p class="' + st(".74s").slice(1) + ">" + nerve + "</p>" +
-              '<div class="pv-duo' + st(".8s") + "><figure></figure><figure></figure></div>" +
-              '<ul class="pv-stats' + st(".86s") + ">" +
+              /* THE STET — the one call that stood; the heading teaches
+                 the word in the instrument voice (the hero struck the
+                 nerve tagline; the proofreader's verdict replaces it) */
+              '<h3 class="mono' + sc(".76s") + '>THE STET: <span class="pv-gloss">LET IT STAND</span></h3>' +
+              '<p class="pv-stet ' + sc(".82s").slice(1) + ">" + stet + "</p>" +
+              '<div class="pv-duo' + sc(".88s") + "><figure></figure><figure></figure></div>" +
+              '<ul class="pv-stats' + sc(".94s") + ">" +
                 c.outcome.map((o, k) =>
                   "<li><b>" + o[0] + '</b><span class="mono">' + o[1] + "</span>" +
                     (k === c.statRing.i
@@ -133,7 +162,7 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
                   "</li>",
                 ).join("") +
               "</ul>" +
-              '<blockquote class="pv-quote' + st(".92s") + ">" + c.quote + '<footer class="mono">' + c.attr + "</footer>" +
+              '<blockquote class="pv-quote' + sc("1s") + ">" + c.quote + '<footer class="mono">' + c.attr + "</footer>" +
                 /* side B: the two hands argue at the quote's shoulder */
                 '<div class="note argue pv-argue" style="--d:.3s">' +
                   c.argue.map((a) => '<span class="' + a.pen + '">' + a.text + "</span>").join("") +
@@ -141,9 +170,15 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
               "</blockquote>" +
             "</div>" +
           "</div>" +
-          '<a class="pv-next' + st(".98s") + ' id="pv-next" href="#p-0' + (next + 1) + '" data-next="' + next + '">' +
-            '<span class="mono">NEXT PROOF &middot; 0' + (next + 1) + "</span><b>" + nextTitle + " &rarr;</b></a>" +
-          '<span class="pv-jobline mono' + st("1.04s") + ' aria-hidden="true">SHEET N&ordm; 0' + (i + 2) + " &middot; " + title.toUpperCase() + " &middot; MARK AXELUS &middot; WORKING PROOF</span>" +
+          /* NEXT PROOF — the handoff is a press pass: the ink rolls
+             across on hover, the arrow advances, and the NEXT sheet's
+             own plate rides up like the next job on the wire */
+          '<a class="pv-next' + sc("1.06s") + ' id="pv-next" href="#p-0' + (next + 1) + '" data-next="' + next + '">' +
+            '<span class="pv-next-ink" aria-hidden="true"></span>' +
+            '<span class="pv-next-plate" aria-hidden="true"></span>' +
+            '<span class="mono">NEXT PROOF &middot; 0' + (next + 1) + "</span>" +
+            "<b>" + nextTitle + '<i class="pv-next-arr" aria-hidden="true">&rarr;</i></b></a>' +
+          '<span class="pv-jobline mono' + sc("1.12s") + ' aria-hidden="true">SHEET N&ordm; 0' + (i + 2) + " &middot; " + title.toUpperCase() + " &middot; MARK AXELUS &middot; WORKING PROOF</span>" +
         "</div>"
       );
     }
@@ -158,6 +193,39 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
         duo[0].style.backgroundImage = detailURI(PROJECTS[i], 0, accent);
         duo[1].style.backgroundImage = detailURI(PROJECTS[i], 1, accent);
       }
+      /* the handoff carries the NEXT sheet's plate (revealed on hover) */
+      const np = pvEl.querySelector<HTMLElement>(".pv-next-plate");
+      if (np) np.style.backgroundImage = platesRef.current[(i + 1) % PROJECTS.length];
+    }
+
+    /* the arrival law, below the fold: each .pv-sc stamps when the
+       scroll brings it onto the sheet. The IO's first delivery keeps the
+       authored press cascade (whatever the open frame already shows);
+       every later batch takes a short local stagger so a block never
+       waits out a delay written for the open. */
+    function watchScrollBlocks(): void {
+      if (stillNow || !pvEl) return;
+      const blocks = Array.prototype.slice.call(pvEl.querySelectorAll(".pv-sc")) as HTMLElement[];
+      if (!blocks.length) return;
+      let firstBatch = true;
+      const obs = new IntersectionObserver(
+        (entries) => {
+          const atOpen = firstBatch;
+          firstBatch = false;
+          let k = 0;
+          entries.forEach((en) => {
+            if (!en.isIntersecting) return;
+            const el = en.target as HTMLElement;
+            if (!atOpen) el.style.setProperty("--pvd", (k * 0.09).toFixed(2) + "s");
+            k++;
+            el.classList.add("pv-in");
+            obs.unobserve(el);
+          });
+        },
+        { root: pvEl, rootMargin: "0px 0px -8% 0px" },
+      );
+      blocks.forEach((el) => obs.observe(el));
+      scObsRef.current = obs;
     }
 
     function watchSheetNotes(): void {
@@ -184,25 +252,24 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
       notesObsRef.current = obs;
     }
 
-    let armT: ReturnType<typeof setTimeout> | undefined;
     function openProject(i: number): void {
       if (!pvEl || !(i >= 0 && i < PROJECTS.length)) return;
       notesObsRef.current?.disconnect();
+      scObsRef.current?.disconnect();
       if (idxRef.current < 0) {
         returnFocusRef.current = (document.activeElement as HTMLElement) ?? null;
       }
       idxRef.current = i;
       pvEl.innerHTML = buildPV(i);
-      /* the press lets go once the last block seats — imp-stamp's fill
-         holds opacity:1, which would pin the ghost numeral (rest ≈ .14)
-         and deafen the proof-mode dims; releasing the arm hands every
-         block back to the cascade through its own transitions */
-      clearTimeout(armT);
-      if (!stillNow) {
-        armT = setTimeout(() => {
-          pvEl.querySelector(".pv-sheet")?.classList.remove("pv-arm");
-        }, 1650);
-      }
+      /* every stamp ends ON its rest values, so there is nothing to
+         release on a timer any more — each block hands itself back the
+         moment it seats (.pv-set kills the fill; transitions take over,
+         so the proof dims and the ghost numeral fade like set type) */
+      pvEl.querySelector(".pv-sheet")?.addEventListener("animationend", (e) => {
+        if ((e as AnimationEvent).animationName === "pv-stamp") {
+          (e.target as HTMLElement).classList.add("pv-set");
+        }
+      });
       inkArt(i);
       document.body.classList.add("pv-open");
       document.documentElement.classList.add("pv-open");
@@ -221,15 +288,17 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
         e.preventDefault();
         openProject(+(this.dataset.next ?? 0));
       });
+      watchScrollBlocks();
       watchSheetNotes();
     }
 
     function closeProject(): void {
       if (idxRef.current < 0 || !pvEl) return;
       idxRef.current = -1;
-      clearTimeout(armT);
       notesObsRef.current?.disconnect();
       notesObsRef.current = null;
+      scObsRef.current?.disconnect();
+      scObsRef.current = null;
       document.body.classList.remove("pv-open");
       document.documentElement.classList.remove("pv-open");
       if (location.hash) history.pushState(null, "", location.pathname + location.search);
@@ -257,9 +326,10 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
 
     return () => {
       window.removeEventListener("hashchange", onHash);
-      clearTimeout(armT);
       notesObsRef.current?.disconnect();
       notesObsRef.current = null;
+      scObsRef.current?.disconnect();
+      scObsRef.current = null;
       if (idxRef.current >= 0) {
         idxRef.current = -1;
         document.body.classList.remove("pv-open");
@@ -284,6 +354,8 @@ export function usePV(rootRef: RefObject<HTMLElement | null>): void {
       duo[0].style.backgroundImage = detailURI(PROJECTS[i], 0, ACCENTS[accentI].night);
       duo[1].style.backgroundImage = detailURI(PROJECTS[i], 1, ACCENTS[accentI].night);
     }
+    const np = pvEl.querySelector<HTMLElement>(".pv-next-plate");
+    if (np) np.style.backgroundImage = plates[(i + 1) % PROJECTS.length];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accentI, plates]);
 

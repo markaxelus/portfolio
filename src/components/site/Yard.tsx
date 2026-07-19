@@ -36,7 +36,7 @@ export default function Yard() {
         <span className="note hand-b n-map2" style={{ "--d": "1.05s" } as CSSProperties}>(now with a detour past the day job.)</span>
 
         {/* the passers-by, at 2am: the cairn topples and we stack again
-             (the nerve theme, in the hand) — and the count is read, not just kept */}
+             (the topple-and-restack theme, in the hand) — and the count is read, not just kept */}
         <span className="note hand-b n-cairn-a" style={{ "--d": ".3s" } as CSSProperties}>it topples sometimes.<br/>i stack it again.</span>
         <span className="note hand-k n-cairn-b" style={{ "--d": ".5s" } as CSSProperties}>strangers, all of them.<br/>i&rsquo;ve read every timestamp.</span>
         <svg className="note scrawl dd-cairn-arrow" style={{ "--d": ".62s" } as CSSProperties} viewBox="0 0 70 40" aria-hidden="true">

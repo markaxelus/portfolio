@@ -3,17 +3,21 @@
  * anatomy comes from the prototype (context-first meta rail, plate hero,
  * outcome figures, a quote, the NEXT PROOF handoff), and the sheet tells
  * each job as a press story: THE BRIEF (the problem), THE RUN (the
- * process, station by station), THE NERVE (the one decision with spine),
- * then the figures. Facts trace to the legacy case copy
+ * process, station by station), THE STET (the one call that stood),
+ * then the figures. "Nerve" died on the hero with the struck tagline
+ * (stet? no.) — the section takes the proofreader's word instead: stet,
+ * let it stand. Facts trace to the legacy case copy
  * (src/data/projects.ts) and the WorkIndex rows — nothing is claimed the
  * data can't back, and nobody is invented to praise the work: every quote
  * is pulled from the shop's own paper (handover notes, the dev log, the
- * pitch to myself).
+ * pitch to myself). DELIVERED links only what is verifiably off press:
+ * the live club site, the public repos; Relay stays honest (no public
+ * pull yet, the rail's WHEN already says so).
  *
  * SIDE B is anchored, never floated (the anchor law): each annotation
  * belongs to the OBJECT it annotates — a pen under the plate, a red ring
  * on one figure, the two hands arguing at the quote's shoulder, a
- * proofreader's insertion inside the nerve itself.
+ * proofreader's insertion inside the stet itself.
  *
  * House mark law: no em dashes on the sheet — machine fields take the
  * middot, prose writes colons, hyphens and periods; en dashes only in
@@ -33,8 +37,12 @@ export interface Case {
   brief: string;
   /** the process, station by station: [station label, the move] */
   run: Array<[string, string]>;
-  nerve: string;
+  /** the one call that stood (proofreader's stet: let it stand) */
+  stet: string;
   made: string[];
+  /** what is verifiably off press: [label, optional href] — no href
+   *  renders as plain set type, never a dead link */
+  delivered: Array<{ t: string; href?: string }>;
   outcome: Array<[string, string]>;
   quote: string;
   attr: string;
@@ -60,7 +68,7 @@ export const CASES: Case[] = [
       ["THE RESPONSIVE PASS", "Mobile-first breakpoints, the framework’s image press, honest loading and error states."],
       ["THE HANDOVER", "Documentation written for the next maintainer, tested by me not being there."],
     ],
-    nerve:
+    stet:
       "No rewrite. The temptation was a blank repo; the discipline was fixing the ship at sea. I touched nothing until the audit mapped the whole codebase, then rebuilt from the inside: the site never went dark, and the club never noticed the surgery.",
     made: [
       "Full code audit, mapped",
@@ -68,6 +76,7 @@ export const CASES: Case[] = [
       "Mobile-first responsive pass",
       "Maintainer documentation",
     ],
+    delivered: [{ t: "LIVE · UVEEC.CA", href: "https://uveec.ca" }],
     outcome: [
       ["0", "CODE CHANGES TO UPDATE THE ROSTER"],
       ["1", "LEGACY CODEBASE, KEPT AFLOAT"],
@@ -99,7 +108,7 @@ export const CASES: Case[] = [
       ["THE BOARD", "Drag-and-drop that survives a dropped connection: error handling that tells the truth."],
       ["STILL ON PRESS", "Caching, presence, the next feature: this run doesn’t close."],
     ],
-    nerve:
+    stet:
       "The websockets fought back: every live update wanted to re-render the world. I built an event layer that batches the socket’s opinions and lets React reconcile on my schedule, not the wire’s. Optimistic UI everywhere, so the interface commits first and apologizes rarely.",
     made: [
       "Real-time sync layer",
@@ -107,6 +116,7 @@ export const CASES: Case[] = [
       "Postgres schema · Prisma models",
       "Optimistic UI system",
     ],
+    delivered: [],
     outcome: [
       ["<1s", "MOST OPERATIONS, ROUND TRIP"],
       ["1", "RENDER PER BATCH, NOT PER EVENT"],
@@ -137,13 +147,17 @@ export const CASES: Case[] = [
       ["THE ENGINE", "Observers arm the motion after mount; every effect answers to the performance budget."],
       ["SIDE B", "The working layer becomes the second author: two pens, the stamps, the cat."],
     ],
-    nerve:
+    stet:
       "The decision was restraint: one serif, one mono, three inks, and nothing moves unless the press would move it. The site performs because it refuses to perform: compositor-cheap transforms, observers instead of scroll math, a budget nobody gets to exceed. The margins argue back; the mess is not a decoration, it is the second author.",
     made: [
       "Design language, print-true",
       "Motion engine, observer-armed",
       "Static build, SSR-settled",
       "The mess layer, on purpose",
+    ],
+    delivered: [
+      { t: "LIVE · YOU’RE ON IT" },
+      { t: "SOURCE · GITHUB", href: "https://github.com/markaxelus/portfolio" },
     ],
     outcome: [
       ["90+", "EVERY CORE WEB VITAL"],
@@ -174,14 +188,15 @@ export const CASES: Case[] = [
       ["THE DISCIPLINE", "Prompts engineered until the relationships held; every answer validated before a user sees it."],
       ["THE DEMO", "10MB in, diagram out, under five seconds: judged, and it held."],
     ],
-    nerve:
-      "The nerve was refusing to trust the model. Every answer it gave walked through validation before anyone saw it: schema checks, Mermaid syntax verification, fallbacks for the weird ones. A hackathon demo lives or dies on its worst output, so we engineered the worst output out.",
+    stet:
+      "Never trust the model: that was the call, and it stood. Every answer walked through validation before anyone saw it: schema checks, Mermaid syntax verification, fallbacks for the weird ones. A hackathon demo lives or dies on its worst output, so we engineered the worst output out.",
     made: [
       "Upload-to-diagram pipeline",
       "Cold-start mitigation",
       "Prompt + validation layer",
       "Editable Mermaid rendering",
     ],
+    delivered: [{ t: "SOURCE · GITHUB", href: "https://github.com/markaxelus/Synapse" }],
     outcome: [
       ["10MB", "PDF, COLD START"],
       ["<5s", "UPLOAD TO DIAGRAM"],

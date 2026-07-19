@@ -7,7 +7,7 @@ const FAVICON =
 export const metadata: Metadata = {
   title: "Mark Axelus · My Desk",
   description:
-    "Mark Axelus is a one-person practice, from my desk. Code, design & interfaces that hold their nerve.",
+    "Mark Axelus is a one-person practice, from my desk. Code, design & interfaces, delivered.",
   keywords: [
     "Mark Axelus",
     "Portfolio",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Mark Axelus · My Desk",
     description:
-      "Mark Axelus is a one-person practice, from my desk. Code, design & interfaces that hold their nerve.",
+      "Mark Axelus is a one-person practice, from my desk. Code, design & interfaces, delivered.",
     url: "https://markaxelus.com",
     siteName: "Mark Axelus Portfolio",
     locale: "en_CA",
@@ -51,11 +51,14 @@ export default function RootLayout({
             script mirrors willLoaderRun() exactly (first visit each session or
             ?loader replay; never reduced / ?still) and raises `html.mr-hold`;
             use-loader lowers it the moment it takes over, and a CSS guard
-            animation lowers it even if the engine never arrives. */}
+            animation lowers it even if the engine never arrives. It ALSO
+            stamps `html.js` unconditionally (before the early returns) — the
+            CSS keys JS-positioned furniture off it (the line's sheets hide
+            until hung; no-JS gets the printed-list fallback). */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "(function(){try{var q=location.search;if(/[?&]still(\\b|=)/.test(q))return;if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(/[?&]loader(\\b|=)/.test(q)||sessionStorage.getItem('ma-press-check')==null)document.documentElement.classList.add('mr-hold');}catch(e){}})();",
+              "(function(){try{document.documentElement.classList.add('js');var q=location.search;if(/[?&]still(\\b|=)/.test(q))return;if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(/[?&]loader(\\b|=)/.test(q)||sessionStorage.getItem('ma-press-check')==null)document.documentElement.classList.add('mr-hold');}catch(e){}})();",
           }}
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

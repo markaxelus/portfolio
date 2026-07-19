@@ -384,10 +384,20 @@ export function useMess(): void {
         if (fontsLive) positionAnchors();
       });
     }
+    /* the mobile law (same as the line's): a height-only resize on a
+       coarse pointer is the URL bar breathing during scroll — never a
+       reason to re-aim the margins */
+    const mqCoarseR = window.matchMedia("(pointer: coarse)");
+    let lastAnchorW = window.innerWidth;
     let resizeT: ReturnType<typeof setTimeout> | undefined;
     function onResize(): void {
+      const w = window.innerWidth;
+      if (w === lastAnchorW && mqCoarseR.matches) return;
       clearTimeout(resizeT);
-      resizeT = setTimeout(() => positionAnchors(), 150);
+      resizeT = setTimeout(() => {
+        lastAnchorW = window.innerWidth;
+        positionAnchors();
+      }, 150);
     }
     window.addEventListener("resize", onResize);
     /* animationend bubbles (a child .ch rattle would fire it) — only the word's

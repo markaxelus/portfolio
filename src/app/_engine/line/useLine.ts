@@ -173,6 +173,9 @@ export function useLine(rootRef: RefObject<HTMLElement | null>): void {
       const headroom = Math.max(0, headBottom + HEAD_GAP - topFrac * BHgeo);
       const BH = BHgeo + headroom;
       indexEl.style.height = BH + "px";
+      /* the CSS carries a close-guess min-height so SSR reserves the hang's
+         room (no load-time page jump); the measured height replaces it */
+      indexEl.style.minHeight = "0px";
       /* reads happen here, in one place, never in the loop */
       const W = indexEl.clientWidth;
       const idxRect = indexEl.getBoundingClientRect();
@@ -378,6 +381,11 @@ export function useLine(rootRef: RefObject<HTMLElement | null>): void {
           zzz.style.right = "auto";
         }
       }
+
+      /* the hang is real now — until this class lands, the CSS keeps the
+         JS-positioned furniture invisible so a refresh never flashes the
+         four sheets stacked at the section's origin */
+      indexEl.classList.add("line-hung");
     }
 
     /* ---- the loop: heavy paper, pure math, changed writes only ---- */
@@ -385,7 +393,9 @@ export function useLine(rootRef: RefObject<HTMLElement | null>): void {
     let rafId = 0;
     function lineFrame(now: number): void {
       rafId = requestAnimationFrame(lineFrame);
-      if (lineVisible && !document.hidden) {
+      /* idle while off screen, while the tab sleeps, and while a proof
+         sheet covers the page — no physics behind an opaque overlay */
+      if (lineVisible && !document.hidden && !document.body.classList.contains("pv-open")) {
         const t = (now - lineT0) / 1000;
         lineDraft *= 0.955; /* the draft dies slowly */
         for (let i = 0; i < lineItems.length; i++) {
@@ -621,11 +631,23 @@ export function useLine(rootRef: RefObject<HTMLElement | null>): void {
       buildLine(); /* ?still ships the hang, hung true, nothing moving */
     }
 
-    /* ---- geometry re-hangs on resize (150ms) + once fonts settle ---- */
+    /* ---- geometry re-hangs on resize (150ms) + once fonts settle ----
+       THE MOBILE LAW: on touch devices the URL bar collapsing/expanding
+       fires `resize` with a HEIGHT-only change on every scroll direction
+       flip — and the mobile hang is vh-sized, so rebuilding re-sized the
+       whole section ~400px mid-scroll and the page snapped backwards.
+       A height-only resize on a coarse pointer is the browser chrome
+       breathing, not a real re-layout: ignore it. Width changes
+       (rotation, split-screen, real resizes) still re-hang. */
+    const mqCoarse = window.matchMedia("(pointer: coarse)");
+    let lastBuildW = window.innerWidth;
     let resizeT: ReturnType<typeof setTimeout> | undefined;
     function onResize(): void {
+      const w = window.innerWidth;
+      if (w === lastBuildW && mqCoarse.matches) return;
       clearTimeout(resizeT);
       resizeT = setTimeout(function () {
+        lastBuildW = window.innerWidth;
         buildLine();
       }, 150);
     }

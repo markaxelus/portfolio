@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { deskStatus } from "@/lib/desk";
 
 /**
@@ -36,13 +36,27 @@ function lines(now: Date): string[] {
 
 export default function Ticker() {
   const [items, setItems] = useState<string[] | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setItems(lines(new Date()));
   }, []);
 
+  /* the marquee runs only while its strip is on screen — an infinite
+     transform animation on an off-screen element still ticks the
+     compositor every frame for nothing (phones notice) */
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver((es) => {
+      es.forEach((en) => el.classList.toggle("tk-off", !en.isIntersecting));
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <div className="ticker mono final" aria-hidden="true">
+    <div className="ticker mono final" aria-hidden="true" ref={rootRef}>
       <div className="ticker-track" id="ticker-track">
         {items &&
           [...items, ...items].map((t, i) => (
