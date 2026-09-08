@@ -3,10 +3,9 @@
 import { useLoader } from "./use-loader";
 
 /**
- * THE MAKE-READY LOADER — the client shell for the first-visit make-ready +
- * the & finale. Renders nothing: it drives the server-rendered `#makeready` /
- * `#mr-frame` (in page.tsx) by id and exposes the `window.__ampFly` /
- * `window.__ampFlood` cross-frame seam that the loader iframe calls.
+ * THE MAKE-READY LOADER — the client shell for the first-visit make-ready.
+ * Renders nothing: it drives the server-rendered `#makeready` / `#mr-frame`
+ * (in page.tsx) by id.
  *
  * Mount anywhere inside <EngineProvider> — placement is cosmetic (it queries
  * the DOM globally and gates on willLoaderRun()). It no-ops entirely on
